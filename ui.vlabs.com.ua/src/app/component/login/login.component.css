@@ -1,0 +1,38 @@
+.login-view-container {
+    width: 100%;
+    /*border: solid 1px blue;*/
+}
+
+.mat-card-login {
+    max-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.mat-progress-spinner-login {
+    margin-left: 35%;
+    /*border: solid 1px blue;*/
+}
+
+.mat-card-actions-login {
+    text-align: right;
+}
+
+.login-form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.error {
+  color: #D50000;
+}
+
+.success {
+  color: #8BC34A;
+}

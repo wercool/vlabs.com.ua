@@ -1,0 +1,39 @@
+.register-view-container {
+    width: 100%;
+    /*border: solid 1px blue;*/
+}
+
+.mat-card-register {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.mat-progress-spinner-login {
+    margin-left: 35%;
+    /*border: solid 1px blue;*/
+}
+
+.mat-card-actions-register {
+    text-align: right;
+}
+
+.register-form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.error {
+  color: #D50000;
+  line-height: 25%;
+}
+
+.success {
+  color: #8BC34A;
+}

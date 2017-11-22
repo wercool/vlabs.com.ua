@@ -1,0 +1,2 @@
+<app-admin-home *ngIf="authorizedFor('ADMIN')"></app-admin-home>
+<app-user-home *ngIf="authorizedFor('USER') && !authorizedFor('ADMIN')"></app-user-home>

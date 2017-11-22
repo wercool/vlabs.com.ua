@@ -1,0 +1,26 @@
+/* .mat-toolbar.mat-primary{
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 999;
+} */
+
+.mat-toolbar-row-spacer {
+  flex: 1 1 auto;
+}
+
+.element-spacer {
+  width: 15px;
+}
+
+.title{
+    color: #ffffff;
+    margin-left: 25px;
+}
+
+.profileTitle{
+    color: #ffffff;
+    margin-left: 25px;
+    font-size:12pt;
+}

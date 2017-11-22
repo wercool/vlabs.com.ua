@@ -1,0 +1,202 @@
+{
+    "presets": {"tetha": 15},
+    "title":                "Friction coefficient measurement",
+    "sceneFile":            "/vl/ph-mpd-fcm/scene/ph-mpd-fcm.dae",
+    "isPhysijsScene":       true,
+    "showStatistics":       true,
+    "showAxis":             false,
+    "showTooltips":         true,
+    "shadows":              true,
+    "forceShadows":         false,
+    "shadowsMapSize":       512,
+    "antialias":            false,
+    "canvasAlphaBuffer":    true,
+    "advanceLighting":      false,
+    "advanceLighting1src":  true,
+    "castShadows":
+    [
+        "Lamp1",
+        "slopingBody", "tableTopFrame", "tableTop", "slopingSurface", "support", "supportRod", "frame", "acPlug", "acWire", "aktakomPowerSupply",
+        "minusWire", "pulleyMotor", "motorFixture", "slopingSurfaceFixture",
+        "motor", "button", "tableTop_001", "Circle_015", "Circle_010", "Plane_007",
+        "Plane_010", "Plane_011", "Circle_012", "Circle_013", "pusher", "framePivot", "BezierCurve_009",
+        "BezierCurve_010", "BezierCurve_008", "BezierCurve_007", "stopbuttonBottomPlate",
+        "herconPlate2Fixture", "BezierCurve_006", "labSwitchHandler", "Plane_025", "labSwitchHandlerBase",
+        "BezierCurve_004", "BezierCurve_002", "BezierCurve_003", "slopingSurfaceFixtureHandle1",
+        "slopingSurfaceFixtureHandle2", "tableBottomFrame", "tableStand", "pulley",
+        "supportFixator1", "stopbuttonTopPlate", "Sphere_001", "Circle_011", "Plane_049", "Plane_050", "kukabasePlate",
+        "tableBottomFrameOutletsBox", "Plane_007", "Plane_010", "Plane_011"
+    ],
+    "receiveShadows":
+    [
+        "tableTop", "slopingSurface", "slopingBody", "slopingSurfaceFixture", "motorWoodenStand", "Plane_007",
+        "Cube_001", "tableTop_007", "Plane_011", "Plane_005", "Plane_010",
+        "motor", "support", "slopingSurfacePin", "labSwitch", "tableBottomFrame", "tableStand", "frontWall", "rightWall", "floor",
+        "kukabasePlate", "tableBottomFrameOutletsBox"
+    ],
+    "castShadowsExecptions":
+    [
+        "scale", "akatakomPowerSupplyHandleVF", "akatakomPowerSupplyHandleVC", "akatakomPowerSupplyHandleCF", "akatakomPowerSupplyHandleCC"
+    ],
+    "receiveShadowsExecptions":
+    [
+        "scale"
+    ],
+    "maps":
+    [
+        {"name":"magnifier", "url":"/vl/ph-mpd-fcm/scene/textures/magnifier.png"},
+        {"name":"info", "url":"/vl/ph-mpd-fcm/scene/textures/info.png"},
+        {"name":"settings", "url":"/vl/ph-mpd-fcm/scene/textures/settings.png"}
+    ],
+    "interactionHelpers":
+    {
+        "plumbScaleHelper":
+        {
+            "parent":"scale",
+            "map":"magnifier",
+            "opacity":"0.5",
+            "scale":{"x":2.0, "y":2.0},
+            "offset":{"x":0.2, "y":0.5, "z":0.1},
+            "visible": true
+        },
+        "aktakomPowerSupplyHelper":
+        {
+            "parent":"aktakomPowerSupply",
+            "map":"settings",
+            "opacity":"0.5",
+            "scale":{"x":0.7, "y":0.7},
+            "offset":{"x":-2.8, "y":1.5, "z":0.0},
+            "visible": true
+        },
+        "button1Helper":
+        {
+            "parent":"button1",
+            "map":"info",
+            "color":"0xd8ff61",
+            "scale":{"x":0.75, "y":0.75},
+            "offset":{"x":-0.5, "y":0.4, "z":0.0},
+            "visible": true
+        },
+        "stopbuttonTopPlateHelper":
+        {
+            "parent":"stopbuttonTopPlate",
+            "map":"magnifier",
+            "opacity":"0.5",
+            "scale":{"x":0.75, "y":0.75},
+            "offset":{"x":0.5, "y":-0.1 , "z":-0.5},
+            "visible": true
+        },
+        "stopbuttonBottomPlateHelper":
+        {
+            "parent":"stopbuttonBottomPlate",
+            "map":"magnifier",
+            "opacity":"0.5",
+            "scale":{"x":0.75, "y":0.75},
+            "offset":{"x":0.5, "y":0.2 , "z":-0.5},
+            "visible": true
+        },
+        "labSwitchHelper":
+        {
+            "parent":"labSwitch",
+            "map":"magnifier",
+            "opacity":"0.5",
+            "scale":{"x":0.75, "y":0.75},
+            "offset":{"x":-0.2, "y":0.5 , "z":-0.5},
+            "visible": true
+        }
+    },
+    "interactors":
+    {
+        "button1":
+        {
+            "active":true,
+            "press":{"callback":"button1Pressed"},
+            "release":{"callback":"button1Released", "strict":false}
+        },
+        "slopingBody":
+        {
+            "active":false,
+            "tooltip":"0.3 kg"
+        },
+        "plumbScaleHelper":
+        {
+            "active":true,
+            "tooltip":"Press to see the plumb's scale",
+            "press":{"callback":"helperZoom ", "arguments":[{"target":"scale", "zOffset":1.2, "xOffset":0.5, "yOffset":-0.5}]}
+        },
+        "aktakomPowerSupplyHelper":
+        {
+            "active":true,
+            "tooltip":"Press to see the power supply front panel",
+            "press":{"callback":"helperZoom", "arguments":[{"target":"aktakomPowerSupplyScreen", "zOffset":2.5, "yOffset":-1.0}]}
+        },
+        "button1Helper":
+        {
+            "active":false,
+            "tooltip":"Press to lift the sloping surface"
+        },
+        "stopbuttonTopPlateHelper":
+        {
+            "active":true,
+            "press":{"callback":"helperZoom", "arguments":[{"target":"stopbuttonTopPlate", "xOffset":0.2, "yOffset":-0.4, "zOffset":1.5}]}
+        },
+        "stopbuttonBottomPlateHelper":
+        {
+            "active":true,
+            "press":{"callback":"helperZoom", "arguments":[{"target":"stopbuttonBottomPlate", "xOffset":-0.5, "yOffset":0.5, "zOffset":1.5}]}
+        },
+        "labSwitchHelper":
+        {
+            "active":true,
+            "press":{"callback":"helperZoom", "arguments":[{"target":"labSwitch", "xOffset":-0.8, "yOffset":2.5, "zOffset":5.0}]}
+        },
+        "labSwitchHandler":
+        {
+            "active":true,
+            "tooltip":"Use [Ctrl] keyboard key to invert mouse action",
+            "press":{"callback":"labSwitchHandler"}
+        }
+    },
+    "physijs":
+    {
+        "slopingBody":
+        {
+            "shape":"BoxMesh",
+            "mass":1.0,
+            "friction":0.4,
+            "restitution":0.2,
+            "collision":"physijsCollision"
+        },
+        "slopingSurface":
+        {
+            "shape":"ConvexMesh",
+            "mass":0.0,
+            "friction":0.2,
+            "restitution":1.0
+        },
+        "slopingSurfaceFixture":
+        {
+            "shape":"ConvexMesh",
+            "mass":0.0,
+            "friction":0.5,
+            "restitution":0.1,
+            "collision":"physijsCollision"
+        },
+        "tableTop":
+        {
+            "shape":"BoxMesh",
+            "mass":0.0,
+            "friction":0.5,
+            "restitution":0.1,
+            "collision":"physijsCollision"
+        },
+        "support":
+        {
+            "shape":"BoxMesh",
+            "mass":0.0,
+            "friction":0.2,
+            "restitution":0.5,
+            "collision":"physijsCollision"
+        }
+    }
+}

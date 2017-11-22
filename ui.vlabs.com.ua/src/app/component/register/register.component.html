@@ -1,0 +1,46 @@
+<div class="register-view-container">
+  <mat-card class="mat-card-register">
+
+    <mat-card-subtitle #card>
+        <h2>Welcome to VLabs</h2>
+    </mat-card-subtitle>
+    <mat-card-title>
+        <h4>Registration</h4>
+        <mat-progress-spinner *ngIf="submitted" class="mat-progress-spinner-login" mode="indeterminate"></mat-progress-spinner>
+    </mat-card-title>
+
+    <mat-card-content>
+        <p [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></p>
+
+        <form *ngIf="!submitted" [formGroup]="form" (ngSubmit)="onSubmit()" #registerForm="ngForm" class="register-form">
+            <mat-form-field class="full-width">
+                <input matInput formControlName="username" type="text" placeholder="username (email)" required (change)="onUsernameFocusLost()">
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <input matInput formControlName="password" type="password" placeholder="password" required>
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <input matInput formControlName="confirmPassword" type="password" placeholder="confirm password" required>
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <input matInput formControlName="email" type="email" placeholder="email" required>
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <input matInput formControlName="firstName" type="text" placeholder="First Name">
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <input matInput formControlName="lastName" type="text" placeholder="Last Name">
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <input matInput formControlName="phoneNumber" type="tel" placeholder="phone number">
+            </mat-form-field>
+
+            <div class="mat-card-actions-register">
+                <button type="submit" mat-button [disabled]="!registerForm.form.valid">SUBMIT REQUEST</button>
+            </div>
+        </form>
+
+    </mat-card-content>
+
+  </mat-card>
+<div>

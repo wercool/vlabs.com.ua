@@ -1,0 +1,5 @@
+<button mat-menu-item [matMenuTriggerFor]="adminMenu">Administration</button>
+
+<mat-menu #adminMenu="matMenu">
+    <button mat-menu-item (click)="navigate('/user-management')">User Management</button>
+</mat-menu>

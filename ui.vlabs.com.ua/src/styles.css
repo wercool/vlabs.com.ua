@@ -1,0 +1,24 @@
+/*  https://material.io/icons  */
+@import '~https://fonts.googleapis.com/icon?family=Material+Icons';
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
+body {
+    margin: 0;
+}
+
+html{
+  position: relative; 
+  min-height: 100%;
+}
+
+ /* Rules for sizing the icon. */
+.mat-icon.md-18 { font-size: 18px; width: 18px; height: 18px; }
+.mat-icon.md-24 { font-size: 24px; width: 24px; height: 24px; }
+.mat-icon.md-36 { font-size: 36px; width: 36px; height: 36px; }
+.mat-icon.md-48 { font-size: 48px; width: 48px; height: 48px; }
+
+/* Link decoration */
+.linkNoDecoration{
+  text-decoration: none;
+  display: block;
+}

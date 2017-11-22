@@ -1,0 +1,36 @@
+<div class="login-view-container">
+  <mat-card class="mat-card-login">
+
+    <mat-card-subtitle>
+        <h2>Welcome to VLabs</h2>
+    </mat-card-subtitle>
+    <mat-card-title>
+        <h4>Login</h4>
+        <mat-progress-spinner *ngIf="submitted" class="mat-progress-spinner-login" mode="indeterminate"></mat-progress-spinner>
+    </mat-card-title>
+
+    <mat-card-content>
+        <p [class]="notification.msgType" *ngIf="notification">{{notification.msgBody}}</p>
+
+        <form *ngIf="!submitted" [formGroup]="form" (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
+            <mat-form-field class="full-width">
+                <input matInput formControlName="username" placeholder="username (email)" required>
+            </mat-form-field>
+
+            <mat-form-field class="full-width">
+                <input matInput formControlName="password" type="password" placeholder="password" required>
+            </mat-form-field>
+
+            <div class="mat-card-actions-login">
+                <button type="submit" mat-button [disabled]="!loginForm.form.valid">LOGIN</button>
+                <button type="button" mat-button (click)="onRegister()">REGISTER</button>
+            </div>
+        </form>
+
+    </mat-card-content>
+
+    <mat-card-actions class="mat-card-actions-login">
+    </mat-card-actions>
+
+  </mat-card>
+<div>

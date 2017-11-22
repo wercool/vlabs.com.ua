@@ -1,0 +1,9 @@
+.content {
+    width: 99%;
+    height: 95vh;
+    /* margin-top: 70px; */
+    margin-top: 0.5%;
+    margin-left: 0.5%;
+    margin-right: 0.5%;
+    /*border: solid 1px red;*/
+  }
