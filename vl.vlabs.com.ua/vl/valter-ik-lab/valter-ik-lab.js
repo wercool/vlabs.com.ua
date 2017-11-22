@@ -445,7 +445,7 @@ var rightForearm_rand = parseFloat((1.0 + Math.random() * (0.75 - 1.0)).toFixed(
 
 // setTimeout(self.IKBruteforce.bind(self.Valter), 10);
 
-        $.post("/srv/savejointstatesrarm", jointStateAndEEFPos, function(result){
+        $.post("/srv/valter/savejointstatesrarm", jointStateAndEEFPos, function(result){
             // self.IKBruteforce();
             setTimeout(self.IKBruteforce.bind(self.Valter), 10);
         });

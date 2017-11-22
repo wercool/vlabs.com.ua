@@ -2,6 +2,6 @@
 mysql -uroot -p < init-db.sql
 
 2) Insert initial data records
-mysql -uvlabsREST -p < init-data.sql
+mysql -uvlabs -p < init-data.sql
 
-2) vlabsREST server by default is running on 8090 port (`server.port` in application.properties)
+2) VLabs server by default is running on 8090 port (`server.port` in application.properties)

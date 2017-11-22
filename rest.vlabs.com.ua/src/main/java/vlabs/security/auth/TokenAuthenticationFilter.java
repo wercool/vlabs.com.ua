@@ -46,6 +46,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     public static final String REGISTER_MATCHER = "/api/register";
     public static final String LOGOUT_MATCHER   = "/api/logout";
 
+    public static final String SRV_MATCHER   = "/srv/**";
+
     private List<String> pathsToSkip = Arrays.asList(
             ROOT_MATCHER,
             HTML_MATCHER,
@@ -55,7 +57,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             IMG_MATCHER,
             LOGIN_MATCHER,
             REGISTER_MATCHER,
-            LOGOUT_MATCHER
+            LOGOUT_MATCHER,
+            SRV_MATCHER
     );
 
     @Override

@@ -80,6 +80,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                 .csrf()
                 .ignoringAntMatchers("/api/login")
                 .ignoringAntMatchers("/api/register")
+                .ignoringAntMatchers("/srv/")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()

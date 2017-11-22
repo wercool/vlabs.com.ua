@@ -2000,7 +2000,7 @@ class Valter
             case "GetRightArmIKPCL":
                 var valterRef = this;
                 $.ajax({
-                    url: "/srv/rightarmikpcl",
+                    url: "/srv/valter/rightarmikpcl",
                     type: 'POST',
                     contentType: "application/json"
                 }).done(function(results){
@@ -2044,7 +2044,7 @@ class Valter
         var valterRef = this;
 
         $.ajax({
-            url: "/srv/solverarmik",
+            url: "/srv/valter/solverarmik",
             type: 'POST',
             contentType: "application/json",
             data: JSON.stringify(eefPos)
