@@ -1,4 +1,4 @@
-package vlabs.security.auth;
+package vlabs.security;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,8 +11,6 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import vlabs.security.TokenHelper;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

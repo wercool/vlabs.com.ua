@@ -16,12 +16,12 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import vlabs.security.auth.AuthenticationFailureHandler;
-import vlabs.security.auth.AuthenticationSuccessHandler;
-import vlabs.security.auth.LogoutSuccess;
-import vlabs.security.auth.RestAuthenticationEntryPoint;
-import vlabs.security.auth.TokenAuthenticationFilter;
-import vlabs.service.impl.CustomUserDetailsService;
+import vlabs.security.AuthenticationFailureHandler;
+import vlabs.security.AuthenticationSuccessHandler;
+import vlabs.security.LogoutSuccess;
+import vlabs.security.RestAuthenticationEntryPoint;
+import vlabs.security.TokenAuthenticationFilter;
+import vlabs.service.CustomUserDetailsService;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)

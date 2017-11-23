@@ -1,4 +1,4 @@
-package vlabs.security.auth;
+package vlabs.security;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 

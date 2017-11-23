@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import vlabs.model.User;
 import vlabs.model.UserTokenState;
 import vlabs.security.TokenHelper;
+import vlabs.service.CustomUserDetailsService;
 import vlabs.service.UserService;
-import vlabs.service.impl.CustomUserDetailsService;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
