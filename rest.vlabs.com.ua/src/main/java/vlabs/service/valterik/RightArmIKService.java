@@ -20,7 +20,7 @@ public class RightArmIKService
     private RightArmIKRepository rightArmIKRepository;
 
     public Page<RightArmIK> findAllPaged() throws AccessDeniedException {
-        PageRequest limit = new PageRequest(0,10, Direction.ASC, "id");
+        PageRequest limit = PageRequest.of(0, 10, Direction.ASC, "id");
         Page<RightArmIK> result = rightArmIKRepository.findAll(limit);
         return result;
     }

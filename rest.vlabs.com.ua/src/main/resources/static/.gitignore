@@ -3,5 +3,5 @@
 
 # But not these files...
 !.gitignore
-!vlabs.index.html
-!vl
+!.persistant
+!vl/

@@ -3,17 +3,28 @@ buildscript
     ext
     {
         springBootVersion = '2.0.0.M5'
+        comMooworkNodeVersion = '1.2.0'
+        gradleJSPluginVersion = '1.12.1'
     }
     repositories
     {
+        jcenter()
         mavenCentral()
         maven { url "https://repo.spring.io/snapshot" }
         maven { url "https://repo.spring.io/milestone" }
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies
     {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "com.moowork.gradle:gradle-node-plugin:${comMooworkNodeVersion}"
+        classpath "com.eriwen:gradle-js-plugin:${gradleJSPluginVersion}"
     }
+}
+
+
+plugins {
+  id "com.eriwen.gradle.js" version "2.14.1"
 }
 
 apply plugin: 'java'
@@ -21,6 +32,8 @@ apply plugin: 'war'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.moowork.node'
+apply plugin: "com.eriwen.gradle.js"
 
 group = 'ua.com.vlabs'
 version = '0.0.1-SNAPSHOT'
@@ -66,8 +79,6 @@ dependencies
     // https://mvnrepository.com/artifact/joda-time/joda-time
     compile group: 'joda-time', name: 'joda-time', version: '2.9.9'
 
-
-
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.0.0.M5'
 
@@ -77,3 +88,94 @@ dependencies
     // https://mvnrepository.com/artifact/junit/junit
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
+node {
+  version = "7.10.1"
+  download = true
+  nodeModulesDir = file("../ui.vlabs.com.ua")
+}
+
+def persistantToList(File f) {
+  def includes = []
+  f.eachLine { line ->
+    //ignore comments and empty lines
+      if (!line.startsWith('#') && !line.isEmpty()) {
+       includes.add(line)
+    }
+  }
+  return includes
+}
+
+task buildUIDev(type: NpmTask, dependsOn: 'npmInstall') {
+    group = 'build'
+    description = 'Compile UI for development'
+    args = ['run', 'buildDev']
+}
+
+task buildUIProd(type: NpmTask, dependsOn: 'npmInstall') {
+  group = 'build'
+  description = "Compile UI for production"
+  args = ['run', 'buildProd']
+}
+
+task deployUIProd(type: Copy, dependsOn: 'buildUIProd') {
+  group = 'deploy'
+  from '../ui.vlabs.com.ua/dist'
+  into './src/main/resources/static'
+}
+
+task deployUIDev(type: Copy, dependsOn: 'buildUIDev') {
+  group = 'deploy'
+  from '../ui.vlabs.com.ua/dist'
+  into './src/main/resources/static'
+}
+
+task cleanUIFolder(){
+    group = 'clean'
+    description = 'Cleans UI folder'
+    doLast {
+        FileTree UIFolderTree = fileTree (dir: "./src/main/resources/static");
+        def filesToBeKept = persistantToList(file('./src/main/resources/static/.persistant'))
+        UIFolderTree.exclude filesToBeKept
+
+        if (UIFolderTree.size() > 0){
+            println "The following files are deleted from UI folder in rest.vlabs.com.ua: "
+            UIFolderTree.each { File file ->
+                println file
+                delete(file)
+            }
+        }
+
+    }
+}
+
+javascript.source {
+    vlab {
+        js {
+            srcDir "./src/main/resources/static/vl/js/vlab"
+            include "vlab.js"
+            include "valter.js"
+        }
+    }
+}
+
+javascript.source.vlab.js.files.eachWithIndex { jsFile, idx ->
+    tasks.create(name: "minifyJS${idx}", type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+        source = jsFile
+        dest = jsFile
+        closure { 
+            warningLevel = 'QUIET'
+            compilationLevel = 'WHITESPACE_ONLY'
+            compilerOptions.languageIn = 'ECMASCRIPT6_STRICT'
+        }
+    }
+}
+
+task individualJSMinify(dependsOn: tasks.matching {Task task -> task.name.startsWith("minifyJS")}){
+    group = 'Minify JS'
+}
+
+buildUIDev.dependsOn(cleanUIFolder)
+buildUIProd.dependsOn(cleanUIFolder)
+bootRun.dependsOn(deployUIDev)
+war.dependsOn(deployUIProd)
