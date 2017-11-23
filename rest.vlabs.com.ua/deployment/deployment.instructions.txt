@@ -5,3 +5,4 @@ mysql -uroot -p < init-db.sql
 mysql -uvlabs -p < init-data.sql
 
 2) VLabs server by default is running on 8090 port (`server.port` in application.properties)
+
