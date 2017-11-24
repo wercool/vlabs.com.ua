@@ -9,3 +9,4 @@ export * from './register/register.component';
 
 /* ROLE_ADMIN components */
 export * from './admin/user-management/user-management.component';
+export * from './admin/user-management/auth-user-dialog/auth-user-dialog.component';

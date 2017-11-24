@@ -1,18 +1,46 @@
 <mat-expansion-panel>
     <mat-expansion-panel-header>
         <mat-panel-title>
-        Recently registered
+        Non Authorized Users
         </mat-panel-title>
         <mat-panel-description>
         ({{this.usersWoAuthoritiesNum}})
         </mat-panel-description>
     </mat-expansion-panel-header>
 
-    <mat-form-field>
-        <input matInput placeholder="First name">
-    </mat-form-field>
 
-    <mat-form-field>
-        <input matInput placeholder="Age">
-    </mat-form-field>
+    <mat-table #table [dataSource]="usersWoAuthoritiesDS">
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="username">
+            <mat-header-cell *matHeaderCellDef>USERNAME</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-button (click)="openUserActivationDialog(element)">
+                    <mat-icon class="material-icons md-24">assignment</mat-icon>
+                    {{element.username}}
+                </button>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="email">
+            <mat-header-cell *matHeaderCellDef>EMAIL</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.email}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="phoneNumber">
+            <mat-header-cell *matHeaderCellDef>PHONE</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.phoneNumber}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="firstName">
+            <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.firstName}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="lastName">
+            <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.lastName}}</mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="usersWoAuthoritiesDisplayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: usersWoAuthoritiesDisplayedColumns;"></mat-row>
+    </mat-table>
+
 </mat-expansion-panel>

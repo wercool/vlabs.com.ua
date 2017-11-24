@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="rightArm")
 public class RightArmIK
@@ -19,6 +21,13 @@ public class RightArmIK
     @Column(name = "eefX", columnDefinition="Double(5, 3)")
     private Double eefX;
 
+    @Column(name = "eefY", columnDefinition="Double(5, 3)")
+    private Double eefY;
+
+    @Column(name = "eefZ", columnDefinition="Double(5, 3)")
+    private Double eefZ;
+
+    @JsonIgnore
     public Long getId() {
         return id;
     }
@@ -35,5 +44,20 @@ public class RightArmIK
         this.eefX = eefX;
     }
 
-    
+    public Double getEefY() {
+        return eefY;
+    }
+
+    public void setEefY(Double eefY) {
+        this.eefY = eefY;
+    }
+
+    public Double getEefZ() {
+        return eefZ;
+    }
+
+    public void setEefZ(Double eefZ) {
+        this.eefZ = eefZ;
+    }
+
 }

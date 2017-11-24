@@ -25,7 +25,8 @@ import {
   LoginComponent,
   RegisterComponent,
   /* ROLE_ADMIN components */
-  UserManagementComponent
+  UserManagementComponent,
+  AuthUserDialogComponent,
 } from './component';
 
 /* Services */
@@ -56,7 +57,11 @@ export function initUserFactory(userService: UserService)
     RegisterComponent,
     AdminMenuComponent,
     AdminHomeComponent,
-    UserManagementComponent
+    UserManagementComponent,
+    AuthUserDialogComponent
+  ],
+  entryComponents: [
+    AuthUserDialogComponent,
   ],
   imports:
   [

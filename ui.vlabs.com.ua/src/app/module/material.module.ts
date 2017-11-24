@@ -12,7 +12,9 @@ import {
     MatTooltipModule,
     MatSnackBarModule,
     MatTabsModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatTableModule,
+    MatDialogModule,
       
 } from '@angular/material';
 
@@ -30,7 +32,9 @@ import {
     MatTooltipModule,
     MatSnackBarModule,
     MatTabsModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatTableModule,
+    MatDialogModule,
   ],
   exports:
   [
@@ -45,7 +49,9 @@ import {
     MatTooltipModule,
     MatSnackBarModule,
     MatTabsModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatTableModule,
+    MatDialogModule,
   ],
   declarations: []
 })

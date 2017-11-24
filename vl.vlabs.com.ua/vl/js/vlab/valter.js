@@ -2001,7 +2001,7 @@ class Valter
                 var valterRef = this;
                 $.ajax({
                     url: "/srv/valter/rightarmikpcl",
-                    type: 'POST',
+                    type: 'GET',
                     contentType: "application/json"
                 }).done(function(results){
                     var pclGeometry = new THREE.Geometry();

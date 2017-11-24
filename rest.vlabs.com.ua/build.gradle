@@ -152,9 +152,24 @@ task cleanUIFolder(){
 javascript.source {
     vlab {
         js {
-            srcDir "./src/main/resources/static/vl/js/vlab"
-            include "vlab.js"
-            include "valter.js"
+            srcDir "./src/main/resources/static/vl/"
+
+            include "js/vlab/aktakomPowerSupply.js"
+            include "js/vlab/button.js"
+            include "js/vlab/kuka.js"
+            include "js/vlab/kukaVacuumGripper.js"
+            include "js/vlab/valter.js"
+            include "js/vlab/vlab.js"
+            include "js/vlab/zoomHelper.js"
+            include "js/vlab/exp/valter-extr-simplified.js"
+
+            include "ph-mpd-fcm/ph-mpd-fcm.js"
+            include "toy-store/toy-store.js"
+            include "valter-ik-lab/valter-ik-lab.js"
+            include "valter-lab/valter-lab.js"
+            include "valter-locus-originis/valter-locus-originis.js"
+            include "valter-navigation-ann/valter-navigation-ann.js"
+
         }
     }
 }
@@ -171,8 +186,27 @@ javascript.source.vlab.js.files.eachWithIndex { jsFile, idx ->
     }
 }
 
-task individualJSMinify(dependsOn: tasks.matching {Task task -> task.name.startsWith("minifyJS")}){
-    group = 'Minify JS'
+task minifyVLJS(dependsOn: tasks.matching {Task task -> task.name.startsWith("minifyJS")}){
+    group = 'Minify & Uglify JS'
+}
+
+javascript.source.vlab.js.files.eachWithIndex { jsFile, idx ->
+    tasks.create(name: "uglifyJS${idx}", type:Exec) {
+        executable "bash"
+        //args "-c","uglifyjs --self --compress --wrap --export-all --output '${jsFile}'"
+        //args "-c","yui-compressor --type js --line-break 256 '${jsFile}' -o '${jsFile}'"
+        //args "-c","closure-compiler --js '${jsFile}' --js_output_file '${jsFile}_'; mv '${jsFile}_' '${jsFile}'"
+    }
+}
+
+task uglifyVLJS(dependsOn: tasks.matching {Task task -> task.name.startsWith("uglifyJS")}){
+    group = 'Minify & Uglify JS'
+}
+
+task syncVLFolder(type:Exec) {
+  group = 'deploy'
+  executable "bash"
+  args "-c","rsync -rav ../vl.vlabs.com.ua/vl/ src/main/resources/static/vl/"
 }
 
 buildUIDev.dependsOn(cleanUIFolder)

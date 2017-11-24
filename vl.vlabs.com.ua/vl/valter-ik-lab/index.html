@@ -55,7 +55,7 @@
                 opacity: 0.2
             });
 
-            ValterLabRef = new ValterLab("webGLContainer", true);
+            ValterLabRef = new ValterLab("webGLContainer", false);
 
             executeScriptDialog = $("#execute-script-dialog").dialog({
                 autoOpen: false,
@@ -76,11 +76,10 @@
 
     </script>
 </body>
-    <div id="execute-script-dialog" title="Execute Script">
-<textarea id="scriptText" style="width:95%; height:95%">
+<div id="execute-script-dialog" title="Execute Script">
+    <textarea id="scriptText" style="width:95%; height:95%">
 GetRightArmIKPCL
-{{#if test}}
 Navigate_0.0_0.0
-{{/if}}
-</textarea></div>
+    </textarea>
+</div>
 </html>
