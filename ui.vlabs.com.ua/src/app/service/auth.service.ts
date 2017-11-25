@@ -59,6 +59,10 @@ export class AuthService {
     }
   }
 
+  authorizeUser(userId:number) {
+    return this.apiService.get(this.config.authorize_user_url + userId);
+  }
+
   changePassowrd(passwordChanger) {
     return this.apiService.post(this.config.change_password_url, passwordChanger);
   }

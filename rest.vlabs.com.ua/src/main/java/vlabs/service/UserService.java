@@ -1,15 +1,20 @@
 package vlabs.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import vlabs.model.Authority;
 import vlabs.model.User;
+import vlabs.repository.AuthorityRepository;
 import vlabs.repository.UserRepository;
 
 @Service
@@ -19,6 +24,9 @@ public class UserService
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AuthorityRepository authorityRepository;
+    
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -32,20 +40,31 @@ public class UserService
 
     @PreAuthorize("hasRole('USER')")
     public User findByUsername(String username) throws UsernameNotFoundException {
-        User u = userRepository.findByUsername(username);
-        return u;
+        User user = userRepository.findByUsername(username);
+        return user;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public User findById(Long id) throws AccessDeniedException {
-        User u = userRepository.getOne(id);
-        return u;
+        User user = userRepository.getOne(id);
+        return user;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public List<User> findAll() throws AccessDeniedException {
         List<User> result = userRepository.findAll();
         return result;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public void authorizeAndActivateUser(Long id) throws AccessDeniedException {
+        User user = userRepository.getOne(id);
+        Authority userAuthority = authorityRepository.findByName("ROLE_USER");
+        List<Authority> grantedAuthorities = new ArrayList<Authority>();
+        grantedAuthorities.add(userAuthority);
+        user.setAuthorities(grantedAuthorities);
+        user.setEnabled(true);
+        userRepository.save(user);
     }
 
     public void createNewUser(User user) {

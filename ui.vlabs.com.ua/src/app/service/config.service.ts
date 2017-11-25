@@ -8,23 +8,17 @@ export class ConfigService {
 
   private _api_url = '/api'
 
-  private _refresh_token_url = this._api_url + '/refresh';
-
-  private _register_url = this._api_url + '/register';
-
-  private _login_url = this._api_url + '/login';
-
-  private _logout_url = this._api_url + '/logout';
-
-  private _change_password_url = this._api_url + '/change-password';
-
-  private _whoami_url = this._api_url + '/whoami';
-
-  private _user_url = this._api_url + '/user';
-  private _users_url = this._user_url + '/all';
-  private _users_wo_authorities_url = this._user_url + '/all-wo-authorites';
-
-  private _foo_url = this._api_url + '/foo';
+  private _refresh_token_url            = this._api_url + '/refresh';
+  private _register_url                 = this._api_url + '/register';
+  private _login_url                    = this._api_url + '/login';
+  private _logout_url                   = this._api_url + '/logout';
+  private _change_password_url          = this._api_url + '/change-password';
+  private _whoami_url                   = this._api_url + '/whoami';
+  private _user_url                     = this._api_url + '/user';
+  private _users_url                    = this._user_url + '/all';
+  private _users_wo_authorities_url     = this._user_url + '/all-wo-authorites';
+  private _authorize_user_url           = this._api_url + '/authorize/';
+  private _foo_url                      = this._api_url + '/foo';
 
   get refresh_token_url(): string {
       return this._refresh_token_url;
@@ -52,6 +46,10 @@ export class ConfigService {
 
   get logout_url(): string {
       return this._logout_url;
+  }
+
+  get authorize_user_url(): string {
+    return this._authorize_user_url;
   }
 
   get change_password_url(): string {

@@ -15,11 +15,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import vlabs.common.EmptyJsonResponse;
 import vlabs.model.User;
 import vlabs.model.UserTokenState;
 import vlabs.security.TokenHelper;
@@ -99,6 +101,12 @@ public class AuthenticationController
         Map<String, String> result = new HashMap<>();
         result.put("result", "success");
         return ResponseEntity.accepted().body(result);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/authorize/{userId}")
+    public ResponseEntity<EmptyJsonResponse> authorizeUser(@PathVariable Long userId) {
+        this.userService.authorizeAndActivateUser(userId);
+        return new ResponseEntity<EmptyJsonResponse>(new EmptyJsonResponse(), HttpStatus.OK);
     }
 
     static class PasswordChanger

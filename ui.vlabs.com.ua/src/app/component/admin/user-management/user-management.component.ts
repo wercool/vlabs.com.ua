@@ -30,7 +30,7 @@ export class UserManagementComponent implements OnInit {
   usersWoAuthoritiesDS: MatTableDataSource<User>;
 
   constructor(
-    private userService:UserService,
+    private userService: UserService,
     private authUserDialog: MatDialog
   ) { }
 
@@ -42,7 +42,7 @@ export class UserManagementComponent implements OnInit {
   private getAllUsers():void {
     this.userService.getAll()
     .subscribe(result => {
-      this.usersAll = result;
+        this.usersAll = result;
     },
     error => {
     });
@@ -51,9 +51,9 @@ export class UserManagementComponent implements OnInit {
   private getUsersWoAuthorities():void {
     this.userService.getAllWoAuthorities()
     .subscribe(result => {
-      this.usersWoAuthorities = result;
-      this.usersWoAuthoritiesNum = this.usersWoAuthorities.length;
-      this.usersWoAuthoritiesDS = new MatTableDataSource<User>(this.usersWoAuthorities);
+        this.usersWoAuthorities = result;
+        this.usersWoAuthoritiesNum = this.usersWoAuthorities.length;
+        this.usersWoAuthoritiesDS = new MatTableDataSource<User>(this.usersWoAuthorities);
     },
     error => {
     });
@@ -64,6 +64,10 @@ export class UserManagementComponent implements OnInit {
     let dialogRef = this.authUserDialog.open(AuthUserDialogComponent, {
       width: '80%',
       data: selectedUser
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      // console.log(result);
+      this.getUsersWoAuthorities();
     });
   }
 

@@ -3,6 +3,10 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 import { User } from '../../../../model/index';
 
+import {
+  AuthService
+} from '../../../../service';
+
 @Component({
   selector: 'app-auth-user-dialog',
   templateUrl: './auth-user-dialog.component.html',
@@ -12,11 +16,21 @@ export class AuthUserDialogComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<AuthUserDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public user: User
+    @Inject(MAT_DIALOG_DATA) public user: User,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
-    console.log(this.user);
+    // console.log(this.user);
+  }
+
+  authorizeUser(){
+    this.authService.authorizeUser(this.user.id)
+    .subscribe(result => {
+      this.dialogRef.close(result);
+    },
+    error => {
+    });
   }
 
 }
