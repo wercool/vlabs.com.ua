@@ -28,3 +28,7 @@
   .mat-column-lastName
   { display: none; }
 }
+
+.mat-panel-title-pad {
+  min-width: 120pt;
+}

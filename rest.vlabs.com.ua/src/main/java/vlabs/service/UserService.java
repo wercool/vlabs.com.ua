@@ -44,6 +44,20 @@ public class UserService
         return user;
     }
 
+    @PreAuthorize("hasRole('USER')")
+    public User updateProfile(User userProfile) throws AccessDeniedException {
+        User user = userRepository.getOne(userProfile.getId());
+        userProfile.setPassword(user.getPassword());
+        return userRepository.save(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public void resetPassword(Long userId) throws AccessDeniedException {
+        User user = userRepository.getOne(userId);
+        user.setPassword(passwordEncoder.encode("123"));
+        userRepository.save(user);
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     public User findById(Long id) throws AccessDeniedException {
         User user = userRepository.getOne(id);

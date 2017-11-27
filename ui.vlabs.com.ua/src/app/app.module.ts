@@ -10,6 +10,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 /* Guards */
 import {
   GuestGuard,
+  AuthenticatedGuard,
   AdminGuard
 } from './guard';
 
@@ -17,16 +18,21 @@ import {
 import { AppComponent } from './app.component';
 import {
   HeaderComponent,
-  AdminMenuComponent,
   HomeComponent,
   AdminHomeComponent,
   UserHomeComponent,
   NotFoundComponent,
   LoginComponent,
   RegisterComponent,
+  /* authenticated user components */
+  EditProfileComponent,
+  /* ROLE_USER components */
+  UserSidenavComponent,
   /* ROLE_ADMIN components */
+  AdminSidenavComponent,
   UserManagementComponent,
   AuthUserDialogComponent,
+  EditUserDialogComponent,
 } from './component';
 
 /* Services */
@@ -48,20 +54,23 @@ export function initUserFactory(userService: UserService)
   [
     AppComponent,
     HeaderComponent,
-    AdminMenuComponent,
     HomeComponent,
     AdminHomeComponent,
     UserHomeComponent,
     NotFoundComponent,
     LoginComponent,
     RegisterComponent,
-    AdminMenuComponent,
     AdminHomeComponent,
     UserManagementComponent,
-    AuthUserDialogComponent
+    AuthUserDialogComponent,
+    AdminSidenavComponent,
+    UserSidenavComponent,
+    EditProfileComponent,
+    EditUserDialogComponent,
   ],
   entryComponents: [
     AuthUserDialogComponent,
+    EditUserDialogComponent,
   ],
   imports:
   [
@@ -76,6 +85,7 @@ export function initUserFactory(userService: UserService)
   providers: 
   [
     GuestGuard,
+    AuthenticatedGuard,
     AdminGuard,
     ConfigService,
     ApiService,

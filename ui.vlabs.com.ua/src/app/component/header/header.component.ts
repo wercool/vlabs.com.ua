@@ -1,14 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
 import {
   UserService,
   AuthService
 } from '../../service';
-
-import { 
-  AdminMenuComponent 
-} from '../index';
 
 @Component({
   selector: 'app-header',
@@ -17,10 +13,12 @@ import {
 })
 export class HeaderComponent implements OnInit {
 
+  @Input() sidenav;
+
   constructor(
     private userService: UserService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
     ) { }
 
   ngOnInit() {

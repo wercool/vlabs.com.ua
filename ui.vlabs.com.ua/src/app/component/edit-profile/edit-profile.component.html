@@ -1,0 +1,37 @@
+<div class="profile-view-container">
+    <mat-card class="mat-card-profile">
+
+      <mat-card-title>
+        <h4>Profile</h4>
+        <mat-card-subtitle>
+            <strong>{{userProfile.username}}</strong>
+        </mat-card-subtitle>
+        <mat-progress-spinner *ngIf="submitted" class="mat-progress-spinner-login" mode="indeterminate"></mat-progress-spinner>
+      </mat-card-title>
+  
+      <mat-card-content>
+          <p [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></p>
+  
+          <form *ngIf="!submitted" [formGroup]="form" (ngSubmit)="onSubmit()" #profileForm="ngForm" class="profile-form">
+              <mat-form-field class="full-width">
+                  <input [(ngModel)]="userProfile.email" matInput formControlName="email" type="email" placeholder="email" required>
+              </mat-form-field>
+              <mat-form-field class="full-width">
+                  <input [(ngModel)]="userProfile.firstName" matInput formControlName="firstName" type="text" placeholder="First Name">
+              </mat-form-field>
+              <mat-form-field class="full-width">
+                  <input [(ngModel)]="userProfile.lastName" matInput formControlName="lastName" type="text" placeholder="Last Name">
+              </mat-form-field>
+              <mat-form-field class="full-width">
+                  <input [(ngModel)]="userProfile.phoneNumber" matInput formControlName="phoneNumber" type="tel" placeholder="phone number">
+              </mat-form-field>
+  
+              <div class="mat-card-actions-profile">
+                  <button type="submit" mat-button [disabled]="!profileForm.form.valid">UPDATE</button>
+              </div>
+          </form>
+  
+      </mat-card-content>
+  
+    </mat-card>
+  <div>

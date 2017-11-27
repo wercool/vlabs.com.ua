@@ -13,6 +13,7 @@ import {
 } from '../../../model';
 
 import { AuthUserDialogComponent } from './auth-user-dialog/auth-user-dialog.component';
+import { EditUserDialogComponent } from './edit-user-dialog/edit-user-dialog.component';
 
 @Component({
   selector: 'app-user-management',
@@ -22,12 +23,16 @@ import { AuthUserDialogComponent } from './auth-user-dialog/auth-user-dialog.com
 export class UserManagementComponent implements OnInit {
 
   usersAll: User[];
+  usersNum: number = 0;
 
   usersWoAuthorities: User[];
   usersWoAuthoritiesNum: number = 0;
 
   usersWoAuthoritiesDisplayedColumns = ['id', 'username', 'email', 'phoneNumber', 'firstName', 'lastName'];
   usersWoAuthoritiesDS: MatTableDataSource<User>;
+
+  usersDisplayedColumns = ['id', 'username', 'email', 'phoneNumber', 'firstName', 'lastName'];
+  usersDS: MatTableDataSource<User>;
 
   constructor(
     private userService: UserService,
@@ -43,6 +48,8 @@ export class UserManagementComponent implements OnInit {
     this.userService.getAll()
     .subscribe(result => {
         this.usersAll = result;
+        this.usersNum = this.usersAll.length;
+        this.usersDS = new MatTableDataSource<User>(this.usersAll);
     },
     error => {
     });
@@ -71,4 +78,15 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
+  openUserEditDialog(selectedUser:User): void{
+    // console.log(selectedUser);
+    let dialogRef = this.authUserDialog.open(EditUserDialogComponent, {
+      width: '80%',
+      data: selectedUser
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      // console.log(result);
+      this.getAllUsers();
+    });
+  }
 }

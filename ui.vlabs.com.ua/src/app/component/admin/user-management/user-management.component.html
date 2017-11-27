@@ -1,6 +1,6 @@
 <mat-expansion-panel>
     <mat-expansion-panel-header>
-        <mat-panel-title>
+        <mat-panel-title class="mat-panel-title-pad">
         Non Authorized Users
         </mat-panel-title>
         <mat-panel-description>
@@ -18,7 +18,7 @@
             <mat-header-cell *matHeaderCellDef>USERNAME</mat-header-cell>
             <mat-cell *matCellDef="let element">
                 <button mat-button (click)="openUserActivationDialog(element)">
-                    <mat-icon class="material-icons md-24">assignment</mat-icon>
+                    <mat-icon class="material-icons md-24">assignment_turned_in</mat-icon>
                     {{element.username}}
                 </button>
             </mat-cell>
@@ -43,4 +43,48 @@
         <mat-row *matRowDef="let row; columns: usersWoAuthoritiesDisplayedColumns;"></mat-row>
     </mat-table>
 
+</mat-expansion-panel>
+<mat-expansion-panel>
+    <mat-expansion-panel-header>
+        <mat-panel-title class="mat-panel-title-pad">
+        VLabs Users
+        </mat-panel-title>
+        <mat-panel-description>
+        ({{this.usersNum}})
+        </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-table #table [dataSource]="usersDS">
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="username">
+                <mat-header-cell *matHeaderCellDef>USERNAME</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <button mat-button (click)="openUserEditDialog(element)">
+                        <mat-icon class="material-icons md-24">assignment_ind</mat-icon>
+                        {{element.username}}
+                    </button>
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="email">
+                <mat-header-cell *matHeaderCellDef>EMAIL</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.email}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="phoneNumber">
+                <mat-header-cell *matHeaderCellDef>PHONE</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.phoneNumber}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="firstName">
+                <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.firstName}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="lastName">
+                <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.lastName}}</mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="usersDisplayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: usersDisplayedColumns;"></mat-row>
+        </mat-table>
 </mat-expansion-panel>

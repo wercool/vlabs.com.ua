@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ApiService } from './service/api.service';
@@ -7,6 +7,7 @@ import { AuthService } from './service/auth.service';
 import { environment } from '../environments/environment';
 
 import { HTTPStatusCodes } from './shared/lib/http-status-codes'
+import { MatSidenav } from '@angular/material';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,8 @@ import { HTTPStatusCodes } from './shared/lib/http-status-codes'
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit{
-  title = 'app';
+
+    @ViewChild('sidenav') sidenav: MatSidenav;
 
     constructor(
     private router: Router,
@@ -22,10 +24,8 @@ export class AppComponent implements OnInit{
     private authService: AuthService
     ) { }
 
-    ngOnInit()
-    {
-        if (this.apiService.apiError)
-        {
+    ngOnInit(){
+        if (this.apiService.apiError){
             this.apiService.apiError.subscribe({
               // next: val => console.log(val),
               // complete: () => console.log('Complete!'),
@@ -41,5 +41,26 @@ export class AppComponent implements OnInit{
               }
             });
         }
+    }
+
+    authorizedFor(authority:string): boolean{
+        return this.authService.hasAuthority(authority);
+    }
+
+    navigate(url: string){
+        // console.log('navigating to: ' + url);
+        this.router.navigate([url]);
+        this.closeSidenav();
+    }
+
+    logout() {
+        this.authService.logout().subscribe(res => {
+          this.router.navigate(['/login']);
+          this.closeSidenav();
+        });
+    }
+
+    closeSidenav() {
+        this.sidenav.close();
     }
 }

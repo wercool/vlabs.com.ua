@@ -26,7 +26,7 @@ export class UserService {
       if (res.access_token !== null) {
         return this.getMyInfo().toPromise()
         .then(user => {
-          console.log(user);
+          // console.log(user);
           this.currentUser = user;
         });
       }
@@ -37,6 +37,14 @@ export class UserService {
 
   getMyInfo() {
     return this.apiService.get(this.config.whoami_url).map(user => this.currentUser = user);
+  }
+
+  updateProfile() {
+    return this.apiService.post(this.config.user_profile_url, this.currentUser).map(user => this.currentUser = user);
+  }
+
+  resetPassword(userId: number) {
+    return this.apiService.get(this.config.user_reset_password + userId);
   }
 
   getAll() {

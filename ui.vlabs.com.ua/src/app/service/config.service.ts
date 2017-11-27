@@ -16,6 +16,8 @@ export class ConfigService {
   private _whoami_url                   = this._api_url + '/whoami';
   private _user_url                     = this._api_url + '/user';
   private _users_url                    = this._user_url + '/all';
+  private _user_profile_url             = this._user_url + '/update-profile';
+  private _user_reset_password          = this._user_url + '/reset-password/';
   private _users_wo_authorities_url     = this._user_url + '/all-wo-authorites';
   private _authorize_user_url           = this._api_url + '/authorize/';
   private _foo_url                      = this._api_url + '/foo';
@@ -30,6 +32,14 @@ export class ConfigService {
 
   get users_url(): string {
       return this._users_url;
+  }
+
+  get user_profile_url(): string {
+      return this._user_profile_url;
+  }
+
+  get user_reset_password(): string {
+      return this._user_reset_password;
   }
 
   get users_wo_authorities_url(): string {

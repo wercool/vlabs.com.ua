@@ -1,4 +1,25 @@
-<app-header></app-header>
-<div class="content">
+<mat-sidenav-container class="content">
+    <mat-sidenav #sidenav mode="over" class="sidenav">
+        <div class="sidenav-content">
+            
+            <div class="sidenav-scrollable-content">
+                <app-admin-sidenav *ngIf="authorizedFor('ADMIN')" (navigateEvent)="navigate($event)"></app-admin-sidenav>
+                <app-user-sidenav *ngIf="authorizedFor('USER') && !authorizedFor('ADMIN')"></app-user-sidenav>
+            </div>
+
+            <div class="sidenav-bottom-content">
+                <button mat-button (click)="navigate('/edit-profile')" class="sidenav-primary-element">
+                        <mat-icon class="md-36">perm_identity</mat-icon>
+                        <span>Profile</span>
+                </button>
+                <hr/>
+                <button mat-button (click)="logout()" class="sidenav-primary-element">
+                    <mat-icon class="md-36">exit_to_app</mat-icon>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+    </mat-sidenav>
+    <app-header [sidenav]="sidenav"></app-header>
     <router-outlet></router-outlet>
-</div>
+</mat-sidenav-container>

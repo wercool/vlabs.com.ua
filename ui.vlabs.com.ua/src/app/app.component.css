@@ -1,9 +1,38 @@
 .content {
-    width: 99%;
-    height: 95vh;
-    /* margin-top: 70px; */
+    width: 100%;
+    height: 100vh;
+    font-family: Roboto,"Helvetica Neue",sans-serif;
+    /* 
     margin-top: 0.5%;
     margin-left: 0.5%;
     margin-right: 0.5%;
-    /*border: solid 1px red;*/
-  }
+    */
+
+    /* border: solid 1px red; */
+}
+.sidenav {
+  display: flex;
+  width: 25%;
+  min-width: 200pt;
+  background-color: #f1f1f3;
+  border-right: 2px solid grey;
+}
+.sidenav-content{
+  width: 100%;
+  /* border: solid 1px red; */
+}
+.sidenav-scrollable-content {
+  overflow: auto;
+  max-height: 90vh;
+}
+.sidenav-bottom-content {
+  position: absolute;
+  padding-left: 5%;
+  bottom: 2%;
+  width: 90% !important;
+  /* border: solid 1px red; */
+}
+.sidenav-primary-element {
+  width: 100% !important;
+  text-align:left;
+}

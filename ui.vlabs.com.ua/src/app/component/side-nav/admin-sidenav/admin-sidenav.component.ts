@@ -1,16 +1,15 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-admin-menu',
-  templateUrl: './admin-menu.component.html',
-  styleUrls: ['./admin-menu.component.css']
+  selector: 'app-admin-sidenav',
+  templateUrl: './admin-sidenav.component.html',
+  styleUrls: ['./admin-sidenav.component.css']
 })
-export class AdminMenuComponent implements OnInit{
+export class AdminSidenavComponent implements OnInit {
 
   @Output() navigateEvent: EventEmitter<string> = new EventEmitter();
 
-  constructor() {
-  }
+  constructor() { }
 
   ngOnInit() {
   }

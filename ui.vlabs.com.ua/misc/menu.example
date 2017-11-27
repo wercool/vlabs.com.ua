@@ -1,0 +1,21 @@
+<mat-menu #rootMenu="matMenu">
+    <!-- Menus authorized for the particular ROLE -->
+    <app-admin-menu *ngIf="authorizedFor('ADMIN')" (navigateEvent)="navigate($event)"></app-admin-menu>
+
+    <button mat-menu-item [matMenuTriggerFor]="profileMenu">Profile</button>
+    <button mat-menu-item (click)="logout()"><mat-icon class="md-36">exit_to_app</mat-icon>Logout</button>
+</mat-menu>
+
+<!-- Authorized for the ROLE_USER -->
+<mat-menu #profileMenu="matMenu">
+    <button mat-menu-item>Edit profile</button>
+    <button mat-menu-item>Change password</button>
+</mat-menu>
+
+
+
+<button *ngIf="hasSignedIn()" 
+        [matMenuTriggerFor]="rootMenu"
+        mat-icon-button matTooltip="Menu" class="mat-icon md-36">
+    <mat-icon class="material-icons md-36">menu</mat-icon>
+</button>

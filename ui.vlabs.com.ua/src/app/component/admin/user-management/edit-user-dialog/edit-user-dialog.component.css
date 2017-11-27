@@ -1,0 +1,14 @@
+.full-width { width: 100%; }
+.label {
+    color: grey;
+    font-size: 8pt;
+    font-family: Roboto,"Helvetica Neue",sans-serif;
+}
+.data {
+    color: rgb(26, 25, 25);
+    font-size: 11pt;
+    font-family: Roboto,"Helvetica Neue",sans-serif;
+}
+.mat-tab-group {
+    min-height: 300pt;
+}

@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -92,6 +93,20 @@ public class AuthenticationController
             result.put("message", "Registration request has been successfully accepted");
             return ResponseEntity.accepted().body(result);
         }
+    }
+
+    /*
+     *  We are not using userService.findByUsername here(we could),
+     *  so it is good that we are making sure that the user has role "ROLE_USER"
+     *  to access this endpoint.
+     */
+    @RequestMapping("/whoami")
+    @PreAuthorize("hasRole('USER')")
+    public User user() {
+        return (User)SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
     }
 
     @RequestMapping(value = "/change-password", method = RequestMethod.POST)

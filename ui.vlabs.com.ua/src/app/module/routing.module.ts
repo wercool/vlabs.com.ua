@@ -8,11 +8,13 @@ import {
   RegisterComponent,
   NotFoundComponent,
   /* ADMIN role component */
-  UserManagementComponent
+  UserManagementComponent,
+  EditProfileComponent
 } from '../component';
 
 import {
   GuestGuard,
+  AuthenticatedGuard,
   AdminGuard
 } from '../guard';
 
@@ -31,6 +33,12 @@ export const routes: Routes = [
     path: 'register',
     component: RegisterComponent,
     canActivate: [GuestGuard]
+  },
+  /* authenticated user role routes */
+  {
+    path: 'edit-profile',
+    component: EditProfileComponent,
+    canActivate: [AuthenticatedGuard]
   },
   /* ADMIN role routes */
   {
