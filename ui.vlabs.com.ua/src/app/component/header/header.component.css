@@ -19,9 +19,9 @@
     margin-left: 25px;
 }
 
-.profileTitle{
+.toolbarItem{
     color: #ffffff;
-    margin-left: 25px;
     font-size:12pt;
     cursor: pointer;
+    margin-left: 10pt;
 }

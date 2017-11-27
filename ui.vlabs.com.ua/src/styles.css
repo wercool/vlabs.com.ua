@@ -11,6 +11,16 @@ html{
   min-height: 100%;
 }
 
+.vertical-spacing-2pt {
+    display: block;
+    height: 2pt;
+}
+
+.vertical-spacing-4pt {
+    display: block;
+    height: 4pt;
+}
+
  /* Rules for sizing the icon. */
 .mat-icon.md-18 { font-size: 18px; width: 18px; height: 18px; }
 .mat-icon.md-24 { font-size: 24px; width: 24px; height: 24px; }

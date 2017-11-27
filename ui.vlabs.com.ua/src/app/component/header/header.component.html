@@ -6,14 +6,14 @@
         <mat-icon class="material-icons md-36">menu</mat-icon>
     </button>
 
-    <a href="/" class="title linkNoDecoration">
+    <span (click)="navigate('/')" class="toolbarItem">
         <span *ngIf="!hasSignedIn()">VLabs</span>
         <span *ngIf="hasSignedIn()">Dashboard</span>
-    </a>
+    </span>
 
     <span class="mat-toolbar-row-spacer"></span>
 
-    <span (click)="navigate('/edit-profile')" *ngIf="hasSignedIn()" class="profileTitle">{{userName()}}</span>
+    <span (click)="navigate('/edit-profile')" *ngIf="hasSignedIn()" class="toolbarItem">{{userName()}}</span>
 
     <span class="element-spacer"></span>
 
