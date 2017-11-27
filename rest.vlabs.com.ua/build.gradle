@@ -211,5 +211,4 @@ task syncVLFolder(type:Exec) {
 
 buildUIDev.dependsOn(cleanUIFolder)
 buildUIProd.dependsOn(cleanUIFolder)
-bootRun.dependsOn(deployUIDev)
 war.dependsOn(deployUIProd)
