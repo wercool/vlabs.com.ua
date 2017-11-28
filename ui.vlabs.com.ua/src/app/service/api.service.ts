@@ -8,6 +8,7 @@ import 'rxjs/add/observable/throw';
 
 import { environment } from '../../environments/environment';
 import { ConfigService } from './config.service';
+import { HTTPStatusCodes } from '../shared/lib/http-status-codes';
 
 @Injectable()
 export class ApiService {
@@ -73,6 +74,15 @@ export class ApiService {
     if (!environment.production) {
       console.error('ApiService::handleError', error);
     }
+    // if (error.status == HTTPStatusCodes.GATEWAY_TIMEOUT || 
+    //     error.status == HTTPStatusCodes.NOT_FOUND
+    //    )
+    // {
+    //   if (!window.location.href.endsWith('/login'))
+    //   {
+    //     window.location.href = '/login';
+    //   }
+    // }
     this.apiError = Observable.throw(error);
     throw error;
   }

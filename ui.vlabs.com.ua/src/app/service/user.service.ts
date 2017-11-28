@@ -43,8 +43,20 @@ export class UserService {
     return this.apiService.post(this.config.user_profile_url, this.currentUser).map(user => this.currentUser = user);
   }
 
+  updateProfilePhoto(userId: number, photo: FormData) {
+    return this.apiService.post(this.config.user_profile_photo_url + userId, photo);
+  }
+
+  updateAuthorities(authorities: string[], userId: number) {
+    return this.apiService.post(this.config.user_update_authorities + userId, authorities);
+  }
+
   resetPassword(userId: number) {
     return this.apiService.get(this.config.user_reset_password + userId);
+  }
+
+  getById(userId: number) {
+    return this.apiService.get(this.config.user_url);
   }
 
   getAll() {

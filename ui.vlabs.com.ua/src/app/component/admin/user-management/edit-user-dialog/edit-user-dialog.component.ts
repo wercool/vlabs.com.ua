@@ -1,7 +1,10 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA, MatChipInputEvent } from '@angular/material';
+import {ENTER, COMMA} from '@angular/cdk/keycodes';
+
+
 import { User } from '../../../../model/index';
-import { UserService } from '../../../../service/index';
+import { UserService, AuthService } from '../../../../service/index';
 
 @Component({
   selector: 'app-edit-user-dialog',
@@ -17,20 +20,95 @@ export class EditUserDialogComponent implements OnInit {
    */
   submitted = false;
 
+  hasAuthority: boolean = false;
+
+  grantedAuthorities: any[] = [];
+  grantedAuthoritiesSeparatorKeysCodes = [ENTER, COMMA];
+  grantedAuthoritiesSelectable: boolean = false;
+  grantedAuthoritiesRemovable: boolean = true;
+
   constructor(
     public dialogRef: MatDialogRef<EditUserDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public user: User,
-    private userService: UserService
+    private userService: UserService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
+    // console.log(this.user);
+    this.hasAuthority = this.authService.hasAuthority('ADMIN');
+
+    this.setAuthoritiesInView();
+  }
+
+  setAuthoritiesInView(){
+    this.grantedAuthorities = [];
+    for (let key in this.user.authorities) {
+      this.grantedAuthorities.push(this.user.authorities[key]);
+    }
+  }
+
+  addAuthority(event: MatChipInputEvent): void {
+    let input = event.input;
+    let value = event.value;
+
+    if ((value || '').trim())
+    {
+      value = value.toUpperCase();
+      if (!value.startsWith('ROLE_'))
+      {
+        value = 'ROLE_' + value;
+      }
+      if (value == 'ROLE_USER' || 
+          value == 'ROLE_MANAGER'
+        )
+      var alreadyHasAuthority = false;
+      for (let key in this.user.authorities) {
+        if (this.user.authorities[key].authority == value)
+        {
+          alreadyHasAuthority = true;
+          break;
+        }
+      }
+      if (!alreadyHasAuthority)
+        this.grantedAuthorities.push({ authority: value.trim() });
+    }
+    if (input) {
+      input.value = '';
+    }
+  }
+
+  removeAuthority(authority: any): void {
+    let index = this.grantedAuthorities.indexOf(authority);
+    if (index >= 0) {
+      this.grantedAuthorities.splice(index, 1);
+    }
+  }
+
+  updateAuthorities(){
+    this.submitted = true;
+    var userAuthorities: string[] = [];
+    for (let key in this.grantedAuthorities) {
+      userAuthorities.push(this.grantedAuthorities[key].authority);
+    }
+    this.userService.updateAuthorities(userAuthorities, this.user.id)
+    //animation
+    .delay(500)
+    .subscribe(user => {
+      this.user = user;
+      this.setAuthoritiesInView();
+      this.submitted = false;
+    },
+    error => {
+      this.submitted = false;
+    });
   }
 
   resetPasswordAction() {
     this.submitted = true;
     this.userService.resetPassword(this.user.id)
     //animation
-    .delay(750)
+    .delay(500)
     .subscribe(result => {
       this.submitted = false;
     },

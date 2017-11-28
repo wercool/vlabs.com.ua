@@ -12,6 +12,9 @@ export * from './edit-profile/edit-profile.component';
 /* ROLE_USER components */
 export * from './side-nav/user-sidenav/user-sidenav.component';
 
+/* ROLE_MANAGER components */
+export * from './side-nav/manager-sidenav/manager-sidenav.component';
+
 /* ROLE_ADMIN components */
 export * from './side-nav/admin-sidenav/admin-sidenav.component';
 export * from './admin/user-management/user-management.component';

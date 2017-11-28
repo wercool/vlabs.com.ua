@@ -1,4 +1,4 @@
-<mat-dialog-content>
+<mat-dialog-content *ngIf="hasAuthority">
   <mat-tab-group class="mat-tab-group">
       <mat-tab label="Profile">
               <div class="full-width">
@@ -26,7 +26,24 @@
                   <div class="data">{{user.lastName}}</div>
               </div>
       </mat-tab>
-      <mat-tab label="Authorities">Content 2</mat-tab>
+      <mat-tab label="Authorities">
+        <br/>
+        <mat-form-field class="authorities-chip-list">
+          <mat-chip-list #authoritiesList>
+            <mat-chip *ngFor="let authorityObj of grantedAuthorities" [selectable]="false"
+                     [removable]="true" (remove)="removeAuthority(authorityObj)">
+                {{authorityObj.authority}}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input placeholder="Granted Authorities"
+                   [matChipInputFor]="authoritiesList"
+                   [matChipInputSeparatorKeyCodes]="grantedAuthoritiesSeparatorKeysCodes"
+                   [matChipInputAddOnBlur]="true"
+                   (matChipInputTokenEnd)="addAuthority($event)" />
+          </mat-chip-list>
+        </mat-form-field>
+        <button mat-raised-button color="accent" (click)='updateAuthorities()'>Update Authorities</button>
+      </mat-tab>
       <mat-tab label="Actions">
           <ul>
             <li><button mat-button (click)="resetPasswordAction()">RESET PASSWORD</button></li>

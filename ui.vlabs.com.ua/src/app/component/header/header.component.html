@@ -11,7 +11,9 @@
         <span *ngIf="hasSignedIn()">Dashboard</span>
     </span>
 
-    <span class="mat-toolbar-row-spacer"></span>
+    <span class="mat-toolbar-row-spacer" style="text-align:center;">
+        <!-- HEADER CENTER LABEL -->
+    </span>
 
     <span (click)="navigate('/edit-profile')" *ngIf="hasSignedIn()" class="toolbarItem">{{userName()}}</span>
 

@@ -46,7 +46,7 @@ export class HeaderComponent implements OnInit {
   }
 
   navigate(url: string){
-    console.log('navigating to: ' + url);
+    // console.log('navigating to: ' + url);
     this.router.navigate([url]);
   }
 

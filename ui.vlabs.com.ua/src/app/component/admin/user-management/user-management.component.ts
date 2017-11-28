@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   MatTableDataSource,
-  MatDialog, MatDialogRef, MAT_DIALOG_DATA
+  MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSort
 } from '@angular/material';
 
 import {
@@ -31,8 +31,10 @@ export class UserManagementComponent implements OnInit {
   usersWoAuthoritiesDisplayedColumns = ['id', 'username', 'email', 'phoneNumber', 'firstName', 'lastName'];
   usersWoAuthoritiesDS: MatTableDataSource<User>;
 
-  usersDisplayedColumns = ['id', 'username', 'email', 'phoneNumber', 'firstName', 'lastName'];
+  usersDisplayedColumns = ['id', 'username', 'email', 'phoneNumber', 'firstName', 'lastName', 'authorities'];
   usersDS: MatTableDataSource<User>;
+
+  @ViewChild(MatSort) sortUsersDS: MatSort;
 
   constructor(
     private userService: UserService,
@@ -50,6 +52,7 @@ export class UserManagementComponent implements OnInit {
         this.usersAll = result;
         this.usersNum = this.usersAll.length;
         this.usersDS = new MatTableDataSource<User>(this.usersAll);
+        this.usersDS.sort = this.sortUsersDS;
     },
     error => {
     });
@@ -75,6 +78,7 @@ export class UserManagementComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       // console.log(result);
       this.getUsersWoAuthorities();
+      this.getAllUsers();
     });
   }
 
@@ -85,8 +89,9 @@ export class UserManagementComponent implements OnInit {
       data: selectedUser
     });
     dialogRef.afterClosed().subscribe(result => {
-      // console.log(result);
+      console.log(result);
       this.getAllUsers();
+      this.getUsersWoAuthorities();
     });
   }
 }

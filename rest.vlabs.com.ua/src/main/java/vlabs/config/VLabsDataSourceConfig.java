@@ -59,6 +59,7 @@ public class VLabsDataSourceConfig {
         jpaProperties.setProperty("hibernate.dialect", HIBERNATE_DIALECT);
         jpaProperties.setProperty("hibernate.naming-strategy", HIBERNATE_NAMING_STRATEGY);
         jpaProperties.setProperty("hibernate.ddl-auto", HIBERNATE_DDL_AUTO);
+//        jpaProperties.setProperty("hibernate.hbm2ddl.auto", HIBERNATE_DDL_AUTO);
         jpaProperties.setProperty("hibernate.show_sql", HIBERNATE_SHOW_SQL);
 
         LocalContainerEntityManagerFactoryBean emf = builder

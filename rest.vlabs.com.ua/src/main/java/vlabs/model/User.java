@@ -13,10 +13,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.joda.time.DateTime;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -66,6 +68,11 @@ public class User implements UserDetails
                joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
     private List<Authority> authorities;
+    
+    @Lob
+    @Nullable
+    @Column(name="photo")
+    private byte[] photo;
 
     public Long getId() {
         return id;
@@ -121,6 +128,12 @@ public class User implements UserDetails
         return grantedAuthorities;
     }
 
+    public List<Authority> getAuthoritiesList() {
+        List<Authority> authorities = new ArrayList<Authority>();
+        authorities.addAll(this.authorities);
+        return authorities;
+    }
+    
     public String getEmail() {
         return email;
     }
@@ -135,6 +148,15 @@ public class User implements UserDetails
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    @JsonIgnore
+    public byte[] getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
     }
 
     @Override

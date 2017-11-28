@@ -1,16 +1,19 @@
 package vlabs.service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.mysql.cj.api.xdevapi.Collection;
 
 import vlabs.model.Authority;
 import vlabs.model.User;
@@ -30,14 +33,6 @@ public class UserService
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-//    public void resetCredentials() {
-//        List<User> users = userRepository.findAll();
-//        for (User user : users) {
-//            user.setPassword(passwordEncoder.encode("123"));
-//            userRepository.save(user);
-//        }
-//    }
-
     @PreAuthorize("hasRole('USER')")
     public User findByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
@@ -46,8 +41,48 @@ public class UserService
 
     @PreAuthorize("hasRole('USER')")
     public User updateProfile(User userProfile) throws AccessDeniedException {
-        User user = userRepository.getOne(userProfile.getId());
-        userProfile.setPassword(user.getPassword());
+
+        User user = (User)SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+        user.setFirstName(userProfile.getFirstName());
+        user.setLastName(userProfile.getLastName());
+        user.setEmail(userProfile.getEmail());
+        user.setPhoneNumber(userProfile.getPhoneNumber());
+        return userRepository.save(user);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public User updateProfilePhoto(Long userId, MultipartFile photo) throws AccessDeniedException {
+
+        User user = (User)SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
+        return user;
+
+//        user.setFirstName(userProfile.getFirstName());
+//        user.setLastName(userProfile.getLastName());
+//        user.setEmail(userProfile.getEmail());
+//        user.setPhoneNumber(userProfile.getPhoneNumber());
+//        return userRepository.save(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public User updateUserAuthorities(List<String> userAuthorities, Long userId) throws AccessDeniedException {
+        User user = userRepository.getOne(userId);
+        List<Authority> grantedAuthorities = new ArrayList<Authority>();
+        for (String authorityName : userAuthorities)
+        {
+            Authority userAuthority = authorityRepository.findByName(authorityName);
+            if (userAuthority != null)
+            {
+                grantedAuthorities.add(userAuthority);
+            }
+        }
+        user.setAuthorities(grantedAuthorities);
         return userRepository.save(user);
     }
 
@@ -71,8 +106,8 @@ public class UserService
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public void authorizeAndActivateUser(Long id) throws AccessDeniedException {
-        User user = userRepository.getOne(id);
+    public void authorizeAndActivateUser(Long userId) throws AccessDeniedException {
+        User user = userRepository.getOne(userId);
         Authority userAuthority = authorityRepository.findByName("ROLE_USER");
         List<Authority> grantedAuthorities = new ArrayList<Authority>();
         grantedAuthorities.add(userAuthority);
@@ -81,15 +116,15 @@ public class UserService
         userRepository.save(user);
     }
 
-    public void createNewUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-    }
-
     @PreAuthorize("hasRole('ADMIN')")
     public List<User> findAllWithoutAuthorites() {
         List<User> result = userRepository.findAllWithoutAuthorities();
         return result;
+    }
+
+    public void createNewUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
     }
 
 }

@@ -20,7 +20,7 @@ import vlabs.repository.UserRepository;
 public class CustomUserDetailsService implements UserDetailsService
 {
 
-    protected final Log LOGGER = LogFactory.getLog(getClass());
+    protected final Log log = LogFactory.getLog(getClass());
 
     @Autowired
     private UserRepository userRepository;
@@ -47,16 +47,16 @@ public class CustomUserDetailsService implements UserDetailsService
         String username = currentUser.getName();
 
         if (authenticationManager != null) {
-            LOGGER.debug("Re-authenticating user '"+ username + "' for password change request.");
+            log.debug("Re-authenticating user '"+ username + "' for password change request.");
 
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, oldPassword));
         } else {
-            LOGGER.debug("No authentication manager set. can't change Password!");
+            log.debug("No authentication manager set. can't change Password!");
 
             return;
         }
 
-        LOGGER.debug("Changing password for user '"+ username + "'");
+        log.debug("Changing password for user '"+ username + "'");
 
         User user = (User) loadUserByUsername(username);
 

@@ -6,6 +6,7 @@ INSERT INTO users (id, username, password, first_name, last_name, email, phone_n
 
 INSERT INTO authority (id, name) VALUES (1, 'ROLE_ADMIN');
 INSERT INTO authority (id, name) VALUES (2, 'ROLE_USER');
+INSERT INTO authority (id, name) VALUES (3, 'ROLE_MANAGER');
 
 INSERT INTO user_authority (user_id, authority_id) VALUES (1, 1);
 INSERT INTO user_authority (user_id, authority_id) VALUES (1, 2);

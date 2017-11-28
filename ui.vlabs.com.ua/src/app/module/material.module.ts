@@ -16,6 +16,8 @@ import {
     MatTableModule,
     MatDialogModule,
     MatSidenavModule,
+    MatChipsModule,
+    MatSortModule,
 } from '@angular/material';
 
 @NgModule({
@@ -36,6 +38,8 @@ import {
     MatTableModule,
     MatDialogModule,
     MatSidenavModule,
+    MatChipsModule,
+    MatSortModule,
   ],
   exports:
   [
@@ -54,6 +58,8 @@ import {
     MatTableModule,
     MatDialogModule,
     MatSidenavModule,
+    MatChipsModule,
+    MatSortModule,
   ],
   declarations: []
 })

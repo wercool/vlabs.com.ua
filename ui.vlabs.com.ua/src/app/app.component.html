@@ -4,7 +4,10 @@
             
             <div class="sidenav-scrollable-content">
                 <app-admin-sidenav *ngIf="authorizedFor('ADMIN')" (navigateEvent)="navigate($event)"></app-admin-sidenav>
-                <app-user-sidenav *ngIf="authorizedFor('USER') && !authorizedFor('ADMIN')"></app-user-sidenav>
+                <app-manager-sidenav *ngIf="authorizedFor('MANAGER')" (navigateEvent)="navigate($event)"></app-manager-sidenav>
+                <app-user-sidenav *ngIf="authorizedFor('USER') 
+                                    && !authorizedFor('ADMIN')
+                                    && !authorizedFor('MANAGER')"></app-user-sidenav>
             </div>
 
             <div class="sidenav-bottom-content">

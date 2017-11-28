@@ -54,9 +54,9 @@
         </mat-panel-description>
     </mat-expansion-panel-header>
 
-    <mat-table #table [dataSource]="usersDS">
+    <mat-table #table [dataSource]="usersDS" matSort>
             <ng-container matColumnDef="id">
-                <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="username">
@@ -84,6 +84,14 @@
                 <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{element.lastName}}</mat-cell>
             </ng-container>
+            <ng-container matColumnDef="authorities">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>AUTHORITIES</mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <ul>
+                            <li *ngFor="let authorityObj of element.authorities">{{authorityObj.authority}}</li>
+                        </ul>
+                    </mat-cell>
+                </ng-container>
             <mat-header-row *matHeaderRowDef="usersDisplayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: usersDisplayedColumns;"></mat-row>
         </mat-table>

@@ -6,6 +6,13 @@
         <h4>Profile</h4>
         <mat-card-subtitle>
             <strong>{{userProfile.username}}</strong>
+            <p>
+                <button mat-button (click)="fileInput.click()">
+                    <mat-icon>add_a_photo</mat-icon>
+                    <span>Profile Photo</span>
+                    <input #fileInput type="file" style="display:none;" (change)="onFileInput($event)">
+                </button>
+            </p>
         </mat-card-subtitle>
         <mat-progress-spinner *ngIf="submitted" class="mat-progress-spinner-login" mode="indeterminate"></mat-progress-spinner>
       </mat-card-title>
@@ -26,7 +33,6 @@
               <mat-form-field class="full-width">
                   <input [(ngModel)]="userProfile.phoneNumber" matInput formControlName="phoneNumber" type="tel" placeholder="phone number">
               </mat-form-field>
-  
               <div class="mat-card-actions-profile">
                   <button type="submit" mat-button [disabled]="!profileForm.form.valid">UPDATE</button>
               </div>

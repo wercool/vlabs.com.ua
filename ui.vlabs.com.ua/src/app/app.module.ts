@@ -28,6 +28,8 @@ import {
   EditProfileComponent,
   /* ROLE_USER components */
   UserSidenavComponent,
+  /* ROLE_MANAGER components */
+  ManagerSidenavComponent,
   /* ROLE_ADMIN components */
   AdminSidenavComponent,
   UserManagementComponent,
@@ -67,6 +69,7 @@ export function initUserFactory(userService: UserService)
     UserSidenavComponent,
     EditProfileComponent,
     EditUserDialogComponent,
+    ManagerSidenavComponent,
   ],
   entryComponents: [
     AuthUserDialogComponent,
