@@ -26,7 +26,7 @@ export class UserService {
       if (res.access_token !== null) {
         return this.getMyInfo().toPromise()
         .then(user => {
-          // console.log(user);
+          console.log(user);
           this.currentUser = user;
         });
       }
@@ -43,8 +43,16 @@ export class UserService {
     return this.apiService.post(this.config.user_profile_url, this.currentUser).map(user => this.currentUser = user);
   }
 
-  updateProfilePhoto(userId: number, photo: FormData) {
-    return this.apiService.post(this.config.user_profile_photo_url + userId, photo);
+  updateProfilePhoto(photo: FormData) {
+    return this.apiService.post(this.config.user_update_profile_photo_url, photo);
+  }
+
+  getProfilePhoto() {
+    return this.apiService.get(this.config.user_get_profile_photo_url);
+  }
+
+  getProfilePhotoByUserId(userId: number) {
+    return this.apiService.get(this.config.user_get_profile_photo_url + '/' + userId);
   }
 
   updateAuthorities(authorities: string[], userId: number) {

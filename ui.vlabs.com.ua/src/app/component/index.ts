@@ -8,6 +8,7 @@ export * from './register/register.component';
 
 /* authenticated user components */
 export * from './edit-profile/edit-profile.component';
+export * from './reset-password/reset-password.component'
 
 /* ROLE_USER components */
 export * from './side-nav/user-sidenav/user-sidenav.component';

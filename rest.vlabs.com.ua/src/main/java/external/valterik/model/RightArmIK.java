@@ -1,4 +1,4 @@
-package vlabs.model.valterik;
+package external.valterik.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

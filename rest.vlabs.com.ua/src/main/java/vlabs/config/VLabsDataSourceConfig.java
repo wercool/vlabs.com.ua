@@ -33,8 +33,11 @@ public class VLabsDataSourceConfig {
     @Value("${vlabs.hibernate.naming-strategy}")
     private String HIBERNATE_NAMING_STRATEGY;
 
-    @Value("${vlabs.hibernate.ddl-auto}")
-    private String HIBERNATE_DDL_AUTO;
+//    @Value("${vlabs.hibernate.ddl-auto}")
+//    private String HIBERNATE_DDL_AUTO;
+
+    @Value("${vlabs.hibernate.hbm2ddl.auto}")
+    private String HIBERNATE_HBM2DDL_AUTO;
 
     @Value("${vlabs.hibernate.show_sql}")
     private String HIBERNATE_SHOW_SQL;
@@ -58,8 +61,8 @@ public class VLabsDataSourceConfig {
         Properties jpaProperties = new Properties();
         jpaProperties.setProperty("hibernate.dialect", HIBERNATE_DIALECT);
         jpaProperties.setProperty("hibernate.naming-strategy", HIBERNATE_NAMING_STRATEGY);
-        jpaProperties.setProperty("hibernate.ddl-auto", HIBERNATE_DDL_AUTO);
-//        jpaProperties.setProperty("hibernate.hbm2ddl.auto", HIBERNATE_DDL_AUTO);
+//        jpaProperties.setProperty("hibernate.ddl-auto", HIBERNATE_DDL_AUTO);
+        jpaProperties.setProperty("hibernate.hbm2ddl.auto", HIBERNATE_HBM2DDL_AUTO);
         jpaProperties.setProperty("hibernate.show_sql", HIBERNATE_SHOW_SQL);
 
         LocalContainerEntityManagerFactoryBean emf = builder

@@ -8,9 +8,8 @@ CREATE TABLE `users` (
   `enabled` bit(1) DEFAULT NULL,
   `first_name` varchar(255) DEFAULT NULL,
   `last_name` varchar(255) DEFAULT NULL,
-  `last_password_reset_date` datetime DEFAULT NULL,
   `phone_number` varchar(255) DEFAULT NULL,
-  `photo` longblob DEFAULT NULL,
+  `last_password_reset_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -25,8 +24,15 @@ CREATE TABLE `user_authority` (
   `authority_id` bigint(20) NOT NULL,
   KEY `authority_id_fk` (`authority_id`),
   KEY `user_id_fk` (`user_id`),
-  CONSTRAINT `authority_id_fk` FOREIGN KEY (`authority_id`) REFERENCES `authority` (`id`),
-  CONSTRAINT `user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `ua_authority_id_fk` FOREIGN KEY (`authority_id`) REFERENCES `authority` (`id`),
+  CONSTRAINT `ua_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `user_media` (
+  `user_id` bigint(20) NOT NULL,
+  `photo` longblob DEFAULT NULL,
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `um_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `vlabs` (

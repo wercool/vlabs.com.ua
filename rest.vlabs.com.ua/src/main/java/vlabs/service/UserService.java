@@ -1,7 +1,15 @@
 package vlabs.service;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,9 +23,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.mysql.cj.api.xdevapi.Collection;
 
+import utils.BufferedImageUtils;
 import vlabs.model.Authority;
 import vlabs.model.User;
+import vlabs.model.UserMedia;
 import vlabs.repository.AuthorityRepository;
+import vlabs.repository.UserMediaRepository;
 import vlabs.repository.UserRepository;
 
 @Service
@@ -32,6 +43,9 @@ public class UserService
     
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserMediaRepository userMediaRepository;
 
     @PreAuthorize("hasRole('USER')")
     public User findByUsername(String username) throws UsernameNotFoundException {
@@ -54,20 +68,64 @@ public class UserService
     }
 
     @PreAuthorize("hasRole('USER')")
-    public User updateProfilePhoto(Long userId, MultipartFile photo) throws AccessDeniedException {
-
+    public void updateProfilePhoto(MultipartFile photoFile) throws AccessDeniedException, IOException {
         User user = (User)SecurityContextHolder
                     .getContext()
                     .getAuthentication()
                     .getPrincipal();
 
-        return user;
+        BufferedImage photoImage = null;
 
-//        user.setFirstName(userProfile.getFirstName());
-//        user.setLastName(userProfile.getLastName());
-//        user.setEmail(userProfile.getEmail());
-//        user.setPhoneNumber(userProfile.getPhoneNumber());
-//        return userRepository.save(user);
+        try
+        {
+            photoImage = ImageIO.read(new ByteArrayInputStream(photoFile.getBytes()));
+
+            photoImage = BufferedImageUtils.resize(photoImage, 150, 150, true);
+
+            BufferedImage photoImageJPG = new BufferedImage(photoImage.getWidth(), photoImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+            photoImageJPG.createGraphics().drawImage(photoImage, 0, 0, Color.WHITE, null);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(photoImageJPG, "JPG", baos);
+
+            UserMedia userMedia = user.getUserMedia();
+            if (userMedia == null) {
+                userMedia = new UserMedia();
+                userMedia.setUser(user);
+            }
+            userMedia.setPhoto(baos.toByteArray());
+
+            userMediaRepository.save(userMedia);
+
+            baos.close();
+
+        } catch (IOException ex){
+            throw ex;
+        }
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public byte[] getProfilePhoto(User user) throws AccessDeniedException {
+        UserMedia userMedia = user.getUserMedia();
+        byte[] photo = null;
+        if (userMedia != null)
+        {
+            photo = user.getUserMedia().getPhoto();
+        }
+        else
+        {
+            BufferedImage noPhotoBI;
+            try {
+                noPhotoBI = ImageIO.read(ClassLoader.getSystemResource("static/images/no-profile-photo.jpg"));
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(noPhotoBI, "JPG", baos);
+                photo = baos.toByteArray();
+                baos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return photo;
     }
 
     @PreAuthorize("hasRole('ADMIN')")

@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -111,9 +112,15 @@ public class AuthenticationController
     @RequestMapping(value = "/change-password", method = RequestMethod.POST)
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> changePassword(@RequestBody PasswordChanger passwordChanger) {
-        userDetailsService.changePassword(passwordChanger.oldPassword, passwordChanger.newPassword);
         Map<String, String> result = new HashMap<>();
-        result.put("result", "success");
+        try
+        {
+            userDetailsService.changePassword(passwordChanger.oldPassword, passwordChanger.newPassword);
+            result.put("result", "success");
+        } catch (AuthenticationException ex)
+        {
+            result.put("result", "error");
+        }
         return ResponseEntity.accepted().body(result);
     }
 

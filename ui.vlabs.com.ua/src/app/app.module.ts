@@ -26,6 +26,7 @@ import {
   RegisterComponent,
   /* authenticated user components */
   EditProfileComponent,
+  ResetPasswordComponent,
   /* ROLE_USER components */
   UserSidenavComponent,
   /* ROLE_MANAGER components */
@@ -70,6 +71,7 @@ export function initUserFactory(userService: UserService)
     EditProfileComponent,
     EditUserDialogComponent,
     ManagerSidenavComponent,
+    ResetPasswordComponent,
   ],
   entryComponents: [
     AuthUserDialogComponent,

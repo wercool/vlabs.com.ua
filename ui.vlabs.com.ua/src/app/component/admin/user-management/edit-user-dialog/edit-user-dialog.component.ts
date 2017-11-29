@@ -27,6 +27,8 @@ export class EditUserDialogComponent implements OnInit {
   grantedAuthoritiesSelectable: boolean = false;
   grantedAuthoritiesRemovable: boolean = true;
 
+  profilePhoto: any = null;
+
   constructor(
     public dialogRef: MatDialogRef<EditUserDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public user: User,
@@ -39,6 +41,20 @@ export class EditUserDialogComponent implements OnInit {
     this.hasAuthority = this.authService.hasAuthority('ADMIN');
 
     this.setAuthoritiesInView();
+    if(window.innerWidth > 375)
+    {
+      this.getProfilePhoto();
+    }
+  }
+
+  getProfilePhoto(){
+    this.userService.getProfilePhotoByUserId(this.user.id)
+    .subscribe(pfofilePhoto => {
+      this.profilePhoto = pfofilePhoto.imageData;
+    },
+    error => {
+      
+    });
   }
 
   setAuthoritiesInView(){

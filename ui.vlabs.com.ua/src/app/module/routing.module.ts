@@ -7,9 +7,11 @@ import {
   LoginComponent,
   RegisterComponent,
   NotFoundComponent,
+  /* authenticated user components */
+  EditProfileComponent,
+  ResetPasswordComponent,
   /* ADMIN role component */
   UserManagementComponent,
-  EditProfileComponent
 } from '../component';
 
 import {
@@ -38,6 +40,11 @@ export const routes: Routes = [
   {
     path: 'edit-profile',
     component: EditProfileComponent,
+    canActivate: [AuthenticatedGuard]
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
     canActivate: [AuthenticatedGuard]
   },
   /* ADMIN role routes */

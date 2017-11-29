@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.joda.time.DateTime;
@@ -68,11 +70,9 @@ public class User implements UserDetails
                joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
     private List<Authority> authorities;
-    
-    @Lob
-    @Nullable
-    @Column(name="photo")
-    private byte[] photo;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
+    private UserMedia userMedia;
 
     public Long getId() {
         return id;
@@ -128,12 +128,13 @@ public class User implements UserDetails
         return grantedAuthorities;
     }
 
+    @JsonIgnore
     public List<Authority> getAuthoritiesList() {
         List<Authority> authorities = new ArrayList<Authority>();
         authorities.addAll(this.authorities);
         return authorities;
     }
-    
+
     public String getEmail() {
         return email;
     }
@@ -151,12 +152,12 @@ public class User implements UserDetails
     }
 
     @JsonIgnore
-    public byte[] getPhoto() {
-        return photo;
+    public UserMedia getUserMedia() {
+        return userMedia;
     }
 
-    public void setPhoto(byte[] photo) {
-        this.photo = photo;
+    public void setUserMedia(UserMedia userMedia) {
+        this.userMedia = userMedia;
     }
 
     @Override

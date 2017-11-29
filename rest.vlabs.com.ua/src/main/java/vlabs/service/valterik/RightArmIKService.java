@@ -9,8 +9,8 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import vlabs.model.valterik.RightArmIK;
-import vlabs.repository.valterik.RightArmIKRepository;
+import external.valterik.model.RightArmIK;
+import external.valterik.repository.RightArmIKRepository;
 
 @Service
 public class RightArmIKService

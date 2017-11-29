@@ -15,7 +15,7 @@ export class ApiService {
 
   apiError: Observable<any>;
 
-  headers = new Headers({
+  jsonHeaders = new Headers({
     'Accept': 'application/json'
   });
 
@@ -28,18 +28,18 @@ export class ApiService {
     return this.http.get(
       path,
       {
-        headers: this.headers,
+        headers: this.jsonHeaders,
         withCredentials: true
       }
     )
     .map(this.extractData);
   }
 
-  get(path: string): Observable<any> {
+  get(path: string, customHeaders?): Observable<any> {
     return this.http.get(
       path,
       {
-        headers: this.headers,
+        headers: customHeaders || this.jsonHeaders,
         withCredentials: true
       }
     )
@@ -53,7 +53,7 @@ export class ApiService {
       {
         method: put ? RequestMethod.Put : RequestMethod.Post,
         body: body,
-        headers: customHeaders || this.headers,
+        headers: customHeaders || this.jsonHeaders,
         withCredentials: true
       }
     )
@@ -74,15 +74,18 @@ export class ApiService {
     if (!environment.production) {
       console.error('ApiService::handleError', error);
     }
-    // if (error.status == HTTPStatusCodes.GATEWAY_TIMEOUT || 
-    //     error.status == HTTPStatusCodes.NOT_FOUND
-    //    )
-    // {
-    //   if (!window.location.href.endsWith('/login'))
-    //   {
-    //     window.location.href = '/login';
-    //   }
-    // }
+
+    if (environment.production) {
+      if (error.status == HTTPStatusCodes.GATEWAY_TIMEOUT || 
+          error.status == HTTPStatusCodes.NOT_FOUND
+        )
+      {
+        if (!window.location.href.endsWith('/login'))
+        {
+          window.location.href = '/login';
+        }
+      }
+    }
     this.apiError = Observable.throw(error);
     throw error;
   }

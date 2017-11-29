@@ -1,4 +1,4 @@
-package vlabs.config;
+package vlabs.config.external;
 
 import java.util.Properties;
 
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableJpaRepositories(
         entityManagerFactoryRef = "valterikEMF", 
-        basePackages = { "vlabs.repository.valterik" },
+        basePackages = { "external.valterik.repository" },
         transactionManagerRef = "valterikTM")
 public class ValterIKDataSourceConfig {
 
@@ -51,7 +51,6 @@ public class ValterIKDataSourceConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
             EntityManagerFactoryBuilder builder,
             @Qualifier("valterikDS") DataSource dataSource) {
-        
 
         Properties jpaProperties = new Properties();
         jpaProperties.setProperty("hibernate.dialect", HIBERNATE_DIALECT);
@@ -61,7 +60,7 @@ public class ValterIKDataSourceConfig {
 
         LocalContainerEntityManagerFactoryBean emf = builder
                                                      .dataSource(dataSource)
-                                                     .packages("vlabs.model.valterik")
+                                                     .packages("external.valterik.model")
                                                      .persistenceUnit("valterik")
                                                      .build();
         emf.setJpaProperties(jpaProperties);

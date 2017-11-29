@@ -1,6 +1,7 @@
 <mat-dialog-content *ngIf="hasAuthority">
   <mat-tab-group class="mat-tab-group">
       <mat-tab label="Profile">
+          <div style="float:left;">
               <div class="full-width">
                 <span class="label">ID</span>
                 <div class="data">{{user.id}}</div>
@@ -25,6 +26,10 @@
                   <span class="label">Last Name</span>
                   <div class="data">{{user.lastName}}</div>
               </div>
+            </div>
+            <div style="float:right;">
+                <img *ngIf="profilePhoto != null" src="{{profilePhoto}}" width="150" />
+            </div>
       </mat-tab>
       <mat-tab label="Authorities">
         <br/>

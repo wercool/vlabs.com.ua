@@ -4,7 +4,8 @@
 
       <mat-card-title>
         <h4>Profile</h4>
-        <mat-card-subtitle>
+        <img *ngIf="profilePhoto != null" src="{{profilePhoto}}" width="150" />
+        <mat-card-subtitle *ngIf="!submitted">
             <strong>{{userProfile.username}}</strong>
             <p>
                 <button mat-button (click)="fileInput.click()">
@@ -14,9 +15,10 @@
                 </button>
             </p>
         </mat-card-subtitle>
-        <mat-progress-spinner *ngIf="submitted" class="mat-progress-spinner-login" mode="indeterminate"></mat-progress-spinner>
       </mat-card-title>
   
+      <mat-progress-spinner *ngIf="submitted" class="mat-progress-spinner-profile" mode="indeterminate"></mat-progress-spinner>
+      
       <mat-card-content>
           <p [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></p>
   
@@ -35,6 +37,7 @@
               </mat-form-field>
               <div class="mat-card-actions-profile">
                   <button type="submit" mat-button [disabled]="!profileForm.form.valid">UPDATE</button>
+                  <button type="button" (click)="onResetPassword()" mat-button>RESET PASSWORD</button>
               </div>
           </form>
   
