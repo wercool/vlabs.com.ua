@@ -10,6 +10,7 @@ import { HTTPStatusCodes } from './shared/lib/http-status-codes'
 import { MatSidenav, MatSnackBar } from '@angular/material';
 
 import "rxjs/add/operator/takeWhile";
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -23,18 +24,40 @@ export class AppComponent implements OnInit, OnDestroy{
     private alive: boolean = true;
 
     constructor(
+        private translate: TranslateService,
         private router: Router,
         private apiService: ApiService,
         private authService: AuthService,
         private snackBar: MatSnackBar,
-    ) { }
+    ) {
+        translate.addLangs(["en", "ru"]);
+        translate.setDefaultLang(localStorage.getItem('vlabs-lang') || translate.getDefaultLang());
+
+        // let browserLang = translate.getBrowserLang();
+        // translate.use(browserLang.match(/en|ru/) ? browserLang : 'en');
+    }
 
     ngOnInit(){
+
+        // VLabs App root component
+
         this.apiService.onError
         .takeWhile(() => this.alive)
         .subscribe(error => {
             switch(error.status)
             {
+                case HTTPStatusCodes.NOT_FOUND:
+                    this.snackBar.open(error.statusText, error.status, {
+                        duration: 5000
+                    }).afterDismissed().subscribe(() => {
+                        if (environment.production)
+                        {
+                            window.location.href = '/';
+                        } else {
+                            console.log('Will be redirected to / in production');
+                        }
+                    });
+                break;
                 case HTTPStatusCodes.FORBIDDEN:
                     this.authService.logout().subscribe(result =>{
                         this.router.navigate(['/login', { msgType: 'error', msgBody: 'Access Forbidden' }]);

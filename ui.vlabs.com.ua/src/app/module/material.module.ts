@@ -18,6 +18,8 @@ import {
     MatSidenavModule,
     MatChipsModule,
     MatSortModule,
+    MatSelectModule,
+    MatPaginatorModule,
 } from '@angular/material';
 
 @NgModule({
@@ -40,6 +42,8 @@ import {
     MatSidenavModule,
     MatChipsModule,
     MatSortModule,
+    MatSelectModule,
+    MatPaginatorModule,
   ],
   exports:
   [
@@ -60,6 +64,8 @@ import {
     MatSidenavModule,
     MatChipsModule,
     MatSortModule,
+    MatSelectModule,
+    MatPaginatorModule,
   ],
   declarations: []
 })

@@ -11,6 +11,9 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import external.valterik.model.RightArmIK;
 import utils.BufferedImageUtils;
 import vlabs.model.Authority;
 import vlabs.model.User;
@@ -148,6 +152,13 @@ public class UserService
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    public Page<User> findAllPaged(int page, int size) throws AccessDeniedException {
+        PageRequest limit = PageRequest.of(page, size, Direction.ASC, "id");
+        Page<User> result = userRepository.findAll(limit);
+        return result;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     public void authorizeAndActivateUser(Long userId) throws AccessDeniedException {
         User user = userRepository.getOne(userId);
         Authority userAuthority = authorityRepository.findByName("ROLE_USER");
@@ -162,6 +173,13 @@ public class UserService
     public List<User> findAllWithoutAuthorites() {
         List<User> result = userRepository.findAllWithoutAuthorities();
         return result;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public void updateUser(User user) throws AccessDeniedException {
+        User existingUser = userRepository.getOne(user.getId());
+        existingUser.setEnabled(user.isEnabled());
+        userRepository.save(existingUser);
     }
 
     public void createNewUser(User user) {

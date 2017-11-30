@@ -8,7 +8,7 @@
 
     <span (click)="navigate('/')" class="toolbarItem">
         <span *ngIf="!hasSignedIn()">VLabs</span>
-        <span *ngIf="hasSignedIn()">Dashboard</span>
+        <span *ngIf="hasSignedIn()">{{ 'header.component.dashboard' | translate }}</span>
     </span>
 
     <span class="mat-toolbar-row-spacer" style="text-align:center;">
@@ -19,13 +19,13 @@
 
     <span class="element-spacer"></span>
 
-    <a *ngIf="!hasSignedIn()" href="/login" mat-icon-button matTooltip="Login" class="mat-icon md-36">
+    <a *ngIf="!hasSignedIn()" href="/login" mat-icon-button matTooltip="{{ 'login.component.login' | translate }}" class="mat-icon md-36">
         <mat-icon class="md-36">account_box</mat-icon>
     </a>
     <a *ngIf="hasSignedIn()" 
         href="javascript:void(0)" 
         mat-icon-button 
-        matTooltip="Logout" 
+        matTooltip="{{ 'app.component.logout' | translate }}" 
         class="mat-icon md-36">
         <mat-icon class="md-36" (click)="logout()">exit_to_app</mat-icon>
     </a>

@@ -1,0 +1,20 @@
+{
+    "app.component":
+    {
+      "logout"  : "Logout",
+      "profile": "Profile"
+    },
+    "header.component":
+    {
+      "dashboard"  : "Dashboard"
+    },
+    "login.component":
+    {
+      "Your language"  : "Your language",
+      "welcome"  : "Welcome to VLabs",
+      "login"  : "Login",
+      "LOGIN"  : "LOGIN",
+      "REGISTER"  : "REGISTER",
+      "username (email)"  : "username (email)"
+    }
+}

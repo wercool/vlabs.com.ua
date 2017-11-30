@@ -9,7 +9,7 @@
     </mat-expansion-panel-header>
 
 
-    <mat-table #table [dataSource]="usersWoAuthoritiesDS">
+    <mat-table #usersWoAuthoritiesDSTable [dataSource]="usersWoAuthoritiesDS">
         <ng-container matColumnDef="id">
             <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
             <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
@@ -42,8 +42,8 @@
         <mat-header-row *matHeaderRowDef="usersWoAuthoritiesDisplayedColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: usersWoAuthoritiesDisplayedColumns;"></mat-row>
     </mat-table>
-
 </mat-expansion-panel>
+
 <mat-expansion-panel>
     <mat-expansion-panel-header>
         <mat-panel-title class="mat-panel-title-pad">
@@ -54,7 +54,7 @@
         </mat-panel-description>
     </mat-expansion-panel-header>
 
-    <mat-table #table [dataSource]="usersDS" matSort>
+    <mat-table #usersDSTable [dataSource]="usersDS" matSort>
             <ng-container matColumnDef="id">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
@@ -62,7 +62,7 @@
             <ng-container matColumnDef="username">
                 <mat-header-cell *matHeaderCellDef>USERNAME</mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <button mat-button (click)="openUserEditDialog(element)">
+                    <button mat-button (click)="openUserEditDialog(element)" [ngStyle]="{'background-color': element.enabled ? 'rgb(215, 235, 215)' : 'rgb(235, 215, 215)'}">
                         <mat-icon class="material-icons md-24">assignment_ind</mat-icon>
                         {{element.username}}
                     </button>
@@ -85,14 +85,21 @@
                 <mat-cell *matCellDef="let element">{{element.lastName}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="authorities">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>AUTHORITIES</mat-header-cell>
-                    <mat-cell *matCellDef="let element">
-                        <ul>
-                            <li *ngFor="let authorityObj of element.authorities">{{authorityObj.authority}}</li>
-                        </ul>
-                    </mat-cell>
-                </ng-container>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>AUTHORITIES</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <ul>
+                        <li *ngFor="let authorityObj of element.authorities">{{authorityObj.authority}}</li>
+                    </ul>
+                </mat-cell>
+            </ng-container>
             <mat-header-row *matHeaderRowDef="usersDisplayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: usersDisplayedColumns;"></mat-row>
         </mat-table>
+
+        <mat-paginator #paginatorUsersDS
+            [length]="1000"
+            [pageSize]="usersDSPageSize"
+            [pageSizeOptions]="[5, 10, 20]">
+        </mat-paginator>
+
 </mat-expansion-panel>

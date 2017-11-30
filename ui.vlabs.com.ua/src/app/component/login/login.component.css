@@ -36,3 +36,24 @@
 .success {
   color: #8BC34A;
 }
+
+.langENSelection{
+  background-image: url('/assets/us.png');
+  background-repeat: no-repeat;
+  background-position: left;
+  padding-left: 40px;
+}
+
+.langUASelection{
+  background-image: url('/assets/ua.png');
+  background-repeat: no-repeat;
+  background-position: left;
+  padding-left: 40px;
+}
+
+.langRUSelection{
+  background-image: url('/assets/ru.png');
+  background-repeat: no-repeat;
+  background-position: left;
+  padding-left: 40px;
+}

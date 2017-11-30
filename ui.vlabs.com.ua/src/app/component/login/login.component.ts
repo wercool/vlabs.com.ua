@@ -12,6 +12,7 @@ import {
   UserService,
   AuthService
 } from '../../service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +22,8 @@ import {
 export class LoginComponent implements OnInit, OnDestroy {
 
   form: FormGroup;
+
+  selectedLanguage = 'en';
 
   /**
    * Boolean used in telling the UI
@@ -36,12 +39,15 @@ export class LoginComponent implements OnInit, OnDestroy {
   notification: DisplayMessage;
 
   constructor(
+    private translate: TranslateService,
     private router: Router,
     private route: ActivatedRoute,
     private formBuilder: FormBuilder,
     private userService: UserService,
     private authService: AuthService
-    ) { }
+    ) {
+      this.selectedLanguage = localStorage.getItem('vlabs-lang') || translate.getDefaultLang();
+    }
 
   ngOnInit() {
     this.route.params
@@ -92,6 +98,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       }
     });
 
+  }
+
+  switchLanguage(lang:string){
+    localStorage.setItem('vlabs-lang', lang);
+    this.translate.use(lang);
   }
 
   onRegister() {

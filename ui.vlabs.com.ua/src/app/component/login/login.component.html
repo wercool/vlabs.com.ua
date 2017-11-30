@@ -1,12 +1,18 @@
 <div class="vertical-spacing-4pt"></div>
 <div class="login-view-container">
   <mat-card class="mat-card-login">
-
+    <mat-form-field>
+        <mat-select placeholder="{{ 'login.component.Your language' | translate }}" [(value)]="selectedLanguage" #langSelect (change)="switchLanguage(langSelect.value)">
+            <mat-option value="en"><div class="langENSelection">English</div></mat-option>
+            <mat-option value="ua"><div class="langUASelection">Українська</div></mat-option>
+            <mat-option value="ru"><div class="langRUSelection">Русский</div></mat-option>
+        </mat-select>
+    </mat-form-field>
     <mat-card-subtitle>
-        <h2>Welcome to VLabs</h2>
+        <h2>{{ 'login.component.welcome' | translate }}</h2>
     </mat-card-subtitle>
     <mat-card-title>
-        <h4>Login</h4>
+        <h4>{{ 'login.component.login' | translate }}</h4>
         <mat-progress-spinner *ngIf="submitted" class="mat-progress-spinner-login" mode="indeterminate"></mat-progress-spinner>
     </mat-card-title>
 
@@ -15,7 +21,7 @@
 
         <form *ngIf="!submitted" [formGroup]="form" (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
             <mat-form-field class="full-width">
-                <input matInput formControlName="username" placeholder="username (email)" required>
+                <input matInput formControlName="username" placeholder="{{ 'login.component.username (email)' | translate }}" required>
             </mat-form-field>
 
             <mat-form-field class="full-width">
@@ -23,8 +29,8 @@
             </mat-form-field>
 
             <div class="mat-card-actions-login">
-                <button type="submit" mat-button>LOGIN</button>
-                <button type="button" mat-button (click)="onRegister()">REGISTER</button>
+                <button type="submit" mat-button>{{ 'login.component.LOGIN' | translate }}</button>
+                <button type="button" mat-button (click)="onRegister()">{{ 'login.component.REGISTER' | translate }}</button>
             </div>
         </form>
 

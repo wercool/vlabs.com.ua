@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   MatTableDataSource,
-  MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSort
+  MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSort, MatPaginator
 } from '@angular/material';
 
 import {
@@ -34,7 +34,11 @@ export class UserManagementComponent implements OnInit {
   usersDisplayedColumns = ['id', 'username', 'email', 'phoneNumber', 'firstName', 'lastName', 'authorities'];
   usersDS: MatTableDataSource<User>;
 
+  usersDSPageSize = 5;
+  usersDSCurrentPage = 0;
+
   @ViewChild(MatSort) sortUsersDS: MatSort;
+  @ViewChild(MatPaginator) paginatorUsersDS: MatPaginator;
 
   constructor(
     private userService: UserService,
@@ -42,8 +46,26 @@ export class UserManagementComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.getAllUsers();
+    // this.getAllUsers();
+    this.getAllUsersPaged();
     this.getUsersWoAuthorities();
+    this.paginatorUsersDS.page.asObservable().subscribe(event => {
+      this.usersDSPageSize = event.pageSize;
+      this.usersDSCurrentPage = event.pageIndex;
+      this.getAllUsersPaged();
+    });
+  }
+
+  private getAllUsersPaged():void {
+    this.userService.getAllPaged(this.usersDSCurrentPage, this.usersDSPageSize)
+    .subscribe(result => {
+        this.usersAll = result;
+        this.usersNum = this.usersAll.length;
+        this.usersDS = new MatTableDataSource<User>(this.usersAll);
+        this.usersDS.sort = this.sortUsersDS;
+    },
+    error => {
+    });
   }
 
   private getAllUsers():void {
@@ -89,7 +111,7 @@ export class UserManagementComponent implements OnInit {
       data: selectedUser
     });
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
+      // console.log(result);
       this.getAllUsers();
       this.getUsersWoAuthorities();
     });

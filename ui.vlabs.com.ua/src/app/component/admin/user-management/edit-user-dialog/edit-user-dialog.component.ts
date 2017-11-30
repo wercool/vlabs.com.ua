@@ -132,4 +132,34 @@ export class EditUserDialogComponent implements OnInit {
       this.submitted = false;
     });
   }
+
+  activateAction(){
+    this.user.enabled = true;
+
+    this.submitted = true;
+    this.userService.updateUser(this.user)
+    //animation
+    .delay(500)
+    .subscribe(response => {
+      this.submitted = false;
+    },
+    error => {
+      this.submitted = false;
+    });
+  }
+
+  deActivateAction(){
+    this.user.enabled = false;
+
+    this.submitted = true;
+    this.userService.updateUser(this.user)
+    //animation
+    .delay(500)
+    .subscribe(response => {
+      this.submitted = false;
+    },
+    error => {
+      this.submitted = false;
+    });
+  }
 }

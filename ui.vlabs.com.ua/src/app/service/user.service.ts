@@ -39,6 +39,10 @@ export class UserService {
     return this.apiService.get(this.config.whoami_url).map(user => this.currentUser = user);
   }
 
+  updateUser(user: User) {
+    return this.apiService.post(this.config.user_update_url, user);
+  }
+
   updateProfile() {
     return this.apiService.post(this.config.user_profile_url, this.currentUser).map(user => this.currentUser = user);
   }
@@ -70,7 +74,11 @@ export class UserService {
   getAll() {
     return this.apiService.get(this.config.users_url);
   }
-  
+
+  getAllPaged(page, size){
+    return this.apiService.get(this.config.users_paged_url.replace("{page}", page).replace("{size}", size));
+  }
+
   getAllWoAuthorities() {
     return this.apiService.get(this.config.users_wo_authorities_url);
   }

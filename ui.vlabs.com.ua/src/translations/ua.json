@@ -1,0 +1,20 @@
+{
+    "app.component":
+    {
+      "logout": "Вихід",
+      "profile": "Профіль"
+    },
+    "header.component":
+    {
+      "dashboard"  : "Робочий стіл"
+    },
+    "login.component":
+    {
+      "Your language"  : "Ваша мова",
+      "welcome"  : "Ласкаво просимо в VLabs",
+      "login"  : "Вхід",
+      "LOGIN"  : "ВХІД",
+      "REGISTER"  : "РЕЄСТРАЦІЯ",
+      "username (email)"  : "ім'я користувача (або email)"
+    }
+}

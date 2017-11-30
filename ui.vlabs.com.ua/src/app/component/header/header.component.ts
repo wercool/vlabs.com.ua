@@ -5,6 +5,7 @@ import {
   UserService,
   AuthService
 } from '../../service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-header',
@@ -16,6 +17,7 @@ export class HeaderComponent implements OnInit {
   @Input() sidenav;
 
   constructor(
+    private translate: TranslateService,
     private userService: UserService,
     private authService: AuthService,
     private router: Router,

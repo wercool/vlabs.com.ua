@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,9 +42,21 @@ public class UserController
         return this.userService.findById(userId);
     }
 
+    @RequestMapping(method = RequestMethod.POST, value= "/user/update")
+    public ResponseEntity<EmptyJsonResponse> updateUser(@RequestBody User user) {
+        this.userService.updateUser(user);
+        return new ResponseEntity<EmptyJsonResponse>(new EmptyJsonResponse(), HttpStatus.OK);
+    }
+
     @RequestMapping(method = RequestMethod.GET, value= "/user/all")
     public List<User> loadAll() {
         return this.userService.findAll();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value= "/user/all-paged/{page}/{size}")
+    public List<User> loadAllPaged(@PathVariable int page,
+                                   @PathVariable int size) {
+        return this.userService.findAllPaged(page, size).getContent();
     }
 
     @RequestMapping(method = RequestMethod.GET, value= "/user/reset-password/{userId}")

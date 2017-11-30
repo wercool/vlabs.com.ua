@@ -2,6 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {TranslateModule} from '@ngx-translate/core';
+import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 
 import { AppRoutingModule } from './module/routing.module';
 import { MaterialModule } from './module/material.module';
@@ -46,10 +48,16 @@ import {
   FooService,
   ConfigService
 } from './service';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { TranslateLoader } from '@ngx-translate/core';
 
 export function initUserFactory(userService: UserService)
 {
     return () => userService.initUser();
+}
+
+export function HttpLoaderFactory(httpClient: HttpClient) {
+  return new TranslateHttpLoader(httpClient, "translations/", ".json");
 }
 
 @NgModule({
@@ -86,6 +94,14 @@ export function initUserFactory(userService: UserService)
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    })
   ],
   providers: 
   [

@@ -59,17 +59,17 @@ public class TopMostServletFilter extends OncePerRequestFilter
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         int status = response.getStatus();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        PrintWriter responseOut = response.getWriter();
-        JSONObject obj = new JSONObject();
-
+        PrintWriter responseWriter = response.getWriter();
+        JSONObject responseBody = new JSONObject();
+        
         try {
-            obj.put("errorCause", appEx.getCause().getMessage());
-            obj.put("detailMessage", appEx.getMessage());
+            responseBody.put("errorCause", appEx.getCause().getMessage());
+        responseBody.put("detailMessage", appEx.getMessage());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        responseOut.print(obj);
+        responseWriter.print(responseBody);
 
         appEx.printStackTrace();
       }
