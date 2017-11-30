@@ -153,7 +153,7 @@ public class User implements UserDetails
 
     @JsonIgnore
     public UserMedia getUserMedia() {
-        return userMedia;
+        return (this.userMedia == null) ? new UserMedia(this) : userMedia;
     }
 
     public void setUserMedia(UserMedia userMedia) {

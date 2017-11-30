@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,21 +13,17 @@ import javax.imageio.ImageIO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.mysql.cj.api.xdevapi.Collection;
-
 import utils.BufferedImageUtils;
 import vlabs.model.Authority;
 import vlabs.model.User;
 import vlabs.model.UserMedia;
 import vlabs.repository.AuthorityRepository;
-import vlabs.repository.UserMediaRepository;
 import vlabs.repository.UserRepository;
 
 @Service
@@ -43,9 +38,6 @@ public class UserService
     
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserMediaRepository userMediaRepository;
 
     @PreAuthorize("hasRole('USER')")
     public User findByUsername(String username) throws UsernameNotFoundException {
@@ -89,15 +81,12 @@ public class UserService
             ImageIO.write(photoImageJPG, "JPG", baos);
 
             UserMedia userMedia = user.getUserMedia();
-            if (userMedia == null) {
-                userMedia = new UserMedia();
-                userMedia.setUser(user);
-            }
             userMedia.setPhoto(baos.toByteArray());
-
-            userMediaRepository.save(userMedia);
-
             baos.close();
+
+            user.setUserMedia(userMedia);
+
+            userRepository.save(user);
 
         } catch (IOException ex){
             throw ex;
@@ -106,13 +95,8 @@ public class UserService
 
     @PreAuthorize("hasRole('USER')")
     public byte[] getProfilePhoto(User user) throws AccessDeniedException {
-        UserMedia userMedia = user.getUserMedia();
-        byte[] photo = null;
-        if (userMedia != null)
-        {
-            photo = user.getUserMedia().getPhoto();
-        }
-        else
+        byte[] photo = user.getUserMedia().getPhoto();
+        if (photo == null)
         {
             BufferedImage noPhotoBI;
             try {

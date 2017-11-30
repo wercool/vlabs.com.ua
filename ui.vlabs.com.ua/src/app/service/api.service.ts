@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Output, EventEmitter } from '@angular/core';
 import { Http, Headers, Response, RequestMethod } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
@@ -9,11 +9,12 @@ import 'rxjs/add/observable/throw';
 import { environment } from '../../environments/environment';
 import { ConfigService } from './config.service';
 import { HTTPStatusCodes } from '../shared/lib/http-status-codes';
+import { MatSnackBar } from '@angular/material';
 
 @Injectable()
 export class ApiService {
 
-  apiError: Observable<any>;
+  @Output() onError = new EventEmitter<any>();
 
   jsonHeaders = new Headers({
     'Accept': 'application/json'
@@ -21,7 +22,7 @@ export class ApiService {
 
   constructor(
     private http: Http,
-    private config: ConfigService
+    private config: ConfigService,
     ) { }
 
   anonGet(path: string): Observable<any> {
@@ -32,7 +33,8 @@ export class ApiService {
         withCredentials: true
       }
     )
-    .map(this.extractData);
+    .map(this.extractData)
+    .catch(this.handleError.bind(this));
   }
 
   get(path: string, customHeaders?): Observable<any> {
@@ -62,7 +64,7 @@ export class ApiService {
   }
 
   put(path: string, body: any): Observable<any> {
-    return this.post(path, body, true);
+    return this.post(path, body, true).catch(this.handleError.bind(this));
   }
 
   private extractData(res: Response) {
@@ -72,21 +74,9 @@ export class ApiService {
 
   private handleError (error: Response | any) {
     if (!environment.production) {
-      console.error('ApiService::handleError', error);
+      console.error('VLabs ApiService::handleError', error);
     }
-
-    if (environment.production) {
-      if (error.status == HTTPStatusCodes.GATEWAY_TIMEOUT || 
-          error.status == HTTPStatusCodes.NOT_FOUND
-        )
-      {
-        if (!window.location.href.endsWith('/login'))
-        {
-          window.location.href = '/login';
-        }
-      }
-    }
-    this.apiError = Observable.throw(error);
+    this.onError.emit(error);
     throw error;
   }
 }

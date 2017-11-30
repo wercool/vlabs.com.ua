@@ -1,4 +1,4 @@
-import { Inject } from '@angular/core';
+import { Inject, ViewEncapsulation } from '@angular/core';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -18,7 +18,8 @@ import {
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrls: ['./register.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class RegisterComponent implements OnInit, OnDestroy {
 
@@ -82,7 +83,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
     .delay(1000)
     .subscribe(data => {
       this.snackBar.open(data.message, 'Registration', {
-        duration: 50000,
+        panelClass: ['successSnackBar'],
+        duration: 20000,
         verticalPosition: 'top'
       });
       this.router.navigate(['/']);

@@ -37,3 +37,7 @@
 .success {
   color: #8BC34A;
 }
+
+.successSnackBar button{
+    color: rgb(100, 240, 82) !important;
+}

@@ -1,6 +1,7 @@
 package vlabs.config;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -11,10 +12,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -41,9 +45,34 @@ public class TopMostServletFilter extends OncePerRequestFilter
           logger.info("[" + method + "] " + url + queryString + " from " + request.getRemoteAddr());
       }
 
-        filterChain.doFilter(request, response);
+
+//      filterChain.doFilter(request, response);
 
       //processing after the request is sent to the servlet, the response filter
+
+      try
+      {
+          filterChain.doFilter(request, response);
+      }
+      catch (Exception appEx)
+      {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        int status = response.getStatus();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        PrintWriter responseOut = response.getWriter();
+        JSONObject obj = new JSONObject();
+
+        try {
+            obj.put("errorCause", appEx.getCause().getMessage());
+            obj.put("detailMessage", appEx.getMessage());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        responseOut.print(obj);
+
+        appEx.printStackTrace();
+      }
 
     }
 

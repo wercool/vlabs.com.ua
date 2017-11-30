@@ -4,6 +4,9 @@ import {
   UserService,
   AuthService
 } from '../../service';
+import { ActivatedRoute } from '@angular/router';
+import { DisplayMessage } from '../../shared/models/display-message';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-home',
@@ -14,7 +17,8 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {

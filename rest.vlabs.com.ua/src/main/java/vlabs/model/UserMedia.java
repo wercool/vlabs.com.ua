@@ -16,6 +16,7 @@ import org.springframework.lang.Nullable;
 public class UserMedia {
 
     @Id
+    @Column(name="user_id")
     private Long id;
 
     @Lob
@@ -26,6 +27,15 @@ public class UserMedia {
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     private User user;
+
+    UserMedia(){
+        super();
+    }
+
+    public UserMedia(User user){
+        this();
+        this.user = user;
+    }
 
     public Long getId() {
         return id;

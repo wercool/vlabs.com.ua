@@ -83,7 +83,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     },
     error => {
       this.submitted = false;
-      this.notification = { msgType: 'error', msgBody: 'Username or password is incorrect' };
+      if (error.status == HTTPStatusCodes.UNAUTHORIZED)
+      {
+        this.notification = { msgType: 'error', msgBody: 'Username or password is incorrect' };
+      }
+      else{
+        this.notification = { msgType: 'error', msgBody: error.statusText };
+      }
     });
 
   }
