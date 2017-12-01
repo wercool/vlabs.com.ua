@@ -38,5 +38,6 @@ CREATE TABLE `user_media` (
 CREATE TABLE `vlabs` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
+  `path` varchar(2048) DEFAULT '/vl/index.html',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

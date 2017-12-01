@@ -39,12 +39,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   notification: DisplayMessage;
 
   constructor(
-    private translate: TranslateService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private formBuilder: FormBuilder,
-    private userService: UserService,
-    private authService: AuthService
+      private translate: TranslateService,
+      private router: Router,
+      private route: ActivatedRoute,
+      private formBuilder: FormBuilder,
+      private userService: UserService,
+      private authService: AuthService
     ) {
       this.selectedLanguage = localStorage.getItem('vlabs-lang') || translate.getDefaultLang();
     }

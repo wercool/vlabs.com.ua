@@ -32,3 +32,32 @@ html{
   text-decoration: none;
   display: block;
 }
+
+/* with 'styles-' in front means globally defined  */
+.styles-mat-panel-title-pad {
+    min-width: 120pt;
+}
+
+.styles-new-expansion-panel-header-header {
+    background-color: rgb(230, 255, 230);
+}
+
+.styles-new-info-panel-header-header {
+    background-color: rgb(253, 255, 230);
+}
+
+.styles-mat-card-actions {
+    text-align: right;
+}
+
+.styles-full-width {
+    width: 100%;
+}
+
+.styles-error {
+    color: #D50000;
+}
+  
+.styles-success {
+    color: #8BC34A;
+}

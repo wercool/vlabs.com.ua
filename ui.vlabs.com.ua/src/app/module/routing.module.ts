@@ -10,6 +10,8 @@ import {
   /* authenticated user components */
   EditProfileComponent,
   ResetPasswordComponent,
+  /* MANAGER role component */
+  VlabsManagementComponent,
   /* ADMIN role component */
   UserManagementComponent,
 } from '../component';
@@ -17,7 +19,8 @@ import {
 import {
   GuestGuard,
   AuthenticatedGuard,
-  AdminGuard
+  AdminGuard,
+  ManagerGuard
 } from '../guard';
 
 export const routes: Routes = [
@@ -46,6 +49,12 @@ export const routes: Routes = [
     path: 'reset-password',
     component: ResetPasswordComponent,
     canActivate: [AuthenticatedGuard]
+  },
+  /* MANAGER role routes */
+  {
+    path: 'vlabs-management',
+    component: VlabsManagementComponent,
+    canActivate: [ManagerGuard]
   },
   /* ADMIN role routes */
   {

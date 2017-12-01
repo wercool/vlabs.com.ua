@@ -54,9 +54,9 @@ public class UserController
     }
 
     @RequestMapping(method = RequestMethod.GET, value= "/user/all-paged/{page}/{size}")
-    public List<User> loadAllPaged(@PathVariable int page,
+    public Page<User> loadAllPaged(@PathVariable int page,
                                    @PathVariable int size) {
-        return this.userService.findAllPaged(page, size).getContent();
+        return this.userService.findAllPaged(page, size);
     }
 
     @RequestMapping(method = RequestMethod.GET, value= "/user/reset-password/{userId}")

@@ -13,6 +13,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   GuestGuard,
   AuthenticatedGuard,
+  ManagerGuard,
   AdminGuard
 } from './guard';
 
@@ -45,11 +46,15 @@ import {
   ApiService,
   AuthService,
   UserService,
+  VlabService,
   FooService,
   ConfigService
 } from './service';
+
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateLoader } from '@ngx-translate/core';
+import { VlabsManagementComponent } from './component/manager/vlabs-management/vlabs-management.component';
+import { NewVlabComponent } from './component/manager/vlabs-management/new-vlab/new-vlab.component';
 
 export function initUserFactory(userService: UserService)
 {
@@ -80,6 +85,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     EditUserDialogComponent,
     ManagerSidenavComponent,
     ResetPasswordComponent,
+    VlabsManagementComponent,
+    NewVlabComponent,
   ],
   entryComponents: [
     AuthUserDialogComponent,
@@ -107,11 +114,13 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
   [
     GuestGuard,
     AuthenticatedGuard,
+    ManagerGuard,
     AdminGuard,
     ConfigService,
     ApiService,
     FooService,
     AuthService,
+    VlabService,
     UserService,
     {
       'provide': APP_INITIALIZER,

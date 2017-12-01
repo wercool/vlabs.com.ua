@@ -1,4 +1,10 @@
 {
+    "paginatorIntl":
+    {
+      "itemsPerPageLabel": "Записів на сторінці:",
+      "nextPageLabel": "Наступна сторінка",
+      "previousPageLabel": "Попередня сторінка"
+    },
     "app.component":
     {
       "logout": "Вихід",

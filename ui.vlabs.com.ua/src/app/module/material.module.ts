@@ -20,6 +20,7 @@ import {
     MatSortModule,
     MatSelectModule,
     MatPaginatorModule,
+    MatPaginatorIntl,
 } from '@angular/material';
 
 @NgModule({
@@ -66,6 +67,10 @@ import {
     MatSortModule,
     MatSelectModule,
     MatPaginatorModule,
+  ],
+  providers:
+  [
+    MatPaginatorIntl
   ],
   declarations: []
 })

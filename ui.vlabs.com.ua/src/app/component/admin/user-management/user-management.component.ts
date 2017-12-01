@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   MatTableDataSource,
-  MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSort, MatPaginator
+  MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSort, MatPaginator, MatPaginatorIntl
 } from '@angular/material';
 
 import {
@@ -14,6 +14,7 @@ import {
 
 import { AuthUserDialogComponent } from './auth-user-dialog/auth-user-dialog.component';
 import { EditUserDialogComponent } from './edit-user-dialog/edit-user-dialog.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-user-management',
@@ -34,6 +35,7 @@ export class UserManagementComponent implements OnInit {
   usersDisplayedColumns = ['id', 'username', 'email', 'phoneNumber', 'firstName', 'lastName', 'authorities'];
   usersDS: MatTableDataSource<User>;
 
+  usersDSLength = 0;
   usersDSPageSize = 5;
   usersDSCurrentPage = 0;
 
@@ -41,13 +43,14 @@ export class UserManagementComponent implements OnInit {
   @ViewChild(MatPaginator) paginatorUsersDS: MatPaginator;
 
   constructor(
+    private translate: TranslateService,
     private userService: UserService,
     private authUserDialog: MatDialog
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
-    // this.getAllUsers();
-    this.getAllUsersPaged();
+    this.getAllUsers();
     this.getUsersWoAuthorities();
     this.paginatorUsersDS.page.asObservable().subscribe(event => {
       this.usersDSPageSize = event.pageSize;
@@ -59,8 +62,10 @@ export class UserManagementComponent implements OnInit {
   private getAllUsersPaged():void {
     this.userService.getAllPaged(this.usersDSCurrentPage, this.usersDSPageSize)
     .subscribe(result => {
-        this.usersAll = result;
-        this.usersNum = this.usersAll.length;
+        this.usersAll = result.content;
+        this.usersDSLength = result.totalElements;
+        // this.usersNum = this.usersAll.length;
+        this.usersNum = result.totalElements;
         this.usersDS = new MatTableDataSource<User>(this.usersAll);
         this.usersDS.sort = this.sortUsersDS;
     },
@@ -69,15 +74,16 @@ export class UserManagementComponent implements OnInit {
   }
 
   private getAllUsers():void {
-    this.userService.getAll()
-    .subscribe(result => {
-        this.usersAll = result;
-        this.usersNum = this.usersAll.length;
-        this.usersDS = new MatTableDataSource<User>(this.usersAll);
-        this.usersDS.sort = this.sortUsersDS;
-    },
-    error => {
-    });
+    this.getAllUsersPaged();
+    // this.userService.getAll()
+    // .subscribe(result => {
+    //     this.usersAll = result;
+    //     this.usersNum = this.usersAll.length;
+    //     this.usersDS = new MatTableDataSource<User>(this.usersAll);
+    //     this.usersDS.sort = this.sortUsersDS;
+    // },
+    // error => {
+    // });
   }
 
   private getUsersWoAuthorities():void {

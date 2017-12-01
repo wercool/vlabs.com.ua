@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import vlabs.model.Vlab;
@@ -30,4 +31,8 @@ public class VlabService
         return vlabs;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public Vlab addNew(Vlab vlab) throws AccessDeniedException {
+        return vlabRepository.save(vlab);
+    }
 }

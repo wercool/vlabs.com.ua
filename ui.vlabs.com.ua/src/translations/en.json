@@ -1,4 +1,10 @@
 {
+    "paginatorIntl":
+    {
+      "itemsPerPageLabel": "Items per page:",
+      "nextPageLabel": "Next page",
+      "previousPageLabel": "Previous page"
+    },
     "app.component":
     {
       "logout"  : "Logout",

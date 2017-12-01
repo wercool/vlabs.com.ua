@@ -15,6 +15,7 @@ export * from './side-nav/user-sidenav/user-sidenav.component';
 
 /* ROLE_MANAGER components */
 export * from './side-nav/manager-sidenav/manager-sidenav.component';
+export * from './manager/vlabs-management/vlabs-management.component';
 
 /* ROLE_ADMIN components */
 export * from './side-nav/admin-sidenav/admin-sidenav.component';

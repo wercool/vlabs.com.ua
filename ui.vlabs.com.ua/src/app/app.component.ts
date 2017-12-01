@@ -7,7 +7,7 @@ import { AuthService } from './service/auth.service';
 import { environment } from '../environments/environment';
 
 import { HTTPStatusCodes } from './shared/lib/http-status-codes'
-import { MatSidenav, MatSnackBar } from '@angular/material';
+import { MatSidenav, MatSnackBar, MatPaginatorIntl } from '@angular/material';
 
 import "rxjs/add/operator/takeWhile";
 import { TranslateService } from '@ngx-translate/core';
@@ -29,16 +29,27 @@ export class AppComponent implements OnInit, OnDestroy{
         private apiService: ApiService,
         private authService: AuthService,
         private snackBar: MatSnackBar,
+        private paginatorIntl: MatPaginatorIntl
     ) {
-        translate.addLangs(["en", "ru"]);
-        translate.setDefaultLang(localStorage.getItem('vlabs-lang') || translate.getDefaultLang());
+        translate.addLangs(["en", "ru", "ua"]);
+        translate.use('en');
+        if (!localStorage.getItem('vlabs-lang'))
+        {
+            let browserLang = translate.getBrowserLang();
+            localStorage.setItem('vlabs-lang', browserLang.match(/en|ru|ua/) ? browserLang : 'en')
+        }
+        translate.setDefaultLang(localStorage.getItem('vlabs-lang'));
 
-        // let browserLang = translate.getBrowserLang();
-        // translate.use(browserLang.match(/en|ru/) ? browserLang : 'en');
+        //Angular2 Material Internationalization
+        translate.get('paginatorIntl').subscribe((result: any) => {
+            this.paginatorIntl.itemsPerPageLabel = result.itemsPerPageLabel;
+            this.paginatorIntl.nextPageLabel = result.nextPageLabel;
+            this.paginatorIntl.previousPageLabel = result.previousPageLabel;
+            this.paginatorIntl.changes.next();
+        });
     }
 
     ngOnInit(){
-
         // VLabs App root component
 
         this.apiService.onError

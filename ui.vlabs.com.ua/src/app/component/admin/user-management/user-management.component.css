@@ -29,10 +29,10 @@
   { display: none; }
 }
 
-.mat-panel-title-pad {
-  min-width: 120pt;
-}
-
 .mat-header-cell.mat-sort-header-sorted {
   color: black;
+}
+
+.openUserEditDialogButton{
+  width: 95%;
 }

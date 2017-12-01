@@ -1,6 +1,15 @@
 <mat-expansion-panel>
-    <mat-expansion-panel-header>
-        <mat-panel-title class="mat-panel-title-pad">
+    <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
+        <mat-panel-title class="styles-mat-panel-title-pad">
+          Add New User
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+  
+  </mat-expansion-panel>
+
+<mat-expansion-panel>
+    <mat-expansion-panel-header class="styles-new-info-panel-header-header">
+        <mat-panel-title class="styles-mat-panel-title-pad">
         Non Authorized Users
         </mat-panel-title>
         <mat-panel-description>
@@ -46,7 +55,7 @@
 
 <mat-expansion-panel>
     <mat-expansion-panel-header>
-        <mat-panel-title class="mat-panel-title-pad">
+        <mat-panel-title class="styles-mat-panel-title-pad">
         VLabs Users
         </mat-panel-title>
         <mat-panel-description>
@@ -62,7 +71,7 @@
             <ng-container matColumnDef="username">
                 <mat-header-cell *matHeaderCellDef>USERNAME</mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <button mat-button (click)="openUserEditDialog(element)" [ngStyle]="{'background-color': element.enabled ? 'rgb(215, 235, 215)' : 'rgb(235, 215, 215)'}">
+                    <button mat-button (click)="openUserEditDialog(element)" [ngStyle]="{'background-color': element.enabled ? 'rgb(215, 235, 215)' : 'rgb(235, 215, 215)'}" class="openUserEditDialogButton">
                         <mat-icon class="material-icons md-24">assignment_ind</mat-icon>
                         {{element.username}}
                     </button>
@@ -97,7 +106,7 @@
         </mat-table>
 
         <mat-paginator #paginatorUsersDS
-            [length]="1000"
+            [length]="usersDSLength"
             [pageSize]="usersDSPageSize"
             [pageSizeOptions]="[5, 10, 20]">
         </mat-paginator>

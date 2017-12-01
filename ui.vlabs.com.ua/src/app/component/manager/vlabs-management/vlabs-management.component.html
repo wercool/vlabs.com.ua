@@ -1,0 +1,39 @@
+<mat-expansion-panel>
+  <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
+      <mat-panel-title class="styles-mat-panel-title-pad">
+        Add New VLab
+      </mat-panel-title>
+  </mat-expansion-panel-header>
+  <br/>
+  <app-new-vlab></app-new-vlab>
+
+</mat-expansion-panel>
+
+<mat-expansion-panel>
+    <mat-expansion-panel-header>
+        <mat-panel-title class="styles-mat-panel-title-pad">
+         VLabs List
+        </mat-panel-title>
+        <mat-panel-description>
+          {{vlabsNum}}
+        </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-table #usersWoAuthoritiesDSTable [dataSource]="vlabsDS">
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="title">
+            <mat-header-cell *matHeaderCellDef>TITLE</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.title}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="path">
+            <mat-header-cell *matHeaderCellDef>PATH</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.path}}</mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="vlabsDisplayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: vlabsDisplayedColumns;"></mat-row>
+    </mat-table>
+
+</mat-expansion-panel>
