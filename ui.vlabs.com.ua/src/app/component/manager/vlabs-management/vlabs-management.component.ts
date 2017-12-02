@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { VlabService } from '../../../service/index';
 import { Vlab } from '../../../model/index';
 import { MatTableDataSource } from '@angular/material';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-vlabs-management',
@@ -9,6 +10,8 @@ import { MatTableDataSource } from '@angular/material';
   styleUrls: ['./vlabs-management.component.css']
 })
 export class VlabsManagementComponent implements OnInit {
+
+  host = environment.host;
 
   vlabsAll: Vlab[] = [];
   vlabsNum: number = 0;

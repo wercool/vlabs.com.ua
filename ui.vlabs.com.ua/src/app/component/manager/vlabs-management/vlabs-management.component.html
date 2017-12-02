@@ -19,7 +19,9 @@
         </ng-container>
         <ng-container matColumnDef="path">
             <mat-header-cell *matHeaderCellDef>PATH</mat-header-cell>
-            <mat-cell *matCellDef="let element">{{element.path}}</mat-cell>
+            <mat-cell *matCellDef="let element">
+                <a href="{{host}}{{element.path}}" target="_blank">{{host}}{{element.path}}</a>
+            </mat-cell>
         </ng-container>
         <mat-header-row *matHeaderRowDef="vlabsDisplayedColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: vlabsDisplayedColumns;"></mat-row>
