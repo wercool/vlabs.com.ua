@@ -102,7 +102,9 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   switchLanguage(lang:string){
     localStorage.setItem('vlabs-lang', lang);
+    this.translate.setDefaultLang(lang);
     this.translate.use(lang);
+    this.translate.reloadLang(lang);
   }
 
   onRegister() {

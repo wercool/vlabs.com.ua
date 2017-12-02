@@ -1,13 +1,17 @@
-<mat-accordion>
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-          User Administration
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <button mat-button (click)="navigate('/user-management')">
-      <mat-icon class="md-24">group</mat-icon>
-      <span>User Management</span>
-    </button>
-  </mat-expansion-panel>
-</mat-accordion>
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+        Users
+        <span class="styles-row-spacer"></span>
+        <mat-icon class="md-18">supervisor_account</mat-icon>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <button mat-button (click)="navigate('/user-management')" class="sidenav-button">
+    <mat-icon class="md-18">assignment_ind</mat-icon>
+    <span>Users Management</span>
+  </button>
+  <button mat-button (click)="navigate('/department-management')" class="sidenav-button">
+    <mat-icon class="md-18">business</mat-icon>
+    <span>Partners Management</span>
+  </button>
+</mat-expansion-panel>

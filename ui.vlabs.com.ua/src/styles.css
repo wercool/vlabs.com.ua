@@ -34,6 +34,10 @@ html{
 }
 
 /* with 'styles-' in front means globally defined  */
+.styles-row-spacer {
+    flex: 1 1 auto;
+}
+
 .styles-mat-panel-title-pad {
     min-width: 120pt;
 }
@@ -60,4 +64,9 @@ html{
   
 .styles-success {
     color: #8BC34A;
+}
+
+.sidenav-button {
+    width: 95% !important;
+    text-align: left !important;
 }

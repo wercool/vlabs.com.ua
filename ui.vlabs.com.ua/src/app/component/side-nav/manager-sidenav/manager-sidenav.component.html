@@ -1,13 +1,51 @@
-<mat-accordion>
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-            VLabs Administration
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <button mat-button (click)="navigate('/vlabs-management')">
-        <mat-icon class="md-24">list</mat-icon>
-        <span>VLabs Management</span>
-      </button>
-    </mat-expansion-panel>
-</mat-accordion>
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+        Courses
+        <span class="styles-row-spacer"></span>
+        <mat-icon class="md-18">import_contacts</mat-icon>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <button mat-button (click)="navigate('/course-management')" class="sidenav-button">
+    <mat-icon class="md-18">web</mat-icon>
+    <span>Courses Management</span>
+  </button>
+  <button mat-button (click)="navigate('/modules-management')" class="sidenav-button">
+    <mat-icon class="md-18">view_module</mat-icon>
+    <span>Modules Management</span>
+  </button>
+</mat-expansion-panel>
+<mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+          Dean's Office
+          <span class="styles-row-spacer"></span>
+          <mat-icon class="md-18">school</mat-icon>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <button mat-button (click)="navigate('/departments-management')" class="sidenav-button">
+      <mat-icon class="md-18">account_balance</mat-icon>
+      <span>Departments Management</span>
+    </button>
+    <button mat-button (click)="navigate('/groups-management')" class="sidenav-button">
+      <mat-icon class="md-18">people_outline</mat-icon>
+      <span>Groups Management</span>
+    </button>
+    <button mat-button (click)="navigate('/classes-management')" class="sidenav-button">
+      <mat-icon class="md-18">layers</mat-icon>
+      <span>Classes Management</span>
+    </button>
+</mat-expansion-panel>
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+        VLabs
+        <span class="styles-row-spacer"></span>
+        <mat-icon class="md-18">videogame_asset</mat-icon>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <button mat-button (click)="navigate('/vlabs-management')" class="sidenav-button">
+    <mat-icon class="md-18">developer_board</mat-icon>
+    <span>VLabs Management</span>
+  </button>
+</mat-expansion-panel>

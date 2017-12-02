@@ -1,13 +1,4 @@
 <mat-expansion-panel>
-    <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
-        <mat-panel-title class="styles-mat-panel-title-pad">
-          Add New User
-        </mat-panel-title>
-    </mat-expansion-panel-header>
-  
-  </mat-expansion-panel>
-
-<mat-expansion-panel>
     <mat-expansion-panel-header class="styles-new-info-panel-header-header">
         <mat-panel-title class="styles-mat-panel-title-pad">
         Non Authorized Users
@@ -16,7 +7,6 @@
         ({{this.usersWoAuthoritiesNum}})
         </mat-panel-description>
     </mat-expansion-panel-header>
-
 
     <mat-table #usersWoAuthoritiesDSTable [dataSource]="usersWoAuthoritiesDS">
         <ng-container matColumnDef="id">
@@ -27,7 +17,7 @@
             <mat-header-cell *matHeaderCellDef>USERNAME</mat-header-cell>
             <mat-cell *matCellDef="let element">
                 <button mat-button (click)="openUserActivationDialog(element)">
-                    <mat-icon class="material-icons md-24">assignment_turned_in</mat-icon>
+                    <!-- <mat-icon class="material-icons md-24">assignment_turned_in</mat-icon> -->
                     {{element.username}}
                 </button>
             </mat-cell>
@@ -53,10 +43,10 @@
     </mat-table>
 </mat-expansion-panel>
 
-<mat-expansion-panel>
+<mat-expansion-panel [expanded]="true">
     <mat-expansion-panel-header>
         <mat-panel-title class="styles-mat-panel-title-pad">
-        VLabs Users
+        Users List
         </mat-panel-title>
         <mat-panel-description>
         ({{this.usersNum}})
@@ -72,7 +62,7 @@
                 <mat-header-cell *matHeaderCellDef>USERNAME</mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     <button mat-button (click)="openUserEditDialog(element)" [ngStyle]="{'background-color': element.enabled ? 'rgb(215, 235, 215)' : 'rgb(235, 215, 215)'}" class="openUserEditDialogButton">
-                        <mat-icon class="material-icons md-24">assignment_ind</mat-icon>
+                        <!-- <mat-icon class="material-icons md-24">assignment_ind</mat-icon> -->
                         {{element.username}}
                     </button>
                 </mat-cell>
@@ -96,7 +86,7 @@
             <ng-container matColumnDef="authorities">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>AUTHORITIES</mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <ul>
+                    <ul style="list-style-type: none; padding: 0; font-size: 10pt;">
                         <li *ngFor="let authorityObj of element.authorities">{{authorityObj.authority}}</li>
                     </ul>
                 </mat-cell>
@@ -110,5 +100,14 @@
             [pageSize]="usersDSPageSize"
             [pageSizeOptions]="[5, 10, 20]">
         </mat-paginator>
+
+</mat-expansion-panel>
+
+<mat-expansion-panel>
+    <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
+        <mat-panel-title class="styles-mat-panel-title-pad">
+            Add New User
+        </mat-panel-title>
+    </mat-expansion-panel-header>
 
 </mat-expansion-panel>

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ApiService } from './service/api.service';
@@ -7,7 +7,7 @@ import { AuthService } from './service/auth.service';
 import { environment } from '../environments/environment';
 
 import { HTTPStatusCodes } from './shared/lib/http-status-codes'
-import { MatSidenav, MatSnackBar, MatPaginatorIntl } from '@angular/material';
+import { MatSidenav, MatSnackBar, MatPaginatorIntl, MatAccordion, MatAccordionDisplayMode } from '@angular/material';
 
 import "rxjs/add/operator/takeWhile";
 import { TranslateService } from '@ngx-translate/core';

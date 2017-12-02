@@ -3,18 +3,22 @@
         <div class="sidenav-content">
             
             <div class="sidenav-scrollable-content">
-                <app-admin-sidenav *ngIf="authorizedFor('ADMIN')" (navigateEvent)="navigate($event)"></app-admin-sidenav>
-                <app-manager-sidenav *ngIf="authorizedFor('MANAGER')" (navigateEvent)="navigate($event)"></app-manager-sidenav>
-                <app-user-sidenav *ngIf="authorizedFor('USER') 
-                                    && !authorizedFor('ADMIN')
-                                    && !authorizedFor('MANAGER')"></app-user-sidenav>
+                <mat-accordion multi="true" displayMode="flat">
+                    <app-admin-sidenav *ngIf="authorizedFor('ADMIN')" (navigateEvent)="navigate($event)"></app-admin-sidenav>
+                    <app-manager-sidenav *ngIf="authorizedFor('MANAGER')" (navigateEvent)="navigate($event)"></app-manager-sidenav>
+                    <app-user-sidenav *ngIf="authorizedFor('USER') 
+                                        && !authorizedFor('ADMIN')
+                                        && !authorizedFor('MANAGER')"></app-user-sidenav>
+                </mat-accordion>
             </div>
 
             <div class="sidenav-bottom-content">
+<!-- 
                 <button mat-button (click)="navigate('/edit-profile')" class="sidenav-primary-element">
                         <mat-icon class="md-36">perm_identity</mat-icon>
                         <span>{{ 'app.component.profile' | translate }}</span>
                 </button>
+ -->
                 <hr/>
                 <button mat-button (click)="logout()" class="sidenav-primary-element">
                     <mat-icon class="md-36">exit_to_app</mat-icon>

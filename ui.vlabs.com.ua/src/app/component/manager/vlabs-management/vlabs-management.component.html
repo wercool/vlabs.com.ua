@@ -1,25 +1,14 @@
-<mat-expansion-panel>
-  <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
-      <mat-panel-title class="styles-mat-panel-title-pad">
-        Add New VLab
-      </mat-panel-title>
-  </mat-expansion-panel-header>
-  <br/>
-  <app-new-vlab></app-new-vlab>
-
-</mat-expansion-panel>
-
-<mat-expansion-panel>
+<mat-expansion-panel [expanded]="true">
     <mat-expansion-panel-header>
         <mat-panel-title class="styles-mat-panel-title-pad">
          VLabs List
         </mat-panel-title>
         <mat-panel-description>
-          {{vlabsNum}}
+          ({{vlabsNum}})
         </mat-panel-description>
     </mat-expansion-panel-header>
 
-    <mat-table #usersWoAuthoritiesDSTable [dataSource]="vlabsDS">
+    <mat-table #vlabsDSTable [dataSource]="vlabsDS">
         <ng-container matColumnDef="id">
             <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
             <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
@@ -36,4 +25,14 @@
         <mat-row *matRowDef="let row; columns: vlabsDisplayedColumns;"></mat-row>
     </mat-table>
 
+</mat-expansion-panel>
+
+<mat-expansion-panel>
+    <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
+        <mat-panel-title class="styles-mat-panel-title-pad">
+            Add New VLab
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <br/>
+    <app-new-vlab></app-new-vlab>
 </mat-expansion-panel>
