@@ -32,13 +32,18 @@ export class AppComponent implements OnInit, OnDestroy{
         private paginatorIntl: MatPaginatorIntl
     ) {
         translate.addLangs(["en", "ru", "ua"]);
-        translate.use('en');
         if (!localStorage.getItem('vlabs-lang'))
         {
             let browserLang = translate.getBrowserLang();
-            localStorage.setItem('vlabs-lang', browserLang.match(/en|ru|ua/) ? browserLang : 'en')
+            localStorage.setItem('vlabs-lang', browserLang.match(/en|ru|ua/) ? browserLang : 'en');
+            translate.use(localStorage.getItem('vlabs-lang') ? localStorage.getItem('vlabs-lang') : 'en');
+            translate.setDefaultLang(localStorage.getItem('vlabs-lang') ? localStorage.getItem('vlabs-lang') : 'en');
         }
-        translate.setDefaultLang(localStorage.getItem('vlabs-lang'));
+        else
+        {
+            translate.use(localStorage.getItem('vlabs-lang'));
+            translate.setDefaultLang(localStorage.getItem('vlabs-lang'));
+        }
 
         //Angular2 Material Internationalization
         translate.get('paginatorIntl').subscribe((result: any) => {
