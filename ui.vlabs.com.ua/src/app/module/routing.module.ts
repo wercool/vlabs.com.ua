@@ -12,8 +12,15 @@ import {
   ResetPasswordComponent,
   /* MANAGER role component */
   VlabsManagementComponent,
+  CourseManagementComponent,
+  ModuleManagementComponent,
+  DepartmentManagementComponent,
+  FacultyManagementComponent,
+  GroupManagementComponent,
+  EclassManagementComponent,
   /* ADMIN role component */
   UserManagementComponent,
+  PartnerManagementComponent,
 } from '../component';
 
 import {
@@ -56,12 +63,49 @@ export const routes: Routes = [
     component: VlabsManagementComponent,
     canActivate: [ManagerGuard]
   },
+  {
+    path: 'course-management',
+    component: CourseManagementComponent,
+    canActivate: [ManagerGuard]
+  },
+  {
+    path: 'modules-management',
+    component: ModuleManagementComponent,
+    canActivate: [ManagerGuard]
+  },
+  {
+    path: 'department-management',
+    component: DepartmentManagementComponent,
+    canActivate: [ManagerGuard]
+  },
+  {
+    path: 'faculty-management',
+    component: FacultyManagementComponent,
+    canActivate: [ManagerGuard]
+  },
+  {
+    path: 'group-management',
+    component: GroupManagementComponent,
+    canActivate: [ManagerGuard]
+  },
+  {
+    path: 'eclass-management',
+    component: EclassManagementComponent,
+    canActivate: [ManagerGuard]
+  },
   /* ADMIN role routes */
   {
     path: 'user-management',
     component: UserManagementComponent,
     canActivate: [AdminGuard]
   },
+  {
+    path: 'partner-management',
+    component: PartnerManagementComponent,
+    canActivate: [AdminGuard]
+  },
+
+  /* Service */
   {
     path: '404',
     component: NotFoundComponent

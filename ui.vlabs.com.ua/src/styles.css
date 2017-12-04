@@ -11,6 +11,10 @@ html{
   min-height: 100%;
 }
 
+.mat-toolbar.mat-primary{
+    background-color: rgb(70, 100, 34) !important;
+}
+
 .vertical-spacing-2pt {
     display: block;
     height: 2pt;

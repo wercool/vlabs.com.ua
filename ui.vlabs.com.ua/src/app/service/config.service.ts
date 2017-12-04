@@ -27,9 +27,37 @@ export class ConfigService {
   private _user_update_authorities              = this._user_url + '/update-authorities/';
   private _users_wo_authorities_url             = this._user_url + '/all-wo-authorites';
 
+  private _course_url                           = this._api_url + '/course';
+  private _course_add_url                       = this._course_url + '/add';
+  private _courses_url                          = this._course_url + '/all';
+
+  private _module_url                           = this._api_url + '/module';
+  private _module_add_url                       = this._module_url + '/add';
+  private _modules_url                          = this._module_url + '/all';
+
+  private _department_url                       = this._api_url + '/department';
+  private _department_add_url                   = this._department_url + '/add';
+  private _departments_url                      = this._department_url + '/all';
+
+  private _faculty_url                          = this._api_url + '/faculty';
+  private _faculty_add_url                      = this._faculty_url + '/add';
+  private _faculties_url                        = this._faculty_url + '/all';
+
+  private _group_url                            = this._api_url + '/group';
+  private _group_add_url                        = this._group_url + '/add';
+  private _groups_url                           = this._group_url + '/all';
+
+  private _eclass_url                           = this._api_url + '/eclass';
+  private _eclass_add_url                       = this._eclass_url + '/add';
+  private _eclasses_url                         = this._eclass_url + '/all';
+
   private _vlab_url                             = this._api_url + '/vlab';
   private _vlab_add_url                         = this._vlab_url + '/add';
   private _vlabs_url                            = this._vlab_url + '/all';
+
+  private _partner_url                          = this._api_url + '/partner';
+  private _partner_add_url                      = this._partner_url + '/add';
+  private _partners_url                         = this._partner_url + '/all';
 
   private _foo_url                              = this._api_url + '/foo';
 
@@ -61,6 +89,34 @@ export class ConfigService {
   //Vlabs
   get vlab_add_url(): string { return this._vlab_add_url; }
   get vlabs_url(): string { return this._vlabs_url; }
+
+  //Courses
+  get course_add_url(): string { return this._course_add_url; };
+  get courses_url(): string { return this._courses_url; };
+
+  //Modules
+  get module_add_url(): string { return this._module_add_url; };
+  get modules_url(): string { return this._modules_url; };
+
+  //Departments
+  get department_add_url(): string { return this._department_add_url; };
+  get departments_url(): string { return this._departments_url; };
+
+  //Faculties
+  get faculty_add_url(): string { return this._faculty_add_url; };
+  get faculties_url(): string { return this._faculties_url; };
+
+  //Groups
+  get group_add_url(): string { return this._group_add_url; };
+  get groups_url(): string { return this._groups_url; };
+
+  //EClasses
+  get eclass_add_url(): string { return this._eclass_add_url; };
+  get eclasses_url(): string { return this._eclasses_url; };
+
+  //Partners
+  get partner_add_url(): string { return this._partner_add_url; };
+  get partners_url(): string { return this._partners_url; };
 
 
   get foo_url(): string {

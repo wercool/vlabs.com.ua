@@ -1,0 +1,37 @@
+<mat-accordion>
+    <mat-expansion-panel [expanded]="true" #groupsListPanel>
+        <mat-expansion-panel-header>
+            <mat-panel-title class="styles-mat-panel-title-pad">
+                Groups List
+            </mat-panel-title>
+            <mat-panel-description>
+                <mat-icon class="md-24">people_outline</mat-icon>
+                ({{groupsNum}})
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-table #groupsDSTable [dataSource]="groupsDS">
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>NAME</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="groupsDisplayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: groupsDisplayedColumns;"></mat-row>
+        </mat-table>
+
+    </mat-expansion-panel>
+    
+    <mat-expansion-panel>
+        <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
+            <mat-panel-title class="styles-mat-panel-title-pad">
+                Add New Group
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <br/>
+        <app-new-group (newGroupAddedEvent)="onNewGroupAddedEvent($event)"></app-new-group>
+    </mat-expansion-panel>
+</mat-accordion>

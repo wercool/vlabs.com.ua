@@ -22,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import external.valterik.model.RightArmIK;
 import utils.BufferedImageUtils;
 import vlabs.model.Authority;
 import vlabs.model.User;

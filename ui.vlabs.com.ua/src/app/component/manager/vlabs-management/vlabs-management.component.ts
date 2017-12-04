@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { VlabService } from '../../../service/index';
 import { Vlab } from '../../../model/index';
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource, MatExpansionPanel } from '@angular/material';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -10,6 +10,8 @@ import { environment } from '../../../../environments/environment';
   styleUrls: ['./vlabs-management.component.css']
 })
 export class VlabsManagementComponent implements OnInit {
+
+  @ViewChild('vlabsListPanel') vlabsListPanel: MatExpansionPanel;
 
   host = environment.host;
 
@@ -30,11 +32,25 @@ export class VlabsManagementComponent implements OnInit {
   private getAllVlabs():void {
     this.vlabService.getAll()
     .subscribe(result => {
-      this.vlabsAll = result;
-      this.vlabsNum = this.vlabsAll.length;
-      this.vlabsDS = new MatTableDataSource<Vlab>(this.vlabsAll);
+      this.upateDS(result);
     },
     error => {
     });
+  }
+
+  private upateDS(updatedDS: Vlab[]){
+    this.vlabsAll = updatedDS;
+    this.refreshDS();
+  }
+
+  private refreshDS(){
+    this.vlabsNum = this.vlabsAll.length;
+    this.vlabsDS = new MatTableDataSource<Vlab>(this.vlabsAll);
+  }
+
+  onNewVlabAddedEvent(vlab: Vlab){
+    this.vlabsAll.push(vlab);
+    this.refreshDS();
+    this.vlabsListPanel.open();
   }
 }

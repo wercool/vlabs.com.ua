@@ -1,0 +1,37 @@
+<mat-accordion>
+    <mat-expansion-panel [expanded]="true" #partnersListPanel>
+    <mat-expansion-panel-header>
+        <mat-panel-title class="styles-mat-panel-title-pad">
+            Partner List
+        </mat-panel-title>
+        <mat-panel-description>
+            <mat-icon class="md-24">business</mat-icon>
+            ({{partnersNum}})
+        </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-table #partnersDSTable [dataSource]="partnersDS">
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>NAME</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="partnersDisplayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: partnersDisplayedColumns;"></mat-row>
+        </mat-table>
+
+    </mat-expansion-panel>
+    
+    <mat-expansion-panel>
+        <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
+            <mat-panel-title class="styles-mat-panel-title-pad">
+                Add New Partner
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <br/>
+        <app-new-partner (newPartnerAddedEvent)="onNewPartnerAddedEvent($event)"></app-new-partner>
+    </mat-expansion-panel>
+</mat-accordion>

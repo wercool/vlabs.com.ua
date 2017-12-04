@@ -1,68 +1,25 @@
-<mat-expansion-panel>
-    <mat-expansion-panel-header class="styles-new-info-panel-header-header">
-        <mat-panel-title class="styles-mat-panel-title-pad">
-        Non Authorized Users
-        </mat-panel-title>
-        <mat-panel-description>
-        ({{this.usersWoAuthoritiesNum}})
-        </mat-panel-description>
-    </mat-expansion-panel-header>
+<mat-accordion>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header class="styles-new-info-panel-header-header">
+            <mat-panel-title class="styles-mat-panel-title-pad">
+            Non Authorized Users
+            </mat-panel-title>
+            <mat-panel-description>
+            <mat-icon class="md-24">person_add</mat-icon>
+            ({{this.usersWoAuthoritiesNum}})
+            </mat-panel-description>
+        </mat-expansion-panel-header>
 
-    <mat-table #usersWoAuthoritiesDSTable [dataSource]="usersWoAuthoritiesDS">
-        <ng-container matColumnDef="id">
-            <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
-            <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="username">
-            <mat-header-cell *matHeaderCellDef>USERNAME</mat-header-cell>
-            <mat-cell *matCellDef="let element">
-                <button mat-button (click)="openUserActivationDialog(element)">
-                    <!-- <mat-icon class="material-icons md-24">assignment_turned_in</mat-icon> -->
-                    {{element.username}}
-                </button>
-            </mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="email">
-            <mat-header-cell *matHeaderCellDef>EMAIL</mat-header-cell>
-            <mat-cell *matCellDef="let element">{{element.email}}</mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="phoneNumber">
-            <mat-header-cell *matHeaderCellDef>PHONE</mat-header-cell>
-            <mat-cell *matCellDef="let element">{{element.phoneNumber}}</mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="firstName">
-            <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
-            <mat-cell *matCellDef="let element">{{element.firstName}}</mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="lastName">
-            <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
-            <mat-cell *matCellDef="let element">{{element.lastName}}</mat-cell>
-        </ng-container>
-        <mat-header-row *matHeaderRowDef="usersWoAuthoritiesDisplayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: usersWoAuthoritiesDisplayedColumns;"></mat-row>
-    </mat-table>
-</mat-expansion-panel>
-
-<mat-expansion-panel [expanded]="true">
-    <mat-expansion-panel-header>
-        <mat-panel-title class="styles-mat-panel-title-pad">
-        Users List
-        </mat-panel-title>
-        <mat-panel-description>
-        ({{this.usersNum}})
-        </mat-panel-description>
-    </mat-expansion-panel-header>
-
-    <mat-table #usersDSTable [dataSource]="usersDS" matSort>
+        <mat-table #usersWoAuthoritiesDSTable [dataSource]="usersWoAuthoritiesDS">
             <ng-container matColumnDef="id">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="username">
                 <mat-header-cell *matHeaderCellDef>USERNAME</mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <button mat-button (click)="openUserEditDialog(element)" [ngStyle]="{'background-color': element.enabled ? 'rgb(215, 235, 215)' : 'rgb(235, 215, 215)'}" class="openUserEditDialogButton">
-                        <!-- <mat-icon class="material-icons md-24">assignment_ind</mat-icon> -->
+                    <button mat-button (click)="openUserActivationDialog(element)">
+                        <!-- <mat-icon class="material-icons md-24">assignment_turned_in</mat-icon> -->
                         {{element.username}}
                     </button>
                 </mat-cell>
@@ -83,31 +40,78 @@
                 <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{element.lastName}}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="authorities">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>AUTHORITIES</mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                    <ul style="list-style-type: none; padding: 0; font-size: 10pt;">
-                        <li *ngFor="let authorityObj of element.authorities">{{authorityObj.authority}}</li>
-                    </ul>
-                </mat-cell>
-            </ng-container>
-            <mat-header-row *matHeaderRowDef="usersDisplayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: usersDisplayedColumns;"></mat-row>
+            <mat-header-row *matHeaderRowDef="usersWoAuthoritiesDisplayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: usersWoAuthoritiesDisplayedColumns;"></mat-row>
         </mat-table>
+    </mat-expansion-panel>
 
-        <mat-paginator #paginatorUsersDS
-            [length]="usersDSLength"
-            [pageSize]="usersDSPageSize"
-            [pageSizeOptions]="[5, 10, 20]">
-        </mat-paginator>
+    <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title class="styles-mat-panel-title-pad">
+            Users List
+            </mat-panel-title>
+            <mat-panel-description>
+            <mat-icon class="md-24">assignment_ind</mat-icon>
+            ({{this.usersNum}})
+            </mat-panel-description>
+        </mat-expansion-panel-header>
 
-</mat-expansion-panel>
+        <mat-table #usersDSTable [dataSource]="usersDS" matSort>
+                <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="username">
+                    <mat-header-cell *matHeaderCellDef>USERNAME</mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <button mat-button (click)="openUserEditDialog(element)" [ngStyle]="{'background-color': element.enabled ? 'rgb(215, 235, 215)' : 'rgb(235, 215, 215)'}" class="openUserEditDialogButton">
+                            <!-- <mat-icon class="material-icons md-24">assignment_ind</mat-icon> -->
+                            {{element.username}}
+                        </button>
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="email">
+                    <mat-header-cell *matHeaderCellDef>EMAIL</mat-header-cell>
+                    <mat-cell *matCellDef="let element">{{element.email}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="phoneNumber">
+                    <mat-header-cell *matHeaderCellDef>PHONE</mat-header-cell>
+                    <mat-cell *matCellDef="let element">{{element.phoneNumber}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="firstName">
+                    <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
+                    <mat-cell *matCellDef="let element">{{element.firstName}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="lastName">
+                    <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
+                    <mat-cell *matCellDef="let element">{{element.lastName}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="authorities">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>AUTHORITIES</mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <ul style="list-style-type: none; padding: 0; font-size: 10pt;">
+                            <li *ngFor="let authorityObj of element.authorities">{{authorityObj.authority}}</li>
+                        </ul>
+                    </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="usersDisplayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: usersDisplayedColumns;"></mat-row>
+            </mat-table>
 
-<mat-expansion-panel>
-    <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
-        <mat-panel-title class="styles-mat-panel-title-pad">
-            Add New User
-        </mat-panel-title>
-    </mat-expansion-panel-header>
+            <mat-paginator #paginatorUsersDS
+                [length]="usersDSLength"
+                [pageSize]="usersDSPageSize"
+                [pageSizeOptions]="[5, 10, 20]">
+            </mat-paginator>
 
-</mat-expansion-panel>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+        <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
+            <mat-panel-title class="styles-mat-panel-title-pad">
+                Add New User
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+
+    </mat-expansion-panel>
+</mat-accordion>

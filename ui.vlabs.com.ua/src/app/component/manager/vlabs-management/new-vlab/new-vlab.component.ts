@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 
 import { VlabService } from '../../../../service/index';
 import { DisplayMessage } from '../../../../shared/models/display-message';
+import { Vlab } from '../../../../model/index';
 
 @Component({
   selector: 'app-new-vlab',
@@ -25,6 +26,8 @@ export class NewVlabComponent implements OnInit {
    * form request or router
    */
   notification: DisplayMessage;
+
+  @Output() newVlabAddedEvent: EventEmitter<Vlab> = new EventEmitter();
 
   constructor(
     private formBuilder: FormBuilder,
@@ -49,6 +52,7 @@ export class NewVlabComponent implements OnInit {
       this.form.reset();
       this.notification = { msgType: 'styles-success', msgBody: '<b>' + vlab.title + '</b>' + ' successfully added' };
       setTimeout(()=>{ this.notification = undefined; }, 5000);
+      this.newVlabAddedEvent.emit(vlab);
     },
     error => {
       this.submitted = false;

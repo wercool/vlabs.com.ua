@@ -34,11 +34,27 @@ import {
   UserSidenavComponent,
   /* ROLE_MANAGER components */
   ManagerSidenavComponent,
+  VlabsManagementComponent,
+  NewVlabComponent,
+  CourseManagementComponent,
+  NewCourseComponent,
+  DepartmentManagementComponent,
+  NewDepartmentComponent,
+  EclassManagementComponent,
+  NewEclassComponent,
+  FacultyManagementComponent,
+  NewFacultyComponent,
+  GroupManagementComponent,
+  NewGroupComponent,
+  ModuleManagementComponent,
+  NewModuleComponent,
   /* ROLE_ADMIN components */
   AdminSidenavComponent,
   UserManagementComponent,
   AuthUserDialogComponent,
   EditUserDialogComponent,
+  PartnerManagementComponent,
+  NewPartnerComponent,
 } from './component';
 
 /* Services */
@@ -47,14 +63,19 @@ import {
   AuthService,
   UserService,
   VlabService,
+  CourseService,
+  DepartmentService,
+  EClassService,
+  FacultyService,
+  GroupService,
+  ModuleService,
+  PartnerService,
   FooService,
   ConfigService
 } from './service';
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateLoader } from '@ngx-translate/core';
-import { VlabsManagementComponent } from './component/manager/vlabs-management/vlabs-management.component';
-import { NewVlabComponent } from './component/manager/vlabs-management/new-vlab/new-vlab.component';
 
 export function initUserFactory(userService: UserService)
 {
@@ -87,6 +108,20 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     ResetPasswordComponent,
     VlabsManagementComponent,
     NewVlabComponent,
+    CourseManagementComponent,
+    DepartmentManagementComponent,
+    EclassManagementComponent,
+    FacultyManagementComponent,
+    GroupManagementComponent,
+    ModuleManagementComponent,
+    PartnerManagementComponent,
+    NewCourseComponent,
+    NewModuleComponent,
+    NewPartnerComponent,
+    NewDepartmentComponent,
+    NewFacultyComponent,
+    NewGroupComponent,
+    NewEclassComponent,
   ],
   entryComponents: [
     AuthUserDialogComponent,
@@ -120,8 +155,15 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     ApiService,
     FooService,
     AuthService,
-    VlabService,
     UserService,
+    VlabService,
+    CourseService,
+    DepartmentService,
+    EClassService,
+    FacultyService,
+    GroupService,
+    ModuleService,
+    PartnerService,
     {
       'provide': APP_INITIALIZER,
       'useFactory': initUserFactory,

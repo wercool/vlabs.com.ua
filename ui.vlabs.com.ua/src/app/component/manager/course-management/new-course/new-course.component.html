@@ -1,0 +1,10 @@
+<p [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></p>
+<mat-progress-spinner *ngIf="submitted" mode="indeterminate"></mat-progress-spinner>
+<form *ngIf="!submitted" [formGroup]="form" (ngSubmit)="onSubmit()" #newCourseForm="ngForm">
+  <mat-form-field class="styles-full-width">
+      <input matInput formControlName="name" type="text" placeholder="Course Name" required>
+  </mat-form-field>
+  <div class="styles-mat-card-actions">
+      <button type="submit" mat-button [disabled]="!newCourseForm.form.valid">SAVE</button>
+  </div>
+</form>

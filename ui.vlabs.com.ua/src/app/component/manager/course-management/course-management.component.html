@@ -1,0 +1,37 @@
+<mat-accordion>
+    <mat-expansion-panel [expanded]="true" #coursesListPanel>
+    <mat-expansion-panel-header>
+        <mat-panel-title class="styles-mat-panel-title-pad">
+            Courses List
+        </mat-panel-title>
+        <mat-panel-description>
+            <mat-icon class="md-24">web</mat-icon>
+            ({{coursesNum}})
+        </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-table #cousrsesDSTable [dataSource]="coursesDS">
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef>NAME</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="coursesDisplayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: coursesDisplayedColumns;"></mat-row>
+    </mat-table>
+
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+    <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
+        <mat-panel-title class="styles-mat-panel-title-pad">
+            Add New Course
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <br/>
+    <app-new-course (newCourseAddedEvent)="onNewCourseAddedEvent($event)"></app-new-course>
+    </mat-expansion-panel>
+</mat-accordion>
