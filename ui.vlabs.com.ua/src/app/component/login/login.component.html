@@ -1,13 +1,6 @@
 <div class="vertical-spacing-4pt"></div>
 <div class="login-view-container">
   <mat-card class="mat-card-login">
-    <mat-form-field>
-        <mat-select placeholder="{{ 'login.component.Your language' | translate }}" [(value)]="selectedLanguage" #langSelect (change)="switchLanguage(langSelect.value)">
-            <mat-option value="en"><div class="langENSelection">English</div></mat-option>
-            <mat-option value="ua"><div class="langUASelection">Українська</div></mat-option>
-            <mat-option value="ru"><div class="langRUSelection">Русский</div></mat-option>
-        </mat-select>
-    </mat-form-field>
     <mat-card-subtitle>
         <h2>{{ 'login.component.welcome' | translate }}</h2>
     </mat-card-subtitle>

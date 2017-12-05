@@ -1,0 +1,21 @@
+.directory-card-home {
+    margin: 25px;
+    min-width: 700px;
+    float: left;
+    display: block !important;
+}
+
+@media screen and (min-width: 600px) and (max-width: 1279px) {
+  .directory-card-home  {
+    margin: 30px;
+    min-width: 500px;
+  }
+}
+
+@media screen and (max-width: 599px) {
+  .directory-card-home {
+    min-width: 320px;
+    display: block !important;
+    margin: 12px;
+  }
+}

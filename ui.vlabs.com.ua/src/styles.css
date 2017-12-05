@@ -7,12 +7,11 @@ body {
 }
 
 html{
-  position: relative; 
-  min-height: 100%;
+  position: relative;
 }
 
 .mat-toolbar.mat-primary{
-    background-color: rgb(70, 100, 34) !important;
+    background-color: rgb(54, 130, 173) !important;
 }
 
 .vertical-spacing-2pt {

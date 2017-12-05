@@ -11,6 +11,7 @@ import { MatSidenav, MatSnackBar, MatPaginatorIntl, MatAccordion, MatAccordionDi
 
 import "rxjs/add/operator/takeWhile";
 import { TranslateService } from '@ngx-translate/core';
+import { UserService } from './service/index';
 
 @Component({
   selector: 'app-root',
@@ -28,6 +29,7 @@ export class AppComponent implements OnInit, OnDestroy{
         private router: Router,
         private apiService: ApiService,
         private authService: AuthService,
+        private userService: UserService,
         private snackBar: MatSnackBar,
         private paginatorIntl: MatPaginatorIntl
     ) {
@@ -92,6 +94,10 @@ export class AppComponent implements OnInit, OnDestroy{
                 break;
             }
         });
+    }
+
+    isLoggedIn(): boolean {
+        return (this.userService.currentUser) ? true : false;
     }
 
     ngOnDestroy(): void {

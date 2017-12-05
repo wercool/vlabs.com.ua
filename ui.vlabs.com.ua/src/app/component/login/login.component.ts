@@ -23,8 +23,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   form: FormGroup;
 
-  selectedLanguage = 'en';
-
   /**
    * Boolean used in telling the UI
    * that the form has been submitted
@@ -45,9 +43,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       private formBuilder: FormBuilder,
       private userService: UserService,
       private authService: AuthService
-    ) {
-      this.selectedLanguage = localStorage.getItem('vlabs-lang') || translate.getDefaultLang();
-    }
+    ) { }
 
   ngOnInit() {
     this.route.params
@@ -98,13 +94,6 @@ export class LoginComponent implements OnInit, OnDestroy {
       }
     });
 
-  }
-
-  switchLanguage(lang:string){
-    localStorage.setItem('vlabs-lang', lang);
-    this.translate.setDefaultLang(lang);
-    this.translate.use(lang);
-    this.translate.reloadLang(lang);
   }
 
   onRegister() {

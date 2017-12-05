@@ -1,9 +1,10 @@
-/* @import 'assets/styles/slider.css'; */
+@import '/assets/styles/slider.css';
 
 .content {
     width: 100%;
     height: 100vh;
     font-family: Roboto,"Helvetica Neue",sans-serif;
+    background-color: rgb(222, 226, 241) !important;
     /* 
     margin-top: 0.5%;
     margin-left: 0.5%;

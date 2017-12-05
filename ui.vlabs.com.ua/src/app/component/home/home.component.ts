@@ -24,6 +24,10 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
   }
 
+  isLoggedIn(): boolean{
+    return (this.userService.currentUser) ? true : false;
+  }
+
   authorizedFor(authority: string): boolean{
     return this.authService.hasAuthority(authority);
   }

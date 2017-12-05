@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 
 import {
@@ -10,9 +10,12 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class HeaderComponent implements OnInit {
+
+  selectedLanguage = 'en';
 
   @Input() sidenav;
 
@@ -21,7 +24,9 @@ export class HeaderComponent implements OnInit {
     private userService: UserService,
     private authService: AuthService,
     private router: Router,
-    ) { }
+    ) {
+      this.selectedLanguage = localStorage.getItem('vlabs-lang') || translate.getDefaultLang();
+    }
 
   ngOnInit() {
   }
@@ -58,4 +63,10 @@ export class HeaderComponent implements OnInit {
     });
   }
 
+  switchLanguage(lang:string){
+    localStorage.setItem('vlabs-lang', lang);
+    this.translate.setDefaultLang(lang);
+    this.translate.use(lang);
+    this.translate.reloadLang(lang);
+  }
 }
