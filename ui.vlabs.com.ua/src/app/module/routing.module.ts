@@ -29,6 +29,7 @@ import {
   AdminGuard,
   ManagerGuard
 } from '../guard';
+import { EditEclassComponent } from '../component/manager/eclass-management/edit-eclass/edit-eclass.component';
 
 export const routes: Routes = [
   {
@@ -88,9 +89,15 @@ export const routes: Routes = [
     component: GroupManagementComponent,
     canActivate: [ManagerGuard]
   },
+  //EClasses
   {
     path: 'eclass-management',
     component: EclassManagementComponent,
+    canActivate: [ManagerGuard]
+  },
+  {
+    path: 'eclass-edit/:id',
+    component: EditEclassComponent,
     canActivate: [ManagerGuard]
   },
   /* ADMIN role routes */

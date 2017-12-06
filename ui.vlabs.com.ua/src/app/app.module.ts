@@ -9,6 +9,8 @@ import { AppRoutingModule } from './module/routing.module';
 import { MaterialModule } from './module/material.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
+
 /* Guards */
 import {
   GuestGuard,
@@ -76,6 +78,7 @@ import {
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateLoader } from '@ngx-translate/core';
+import { EditEclassComponent } from './component/manager/eclass-management/edit-eclass/edit-eclass.component';
 
 export function initUserFactory(userService: UserService)
 {
@@ -122,6 +125,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     NewFacultyComponent,
     NewGroupComponent,
     NewEclassComponent,
+    EditEclassComponent,
   ],
   entryComponents: [
     AuthUserDialogComponent,
@@ -137,6 +141,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    FroalaEditorModule.forRoot(),
+    FroalaViewModule.forRoot(),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

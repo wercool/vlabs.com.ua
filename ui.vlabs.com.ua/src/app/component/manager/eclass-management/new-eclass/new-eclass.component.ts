@@ -3,6 +3,9 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { DisplayMessage } from '../../../../shared/models/display-message';
 import { EClass } from '../../../../model/index';
 import { EClassService } from '../../../../service/index';
+import { ViewChild } from '@angular/core/src/metadata/di';
+import { FroalaViewModule } from 'angular-froala-wysiwyg/view/view.module';
+import { FroalaEditorModule } from 'angular-froala-wysiwyg/editor/editor.module';
 
 @Component({
   selector: 'app-new-eclass',
@@ -27,6 +30,14 @@ export class NewEclassComponent implements OnInit {
 
   @Output() newEClassAddedEvent: EventEmitter<EClass> = new EventEmitter();
 
+  eclassSummary: string = '';
+
+  froalaEditorOptions = {
+    heightMin: 200,
+    quickInsertTags: [],
+    emoticonsUseImage: false
+  };
+
   constructor(
     private formBuilder: FormBuilder,
     private eclassService: EClassService
@@ -35,13 +46,18 @@ export class NewEclassComponent implements OnInit {
   ngOnInit() {
     this.form = this.formBuilder.group({
       title: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
+      description: [''],
+      active: [false],
     });
   }
 
   onSubmit(){
     this.submitted = true;
 
-    this.eclassService.addNew(this.form.value)
+    let newEclass: EClass = this.form.value;
+    newEclass.summary = this.eclassSummary;
+
+    this.eclassService.addNew(newEclass)
     // show the animation
     .delay(1000)
     .subscribe(eclass => {

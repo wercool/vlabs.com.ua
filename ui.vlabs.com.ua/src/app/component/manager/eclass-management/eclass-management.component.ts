@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { EClass } from '../../../model/index';
 import { MatTableDataSource, MatExpansionPanel } from '@angular/material';
 import { EClassService } from '../../../service/index';
+import { EditEclassComponent } from './edit-eclass/edit-eclass.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-eclass-management',
@@ -15,10 +17,11 @@ export class EclassManagementComponent implements OnInit {
   eclassesAll: EClass[] = [];
   eclassesNum: number = 0;
 
-  eclassesDisplayedColumns = ['id', 'title'];
+  eclassesDisplayedColumns = ['id', 'title', 'description', 'active'];
   eclassesDS: MatTableDataSource<EClass>;
 
   constructor(
+    private router: Router,
     private eclassService: EClassService
   ) { }
 
@@ -46,8 +49,12 @@ export class EclassManagementComponent implements OnInit {
   }
 
   onNewEClassAddedEvent(eclass: EClass){
-    this.eclassesAll.push(eclass);
+    this.eclassesAll.unshift(eclass);
     this.refreshDS();
     this.eclassesListPanel.open();
+  }
+
+  eclassRowClicked(selectedEClass: EClass){
+    this.router.navigate(['eclass-edit', selectedEClass.id]);
   }
 }

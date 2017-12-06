@@ -59,6 +59,8 @@ export class AppComponent implements OnInit, OnDestroy{
     ngOnInit(){
         // VLabs App root component
 
+        this.sidenav.mode = (window.screen.width > 1024) ? 'side' : 'over';
+
         this.apiService.onError
         .takeWhile(() => this.alive)
         .subscribe(error => {
@@ -111,7 +113,7 @@ export class AppComponent implements OnInit, OnDestroy{
     navigate(url: string){
         // console.log('navigating to: ' + url);
         this.router.navigate([url]);
-        this.closeSidenav();
+        if (this.sidenav.mode == 'over') this.closeSidenav();
     }
 
     logout() {

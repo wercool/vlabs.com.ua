@@ -19,8 +19,21 @@
                 <mat-header-cell *matHeaderCellDef>TITLE</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{element.title}}</mat-cell>
             </ng-container>
+            <ng-container matColumnDef="description">
+                <mat-header-cell *matHeaderCellDef>DESCRIPTION</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.description}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="active">
+                <mat-header-cell *matHeaderCellDef>ACTIVITY</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                        <mat-icon *ngIf="element.active" class="md-36">visibility</mat-icon>
+                        <mat-icon *ngIf="!element.active" class="md-36">visibility_off</mat-icon>
+                </mat-cell>
+            </ng-container>
             <mat-header-row *matHeaderRowDef="eclassesDisplayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: eclassesDisplayedColumns;"></mat-row>
+            <mat-row class="styles-mat-table-row"
+            (click)="eclassRowClicked(row)" 
+            *matRowDef="let row; columns: eclassesDisplayedColumns;"></mat-row>
         </mat-table>
 
     </mat-expansion-panel>

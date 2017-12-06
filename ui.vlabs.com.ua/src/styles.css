@@ -1,6 +1,7 @@
 /*  https://material.io/icons  */
 @import '~https://fonts.googleapis.com/icon?family=Material+Icons';
-@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+/* @import '~@angular/material/prebuilt-themes/indigo-pink.css'; */
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 
 body {
     margin: 0;
@@ -34,6 +35,14 @@ html{
 .linkNoDecoration{
   text-decoration: none;
   display: block;
+}
+
+.successSnackBar button{
+    color: rgb(100, 240, 82) !important;
+}
+
+.errorSnackBar button{
+    color: rgb(255, 0, 0) !important;
 }
 
 /* with 'styles-' in front means globally defined  */
@@ -72,4 +81,12 @@ html{
 .sidenav-button {
     width: 100% !important;
     text-align: left !important;
+}
+
+.styles-mat-table-row {
+    cursor: pointer;
+}
+
+.styles-mat-table-row:hover {
+    background-color: rgb(166, 231, 243)
 }

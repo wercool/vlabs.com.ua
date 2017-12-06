@@ -75,6 +75,9 @@ CREATE TABLE `groups` (
 CREATE TABLE `eclasses` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
+  `description` varchar(2048) DEFAULT NULL,
+  `active` bit(1) DEFAULT 0,
+  `summary` LONGTEXT DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

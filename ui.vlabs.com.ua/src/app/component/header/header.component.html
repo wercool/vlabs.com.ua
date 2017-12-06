@@ -1,9 +1,10 @@
 <mat-toolbar color="primary" layout="row">
 
     <button *ngIf="hasSignedIn()" 
-            (click)="sidenav.open()"
+            (click)="sidenav.toggle()"
             mat-icon-button class="mat-icon md-36">
-        <mat-icon class="material-icons md-36">menu</mat-icon>
+        <mat-icon *ngIf="!sidenav.opened"class="material-icons md-36">menu</mat-icon>
+        <mat-icon *ngIf="sidenav.opened"class="material-icons md-36">close</mat-icon>
     </button>
 
     <span (click)="navigate('/')" class="toolbarItem">

@@ -1,0 +1,34 @@
+<mat-accordion>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title class="styles-mat-panel-title-pad">
+                EClass General Properties
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <form *ngIf="!submitted" [formGroup]="generalEClassFormGroup" (ngSubmit)="onGeneralEClassFormSubmit()" #generalEClassForm="ngForm">
+
+          <mat-form-field class="styles-full-width">
+            <input matInput formControlName="title" type="text" placeholder="Title" required>
+          </mat-form-field>
+          <mat-form-field class="styles-full-width">
+            <textarea matInput formControlName="description" placeholder="Description" matTextareaAutosize matAutosizeMinRows="3" matAutosizeMaxRows="4"></textarea>
+          </mat-form-field>
+          <mat-checkbox class="styles-full-width" matInput formControlName="active">EClass is active</mat-checkbox>
+
+          <br/>
+          <br/>
+
+          Summary
+          <div [(froalaModel)]="eclassSummary" [froalaEditor]="froalaEditorOptions" class="styles-full-width"></div>
+
+          <br/>
+
+          <div class="styles-mat-card-actions">
+              <button type="submit" mat-button [disabled]="!generalEClassForm.form.valid">SAVE</button>
+          </div>
+        </form>
+
+
+    </mat-expansion-panel>
+</mat-accordion>

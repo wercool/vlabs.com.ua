@@ -1,9 +1,23 @@
 <p [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></p>
 <mat-progress-spinner *ngIf="submitted" mode="indeterminate"></mat-progress-spinner>
 <form *ngIf="!submitted" [formGroup]="form" (ngSubmit)="onSubmit()" #newEClassForm="ngForm">
+
   <mat-form-field class="styles-full-width">
-      <input matInput formControlName="title" type="text" placeholder="EClass Title" required>
+    <input matInput formControlName="title" type="text" placeholder="Title" required>
   </mat-form-field>
+  <mat-form-field class="styles-full-width">
+    <textarea matInput formControlName="description" placeholder="Description" matTextareaAutosize matAutosizeMinRows="3" matAutosizeMaxRows="4"></textarea>
+  </mat-form-field>
+  <mat-checkbox class="styles-full-width" matInput formControlName="active">EClass is active</mat-checkbox>
+
+  <br/>
+  <br/>
+
+  Summary
+  <div [(froalaModel)]="eclassSummary" [froalaEditor]="froalaEditorOptions" class="styles-full-width"></div>
+
+  <br/>
+
   <div class="styles-mat-card-actions">
       <button type="submit" mat-button [disabled]="!newEClassForm.form.valid">SAVE</button>
   </div>

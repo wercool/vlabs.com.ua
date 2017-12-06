@@ -5,7 +5,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="eclasses")
@@ -18,6 +21,16 @@ public class EClass
 
     @Column(name = "title")
     private String title;
+
+    @Column(name = "description", length = 2048)
+    private String description;
+
+    @Column(name = "active")
+    private Boolean active;
+
+    @Lob
+    @Column(name = "summary")
+    private String summary;
 
     public Long getId() {
         return id;
@@ -35,4 +48,28 @@ public class EClass
         this.title = title;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    @JsonIgnore
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
 }

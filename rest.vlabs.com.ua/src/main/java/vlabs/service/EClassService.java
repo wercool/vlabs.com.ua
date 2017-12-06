@@ -27,7 +27,8 @@ public class EClassService
     }
 
     public List<EClass> findAll() throws AccessDeniedException {
-        List<EClass> eClasses = eClassRepository.findAll();
+//        List<EClass> eClasses = eClassRepository.findAll();
+        List<EClass> eClasses = eClassRepository.findAllByOrderByIdDesc();
         return eClasses;
     }
 
