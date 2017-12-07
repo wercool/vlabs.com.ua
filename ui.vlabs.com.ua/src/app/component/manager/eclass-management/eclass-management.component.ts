@@ -49,9 +49,10 @@ export class EclassManagementComponent implements OnInit {
   }
 
   onNewEClassAddedEvent(eclass: EClass){
-    this.eclassesAll.unshift(eclass);
-    this.refreshDS();
-    this.eclassesListPanel.open();
+    // this.eclassesAll.unshift(eclass);
+    // this.refreshDS();
+    // this.eclassesListPanel.open();
+    this.router.navigate(['eclass-edit/' + eclass.id.toString()]);
   }
 
   eclassRowClicked(selectedEClass: EClass){

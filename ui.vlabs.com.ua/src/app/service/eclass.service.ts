@@ -17,9 +17,22 @@ export class EClassService {
     private config: ConfigService
     ) { }
 
+  getById(id: number) {
+    return this.apiService.get(this.config.eclass_url + '/' + id);
+  }
+  getSummaryById(id: number) {
+    return this.apiService.get(this.config.eclass_summary_url + id);
+  }
   addNew(eclass: EClass) {
     return this.apiService.post(this.config.eclass_add_url, eclass);
   }
+  update(eclass: EClass) {
+    return this.apiService.post(this.config.eclass_update_url, eclass);
+  }
+  updateSummary(id: number, summary: string) {
+    return this.apiService.post(this.config.eclass_update_summary_url + id, summary);
+  }
+  eclass_update_summary_url
   getAll() {
     return this.apiService.get(this.config.eclasses_url);
   }

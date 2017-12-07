@@ -55,17 +55,21 @@ export class NewEclassComponent implements OnInit {
     this.submitted = true;
 
     let newEclass: EClass = this.form.value;
-    newEclass.summary = this.eclassSummary;
-
     this.eclassService.addNew(newEclass)
     // show the animation
     .delay(1000)
     .subscribe(eclass => {
-      this.submitted = false;
-      this.form.reset();
-      this.notification = { msgType: 'styles-success', msgBody: '<b>' + eclass.title + '</b>' + ' successfully added' };
-      setTimeout(()=>{ this.notification = undefined; }, 5000);
-      this.newEClassAddedEvent.emit(eclass);
+      this.eclassService.updateSummary(eclass.id, this.eclassSummary).subscribe(result => {
+        this.submitted = false;
+        this.form.reset();
+        this.notification = { msgType: 'styles-success', msgBody: '<b>' + eclass.title + '</b>' + ' successfully added' };
+        setTimeout(()=>{ this.notification = undefined; }, 5000);
+        this.newEClassAddedEvent.emit(eclass);
+      },
+      error => {
+        this.submitted = false;
+        this.notification = { msgType: 'styles-error', msgBody: error.json().message };
+      });
     },
     error => {
       this.submitted = false;

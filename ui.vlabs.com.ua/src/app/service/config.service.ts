@@ -47,9 +47,13 @@ export class ConfigService {
   private _group_add_url                        = this._group_url + '/add';
   private _groups_url                           = this._group_url + '/all';
 
+  //EClasses
   private _eclass_url                           = this._api_url + '/eclass';
   private _eclass_add_url                       = this._eclass_url + '/add';
+  private _eclass_update_url                    = this._eclass_url + '/update';
   private _eclasses_url                         = this._eclass_url + '/all';
+  private _eclass_summary_url                   = this._eclass_url + '/summary/';
+  private _eclass_update_summary_url            = this._eclass_url + '/update-summary/';
 
   private _vlab_url                             = this._api_url + '/vlab';
   private _vlab_add_url                         = this._vlab_url + '/add';
@@ -111,8 +115,12 @@ export class ConfigService {
   get groups_url(): string { return this._groups_url; };
 
   //EClasses
+  get eclass_url(): string { return this._eclass_url; };
   get eclass_add_url(): string { return this._eclass_add_url; };
+  get eclass_update_url(): string { return this._eclass_update_url; };
   get eclasses_url(): string { return this._eclasses_url; };
+  get eclass_summary_url(): string { return this._eclass_summary_url; };
+  get eclass_update_summary_url(): string { return this._eclass_update_summary_url; };
 
   //Partners
   get partner_add_url(): string { return this._partner_add_url; };

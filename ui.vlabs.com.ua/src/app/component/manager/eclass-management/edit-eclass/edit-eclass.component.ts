@@ -5,6 +5,7 @@ import { EClass } from '../../../../model/index';
 import { EClassService } from '../../../../service/index';
 import { MatSnackBar } from '@angular/material';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { DisplayMessage } from '../../../../shared/models/display-message';
 
 @Component({
   selector: 'app-edit-eclass',
@@ -25,12 +26,15 @@ export class EditEclassComponent implements OnInit {
     emoticonsUseImage: false
   };
   
-  /**
-   * Boolean used in telling the UI
-   * that the form has been submitted
-   * and is awaiting a response
-   */
   submitted = false;
+  completed = false;
+
+    /**
+   * Notification message from received
+   * form request or router
+   */
+  notification: DisplayMessage;
+
 
   constructor(
     private route: ActivatedRoute,
@@ -41,6 +45,8 @@ export class EditEclassComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
+    this.completed = false;
 
     this.generalEClassFormGroup = this.formBuilder.group({
       title: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
@@ -64,30 +70,66 @@ export class EditEclassComponent implements OnInit {
         this.router.navigate(['eclass-management']);
       });
     } else {
-      console.log(Number(id));
+      this.eclassService.getById(id)
+      .delay(1000)
+      .subscribe(eclass => {
+        this.eClass = eclass;
+      },
+      error => {
+        this.snackBar.open(error.json().message, 'SERVER ERROR', {
+          panelClass: ['errorSnackBar'],
+          duration: 1000,
+          verticalPosition: 'top'
+        });
+      });
+
+      this.eclassService.getSummaryById(id)
+      .delay(1000)
+      .subscribe(result => {
+          this.eclassSummary = result.data;
+          this.completed = true;
+      },
+      error => {
+        this.snackBar.open(error.json().message, 'SERVER ERROR', {
+          panelClass: ['errorSnackBar'],
+          duration: 1000,
+          verticalPosition: 'top'
+        });
+      });
     }
   }
 
   onGeneralEClassFormSubmit(){
     this.submitted = true;
 
-    // let newEclass: EClass = this.form.value;
-    // newEclass.summary = this.eclassSummary;
+    this.eclassService.update(this.eClass)
+    // show the animation
+    .delay(1000)
+    .subscribe(eclass => {
 
-    // this.eclassService.addNew(newEclass)
-    // // show the animation
-    // .delay(1000)
-    // .subscribe(eclass => {
-    //   this.submitted = false;
-    //   this.form.reset();
-    //   this.notification = { msgType: 'styles-success', msgBody: '<b>' + eclass.title + '</b>' + ' successfully added' };
-    //   setTimeout(()=>{ this.notification = undefined; }, 5000);
-    //   this.newEClassAddedEvent.emit(eclass);
-    // },
-    // error => {
-    //   this.submitted = false;
-    //   this.notification = { msgType: 'styles-error', msgBody: error.json().message };
-    // });
+      this.eclassService.updateSummary(eclass.id, this.eclassSummary).subscribe(result => {
+        this.submitted = false;
+        this.notification = { msgType: 'styles-success', msgBody: '<b>' + eclass.title + '</b>' + ' successfully updated' };
+        setTimeout(()=>{ this.notification = undefined; }, 2000);
+      },
+        error => {
+          this.submitted = false;
+          this.snackBar.open(error.json().message, 'SERVER ERROR', {
+            panelClass: ['errorSnackBar'],
+            duration: 1000,
+            verticalPosition: 'top'
+        });
+      });
+
+    },
+    error => {
+      this.submitted = false;
+      this.snackBar.open(error.json().message, 'SERVER ERROR', {
+        panelClass: ['errorSnackBar'],
+        duration: 1000,
+        verticalPosition: 'top'
+      });
+    });
   }
 
 }

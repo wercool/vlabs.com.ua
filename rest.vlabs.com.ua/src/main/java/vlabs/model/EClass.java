@@ -9,9 +9,11 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name="eclasses")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EClass
 {
     @Id

@@ -12,6 +12,7 @@ import { MatSidenav, MatSnackBar, MatPaginatorIntl, MatAccordion, MatAccordionDi
 import "rxjs/add/operator/takeWhile";
 import { TranslateService } from '@ngx-translate/core';
 import { UserService } from './service/index';
+import { HttpErrorResponse } from '@angular/common/http/src/response';
 
 @Component({
   selector: 'app-root',
@@ -90,9 +91,17 @@ export class AppComponent implements OnInit, OnDestroy{
                     });
                 break;
                 default:
-                    this.snackBar.open(error.statusText, error.status, {
-                        duration: 5000
-                    });
+                    if (environment.production) {
+                        this.snackBar.open(error.statusText, error.status, {
+                            duration: 5000
+                        });
+                    } else {
+                        let errorDetails = JSON.parse(error.headers.get('errorDetails'));
+                        this.snackBar.open(errorDetails.detailMessage, error.status, {
+                            duration: 10000
+                        });
+                    }
+
                 break;
             }
         });
