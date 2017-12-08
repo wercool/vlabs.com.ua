@@ -18,6 +18,14 @@
 
   <br/>
 
+  <mat-form-field>
+      <mat-select placeholder="EClass Format" formControlName="format_id">
+          <mat-option *ngFor="let eclassFormat of eClassFormats" [value]="eclassFormat.id">
+              {{ eclassFormat.title }}
+          </mat-option>
+      </mat-select>
+  </mat-form-field>
+
   <div class="styles-mat-card-actions">
       <button type="submit" mat-button [disabled]="!newEClassForm.form.valid">SAVE</button>
   </div>

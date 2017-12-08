@@ -10,6 +10,8 @@ import { PasswordValidation } from '../../shared/utils/password-validation';
 
 import { HTTPStatusCodes } from '../../shared/lib/http-status-codes'
 
+import { QrScannerComponent } from 'angular2-qrscanner';
+
 import {
   UserService,
   AuthService
@@ -37,6 +39,13 @@ export class RegisterComponent implements OnInit, OnDestroy {
    * form request or router
    */
   notification: DisplayMessage;
+
+  registrationMethod = 'Generic';
+
+  regMethods = [
+    {value: 'Generic'},
+    {value: 'QR Code Invitation'}
+  ];
 
   constructor(
     private router: Router,
@@ -72,6 +81,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
       // null returned from validator meas no error = valid email is entered
       this.form.controls.email.setValue(this.form.controls.username.value);
     }
+  }
+
+  qrDecodedOutput(decodedResult:any) {
+    console.log(decodedResult);
   }
 
   onSubmit() {

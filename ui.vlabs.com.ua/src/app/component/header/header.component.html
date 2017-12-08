@@ -16,19 +16,11 @@
         <!-- HEADER CENTER LABEL -->
     </span>
 
-    <mat-form-field *ngIf="!hasSignedIn()">
-        <mat-select [(value)]="selectedLanguage" #langSelect (change)="switchLanguage(langSelect.value)">
-            <mat-option value="en"><div class="langENSelection">English</div></mat-option>
-            <mat-option value="ua"><div class="langUASelection">Українська</div></mat-option>
-            <mat-option value="ru"><div class="langRUSelection">Русский</div></mat-option>
-        </mat-select>
-    </mat-form-field>
-
     <span (click)="navigate('/edit-profile')" *ngIf="hasSignedIn()" class="toolbarItem">{{userName()}}</span>
 
     <span class="element-spacer"></span>
 
-    <a *ngIf="!hasSignedIn()" href="/login" mat-icon-button matTooltip="{{ 'login.component.login' | translate }}" class="mat-icon md-36">
+    <a *ngIf="!hasSignedIn()" href="javascript:void(0)" (click)="navigate('/login')" mat-icon-button matTooltip="{{ 'login.component.login' | translate }}" class="mat-icon md-36">
         <mat-icon class="md-36">account_box</mat-icon>
     </a>
     <a *ngIf="hasSignedIn()" 

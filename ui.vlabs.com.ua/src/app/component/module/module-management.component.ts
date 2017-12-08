@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Module } from '../../../model/index';
+import { Module } from '../../model/index';
 import { MatTableDataSource, MatExpansionPanel } from '@angular/material';
-import { ModuleService } from '../../../service/index';
+import { ModuleService } from '../../service/index';
 
 @Component({
   selector: 'app-module-management',

@@ -44,6 +44,7 @@ import {
   NewDepartmentComponent,
   EclassManagementComponent,
   NewEclassComponent,
+  EditEclassComponent,
   FacultyManagementComponent,
   NewFacultyComponent,
   GroupManagementComponent,
@@ -78,7 +79,7 @@ import {
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateLoader } from '@ngx-translate/core';
-import { EditEclassComponent } from './component/manager/eclass-management/edit-eclass/edit-eclass.component';
+import { QrScannerModule, QrScannerComponent } from 'angular2-qrscanner';
 
 export function initUserFactory(userService: UserService)
 {
@@ -125,7 +126,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     NewFacultyComponent,
     NewGroupComponent,
     NewEclassComponent,
-    EditEclassComponent,
+    EditEclassComponent
   ],
   entryComponents: [
     AuthUserDialogComponent,
@@ -141,6 +142,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    QrScannerModule,
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot(),
     TranslateModule.forRoot({

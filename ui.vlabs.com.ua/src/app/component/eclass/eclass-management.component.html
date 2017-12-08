@@ -30,6 +30,10 @@
                         <mat-icon *ngIf="!element.active" class="md-36">visibility_off</mat-icon>
                 </mat-cell>
             </ng-container>
+            <ng-container matColumnDef="format">
+                    <mat-header-cell *matHeaderCellDef>FORMAT</mat-header-cell>
+                    <mat-cell *matCellDef="let element">{{element.format.title}}</mat-cell>
+                </ng-container>
             <mat-header-row *matHeaderRowDef="eclassesDisplayedColumns"></mat-header-row>
             <mat-row class="styles-mat-table-row"
             (click)="eclassRowClicked(row)" 

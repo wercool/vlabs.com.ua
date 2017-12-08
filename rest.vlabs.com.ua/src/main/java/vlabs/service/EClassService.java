@@ -43,6 +43,7 @@ public class EClassService
         existingEClass.setTitle(eClass.getTitle());
         existingEClass.setDescription(eClass.getDescription());
         existingEClass.setActive(eClass.getActive());
+        existingEClass.setFormat_id(eClass.getFormat_id());
         return eClassRepository.save(existingEClass);
     }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Course } from '../../../model/index';
+import { Course } from '../../model/index';
 import { MatTableDataSource, MatExpansionPanel } from '@angular/material';
-import { CourseService } from '../../../service/index';
+import { CourseService } from '../../service/index';
 
 @Component({
   selector: 'app-course-management',

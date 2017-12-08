@@ -54,6 +54,7 @@ export class ConfigService {
   private _eclasses_url                         = this._eclass_url + '/all';
   private _eclass_summary_url                   = this._eclass_url + '/summary/';
   private _eclass_update_summary_url            = this._eclass_url + '/update-summary/';
+  private _eclass_formats_url                   = this._eclass_url + '/formats';
 
   private _vlab_url                             = this._api_url + '/vlab';
   private _vlab_add_url                         = this._vlab_url + '/add';
@@ -121,6 +122,7 @@ export class ConfigService {
   get eclasses_url(): string { return this._eclasses_url; };
   get eclass_summary_url(): string { return this._eclass_summary_url; };
   get eclass_update_summary_url(): string { return this._eclass_update_summary_url; };
+  get eclass_formats_url(): string { return this._eclass_formats_url; };
 
   //Partners
   get partner_add_url(): string { return this._partner_add_url; };

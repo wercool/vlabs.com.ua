@@ -15,6 +15,7 @@ export class ManagerGuard implements CanActivate {
     if (this.authService.hasAuthority('MANAGER')) {
       return true;
     } else {
+      this.router.navigate(['/login']);
       return false;
     }
   }

@@ -1,18 +1,18 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { DisplayMessage } from '../../../../shared/models/display-message';
-import { CourseService } from '../../../../service/index';
-import { Course } from '../../../../model/index';
+import { DisplayMessage } from '../../../shared/models/display-message';
+import { Module } from '../../../model/index';
+import { ModuleService } from '../../../service/index';
 
 @Component({
-  selector: 'app-new-course',
-  templateUrl: './new-course.component.html',
-  styleUrls: ['./new-course.component.css']
+  selector: 'app-new-module',
+  templateUrl: './new-module.component.html',
+  styleUrls: ['./new-module.component.css']
 })
-export class NewCourseComponent implements OnInit {
+export class NewModuleComponent implements OnInit {
 
   form: FormGroup;
-
+  
   /**
    * Boolean used in telling the UI
    * that the form has been submitted
@@ -25,31 +25,31 @@ export class NewCourseComponent implements OnInit {
    */
   notification: DisplayMessage;
 
-  @Output() newCourseAddedEvent: EventEmitter<Course> = new EventEmitter();
+  @Output() newModuleAddedEvent: EventEmitter<Module> = new EventEmitter();
 
   constructor(
     private formBuilder: FormBuilder,
-    private courseService: CourseService
+    private moduleService: ModuleService
   ) { }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      name: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
+      title: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
     });
   }
 
   onSubmit(){
     this.submitted = true;
 
-    this.courseService.addNew(this.form.value)
+    this.moduleService.addNew(this.form.value)
     // show the animation
     .delay(1000)
-    .subscribe(course => {
+    .subscribe(module => {
       this.submitted = false;
       this.form.reset();
-      this.notification = { msgType: 'styles-success', msgBody: '<b>' + course.name + '</b>' + ' successfully added' };
+      this.notification = { msgType: 'styles-success', msgBody: '<b>' + module.title + '</b>' + ' successfully added' };
       setTimeout(()=>{ this.notification = undefined; }, 5000);
-      this.newCourseAddedEvent.emit(course);
+      this.newModuleAddedEvent.emit(module);
     },
     error => {
       this.submitted = false;

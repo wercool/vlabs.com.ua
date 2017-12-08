@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { EClass } from '../../../model/index';
+import { EClass } from '../../model/index';
 import { MatTableDataSource, MatExpansionPanel } from '@angular/material';
-import { EClassService } from '../../../service/index';
+import { EClassService } from '../../service/index';
 import { EditEclassComponent } from './edit-eclass/edit-eclass.component';
 import { Router } from '@angular/router';
 
@@ -17,7 +17,7 @@ export class EclassManagementComponent implements OnInit {
   eclassesAll: EClass[] = [];
   eclassesNum: number = 0;
 
-  eclassesDisplayedColumns = ['id', 'title', 'description', 'active'];
+  eclassesDisplayedColumns = ['id', 'title', 'description', 'active', 'format'];
   eclassesDS: MatTableDataSource<EClass>;
 
   constructor(

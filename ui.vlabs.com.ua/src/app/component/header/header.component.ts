@@ -10,12 +10,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css'],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-
-  selectedLanguage = 'en';
 
   @Input() sidenav;
 
@@ -24,9 +21,7 @@ export class HeaderComponent implements OnInit {
     private userService: UserService,
     private authService: AuthService,
     private router: Router,
-    ) {
-      this.selectedLanguage = localStorage.getItem('vlabs-lang') || translate.getDefaultLang();
-    }
+    ) { }
 
   ngOnInit() {
   }
@@ -62,12 +57,5 @@ export class HeaderComponent implements OnInit {
       this.router.navigate(['/login']);
       this.sidenav.close();
     });
-  }
-
-  switchLanguage(lang:string){
-    localStorage.setItem('vlabs-lang', lang);
-    this.translate.setDefaultLang(lang);
-    this.translate.use(lang);
-    this.translate.reloadLang(lang);
   }
 }

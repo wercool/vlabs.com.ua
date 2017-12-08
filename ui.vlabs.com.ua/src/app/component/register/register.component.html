@@ -12,6 +12,24 @@
     <mat-card-content>
         <p [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></p>
 
+        <mat-form-field>
+            <mat-select placeholder="Registration Method" [(ngModel)]="registrationMethod">
+                <mat-option *ngFor="let regMethod of regMethods" [value]="regMethod.value">
+                {{regMethod.value}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <qr-scanner *ngIf="registrationMethod == 'QR Code Invitation'"
+                    [debug]="false"
+                    [canvasWidth]="640"
+                    [canvasHeight]="480"
+                    [mirror]="false"
+                    [stopAfterScan]="true"
+                    [updateTime]="500"
+                    (onRead)="qrDecodedOutput($event)">
+        </qr-scanner>
+
         <form *ngIf="!submitted" [formGroup]="form" (ngSubmit)="onSubmit()" #registerForm="ngForm" class="register-form">
             <mat-form-field class="full-width">
                 <input matInput formControlName="username" type="text" placeholder="username (email)" required (change)="onUsernameFocusLost()">

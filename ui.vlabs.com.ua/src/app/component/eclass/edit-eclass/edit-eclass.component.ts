@@ -1,11 +1,11 @@
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
-import { EclassManagementComponent } from '../../../index';
+import { EclassManagementComponent } from '../../index';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EClass } from '../../../../model/index';
-import { EClassService } from '../../../../service/index';
+import { EClass, EClassFormat } from '../../../model/index';
+import { EClassService } from '../../../service/index';
 import { MatSnackBar } from '@angular/material';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { DisplayMessage } from '../../../../shared/models/display-message';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { DisplayMessage } from '../../../shared/models/display-message';
 
 @Component({
   selector: 'app-edit-eclass',
@@ -17,6 +17,7 @@ export class EditEclassComponent implements OnInit {
 
   private sub: any;
   private eClass: EClass;
+  private eClassFormats: EClassFormat[];
 
   generalEClassFormGroup: FormGroup;
   eclassSummary: string = '';
@@ -52,10 +53,24 @@ export class EditEclassComponent implements OnInit {
       title: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
       description: [''],
       active: [false],
+      format_id:  ['', Validators.compose([Validators.required])]
     });
 
-    this.sub = this.route.params.subscribe(params => {
-      this.setEClass(params['id']);
+    this.eclassService.getFormats()
+    .delay(250)
+    .subscribe(eclassFormats => {
+        this.eClassFormats = eclassFormats;
+
+        this.sub = this.route.params.subscribe(params => {
+          this.setEClass(params['id']);
+        });
+    },
+    error => {
+      this.snackBar.open(error.json().message, 'SERVER ERROR', {
+        panelClass: ['errorSnackBar'],
+        duration: 1000,
+        verticalPosition: 'top'
+      });
     });
   }
 
@@ -71,23 +86,25 @@ export class EditEclassComponent implements OnInit {
       });
     } else {
       this.eclassService.getById(id)
-      .delay(1000)
+      .delay(250)
       .subscribe(eclass => {
-        this.eClass = eclass;
-      },
-      error => {
-        this.snackBar.open(error.json().message, 'SERVER ERROR', {
-          panelClass: ['errorSnackBar'],
-          duration: 1000,
-          verticalPosition: 'top'
-        });
-      });
 
-      this.eclassService.getSummaryById(id)
-      .delay(1000)
-      .subscribe(result => {
-          this.eclassSummary = result.data;
-          this.completed = true;
+        this.eClass = eclass;
+
+        this.eclassService.getSummaryById(id)
+        .delay(250)
+        .subscribe(result => {
+            this.eclassSummary = result.data;
+            this.completed = true;
+        },
+        error => {
+          this.snackBar.open(error.json().message, 'SERVER ERROR', {
+            panelClass: ['errorSnackBar'],
+            duration: 1000,
+            verticalPosition: 'top'
+          });
+        });
+
       },
       error => {
         this.snackBar.open(error.json().message, 'SERVER ERROR', {
@@ -104,7 +121,7 @@ export class EditEclassComponent implements OnInit {
 
     this.eclassService.update(this.eClass)
     // show the animation
-    .delay(1000)
+    .delay(250)
     .subscribe(eclass => {
 
       this.eclassService.updateSummary(eclass.id, this.eclassSummary).subscribe(result => {

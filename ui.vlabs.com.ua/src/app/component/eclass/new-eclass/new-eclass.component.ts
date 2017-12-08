@@ -1,8 +1,8 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { DisplayMessage } from '../../../../shared/models/display-message';
-import { EClass } from '../../../../model/index';
-import { EClassService } from '../../../../service/index';
+import { DisplayMessage } from '../../../shared/models/display-message';
+import { EClass, EClassFormat } from '../../../model/index';
+import { EClassService } from '../../../service/index';
 import { ViewChild } from '@angular/core/src/metadata/di';
 import { FroalaViewModule } from 'angular-froala-wysiwyg/view/view.module';
 import { FroalaEditorModule } from 'angular-froala-wysiwyg/editor/editor.module';
@@ -38,6 +38,8 @@ export class NewEclassComponent implements OnInit {
     emoticonsUseImage: false
   };
 
+  private eClassFormats: EClassFormat[];
+
   constructor(
     private formBuilder: FormBuilder,
     private eclassService: EClassService
@@ -48,6 +50,15 @@ export class NewEclassComponent implements OnInit {
       title: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
       description: [''],
       active: [false],
+      format_id:  ['', Validators.compose([Validators.required])]
+    });
+    this.getEClassFormats();
+  }
+
+  private getEClassFormats():void {
+    this.eclassService.getFormats()
+    .subscribe(eclassFormats => {
+        this.eClassFormats = eclassFormats;
     });
   }
 

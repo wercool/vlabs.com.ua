@@ -13,14 +13,17 @@ import {
   /* MANAGER role component */
   VlabsManagementComponent,
   CourseManagementComponent,
-  ModuleManagementComponent,
   DepartmentManagementComponent,
   FacultyManagementComponent,
   GroupManagementComponent,
-  EclassManagementComponent,
   /* ADMIN role component */
   UserManagementComponent,
   PartnerManagementComponent,
+
+  /* ADMIN, MANAGER role component */
+  ModuleManagementComponent,
+  EclassManagementComponent,
+  EditEclassComponent,
 } from '../component';
 
 import {
@@ -29,7 +32,6 @@ import {
   AdminGuard,
   ManagerGuard
 } from '../guard';
-import { EditEclassComponent } from '../component/manager/eclass-management/edit-eclass/edit-eclass.component';
 
 export const routes: Routes = [
   {

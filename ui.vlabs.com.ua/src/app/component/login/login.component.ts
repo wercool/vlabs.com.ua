@@ -36,6 +36,8 @@ export class LoginComponent implements OnInit, OnDestroy {
    */
   notification: DisplayMessage;
 
+  selectedLanguage = 'en';
+
   constructor(
       private translate: TranslateService,
       private router: Router,
@@ -43,7 +45,9 @@ export class LoginComponent implements OnInit, OnDestroy {
       private formBuilder: FormBuilder,
       private userService: UserService,
       private authService: AuthService
-    ) { }
+    ) {
+      this.selectedLanguage = localStorage.getItem('vlabs-lang') || translate.getDefaultLang();
+    }
 
   ngOnInit() {
     this.route.params
@@ -98,5 +102,12 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onRegister() {
     this.router.navigate(['/register']);
+  }
+
+  switchLanguage(lang:string){
+    localStorage.setItem('vlabs-lang', lang);
+    this.translate.setDefaultLang(lang);
+    this.translate.use(lang);
+    this.translate.reloadLang(lang);
   }
 }

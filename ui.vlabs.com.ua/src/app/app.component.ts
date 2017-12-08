@@ -69,14 +69,9 @@ export class AppComponent implements OnInit, OnDestroy{
             {
                 case HTTPStatusCodes.NOT_FOUND:
                     this.snackBar.open(error.statusText, error.status, {
-                        duration: 5000
+                        duration: 2000
                     }).afterDismissed().subscribe(() => {
-                        if (environment.production)
-                        {
-                            window.location.href = '/';
-                        } else {
-                            console.log('Will be redirected to / in production');
-                        }
+                        window.location.href = '/login';
                     });
                 break;
                 case HTTPStatusCodes.FORBIDDEN:

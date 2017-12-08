@@ -2,10 +2,13 @@ package vlabs.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,6 +36,13 @@ public class EClass
     @Lob
     @Column(name = "summary")
     private String summary;
+
+    @Column(name = "format_id")
+    private Long format_id;
+
+    @OneToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name = "format_id", referencedColumnName = "id", insertable=false, updatable=false)
+    private EClassFormat format;
 
     public Long getId() {
         return id;
@@ -73,5 +83,21 @@ public class EClass
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public Long getFormat_id() {
+        return format_id;
+    }
+
+    public void setFormat_id(Long format_id) {
+        this.format_id = format_id;
+    }
+
+    public EClassFormat getFormat() {
+        return format;
+    }
+
+    public void setFormat(EClassFormat format) {
+        this.format = format;
     }
 }

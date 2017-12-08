@@ -6,6 +6,10 @@
         <mat-icon class="md-18">import_contacts</mat-icon>
     </mat-panel-title>
   </mat-expansion-panel-header>
+  <button mat-button (click)="navigate('/eclass-management')" class="sidenav-button">
+    <mat-icon class="md-18">layers</mat-icon>
+    <span>EClasses Management</span>
+  </button>
   <button mat-button (click)="navigate('/course-management')" class="sidenav-button">
     <mat-icon class="md-18">web</mat-icon>
     <span>Courses Management</span>
@@ -34,10 +38,6 @@
     <button mat-button (click)="navigate('/group-management')" class="sidenav-button">
       <mat-icon class="md-18">people_outline</mat-icon>
       <span>Groups Management</span>
-    </button>
-    <button mat-button (click)="navigate('/eclass-management')" class="sidenav-button">
-      <mat-icon class="md-18">layers</mat-icon>
-      <span>EClasses Management</span>
     </button>
 </mat-expansion-panel>
 <mat-expansion-panel>

@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vlabs.common.EmptyJsonResponse;
 import vlabs.model.EClass;
+import vlabs.model.EClassFormat;
+import vlabs.service.EClassFormatService;
 import vlabs.service.EClassService;
 
 @RestController
@@ -25,6 +27,9 @@ public class EClassContoller
 {
     @Autowired
     private EClassService eclassService;
+
+    @Autowired
+    private EClassFormatService eClassFormatService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/eclass/{eclassId}")
     public EClass loadById(@PathVariable Long eclassId) {
@@ -39,7 +44,7 @@ public class EClassContoller
     }
 
     @RequestMapping(method = RequestMethod.POST, value= "/eclass/update-summary/{eclassId}")
-    public ResponseEntity<EmptyJsonResponse> addNewEClass(@PathVariable Long eclassId, 
+    public ResponseEntity<EmptyJsonResponse> updateEClassSummary(@PathVariable Long eclassId, 
                                                           @RequestBody String eclassSummary) {
         EClass eclass = eclassService.findById(eclassId);
         eclass.setSummary(eclassSummary);
@@ -60,5 +65,11 @@ public class EClassContoller
     @RequestMapping(method = RequestMethod.GET, value= "/eclass/all")
     public List<EClass> getAllEClasses() {
         return eclassService.findAll();
+    }
+    
+    // EClass formats
+    @RequestMapping(method = RequestMethod.GET, value = "/eclass/formats")
+    public List<EClassFormat> getAllEClassFormats() {
+        return eClassFormatService.findAll();
     }
 }
