@@ -1,3 +1,4 @@
+<div class="vertical-spacing-4pt"></div>
 <div class="register-view-container">
   <mat-card class="mat-card-register">
 
@@ -12,7 +13,7 @@
     <mat-card-content>
         <p [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></p>
 
-        <mat-form-field>
+        <mat-form-field *ngIf="!submitted && !qrDecoded">
             <mat-select placeholder="Registration Method" [(ngModel)]="registrationMethod">
                 <mat-option *ngFor="let regMethod of regMethods" [value]="regMethod.value">
                 {{regMethod.value}}
@@ -20,17 +21,33 @@
             </mat-select>
         </mat-form-field>
 
-        <qr-scanner *ngIf="registrationMethod == 'QR Code Invitation'"
+        <qr-scanner *ngIf="registrationMethod == 'QR Code Invitation' && !qrDecoded"
+                    #qrScanner
                     [debug]="false"
-                    [canvasWidth]="640"
-                    [canvasHeight]="480"
-                    [mirror]="false"
+                    [mirror]="true"
                     [stopAfterScan]="true"
                     [updateTime]="500"
                     (onRead)="qrDecodedOutput($event)">
         </qr-scanner>
 
-        <form *ngIf="!submitted" [formGroup]="form" (ngSubmit)="onSubmit()" #registerForm="ngForm" class="register-form">
+        <mat-progress-spinner *ngIf="invSubCardsRetrieving" class="mat-progress-spinner-login" mode="indeterminate"></mat-progress-spinner>
+        <div *ngIf="!submitted && qrDecoded && invSubCards?.length > 0">
+            <h3>Invitation Subscriptions</h3>
+            <div *ngFor="let invSubCard of invSubCards">
+                <mat-card>
+                    <mat-card-header>
+                        <mat-card-title style="text-align:left;">{{invSubCard.title}}</mat-card-title>
+                        <mat-card-subtitle style="text-align:left;">{{invSubCard.subtitle}}</mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content style="text-align:left;">
+                        <div [innerHTML]="invSubCard.content"></div>
+                    </mat-card-content>
+                </mat-card>
+                <br/>
+            </div>
+        </div>
+
+        <form *ngIf="!submitted && !existingUserSubscribing" [formGroup]="form" (ngSubmit)="onSubmit()" #registerForm="ngForm" class="register-form">
             <mat-form-field class="full-width">
                 <input matInput formControlName="username" type="text" placeholder="username (email)" required (change)="onUsernameFocusLost()">
             </mat-form-field>

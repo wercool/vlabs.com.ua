@@ -7,5 +7,5 @@ export class EClass {
     active: boolean;
     summary: string;
     format_id: number;
-    format: EClassFormat
+    format: EClassFormat;
 }

@@ -10,4 +10,5 @@ export * from './faculty.service';
 export * from './group.service';
 export * from './module.service';
 export * from './partner.service';
+export * from './subscription.service';
 export * from './foo.service';

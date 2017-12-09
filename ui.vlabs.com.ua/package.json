@@ -4,10 +4,10 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --aot --host 0.0.0.0 --port 4200 --disable-host-check --proxy-config proxy.conf.json",
-    "build": "ng build",
-    "buildDev": "ng build",
-    "buildProd": "ng build --prod",
+    "start": "ng serve --host 0.0.0.0 --port 4200 --aot false --disable-host-check --proxy-config proxy.conf.json",
+    "build": "ng build --aot false",
+    "buildDev": "ng build --aot false",
+    "buildProd": "ng build --prod --aot false",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

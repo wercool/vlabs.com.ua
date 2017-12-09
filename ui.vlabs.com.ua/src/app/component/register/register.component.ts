@@ -1,4 +1,4 @@
-import { Inject, ViewEncapsulation } from '@angular/core';
+import { Inject, ViewEncapsulation, ViewChild } from '@angular/core';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -10,12 +10,12 @@ import { PasswordValidation } from '../../shared/utils/password-validation';
 
 import { HTTPStatusCodes } from '../../shared/lib/http-status-codes'
 
-import { QrScannerComponent } from 'angular2-qrscanner';
-
 import {
   UserService,
-  AuthService
+  AuthService,
+  SubscriptionService
 } from '../../service';
+import { QrScannerComponent } from 'angular2-qrscanner';
 
 @Component({
   selector: 'app-register',
@@ -42,10 +42,19 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   registrationMethod = 'Generic';
 
+  invSubCards: any[];
+  invSubCardsRetrieving = false;
+
   regMethods = [
     {value: 'Generic'},
     {value: 'QR Code Invitation'}
   ];
+
+  @ViewChild ('qrScanner') qrScanner: QrScannerComponent;
+
+  qrDecoded = false;
+
+  existingUserSubscribing = false;
 
   constructor(
     private router: Router,
@@ -53,11 +62,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private userService: UserService,
     private authService: AuthService,
+    private subscriptionService: SubscriptionService,
     private snackBar: MatSnackBar
     ) { }
 
-  ngOnInit()
-  {
+  ngOnInit() {
     this.form = this.formBuilder.group({
       username: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
       password: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
@@ -75,7 +84,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   }
 
-  onUsernameFocusLost(){
+  onUsernameFocusLost() {
     if (Validators.email(this.form.controls.username) === null)
     {
       // null returned from validator meas no error = valid email is entered
@@ -83,8 +92,31 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
   }
 
-  qrDecodedOutput(decodedResult:any) {
-    console.log(decodedResult);
+  qrDecodedOutput(decodedResult:string) {
+    try {
+      this.invSubCardsRetrieving = true;
+      let invitation = JSON.parse(decodedResult);
+      console.log(invitation);
+      this.subscriptionService.getSubscriptionCards(invitation.subId)
+      .delay(500)
+      .subscribe(invSubCards => {
+        this.invSubCards = invSubCards;
+        this.invSubCardsRetrieving = false;
+      },
+      error => {
+        this.notification = { msgType: 'error', msgBody: error.json().message };
+      });
+
+      this.qrDecoded = true;
+    } catch (e) {
+      this.snackBar.open("Error happened while QR code scanning", 'Registration', {
+        panelClass: ['errorSnackBar'],
+        duration: 3000,
+        verticalPosition: 'top'
+      }).afterDismissed().subscribe(()=>{
+        this.qrScanner.startScanning();
+      });
+    }
   }
 
   onSubmit() {

@@ -12,3 +12,7 @@ https://scattercode.co.uk/2016/01/05/multiple-databases-with-spring-boot-and-spr
 
 ----JPA
 https://docs.spring.io/spring-data/jpa/docs/current/reference/html/
+
+--HTTPS
+https://drissamri.be/blog/java/enable-https-in-spring-boot/
+https://www.thomasvitale.com/https-spring-boot-ssl-certificate/

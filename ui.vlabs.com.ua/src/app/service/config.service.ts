@@ -64,6 +64,10 @@ export class ConfigService {
   private _partner_add_url                      = this._partner_url + '/add';
   private _partners_url                         = this._partner_url + '/all';
 
+  //Subscription
+  private _subscription_url                     = this._api_url + '/subscription';
+  private _subscription_cards_url               = this._subscription_url + '/cards/';
+
   private _foo_url                              = this._api_url + '/foo';
 
   get refresh_token_url(): string {
@@ -128,6 +132,9 @@ export class ConfigService {
   get partner_add_url(): string { return this._partner_add_url; };
   get partners_url(): string { return this._partners_url; };
 
+
+  //Subscription
+  get subscription_cards_url(): string { return this._subscription_cards_url; };
 
   get foo_url(): string {
       return this._foo_url;

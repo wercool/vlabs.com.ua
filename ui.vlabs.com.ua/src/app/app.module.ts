@@ -62,6 +62,7 @@ import {
 
 /* Services */
 import {
+  ConfigService,
   ApiService,
   AuthService,
   UserService,
@@ -73,8 +74,8 @@ import {
   GroupService,
   ModuleService,
   PartnerService,
+  SubscriptionService,
   FooService,
-  ConfigService
 } from './service';
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -161,7 +162,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     AdminGuard,
     ConfigService,
     ApiService,
-    FooService,
     AuthService,
     UserService,
     VlabService,
@@ -172,6 +172,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     GroupService,
     ModuleService,
     PartnerService,
+    SubscriptionService,
+    FooService,
     {
       'provide': APP_INITIALIZER,
       'useFactory': initUserFactory,

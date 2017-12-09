@@ -34,19 +34,20 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     /*
      * The below paths will get ignored by the filter
      */
-    public static final String ROOT_MATCHER = "/";
-    public static final String FAVICON_MATCHER = "/favicon.ico";
-    public static final String HTML_MATCHER = "/**/*.html";
-    public static final String CSS_MATCHER = "/**/*.css";
-    public static final String JS_MATCHER = "/**/*.js";
-    public static final String IMG_MATCHER = "/images/*";
-    public static final String LOGIN_MATCHER    = "/api/login";
-    public static final String REGISTER_MATCHER = "/api/register";
-    public static final String LOGOUT_MATCHER   = "/api/logout";
+    public static final String ROOT_MATCHER                         = "/";
+    public static final String FAVICON_MATCHER                      = "/favicon.ico";
+    public static final String HTML_MATCHER                         = "/**/*.html";
+    public static final String CSS_MATCHER                          = "/**/*.css";
+    public static final String JS_MATCHER                           = "/**/*.js";
+    public static final String IMG_MATCHER                          = "/images/*";
+    public static final String LOGIN_MATCHER                        = "/api/login";
+    public static final String REGISTER_MATCHER                     = "/api/register";
+    public static final String LOGOUT_MATCHER                       = "/api/logout";
+    public static final String SUBSCRIPTION_CARDS_MATCHER           = "/api/subscription/cards/**";
 
-    public static final String SRV_MATCHER   = "/srv/**";
+    public static final String SRV_MATCHER                          = "/srv/**";
 
-    public static final String VL_MATCHER   = "/vl/**";
+    public static final String VL_MATCHER                           = "/vl/**";
 
     private List<String> pathsToSkip = Arrays.asList(
             ROOT_MATCHER,
@@ -58,6 +59,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             LOGIN_MATCHER,
             REGISTER_MATCHER,
             LOGOUT_MATCHER,
+            SUBSCRIPTION_CARDS_MATCHER,
             SRV_MATCHER,
             VL_MATCHER
     );
