@@ -9,7 +9,7 @@ import { AppRoutingModule } from './module/routing.module';
 import { MaterialModule } from './module/material.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
+import { QuillEditorModule } from 'ng2-quill-editor';
 
 /* Guards */
 import {
@@ -144,8 +144,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     ReactiveFormsModule,
     HttpClientModule,
     QrScannerModule,
-    FroalaEditorModule.forRoot(),
-    FroalaViewModule.forRoot(),
+    QuillEditorModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

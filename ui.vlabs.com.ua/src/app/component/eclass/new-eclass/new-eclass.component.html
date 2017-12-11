@@ -14,7 +14,9 @@
   <br/>
 
   Summary
-  <div [(froalaModel)]="eclassSummary" [froalaEditor]="froalaEditorOptions" class="styles-full-width"></div>
+  <quill-editor [(ngModel)]="editorContent"
+                [options]="richEditorOptions"
+                (ready)="onEditorCreated($event)"></quill-editor>
 
   <br/>
 

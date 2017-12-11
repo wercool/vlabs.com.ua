@@ -21,11 +21,6 @@ export class EditEclassComponent implements OnInit {
 
   generalEClassFormGroup: FormGroup;
   eclassSummary: string = '';
-  froalaEditorOptions = {
-    heightMin: 200,
-    quickInsertTags: [],
-    emoticonsUseImage: false
-  };
   
   submitted = false;
   completed = false;

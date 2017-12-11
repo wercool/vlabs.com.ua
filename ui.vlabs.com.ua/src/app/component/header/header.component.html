@@ -20,11 +20,10 @@
 
     <span class="element-spacer"></span>
 
-    <a *ngIf="!hasSignedIn()" href="javascript:void(0)" (click)="navigate('/login')" mat-icon-button matTooltip="{{ 'login.component.login' | translate }}" class="mat-icon md-36">
+    <a *ngIf="!hasSignedIn()" (click)="navigate('/login')" mat-icon-button matTooltip="{{ 'login.component.login' | translate }}" class="mat-icon md-36">
         <mat-icon class="md-36">account_box</mat-icon>
     </a>
-    <a *ngIf="hasSignedIn()" 
-        href="javascript:void(0)" 
+    <a *ngIf="hasSignedIn()"
         mat-icon-button 
         matTooltip="{{ 'app.component.logout' | translate }}" 
         class="mat-icon md-36">

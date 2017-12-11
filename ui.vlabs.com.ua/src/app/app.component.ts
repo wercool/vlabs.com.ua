@@ -68,10 +68,15 @@ export class AppComponent implements OnInit, OnDestroy{
             switch(error.status)
             {
                 case HTTPStatusCodes.NOT_FOUND:
+                    error.statusText = "Resource not found";
                     this.snackBar.open(error.statusText, error.status, {
                         duration: 2000
                     }).afterDismissed().subscribe(() => {
-                        window.location.href = '/login';
+                        if (environment.production) {
+                            window.location.href = '/login';
+                        } else {
+                            console.log('On production will be redirected to /login');
+                        }
                     });
                 break;
                 case HTTPStatusCodes.FORBIDDEN:

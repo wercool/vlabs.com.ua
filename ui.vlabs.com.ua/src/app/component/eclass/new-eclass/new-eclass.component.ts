@@ -4,8 +4,6 @@ import { DisplayMessage } from '../../../shared/models/display-message';
 import { EClass, EClassFormat } from '../../../model/index';
 import { EClassService } from '../../../service/index';
 import { ViewChild } from '@angular/core/src/metadata/di';
-import { FroalaViewModule } from 'angular-froala-wysiwyg/view/view.module';
-import { FroalaEditorModule } from 'angular-froala-wysiwyg/editor/editor.module';
 
 @Component({
   selector: 'app-new-eclass',
@@ -32,10 +30,8 @@ export class NewEclassComponent implements OnInit {
 
   eclassSummary: string = '';
 
-  froalaEditorOptions = {
-    heightMin: 200,
-    quickInsertTags: [],
-    emoticonsUseImage: false
+  public richEditorOptions = {
+    placeholder: "Type here..."
   };
 
   private eClassFormats: EClassFormat[];
@@ -60,6 +56,10 @@ export class NewEclassComponent implements OnInit {
     .subscribe(eclassFormats => {
         this.eClassFormats = eclassFormats;
     });
+  }
+
+  onEditorCreated(quill) {
+    console.log("!!!!");
   }
 
   onSubmit(){

@@ -16,8 +16,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -28,6 +30,9 @@ public class TopMostServletFilter extends OncePerRequestFilter
 {
 
     private final Logger logger = LoggerFactory.getLogger(TopMostServletFilter.class);
+
+    @Autowired
+    private Environment environment;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -42,7 +47,7 @@ public class TopMostServletFilter extends OncePerRequestFilter
           String url = ((HttpServletRequest)request).getRequestURL().toString();
           String queryString = ((HttpServletRequest)request).getQueryString();
           queryString = (queryString != null) ? (queryString.isEmpty() ? "?" + queryString : ""): "";
-          logger.info("[" + method + "] " + url + queryString + " from " + request.getRemoteAddr());
+          logger.info("[" + method + "] request " + url + queryString + " from " + request.getRemoteAddr());
       }
 
 
@@ -52,6 +57,12 @@ public class TopMostServletFilter extends OncePerRequestFilter
 
       try
       {
+          String[] activeProfiles = environment.getActiveProfiles();
+          if (activeProfiles[0].equals("dev")) {
+              response.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+              response.addHeader("Access-Control-Allow-Credentials", "true");
+          }
+
           filterChain.doFilter(request, response);
       }
       catch (Exception appEx)
