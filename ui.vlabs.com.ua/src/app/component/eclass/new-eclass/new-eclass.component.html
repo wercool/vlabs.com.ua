@@ -10,25 +10,20 @@
   </mat-form-field>
   <mat-checkbox class="styles-full-width" matInput formControlName="active">EClass is active</mat-checkbox>
 
-  <br/>
-  <br/>
+  <div class="styles-full-width" style="margin-top: 10pt; margin-bottom: 10pt;">
+    <mat-form-field>
+        <mat-select placeholder="EClass Format" formControlName="format_id">
+            <mat-option *ngFor="let eclassFormat of eClassFormats" [value]="eclassFormat.id">
+                {{ eclassFormat.title }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+  </div>
 
   Summary
-  <quill-editor [(ngModel)]="editorContent"
-                [options]="richEditorOptions"
-                (ready)="onEditorCreated($event)"></quill-editor>
+  <quill [(value)]="eclassSummary"></quill>
 
-  <br/>
-
-  <mat-form-field>
-      <mat-select placeholder="EClass Format" formControlName="format_id">
-          <mat-option *ngFor="let eclassFormat of eClassFormats" [value]="eclassFormat.id">
-              {{ eclassFormat.title }}
-          </mat-option>
-      </mat-select>
-  </mat-form-field>
-
-  <div class="styles-mat-card-actions">
+  <div class="styles-mat-card-actions" style="margin-top:10pt;">
       <button type="submit" mat-button [disabled]="!newEClassForm.form.valid">SAVE</button>
   </div>
 </form>

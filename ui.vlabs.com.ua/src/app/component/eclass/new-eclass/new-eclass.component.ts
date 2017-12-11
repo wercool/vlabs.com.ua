@@ -28,11 +28,7 @@ export class NewEclassComponent implements OnInit {
 
   @Output() newEClassAddedEvent: EventEmitter<EClass> = new EventEmitter();
 
-  eclassSummary: string = '';
-
-  public richEditorOptions = {
-    placeholder: "Type here..."
-  };
+  eclassSummary: string = '';;
 
   private eClassFormats: EClassFormat[];
 
@@ -56,10 +52,6 @@ export class NewEclassComponent implements OnInit {
     .subscribe(eclassFormats => {
         this.eClassFormats = eclassFormats;
     });
-  }
-
-  onEditorCreated(quill) {
-    console.log("!!!!");
   }
 
   onSubmit(){

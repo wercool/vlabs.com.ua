@@ -21,7 +21,7 @@
             </ng-container>
             <ng-container matColumnDef="description">
                 <mat-header-cell *matHeaderCellDef>DESCRIPTION</mat-header-cell>
-                <mat-cell *matCellDef="let element">{{element.description}}</mat-cell>
+                <mat-cell *matCellDef="let element">{{element.description | truncate : [25]}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="active">
                 <mat-header-cell *matHeaderCellDef>ACTIVITY</mat-header-cell>

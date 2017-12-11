@@ -20,8 +20,7 @@ export class EditEclassComponent implements OnInit {
   private eClassFormats: EClassFormat[];
 
   generalEClassFormGroup: FormGroup;
-  eclassSummary: string = '';
-  
+
   submitted = false;
   completed = false;
 
@@ -31,6 +30,7 @@ export class EditEclassComponent implements OnInit {
    */
   notification: DisplayMessage;
 
+  eclassSummary: string = '';
 
   constructor(
     private route: ActivatedRoute,

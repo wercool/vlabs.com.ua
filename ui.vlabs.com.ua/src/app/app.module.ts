@@ -4,12 +4,21 @@ import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { TranslateLoader } from '@ngx-translate/core';
+import { QrScannerModule, QrScannerComponent } from 'angular2-qrscanner';
+
+import { QuillModule } from 'ngx-quill-wrapper';
+import { QUILL_CONFIG } from 'ngx-quill-wrapper';
+import { QuillConfigInterface } from 'ngx-quill-wrapper';
 
 import { AppRoutingModule } from './module/routing.module';
 import { MaterialModule } from './module/material.module';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { QuillEditorModule } from 'ng2-quill-editor';
+import { 
+  TruncatePipe
+} from './pipes';
 
 /* Guards */
 import {
@@ -78,9 +87,12 @@ import {
   FooService,
 } from './service';
 
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { TranslateLoader } from '@ngx-translate/core';
-import { QrScannerModule, QrScannerComponent } from 'angular2-qrscanner';
+const DEFAULT_QUILL_CONFIG: QuillConfigInterface = {
+  theme: 'snow',
+  modules: {
+    toolbar: true
+  }
+};
 
 export function initUserFactory(userService: UserService)
 {
@@ -127,7 +139,9 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     NewFacultyComponent,
     NewGroupComponent,
     NewEclassComponent,
-    EditEclassComponent
+    EditEclassComponent,
+    /* Pipes */
+    TruncatePipe,
   ],
   entryComponents: [
     AuthUserDialogComponent,
@@ -143,8 +157,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    QuillModule,
     QrScannerModule,
-    QuillEditorModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -178,6 +192,10 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
       'useFactory': initUserFactory,
       'deps': [UserService],
       'multi': true
+    },
+    {
+      provide: QUILL_CONFIG,
+      useValue: DEFAULT_QUILL_CONFIG
     }
   ],
   bootstrap: [AppComponent]
