@@ -17,6 +17,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.joda.time.DateTime;
 import org.springframework.security.core.GrantedAuthority;
@@ -67,7 +68,7 @@ public class User implements UserDetails
                inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
     private List<Authority> authorities;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
+    @Transient
     private UserMedia userMedia;
 
     public Long getId() {
@@ -147,6 +148,7 @@ public class User implements UserDetails
         this.phoneNumber = phoneNumber;
     }
 
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, optional=false)
     @JsonIgnore
     public UserMedia getUserMedia() {
         return (this.userMedia == null) ? new UserMedia(this) : userMedia;

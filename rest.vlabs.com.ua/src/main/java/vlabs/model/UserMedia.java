@@ -35,6 +35,7 @@ public class UserMedia {
     public UserMedia(User user){
         this();
         this.user = user;
+        this.id = this.user.getId();
     }
 
     public Long getId() {

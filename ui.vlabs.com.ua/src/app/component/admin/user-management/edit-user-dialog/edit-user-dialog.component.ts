@@ -58,10 +58,7 @@ export class EditUserDialogComponent implements OnInit {
   }
 
   setAuthoritiesInView(){
-    this.grantedAuthorities = [];
-    for (let key in this.user.authorities) {
-      this.grantedAuthorities.push(this.user.authorities[key]);
-    }
+    this.grantedAuthorities = this.user.authorities;
   }
 
   addAuthority(event: MatChipInputEvent): void {

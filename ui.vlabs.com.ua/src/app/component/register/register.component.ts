@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar, MatSelect } from '@angular/material';
 
 import { DisplayMessage } from '../../shared/models/display-message';
 import { PasswordValidation } from '../../shared/utils/password-validation';
@@ -51,6 +51,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   ];
 
   @ViewChild ('qrScanner') qrScanner: QrScannerComponent;
+  @ViewChild ('registrationMethodSelector') registrationMethodSelector: MatSelect;
 
   qrDecoded = false;
 
@@ -89,6 +90,40 @@ export class RegisterComponent implements OnInit, OnDestroy {
     {
       // null returned from validator meas no error = valid email is entered
       this.form.controls.email.setValue(this.form.controls.username.value);
+    }
+  }
+
+  registrationMethodChanged(event) {
+    if (event.value == "QR Code Invitation") {
+      if (navigator.getUserMedia) {
+        navigator.getUserMedia(
+          {
+            video: true
+          },
+          function(localMediaStream) {
+            this.registrationMethod = event.value;
+          },
+          function(err) {
+            this.snackBar.open("There is no default camera present", 'No Video', {
+              panelClass: ['errorSnackBar'],
+              duration: 3000,
+              verticalPosition: 'top'
+            });
+            this.registrationMethodSelector.value = 'Generic';
+          }
+        );
+      
+      } else {
+        this.snackBar.open("There is no default camera present", 'No Video', {
+          panelClass: ['errorSnackBar'],
+          duration: 3000,
+          verticalPosition: 'top'
+        });
+        this.registrationMethodSelector.value = 'Generic';
+      }
+
+    } else {
+      this.registrationMethod = event.value;
     }
   }
 

@@ -80,12 +80,15 @@ export class AppComponent implements OnInit, OnDestroy{
                     });
                 break;
                 case HTTPStatusCodes.FORBIDDEN:
-                    this.authService.logout().subscribe(result =>{
-                        this.router.navigate(['/login', { msgType: 'error', msgBody: 'Access Forbidden' }]);
-                    });
+                    this.closeSidenav();
+                    if (environment.production) {
+                        window.location.href = '/login?msgType=error&msgBody=Access Forbidden';
+                    } else {
+                        console.log('On production will be redirected to /login');
+                    }
+                    this.authService.logout();
                 break;
                 case HTTPStatusCodes.GATEWAY_TIMEOUT:
-                    this.router.navigate(['/login', { msgType: 'error', msgBody: 'Gateway Timeout' }]);
                     this.snackBar.open(error.statusText, error.status, {
                         duration: 5000
                     });
@@ -101,7 +104,6 @@ export class AppComponent implements OnInit, OnDestroy{
                             duration: 10000
                         });
                     }
-
                 break;
             }
         });

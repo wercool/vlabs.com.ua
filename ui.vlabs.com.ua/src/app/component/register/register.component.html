@@ -14,7 +14,7 @@
         <p [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></p>
 
         <mat-form-field *ngIf="!submitted && !qrDecoded">
-            <mat-select placeholder="Registration Method" [(ngModel)]="registrationMethod">
+            <mat-select placeholder="Registration Method" #registrationMethodSelector (change)="registrationMethodChanged($event)" [value]="registrationMethod">
                 <mat-option *ngFor="let regMethod of regMethods" [value]="regMethod.value">
                 {{regMethod.value}}
                 </mat-option>

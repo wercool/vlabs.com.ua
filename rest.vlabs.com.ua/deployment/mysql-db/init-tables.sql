@@ -1,5 +1,8 @@
 USE vlabs;
 
+
+
+-- Users
 CREATE TABLE `users` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) DEFAULT NULL,
@@ -35,6 +38,9 @@ CREATE TABLE `user_media` (
   CONSTRAINT `um_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
+-- VLabs
 CREATE TABLE `vlabs` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
@@ -42,34 +48,66 @@ CREATE TABLE `vlabs` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
+-- Courses
 CREATE TABLE `courses` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
+-- Modules
 CREATE TABLE `modules` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
+-- Departments
 CREATE TABLE `departments` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
+-- Faculties
 CREATE TABLE `faculties` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
+-- Groups
 CREATE TABLE `groups` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+-- EClasses
+CREATE TABLE `eclass_format` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL,
+  `description` varchar(2048) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `eclass_structure` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `format_id` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `es_id_format_id` (`id`,`format_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `eclasses` (
@@ -79,16 +117,17 @@ CREATE TABLE `eclasses` (
   `active` bit(1) DEFAULT 0,
   `summary` LONGTEXT DEFAULT NULL,
   `format_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
+  `structure_id` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ec_format_id` (`format_id`),
+  KEY `ec_structure_id_format_id` (`structure_id`,`format_id`),
+  CONSTRAINT `ec_fk_format_id` FOREIGN KEY (`format_id`) REFERENCES `eclass_format` (`id`),
+  CONSTRAINT `ec_fk_structure_id_format_id` FOREIGN KEY (`structure_id`, `format_id`) REFERENCES `eclass_structure` (`id`, `format_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `eclass_format` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) DEFAULT NULL,
-  `description` varchar(2048) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+-- Partners
 CREATE TABLE `partners` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,

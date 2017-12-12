@@ -119,19 +119,25 @@ export class EditEclassComponent implements OnInit {
     .delay(250)
     .subscribe(eclass => {
 
-      this.eclassService.updateSummary(eclass.id, this.eclassSummary).subscribe(result => {
-        this.submitted = false;
-        this.notification = { msgType: 'styles-success', msgBody: '<b>' + eclass.title + '</b>' + ' successfully updated' };
-        setTimeout(()=>{ this.notification = undefined; }, 2000);
-      },
-        error => {
+      if (this.eclassSummary) {
+        this.eclassService.updateSummary(eclass.id, this.eclassSummary).subscribe(result => {
           this.submitted = false;
-          this.snackBar.open(error.json().message, 'SERVER ERROR', {
-            panelClass: ['errorSnackBar'],
-            duration: 1000,
-            verticalPosition: 'top'
+          this.notification = { msgType: 'styles-success', msgBody: '<b>' + eclass.title + '</b>' + ' successfully updated' };
+          setTimeout(()=>{ this.notification = undefined; }, 2000);
+        },
+          error => {
+            this.submitted = false;
+            this.snackBar.open(error.json().message, 'SERVER ERROR', {
+              panelClass: ['errorSnackBar'],
+              duration: 1000,
+              verticalPosition: 'top'
+          });
         });
-      });
+     } else {
+      this.submitted = false;
+      this.notification = { msgType: 'styles-success', msgBody: '<b>' + eclass.title + '</b>' + ' successfully updated' };
+      setTimeout(()=>{ this.notification = undefined; }, 2000);
+     }
 
     },
     error => {

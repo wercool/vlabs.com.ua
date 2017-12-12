@@ -9,7 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.persistence.EntityNotFoundException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,14 +30,20 @@ import vlabs.model.Authority;
 import vlabs.model.User;
 import vlabs.model.UserMedia;
 import vlabs.repository.AuthorityRepository;
+import vlabs.repository.UserMediaRepository;
 import vlabs.repository.UserRepository;
 
 @Service
 public class UserService
 {
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserMediaRepository userMediaRepository;
 
     @Autowired
     private AuthorityRepository authorityRepository;
@@ -87,9 +96,7 @@ public class UserService
             userMedia.setPhoto(baos.toByteArray());
             baos.close();
 
-            user.setUserMedia(userMedia);
-
-            userRepository.save(user);
+            userMediaRepository.save(userMedia);
 
         } catch (IOException ex){
             throw ex;
@@ -98,7 +105,13 @@ public class UserService
 
     @PreAuthorize("hasRole('USER')")
     public byte[] getProfilePhoto(User user) throws AccessDeniedException {
-        byte[] photo = user.getUserMedia().getPhoto();
+        byte[] photo = null;
+        try
+        {
+            photo = userMediaRepository.getOne(user.getId()).getPhoto();
+        } catch (EntityNotFoundException ex) {
+            log.info("No UserMedia set yet for User id:" + user.getId().toString());
+        }
         if (photo == null)
         {
             BufferedImage noPhotoBI;
