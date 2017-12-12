@@ -6,6 +6,6 @@ export class EClass {
     description: string;
     active: boolean;
     summary: string;
-    format_id: number;
+    formatId: number;
     format: EClassFormat;
 }

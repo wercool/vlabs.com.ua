@@ -42,7 +42,7 @@ export class NewEclassComponent implements OnInit {
       title: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
       description: [''],
       active: [false],
-      format_id:  ['', Validators.compose([Validators.required])]
+      formatId:  ['', Validators.compose([Validators.required])]
     });
     this.getEClassFormats();
   }

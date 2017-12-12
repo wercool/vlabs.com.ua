@@ -7,12 +7,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -41,17 +38,11 @@ public class EClass
     private String summary;
 
     @Column(name = "format_id")
-    private Long format_id;
-
-    @Column(name = "structure_id")
-    private Long structure_id;
+    private Long formatId;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "format_id", referencedColumnName = "id", insertable=false, updatable=false)
     private EClassFormat format;
-
-    @Transient
-    private EClassStructure structure;
 
     public Long getId() {
         return id;
@@ -94,40 +85,19 @@ public class EClass
         this.summary = summary;
     }
 
-    public Long getFormat_id() {
-        return format_id;
+    public Long getFormatId() {
+        return formatId;
     }
 
-    public void setFormat_id(Long format_id) {
-        this.format_id = format_id;
+    public void setFormatId(Long formatId) {
+        this.formatId = formatId;
     }
 
     public EClassFormat getFormat() {
         return format;
     }
 
-    public Long getStructure_id() {
-        return structure_id;
-    }
-
-    public void setStructure_id(Long structure_id) {
-        this.structure_id = structure_id;
-    }
-
     public void setFormat(EClassFormat format) {
         this.format = format;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-        @JoinColumn(name = "structure_id", referencedColumnName = "id", insertable = false, updatable = false),
-        @JoinColumn(name = "format_id", referencedColumnName = "format_id", insertable = false, updatable = false)
-    })
-    public EClassStructure getStructure() {
-        return structure;
-    }
-
-    public void setStructure(EClassStructure structure) {
-        this.structure = structure;
     }
 }

@@ -39,11 +39,15 @@ public class EClassService
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public EClass saveEclass(EClass eClass) throws AccessDeniedException {
+
+        EClass newEClass = eClassRepository.save(eClass);
+
         EClassStructure eClassStructure = new EClassStructure();
-        eClassStructure.setFormat_id(eClass.getFormat_id());
-        eClassStructure = eClassStructureRepository.save(eClassStructure);
-        eClass.setStructure_id(eClassStructure.getId());
-        return eClassRepository.save(eClass);
+        eClassStructure.setEclassId(newEClass.getId());
+        eClassStructure.setFormatId(newEClass.getFormatId());
+        eClassStructureRepository.save(eClassStructure);
+
+        return newEClass;
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
@@ -52,8 +56,15 @@ public class EClassService
         existingEClass.setTitle(eClass.getTitle());
         existingEClass.setDescription(eClass.getDescription());
         existingEClass.setActive(eClass.getActive());
+        existingEClass.setFormatId(eClass.getFormatId());
 
-        EClassStructure eClassStructure = existingEClass.getStructure();
+        EClassStructure eClassStructure = eClassStructureRepository.findOneByEclassIdAndFormatId(existingEClass.getId(), existingEClass.getFormatId());
+        if (eClassStructure == null) {
+            eClassStructure = new EClassStructure();
+            eClassStructure.setEclassId(existingEClass.getId());
+            eClassStructure.setFormatId(existingEClass.getFormatId());
+            eClassStructureRepository.save(eClassStructure);
+        }
 
         return eClassRepository.save(existingEClass);
     }

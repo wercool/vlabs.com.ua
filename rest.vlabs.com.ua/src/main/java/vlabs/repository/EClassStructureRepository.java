@@ -8,5 +8,5 @@ import vlabs.model.EClassStructure;
 @Repository
 public interface EClassStructureRepository extends JpaRepository<EClassStructure, Long>
 {
-
+    EClassStructure findOneByEclassIdAndFormatId(Long eClassId, Long formatId);
 }

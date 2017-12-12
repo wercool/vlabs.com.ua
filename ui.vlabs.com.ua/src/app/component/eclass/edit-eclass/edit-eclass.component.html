@@ -18,7 +18,7 @@
 
           <div class="styles-full-width" style="margin-top: 15pt; margin-bottom: 10pt;">
             <mat-form-field>
-                <mat-select placeholder="EClass Format" formControlName="format_id" [(ngModel)]="eClass.format_id">
+                <mat-select placeholder="EClass Format" formControlName="formatId" [(ngModel)]="eClass.formatId">
                     <mat-option *ngFor="let eclassFormat of eClassFormats" [value]="eclassFormat.id">
                         {{ eclassFormat.title }}
                     </mat-option>

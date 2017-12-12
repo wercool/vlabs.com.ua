@@ -105,27 +105,30 @@ CREATE TABLE `eclass_format` (
 
 CREATE TABLE `eclass_structure` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `eclass_id` bigint(20) DEFAULT NULL,
   `format_id` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `es_id_format_id` (`id`,`format_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `eclasses` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) DEFAULT NULL,
+  `active` bit(1) DEFAULT NULL,
   `description` varchar(2048) DEFAULT NULL,
-  `active` bit(1) DEFAULT 0,
-  `summary` LONGTEXT DEFAULT NULL,
-  `format_id` bigint(20) NOT NULL,
-  `structure_id` bigint(20) DEFAULT NULL,
+  `format_id` bigint(20) DEFAULT NULL,
+  `summary` longtext,
+  `title` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `ec_format_id` (`format_id`),
-  KEY `ec_structure_id_format_id` (`structure_id`,`format_id`),
-  CONSTRAINT `ec_fk_format_id` FOREIGN KEY (`format_id`) REFERENCES `eclass_format` (`id`),
-  CONSTRAINT `ec_fk_structure_id_format_id` FOREIGN KEY (`structure_id`, `format_id`) REFERENCES `eclass_structure` (`id`, `format_id`)
+  CONSTRAINT `ec_fk_format_id` FOREIGN KEY (`format_id`) REFERENCES `eclass_format` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- Content Element = CElement
+CREATE TABLE `celement` (
+  `title` varchar(255) DEFAULT NULL,
+  `eClassStructure_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`eClassStructure_id`),
+  CONSTRAINT `cel_fk_eClassStructure_id` FOREIGN KEY (`eClassStructure_id`) REFERENCES `eclass_structure` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Partners
 CREATE TABLE `partners` (

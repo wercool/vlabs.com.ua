@@ -94,6 +94,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   registrationMethodChanged(event) {
+    let self = this;
     if (event.value == "QR Code Invitation") {
       if (navigator.getUserMedia) {
         navigator.getUserMedia(
@@ -101,7 +102,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
             video: true
           },
           function(localMediaStream) {
-            this.registrationMethod = event.value;
+            self.registrationMethod = event.value;
           },
           function(err) {
             this.snackBar.open("There is no default camera present", 'No Video', {
