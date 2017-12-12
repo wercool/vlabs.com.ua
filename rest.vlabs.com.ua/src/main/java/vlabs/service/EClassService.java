@@ -52,11 +52,8 @@ public class EClassService
         existingEClass.setTitle(eClass.getTitle());
         existingEClass.setDescription(eClass.getDescription());
         existingEClass.setActive(eClass.getActive());
-        existingEClass.setFormat_id(eClass.getFormat_id());
 
-        EClassStructure eClassStructure = eClassStructureRepository.getOne(eClass.getStructure_id());
-        eClassStructure.setFormat_id(eClass.getFormat_id());
-        eClassStructureRepository.save(eClassStructure);
+        EClassStructure eClassStructure = existingEClass.getStructure();
 
         return eClassRepository.save(existingEClass);
     }
