@@ -39,4 +39,7 @@ export class EClassService {
   getAll() {
     return this.apiService.get(this.config.eclasses_url);
   }
+  getStrcuture(eClass: EClass) {
+    return this.apiService.get(this.config.eclass_structure_url + '/' + eClass.id + "/"  + eClass.formatId);
+  }
 }

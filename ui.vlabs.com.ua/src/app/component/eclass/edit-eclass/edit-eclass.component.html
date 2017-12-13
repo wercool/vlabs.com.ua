@@ -38,36 +38,20 @@
     </mat-expansion-panel>
 
     <mat-expansion-panel *ngIf="completed">
-            <mat-expansion-panel-header>
-                <mat-panel-title class="styles-mat-panel-title-pad">
-                    EClass Structure
-                </mat-panel-title>
-            </mat-expansion-panel-header>
-    
-            <!-- <mat-progress-spinner *ngIf="!completed" mode="indeterminate"></mat-progress-spinner>
-            <form *ngIf="completed" [formGroup]="generalEClassFormGroup" (ngSubmit)="onGeneralEClassFormSubmit()" #generalEClassForm="ngForm">
-              <mat-form-field class="styles-full-width">
-                <input [(ngModel)]="eClass.title" matInput formControlName="title" type="text" placeholder="Title" required>
-              </mat-form-field>
-              <mat-form-field class="styles-full-width">
-                <textarea [(ngModel)]="eClass.description" matInput formControlName="description" placeholder="Description" matTextareaAutosize matAutosizeMinRows="3" matAutosizeMaxRows="4"></textarea>
-              </mat-form-field>
-              <mat-checkbox [(ngModel)]="eClass.active" class="styles-full-width" matInput formControlName="active">EClass is active</mat-checkbox>
-    
-              <br/>
-              <br/>
-    
-              Summary
-              <div [(froalaModel)]="eclassSummary" [froalaEditor]="froalaEditorOptions" class="styles-full-width"></div>
-    
-              <br/>
-    
-                <div class="styles-full-width" style="text-align: right;">
-                    <div style="display: block; float: left;" [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></div>
-                    <mat-progress-spinner style="display: inline-block; vertical-align:middle;" *ngIf="submitted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
-                    <button style="display: inline-block;" type="submit" mat-button [disabled]="!generalEClassForm.form.valid">UPDATE</button>
-                </div>
-            </form> -->
-        </mat-expansion-panel>
+        <mat-expansion-panel-header (click)="eCLassStructureHeaderClicked($event)">
+            <mat-panel-title class="styles-mat-panel-title-pad">
+                EClass Structure
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-progress-spinner *ngIf="!structureCompleted" mode="indeterminate"></mat-progress-spinner>
+        <div *ngIf="structureCompleted" style="min-height: 50vh;">
+            <div style="float:right;">
+                <button mat-button (click)="addCElement()">
+                    <mat-icon class="md-18">add</mat-icon>
+                    <span>Add New Content Element</span>
+                </button>
+            </div>
+        </div>
+    </mat-expansion-panel>
 
 </mat-accordion>

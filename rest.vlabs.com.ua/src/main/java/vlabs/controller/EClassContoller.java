@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import vlabs.common.EmptyJsonResponse;
 import vlabs.model.EClass;
 import vlabs.model.EClassFormat;
+import vlabs.model.EClassStructure;
+import vlabs.repository.EClassStructureRepository;
 import vlabs.service.EClassFormatService;
 import vlabs.service.EClassService;
 
@@ -30,6 +32,9 @@ public class EClassContoller
 
     @Autowired
     private EClassFormatService eClassFormatService;
+
+    @Autowired
+    private EClassStructureRepository eClassStructureRepository;
 
     @RequestMapping(method = RequestMethod.GET, value = "/eclass/{eclassId}")
     public EClass loadById(@PathVariable Long eclassId) {
@@ -48,13 +53,13 @@ public class EClassContoller
                                                           @RequestBody String eclassSummary) {
         EClass eclass = eclassService.findById(eclassId);
         eclass.setSummary(eclassSummary);
-        eclassService.saveEclass(eclass);
+        eclassService.updateEclass(eclass);
         return new ResponseEntity<EmptyJsonResponse>(new EmptyJsonResponse(), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST, value= "/eclass/add")
     public EClass addNewEClass(@RequestBody EClass eclass) {
-        return eclassService.saveEclass(eclass);
+        return eclassService.addEclass(eclass);
     }
 
     @RequestMapping(method = RequestMethod.POST, value= "/eclass/update")
@@ -66,10 +71,17 @@ public class EClassContoller
     public List<EClass> getAllEClasses() {
         return eclassService.findAll();
     }
-    
+
     // EClass formats
     @RequestMapping(method = RequestMethod.GET, value = "/eclass/formats")
     public List<EClassFormat> getAllEClassFormats() {
         return eClassFormatService.findAll();
+    }
+
+    // EClass structure
+    @RequestMapping(method = RequestMethod.GET, value = "/eclass/structure/{eClassId}/{formatId}")
+    public EClassStructure getEClassStructure(@PathVariable Long eClassId,
+                                                    @PathVariable Long formatId) {
+        return eClassStructureRepository.findOneByEclassIdAndFormatId(eClassId, formatId);
     }
 }

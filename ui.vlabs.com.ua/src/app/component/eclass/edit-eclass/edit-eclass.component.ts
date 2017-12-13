@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 import { EclassManagementComponent } from '../../index';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EClass, EClassFormat } from '../../../model/index';
+import { EClass, EClassFormat, EClassStrcuture } from '../../../model/index';
 import { EClassService } from '../../../service/index';
 import { MatSnackBar } from '@angular/material';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
@@ -24,6 +24,8 @@ export class EditEclassComponent implements OnInit {
   submitted = false;
   completed = false;
 
+  structureCompleted = false;
+
     /**
    * Notification message from received
    * form request or router
@@ -31,6 +33,8 @@ export class EditEclassComponent implements OnInit {
   notification: DisplayMessage;
 
   eclassSummary: string = '';
+
+  eClassStrcuture: EClassStrcuture;
 
   constructor(
     private route: ActivatedRoute,
@@ -123,21 +127,21 @@ export class EditEclassComponent implements OnInit {
         this.eclassService.updateSummary(eclass.id, this.eclassSummary).subscribe(result => {
           this.submitted = false;
           this.notification = { msgType: 'styles-success', msgBody: '<b>' + eclass.title + '</b>' + ' successfully updated' };
-          setTimeout(()=>{ this.notification = undefined; }, 2000);
+          setTimeout(() => { this.notification = undefined; }, 2000);
         },
-          error => {
-            this.submitted = false;
-            this.snackBar.open(error.json().message, 'SERVER ERROR', {
-              panelClass: ['errorSnackBar'],
-              duration: 1000,
-              verticalPosition: 'top'
+        error => {
+          this.submitted = false;
+          this.snackBar.open(error.json().message, 'SERVER ERROR', {
+            panelClass: ['errorSnackBar'],
+            duration: 1000,
+            verticalPosition: 'top'
           });
         });
-     } else {
-      this.submitted = false;
-      this.notification = { msgType: 'styles-success', msgBody: '<b>' + eclass.title + '</b>' + ' successfully updated' };
-      setTimeout(()=>{ this.notification = undefined; }, 2000);
-     }
+      } else {
+        this.submitted = false;
+        this.notification = { msgType: 'styles-success', msgBody: '<b>' + eclass.title + '</b>' + ' successfully updated' };
+        setTimeout(() => { this.notification = undefined; }, 2000);
+      }
 
     },
     error => {
@@ -150,4 +154,24 @@ export class EditEclassComponent implements OnInit {
     });
   }
 
+  eCLassStructureHeaderClicked($event) {
+    this.eclassService.getStrcuture(this.eClass)
+    .delay(250)
+    .subscribe(eClassStrcuture => {
+      this.eClassStrcuture = eClassStrcuture;
+      console.log(this.eClassStrcuture);
+      this.structureCompleted = true;
+    },
+    error => {
+      this.snackBar.open(error.json().message, 'SERVER ERROR', {
+        panelClass: ['errorSnackBar'],
+        duration: 1000,
+        verticalPosition: 'top'
+      });
+    });
+  }
+
+  addCElement() {
+    console.log(this.eClass);
+  }
 }

@@ -38,7 +38,7 @@ public class EClassService
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public EClass saveEclass(EClass eClass) throws AccessDeniedException {
+    public EClass addEclass(EClass eClass) throws AccessDeniedException {
 
         EClass newEClass = eClassRepository.save(eClass);
 
@@ -52,6 +52,7 @@ public class EClassService
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public EClass updateEclass(EClass eClass) throws AccessDeniedException {
+
         EClass existingEClass = eClassRepository.getOne(eClass.getId());
         existingEClass.setTitle(eClass.getTitle());
         existingEClass.setDescription(eClass.getDescription());
