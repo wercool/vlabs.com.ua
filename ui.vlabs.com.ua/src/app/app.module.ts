@@ -7,7 +7,7 @@ import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateLoader } from '@ngx-translate/core';
-import { QrScannerModule, QrScannerComponent } from 'angular2-qrscanner';
+import { QrScannerModule } from 'angular2-qrscanner';
 
 import { QuillModule } from 'ngx-quill-wrapper';
 import { QUILL_CONFIG } from 'ngx-quill-wrapper';

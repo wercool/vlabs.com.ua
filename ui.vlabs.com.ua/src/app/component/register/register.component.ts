@@ -102,29 +102,30 @@ export class RegisterComponent implements OnInit, OnDestroy {
             video: true
           },
           function(localMediaStream) {
+            localMediaStream.getTracks().forEach(function (track) { track.stop(); })
             self.registrationMethod = event.value;
           },
           function(err) {
-            this.snackBar.open("There is no default camera present", 'No Video', {
+            self.snackBar.open("There is no default camera present", 'No Video', {
               panelClass: ['errorSnackBar'],
               duration: 3000,
               verticalPosition: 'top'
             });
-            this.registrationMethodSelector.value = 'Generic';
+            self.registrationMethodSelector.value = 'Generic';
           }
         );
       
       } else {
-        this.snackBar.open("There is no default camera present", 'No Video', {
+        self.snackBar.open("There is no default camera present", 'No Video', {
           panelClass: ['errorSnackBar'],
           duration: 3000,
           verticalPosition: 'top'
         });
-        this.registrationMethodSelector.value = 'Generic';
+        self.registrationMethodSelector.value = 'Generic';
       }
 
     } else {
-      this.registrationMethod = event.value;
+      self.registrationMethod = event.value;
     }
   }
 

@@ -1,0 +1,10 @@
+=========================================== angular2-qrscanner ===========================================
+[node_modules/angular2-qrscanner/index.ts]
+(component taken from dist/ instead of just src/)
+
+...
+import {QrScannerComponent} from './dist/src/qrscanner.component';
+
+export * from './dist/src/qrscanner.component';
+...
+
