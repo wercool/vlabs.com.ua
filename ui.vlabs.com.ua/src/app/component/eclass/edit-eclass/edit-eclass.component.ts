@@ -1,9 +1,10 @@
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 import { EclassManagementComponent } from '../../index';
+import { AddCelementDialogComponent } from '../../celement/add-celement-dialog/add-celement-dialog.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EClass, EClassFormat, EClassStrcuture } from '../../../model/index';
 import { EClassService } from '../../../service/index';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar, MatDialog } from '@angular/material';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { DisplayMessage } from '../../../shared/models/display-message';
 
@@ -24,6 +25,8 @@ export class EditEclassComponent implements OnInit {
   submitted = false;
   completed = false;
 
+  cElementSaving = false;
+
   structureCompleted = false;
 
     /**
@@ -41,7 +44,8 @@ export class EditEclassComponent implements OnInit {
     private router: Router,
     private snackBar: MatSnackBar,
     private formBuilder: FormBuilder,
-    private eclassService: EClassService
+    private eclassService: EClassService,
+    private addCelementDialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -173,5 +177,13 @@ export class EditEclassComponent implements OnInit {
 
   addCElement() {
     console.log(this.eClass);
+    let dialogRef = this.addCelementDialog.open(AddCelementDialogComponent, {
+      width: '80%',
+      data: this.eClass
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) this.cElementSaving = true;
+      console.log(result);
+    });
   }
 }

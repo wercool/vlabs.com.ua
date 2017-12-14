@@ -22,6 +22,9 @@ import {
     MatPaginatorModule,
     MatPaginatorIntl,
     MatCheckboxModule,
+    MatListModule,
+    MatRadioButton,
+    MatRadioModule,
 } from '@angular/material';
 
 @NgModule({
@@ -47,6 +50,8 @@ import {
     MatSelectModule,
     MatPaginatorModule,
     MatCheckboxModule,
+    MatListModule,
+    MatRadioModule,
   ],
   exports:
   [
@@ -70,6 +75,8 @@ import {
     MatSelectModule,
     MatPaginatorModule,
     MatCheckboxModule,
+    MatListModule,
+    MatRadioModule,
   ],
   providers:
   [

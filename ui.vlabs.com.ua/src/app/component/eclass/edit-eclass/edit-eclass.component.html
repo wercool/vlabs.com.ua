@@ -42,6 +42,9 @@
             <mat-panel-title class="styles-mat-panel-title-pad">
                 EClass Structure
             </mat-panel-title>
+            <mat-panel-description>
+                <mat-progress-spinner style="display: inline-block; vertical-align:middle;" *ngIf="cElementSaving" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+            </mat-panel-description>
         </mat-expansion-panel-header>
         <mat-progress-spinner *ngIf="!structureCompleted" mode="indeterminate"></mat-progress-spinner>
         <div *ngIf="structureCompleted" style="min-height: 50vh;">

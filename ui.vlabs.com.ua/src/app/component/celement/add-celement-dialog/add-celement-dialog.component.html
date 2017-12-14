@@ -1,0 +1,39 @@
+<mat-sidenav-container>
+  <mat-sidenav #sideNav opened mode="side" class="celement-list">
+    <mat-nav-list>
+      <mat-radio-group [(ngModel)]="selectedCElementType">
+        <span style="color: rgb(15, 45, 71);">ACTIVITIES</span>
+        <div style="padding-left: 20px; margin-right: 20px; padding-top: 10px; border-top: dotted 1px grey;">
+            <mat-radio-button value="vlab"><mat-icon class="md-24">developer_board</mat-icon><br/>VLab</mat-radio-button>
+            <hr/>
+            <mat-radio-button value="quiz"><mat-icon class="md-24">event_available</mat-icon><br/>Quiz</mat-radio-button>
+        </div>
+        <br/><br/>
+        <span style="color: rgb(15, 45, 71);">RESOURCES</span>
+        <div style="padding-left: 20px; margin-right: 20px; padding-top: 10px; border-top: dotted 1px grey;">
+          <mat-radio-button value="attachment"><mat-icon class="md-24">attachment</mat-icon><br/>Attachment</mat-radio-button>
+          <hr/>
+          <mat-radio-button value="label"><mat-icon class="md-24">label</mat-icon><br/>Label</mat-radio-button>
+          <hr/>
+          <mat-radio-button value="ioutube"><mat-icon class="md-24">subscriptions</mat-icon><br/>Youtube</mat-radio-button>
+          <hr/>
+          <mat-radio-button value="folder"><mat-icon class="md-24">create_new_folder</mat-icon><br/>Folder</mat-radio-button>
+        </div>
+      </mat-radio-group>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content style="padding: 5pt;" class="celement-desc">
+    <div *ngIf="selectedCElementType == 'vlab'">
+      VLabs CElement type description
+    </div>
+    <div *ngIf="selectedCElementType == 'quiz'">
+      Quiz CElement type description
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+<mat-dialog-actions style="float:right;">
+    <button mat-button mat-dialog-close>Close</button>
+    <button mat-button [mat-dialog-close]="true" (click)="addCElement()" [disabled]="!selectedCElementType">Add Element</button>
+</mat-dialog-actions>

@@ -1,0 +1,11 @@
+.mat-sidenav-container {
+    height: 80vh;
+    font-family: Roboto,"Helvetica Neue",sans-serif;
+}
+
+@media screen and (min-width: 301px) and (max-width: 600px) {
+    .celement-desc
+    { display: none; }
+    .celement-list
+    { width: 100%; }
+}

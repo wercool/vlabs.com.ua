@@ -39,5 +39,6 @@ export * from './course/new-course/new-course.component';
 export * from './eclass/eclass-management.component';
 export * from './eclass/new-eclass/new-eclass.component';
 export * from './eclass/edit-eclass/edit-eclass.component';
+export * from './celement/add-celement-dialog/add-celement-dialog.component';
 export * from './module/module-management.component';
 export * from './module/new-module/new-module.component';

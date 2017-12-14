@@ -54,6 +54,7 @@ import {
   EclassManagementComponent,
   NewEclassComponent,
   EditEclassComponent,
+  AddCelementDialogComponent,
   FacultyManagementComponent,
   NewFacultyComponent,
   GroupManagementComponent,
@@ -140,12 +141,15 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     NewGroupComponent,
     NewEclassComponent,
     EditEclassComponent,
+    AddCelementDialogComponent,
     /* Pipes */
     TruncatePipe,
   ],
+  /* Dialogs */
   entryComponents: [
     AuthUserDialogComponent,
     EditUserDialogComponent,
+    AddCelementDialogComponent,
   ],
   imports:
   [
