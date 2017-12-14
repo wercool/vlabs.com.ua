@@ -18,6 +18,10 @@ export class AddCelementDialogComponent implements OnInit {
   }
 
   addCElement() {
-    this.dialogRef.close({});
+    if (this.selectedCElementType) {
+      this.dialogRef.close({type: this.selectedCElementType});
+    } else {
+      this.dialogRef.close();
+    }
   }
 }

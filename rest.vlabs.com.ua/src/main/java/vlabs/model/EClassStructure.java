@@ -3,13 +3,16 @@ package vlabs.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 @Entity
@@ -27,8 +30,10 @@ public class EClassStructure
     @Column(name = "format_id")
     private Long formatId;
 
-    @OneToMany(mappedBy = "eClassStructure", fetch = FetchType.LAZY)
-    private List<CElement> celements = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "structure_id", referencedColumnName = "id")
+    @OrderBy("sid DESC")
+    private List<CElement> cElements = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -54,21 +59,11 @@ public class EClassStructure
         this.formatId = formatId;
     }
 
-    public List<CElement> getCelements() {
-        return celements;
+    public List<CElement> getcElements() {
+        return cElements;
     }
 
-    public void setCelements(List<CElement> celements) {
-        this.celements = celements;
-    }
-
-    public void addCElement(CElement cElement) {
-        celements.add(cElement);
-        cElement.seteClassStructure(this);
-    }
- 
-    public void removeCElement(CElement cElement) {
-        celements.remove(cElement);
-        cElement.seteClassStructure(this);
+    public void setcElements(List<CElement> cElements) {
+        this.cElements = cElements;
     }
 }

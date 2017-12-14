@@ -1,7 +1,7 @@
 <mat-accordion>
     <mat-expansion-panel [expanded]="true">
         <mat-expansion-panel-header>
-            <mat-panel-title class="styles-mat-panel-title-pad">
+            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
                 EClass General Properties
             </mat-panel-title>
         </mat-expansion-panel-header>
@@ -39,7 +39,7 @@
 
     <mat-expansion-panel *ngIf="completed">
         <mat-expansion-panel-header (click)="eCLassStructureHeaderClicked($event)">
-            <mat-panel-title class="styles-mat-panel-title-pad">
+            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
                 EClass Structure
             </mat-panel-title>
             <mat-panel-description>
@@ -48,11 +48,46 @@
         </mat-expansion-panel-header>
         <mat-progress-spinner *ngIf="!structureCompleted" mode="indeterminate"></mat-progress-spinner>
         <div *ngIf="structureCompleted" style="min-height: 50vh;">
-            <div style="float:right;">
+            <div style="display: table-cell; width: 100vw; text-align: right;">
                 <button mat-button (click)="addCElement()">
                     <mat-icon class="md-18">add</mat-icon>
-                    <span>Add New Content Element</span>
+                    <span>Content Element</span>
                 </button>
+            </div>
+            <!-- Content Elements -->
+            <hr/>
+            <div>
+                <ul dnd-sortable-container [sortableData]="eClassStrcuture.cElements" style="list-style: none; padding: 0;">
+                    <li *ngFor="let cElement of eClassStrcuture.cElements; let i = index" 
+                        dnd-sortable [sortableIndex]="i" 
+                        (onDropSuccess)="cElementDropped()"
+                        style="padding:0 0 10pt 0;">
+                        <mat-card>
+                            <div class="styles-full-width">
+                                <!-- CElement title -->
+                                <div style="float: left;">
+                                    <div style="float: left;">
+                                        <mat-icon matTooltip="{{ cElement.type }}" class="md-36 celement">{{ cElement.type | celement : {action: 'icon'} }}</mat-icon>
+                                    </div>
+                                    <div (click)="cElementTitleEdit(cElement)" style="float: left; margin-left: 10pt; margin-top: 10%;">
+                                        <div *ngIf="!cElement.title" style="color: grey; float: left;">TITLE</div>
+                                        <div *ngIf="cElement.title" style="float: left;">{{cElement.title}}</div>
+                                        <mat-icon style="float: left; margin-left: 2pt;" class="md-18">mode_edit</mat-icon>
+                                    </div>
+                                </div>
+                                <!-- CElement tools -->
+                                <div style="float: right;">
+                                    <mat-icon class="md-18" (click)="cElementSettings(cElement)">build</mat-icon>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </div>
+                            <!-- CElement content -->
+                            <mat-card-content>
+                                CONTENT
+                            </mat-card-content>
+                        </mat-card>
+                    </li>
+                </ul>
             </div>
         </div>
     </mat-expansion-panel>

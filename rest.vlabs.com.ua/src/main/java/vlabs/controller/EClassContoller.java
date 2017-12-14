@@ -84,4 +84,9 @@ public class EClassContoller
                                                     @PathVariable Long formatId) {
         return eClassStructureRepository.findOneByEclassIdAndFormatId(eClassId, formatId);
     }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/eclass/structure/update")
+    public EClassStructure getEClassStructure(@RequestBody EClassStructure eClassStructure) {
+        return eClassStructureRepository.save(eClassStructure);
+    }
 }

@@ -16,8 +16,11 @@ import { QuillConfigInterface } from 'ngx-quill-wrapper';
 import { AppRoutingModule } from './module/routing.module';
 import { MaterialModule } from './module/material.module';
 
+import { DndModule } from 'ng2-dnd';
+
 import { 
-  TruncatePipe
+  TruncatePipe,
+  CelementPipe
 } from './pipes';
 
 /* Guards */
@@ -144,6 +147,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     AddCelementDialogComponent,
     /* Pipes */
     TruncatePipe,
+    CelementPipe
   ],
   /* Dialogs */
   entryComponents: [
@@ -169,7 +173,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         useFactory: HttpLoaderFactory,
         deps: [HttpClient]
       }
-    })
+    }),
+    DndModule.forRoot()
   ],
   providers: 
   [

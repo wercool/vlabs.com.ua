@@ -123,11 +123,14 @@ CREATE TABLE `eclasses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Content Element = CElement
-CREATE TABLE `celement` (
+CREATE TABLE `celements` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `structure_id` bigint(20) NOT NULL,
+  `type` varchar(24) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
-  `eClassStructure_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`eClassStructure_id`),
-  CONSTRAINT `cel_fk_eClassStructure_id` FOREIGN KEY (`eClassStructure_id`) REFERENCES `eclass_structure` (`id`)
+  `sid` int NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `cel_fk_structure_id` FOREIGN KEY (`structure_id`) REFERENCES `eclass_structure` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Partners

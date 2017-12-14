@@ -2,19 +2,13 @@ package vlabs.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 @Entity
-@Table(name="celement")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@Table(name="celements")
 public class CElement
 {
     @Id
@@ -22,12 +16,17 @@ public class CElement
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "structure_id")
+    private Long structureId;
+
+    @Column(name = "type")
+    private String type;
+
     @Column(name = "title")
     private String title;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId
-    private EClassStructure eClassStructure;
+    @Column(name = "sid")
+    private Integer sid;
 
     public Long getId() {
         return id;
@@ -35,6 +34,22 @@ public class CElement
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getStructureId() {
+        return structureId;
+    }
+
+    public void setStructureId(Long structureId) {
+        this.structureId = structureId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getTitle() {
@@ -45,12 +60,12 @@ public class CElement
         this.title = title;
     }
 
-    public EClassStructure geteClassStructure() {
-        return eClassStructure;
+    public Integer getSid() {
+        return sid;
     }
 
-    public void seteClassStructure(EClassStructure eClassStructure) {
-        this.eClassStructure = eClassStructure;
+    public void setSid(Integer sid) {
+        this.sid = sid;
     }
 
 }

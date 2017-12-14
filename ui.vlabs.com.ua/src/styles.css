@@ -3,6 +3,8 @@
 /* @import '~@angular/material/prebuilt-themes/indigo-pink.css'; */
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 
+@import '../node_modules/ng2-dnd/bundles/style.css';
+
 body {
     margin: 0;
 }
@@ -26,10 +28,13 @@ html{
 }
 
  /* Rules for sizing the icon. */
+.mat-icon.md-16 { font-size: 16px; width: 16px; height: 16px; }
 .mat-icon.md-18 { font-size: 18px; width: 18px; height: 18px; }
 .mat-icon.md-24 { font-size: 24px; width: 24px; height: 24px; }
 .mat-icon.md-36 { font-size: 36px; width: 36px; height: 36px; }
 .mat-icon.md-48 { font-size: 48px; width: 48px; height: 48px; }
+
+.mat-icon.celement { color: rgb(24, 118, 224) }
 
 /* Link decoration */
 .linkNoDecoration{
@@ -89,4 +94,11 @@ html{
 
 .styles-mat-table-row:hover {
     background-color: rgb(166, 231, 243)
+}
+
+.styles-not-selectable {
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }

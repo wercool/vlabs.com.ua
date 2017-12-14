@@ -1,7 +1,7 @@
 <mat-sidenav-container>
   <mat-sidenav #sideNav opened mode="side" class="celement-list">
     <mat-nav-list>
-      <mat-radio-group [(ngModel)]="selectedCElementType">
+      <mat-radio-group [(ngModel)]="selectedCElementType" class="styles-not-selectable">
         <span style="color: rgb(15, 45, 71);">ACTIVITIES</span>
         <div style="padding-left: 20px; margin-right: 20px; padding-top: 10px; border-top: dotted 1px grey;">
             <mat-radio-button value="vlab"><mat-icon class="md-24">developer_board</mat-icon><br/>VLab</mat-radio-button>
@@ -15,7 +15,7 @@
           <hr/>
           <mat-radio-button value="label"><mat-icon class="md-24">label</mat-icon><br/>Label</mat-radio-button>
           <hr/>
-          <mat-radio-button value="ioutube"><mat-icon class="md-24">subscriptions</mat-icon><br/>Youtube</mat-radio-button>
+          <mat-radio-button value="youtube"><mat-icon class="md-24">subscriptions</mat-icon><br/>Youtube</mat-radio-button>
           <hr/>
           <mat-radio-button value="folder"><mat-icon class="md-24">create_new_folder</mat-icon><br/>Folder</mat-radio-button>
         </div>

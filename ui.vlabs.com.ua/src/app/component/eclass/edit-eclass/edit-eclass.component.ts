@@ -2,7 +2,7 @@ import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 import { EclassManagementComponent } from '../../index';
 import { AddCelementDialogComponent } from '../../celement/add-celement-dialog/add-celement-dialog.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EClass, EClassFormat, EClassStrcuture } from '../../../model/index';
+import { EClass, EClassFormat, EClassStrcuture, CElement } from '../../../model/index';
 import { EClassService } from '../../../service/index';
 import { MatSnackBar, MatDialog } from '@angular/material';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
@@ -38,6 +38,8 @@ export class EditEclassComponent implements OnInit {
   eclassSummary: string = '';
 
   eClassStrcuture: EClassStrcuture;
+
+  eClassStrcutureNeedsUpdate = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -122,6 +124,8 @@ export class EditEclassComponent implements OnInit {
   onGeneralEClassFormSubmit(){
     this.submitted = true;
 
+    this.eClassStrcutureNeedsUpdate = true;
+
     this.eclassService.update(this.eClass)
     // show the animation
     .delay(250)
@@ -159,12 +163,15 @@ export class EditEclassComponent implements OnInit {
   }
 
   eCLassStructureHeaderClicked($event) {
+    if (!this.eClassStrcutureNeedsUpdate && this.eClassStrcuture) return;
+    if (this.eClassStrcutureNeedsUpdate) this.structureCompleted = false;
     this.eclassService.getStrcuture(this.eClass)
     .delay(250)
     .subscribe(eClassStrcuture => {
       this.eClassStrcuture = eClassStrcuture;
       console.log(this.eClassStrcuture);
       this.structureCompleted = true;
+      this.eClassStrcutureNeedsUpdate = false;
     },
     error => {
       this.snackBar.open(error.json().message, 'SERVER ERROR', {
@@ -182,8 +189,49 @@ export class EditEclassComponent implements OnInit {
       data: this.eClass
     });
     dialogRef.afterClosed().subscribe(result => {
-      if (result) this.cElementSaving = true;
-      console.log(result);
+      if (result) {
+          let celement:CElement = new CElement();
+          celement.type = result.type;
+          celement.structureId = this.eClassStrcuture.id;
+          celement.sid = this.eClassStrcuture.cElements.length + 1;
+          this.eClassStrcuture.cElements.push(celement);
+
+          this.updateEClassStructure();
+        }
+      });
+  }
+
+  updateEClassStructure(){
+    this.cElementSaving = true;
+    this.eclassService.updateStructure(this.eClassStrcuture)
+    .delay(250)
+    .subscribe(eClassStrcuture => {
+      this.cElementSaving = false;
+      this.eClassStrcuture = eClassStrcuture;
+    },
+    error => {
+      this.cElementSaving = false;
+      this.snackBar.open(error.json().message, 'SERVER ERROR', {
+        panelClass: ['errorSnackBar'],
+        duration: 1000,
+        verticalPosition: 'top'
+      });
     });
+  }
+
+  cElementDropped() {
+    this.eClassStrcuture.cElements.forEach((cElement:CElement, index) => {
+      cElement.sid = index + 1;
+      this.eClassStrcuture.cElements[index] = cElement;
+    });
+    this.updateEClassStructure();
+  }
+
+  cElementTitleEdit(cElement:CElement) {
+    console.log(cElement);
+  }
+
+  cElementSettings(cElement:CElement) {
+    console.log(cElement);
   }
 }

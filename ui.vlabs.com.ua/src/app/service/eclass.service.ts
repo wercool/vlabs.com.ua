@@ -6,7 +6,7 @@ import { ConfigService } from './config.service';
 import { HTTPStatusCodes } from '../shared/lib/http-status-codes'
 
 import { 
-  EClass, EClassFormat
+  EClass, EClassFormat, EClassStrcuture
 } from '../model/index';
 
 @Injectable()
@@ -31,6 +31,9 @@ export class EClassService {
   }
   update(eclass: EClass) {
     return this.apiService.post(this.config.eclass_update_url, eclass);
+  }
+  updateStructure(eclassStructure: EClassStrcuture) {
+    return this.apiService.post(this.config.eclass_update_structure_url, eclassStructure);
   }
   updateSummary(id: number, summary: string) {
     return this.apiService.post(this.config.eclass_update_summary_url + id, summary);
