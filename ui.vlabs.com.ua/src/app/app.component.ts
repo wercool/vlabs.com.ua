@@ -81,12 +81,16 @@ export class AppComponent implements OnInit, OnDestroy{
                 break;
                 case HTTPStatusCodes.FORBIDDEN:
                     this.closeSidenav();
-                    if (environment.production) {
-                        window.location.href = '/login?msgType=error&msgBody=Access Forbidden';
-                    } else {
-                        console.log('On production will be redirected to /login');
-                    }
                     this.authService.logout();
+                    this.snackBar.open(error.statusText, error.status, {
+                        duration: 2000
+                    }).afterDismissed().subscribe(() => {
+                        if (environment.production) {
+                            window.location.href = '/login';
+                        } else {
+                            console.log('On production will be redirected to /login');
+                        }
+                    });
                 break;
                 case HTTPStatusCodes.GATEWAY_TIMEOUT:
                     this.snackBar.open(error.statusText, error.status, {

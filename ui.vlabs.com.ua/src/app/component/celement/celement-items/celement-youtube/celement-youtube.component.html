@@ -1,0 +1,38 @@
+<div *ngIf="cElementItemsCompleted">
+    <button *ngIf="!youTubeItem.videoURL" mat-button matTooltip="YouTube URL" (click)="editYoutubeVideoURL()">
+        <mat-icon class="md-18">video_library</mat-icon>
+        <span>Add YouTube Video</span>
+    </button>
+</div>
+
+<mat-expansion-panel *ngIf="youTubeItem.videoURL" #youTubeItemPanel>
+    <mat-expansion-panel-header (click)="itemsPanelHeaderClicked($event, youTubeItemPanel)">
+        <mat-panel-title>
+            <img src="/assets/youtube.png" matTooltip="{{ youTubeItem.videoURL }}" height="32" width="32" style="vertical-align: middle;"/>
+            <mat-icon (click)="editYoutubeVideoURL()" matTooltip="Change YouTube Video URL" style="float: left; margin-left: 2pt;" class="md-18">mode_edit</mat-icon>
+        </mat-panel-title>
+        <mat-panel-description>
+            {{ youTubeItem.videoURL }}
+        </mat-panel-description>
+    </mat-expansion-panel-header>
+    <iframe *ngIf="activateYouTubeIframe" 
+            style="overflow:hidden; min-height:450px; width:100%;" 
+            [src]="youtubeEmbedSafeURL" 
+            frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen>
+    </iframe>
+    <br/>
+    <div *ngIf="youTubeItem.videoURL">
+        <button *ngIf="!youTubeItem.comments" mat-button matTooltip="YouTube URL" (click)="editYoutubeItemComments()">
+            <mat-icon class="md-18">note_add</mat-icon>
+            <span>Add Comments</span>
+        </button>
+        <div *ngIf="youTubeItem.comments" (click)="editYoutubeItemComments()">
+            <div style="float: left; text-decoration: underline;">Comments</div>
+            <div style="float: left; margin-left: 2pt;">
+                <mat-icon class="md-18">mode_edit</mat-icon>
+            </div>
+        </div>
+        <div style="clear: both;" [innerHTML]="youTubeItem.comments"></div>
+    </div>
+
+</mat-expansion-panel>

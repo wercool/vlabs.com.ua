@@ -20,7 +20,8 @@ import { DndModule } from 'ng2-dnd';
 
 import { 
   TruncatePipe,
-  CelementPipe
+  CelementPipe,
+  SafeURLPipe
 } from './pipes';
 
 /* Guards */
@@ -71,6 +72,8 @@ import {
   CElementItemComponent,
   CelementLabelComponent,
   CelementQuizComponent,
+  CelementYoutubeComponent,
+  CelementVLabComponent,
 } from './component';
 
 /* Services */
@@ -91,6 +94,7 @@ import {
   SubscriptionService,
   FooService,
 } from './service';
+import { AddVLabItemDialogComponent } from './component/dialogs/add-vlab-item-dialog/add-vlab-item-dialog.component';
 
 const DEFAULT_QUILL_CONFIG: QuillConfigInterface = {
   theme: 'snow',
@@ -114,6 +118,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     /* Pipes */
     TruncatePipe,
     CelementPipe,
+    SafeURLPipe,
     /* Component */
     AppComponent,
     HeaderComponent,
@@ -155,6 +160,9 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     CElementItemComponent,
     CelementLabelComponent,
     CelementQuizComponent,
+    CelementYoutubeComponent,
+    CelementVLabComponent,
+    AddVLabItemDialogComponent,
   ],
   /* Dialogs */
   entryComponents: [
@@ -162,6 +170,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     EditUserDialogComponent,
     AddCelementDialogComponent,
     EditPropertyDialogComponent,
+    AddVLabItemDialogComponent,
   ],
   imports:
   [

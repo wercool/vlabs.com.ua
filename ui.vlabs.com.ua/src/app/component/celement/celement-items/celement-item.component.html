@@ -1,2 +1,4 @@
-<celement-item-label    *ngIf="cElement.type == 'label'"   [cElement]="cElement"></celement-item-label>
-<celement-item-quiz     *ngIf="cElement.type == 'quiz'"    [cElement]="cElement"></celement-item-quiz>
+<celement-item-label    *ngIf="cElement.type == 'label'   && cElement.id"    [cElement]="cElement"></celement-item-label>
+<celement-item-quiz     *ngIf="cElement.type == 'quiz'    && cElement.id"    [cElement]="cElement"></celement-item-quiz>
+<celement-item-youtube  *ngIf="cElement.type == 'youtube' && cElement.id"    [cElement]="cElement"></celement-item-youtube>
+<celement-item-vlab     *ngIf="cElement.type == 'vlab'    && cElement.id"    [cElement]="cElement"></celement-item-vlab>

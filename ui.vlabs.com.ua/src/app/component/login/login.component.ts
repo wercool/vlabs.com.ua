@@ -50,8 +50,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit() {
-    this.route.params
-    .subscribe((params: DisplayMessage) => {
+    this.route.params.subscribe((params: DisplayMessage) => {
       this.notification = params;
     });
 

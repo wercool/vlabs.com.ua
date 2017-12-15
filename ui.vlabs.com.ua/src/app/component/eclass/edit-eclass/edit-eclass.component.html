@@ -62,27 +62,26 @@
                         dnd-sortable [sortableIndex]="i" 
                         (onDropSuccess)="cElementDropped()"
                         style="padding:0 0 10pt 0;">
-                        <mat-card>
-                            <div class="styles-full-width">
-                                <!-- CElement title -->
+                        <mat-card matTooltip="drag to reorder" matTooltipPosition="before" matTooltipShowDelay="2000">
+                            <!-- CElement title -->
+                            <div style="float: left;">
                                 <div style="float: left;">
-                                    <div style="float: left;">
-                                        <mat-icon matTooltip="{{ cElement.type }}" class="md-24 celement">{{ cElement.type | celement : {action: 'icon'} }}</mat-icon>
-                                    </div>
-                                    <div (click)="cElementTitleEdit(cElement)" style="float: left; margin-left: 10pt;">
-                                        <div *ngIf="!cElement.title" style="color: grey; float: left; font-size: 6pt;">NO TITLE</div>
-                                        <div *ngIf="cElement.title" style="float: left; font-size: 14pt;">{{cElement.title}}</div>
-                                        <mat-icon style="float: left; margin-left: 2pt;" class="md-18">mode_edit</mat-icon>
-                                    </div>
+                                    <mat-icon matTooltip="{{ cElement.type }}" class="md-24 celement">{{ cElement.type | celement : {action: 'icon'} }}</mat-icon>
                                 </div>
-                                <!-- CElement tools -->
-                                <div style="float: right;">
-                                    <button [matMenuTriggerFor]="contentElementMenu" mat-icon-button color="primary">
-                                        <mat-icon class="md-24" matTooltip="actions">settings</mat-icon>
-                                    </button>
+                                <div (click)="cElementTitleEdit(cElement)" style="float: left; margin-left: 10pt;">
+                                    <div *ngIf="!cElement.title" style="color: grey; float: left; font-size: 6pt;">NO TITLE</div>
+                                    <div *ngIf="cElement.title" style="float: left; font-size: 14pt;">{{cElement.title}}</div>
+                                    <mat-icon style="float: left; margin-left: 2pt;" class="md-18">mode_edit</mat-icon>
                                 </div>
-                                <div style="clear: both;"></div>
                             </div>
+                            <!-- CElement tools -->
+                            <div style="float: right;">
+                                <button [matMenuTriggerFor]="contentElementMenu" mat-icon-button color="primary">
+                                    <mat-icon class="md-24" matTooltip="actions">settings</mat-icon>
+                                </button>
+                            </div>
+                            <div style="clear: both;"></div>
+
                             <!-- CElement content -->
                             <mat-card-content>
                                 <app-celement-item [cElement]="cElement"></app-celement-item>

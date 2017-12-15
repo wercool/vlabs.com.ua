@@ -35,3 +35,5 @@ export * from './module/new-module/new-module.component';
 export * from './celement/celement-items/celement-item.component';
 export * from './celement/celement-items/celement-label/celement-label.component';
 export * from './celement/celement-items/celement-quiz/celement-quiz.component';
+export * from './celement/celement-items/celement-youtube/celement-youtube.component';
+export * from './celement/celement-items/celement-vlab/celement-vlab.component';

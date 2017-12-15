@@ -1,10 +1,24 @@
-<form (ngSubmit)="complete()">
-  <mat-form-field class="styles-full-width">
-    <input *ngIf="editedProperty.type == 'text-input'" [(ngModel)]="editedProperty.value" name="editedProperty" matInput placeholder="{{editedProperty.caption}}" value="{{editedProperty.value}}">
-  </mat-form-field>
+<!-- Rich Text -->
+<div *ngIf="editedProperty.type == 'text-rich'" style="max-height: 80vh;">
+  <span mat-dialog-title *ngIf="editedProperty.type == 'text-rich'">{{editedProperty.caption}}</span>
+  <quill *ngIf="editedProperty.type == 'text-rich'" [(value)]="editedProperty.value"></quill>
 
-  <div class="styles-mat-card-actions" style="margin-top:10pt;">
+  <div class="styles-mat-card-actions" style="margin-top:10pt; margin-bottom:10pt;">
     <button mat-button mat-dialog-close>Close</button>
-    <button mat-button type="submit">Save</button>
+    <button mat-button [mat-dialog-close]="true" (click)="complete()">Save</button>
   </div>
-</form>
+</div>
+
+<!-- Form Controls -->
+<div *ngIf="editedProperty.type != 'text-rich'" >
+  <form (ngSubmit)="complete()">
+      <mat-form-field class="styles-full-width">
+        <input *ngIf="editedProperty.type == 'text-input'" [(ngModel)]="editedProperty.value" name="editedProperty" matInput placeholder="{{editedProperty.caption}}" value="{{editedProperty.value}}">
+      </mat-form-field>
+    
+      <div class="styles-mat-card-actions" style="margin-top:10pt;">
+        <button mat-button mat-dialog-close>Close</button>
+        <button mat-button type="submit">Save</button>
+      </div>
+    </form>
+</div>
