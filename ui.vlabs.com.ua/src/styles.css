@@ -80,7 +80,11 @@ html{
 }
   
 .styles-success {
-    color: #8BC34A;
+    color: rgb(126, 182, 57);
+}
+
+.styles-info {
+    color: rgb(247, 200, 71);
 }
 
 .sidenav-button {

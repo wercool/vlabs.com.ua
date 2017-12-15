@@ -133,6 +133,17 @@ CREATE TABLE `celements` (
   CONSTRAINT `cel_fk_structure_id` FOREIGN KEY (`structure_id`) REFERENCES `eclass_structure` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `celement_items` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `celement_id` bigint(20) NOT NULL,
+  `nature` longtext,
+  `sid` int NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `celi_fk_celement_id` FOREIGN KEY (`celement_id`) REFERENCES `celements` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 -- Partners
 CREATE TABLE `partners` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,

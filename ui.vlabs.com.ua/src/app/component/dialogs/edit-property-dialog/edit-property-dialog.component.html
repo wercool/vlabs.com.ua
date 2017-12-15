@@ -1,0 +1,10 @@
+<form (ngSubmit)="complete()">
+  <mat-form-field class="styles-full-width">
+    <input *ngIf="editedProperty.type == 'text-input'" [(ngModel)]="editedProperty.value" name="editedProperty" matInput placeholder="{{editedProperty.caption}}" value="{{editedProperty.value}}">
+  </mat-form-field>
+
+  <div class="styles-mat-card-actions" style="margin-top:10pt;">
+    <button mat-button mat-dialog-close>Close</button>
+    <button mat-button type="submit">Save</button>
+  </div>
+</form>

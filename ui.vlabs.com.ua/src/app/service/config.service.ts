@@ -58,6 +58,13 @@ export class ConfigService {
   private _eclass_structure_url                 = this._eclass_url + '/structure/';
   private _eclass_update_structure_url          = this._eclass_url + '/structure/update';
 
+  //CElements
+  private _celement_url                           = this._api_url + '/celement';
+  private _celement_update_url                    = this._celement_url + '/update';
+  private _celement_item_url                      = this._celement_url + '/item';
+  private _celement_items_url                     = this._celement_url + '/items';
+  private _celement_item_update_url               = this._celement_item_url + '/update';
+
   private _vlab_url                             = this._api_url + '/vlab';
   private _vlab_add_url                         = this._vlab_url + '/add';
   private _vlabs_url                            = this._vlab_url + '/all';
@@ -131,6 +138,13 @@ export class ConfigService {
   get eclass_formats_url(): string { return this._eclass_formats_url; };
   get eclass_structure_url(): string { return this._eclass_structure_url; };
   get eclass_update_structure_url(): string { return this._eclass_update_structure_url; };
+
+  //CElements
+  get celement_url(): string { return this._celement_url; };
+  get celement_update_url(): string { return this._celement_update_url; };
+  get celement_item_url(): string { return this._celement_item_url; };
+  get celement_items_url(): string { return this._celement_items_url; };
+  get celement_item_update_url(): string { return this._celement_item_update_url; };
 
   //Partners
   get partner_add_url(): string { return this._partner_add_url; };

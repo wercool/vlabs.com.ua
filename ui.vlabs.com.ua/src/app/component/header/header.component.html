@@ -16,7 +16,7 @@
         <!-- HEADER CENTER LABEL -->
     </span>
 
-    <span (click)="navigate('/edit-profile')" *ngIf="hasSignedIn()" class="toolbarItem">{{userName()}}</span>
+    <span (click)="navigate('/edit-profile')" *ngIf="hasSignedIn()" class="toolbarItem" matTooltip="Profile">{{userName()}}</span>
 
     <span class="element-spacer"></span>
 

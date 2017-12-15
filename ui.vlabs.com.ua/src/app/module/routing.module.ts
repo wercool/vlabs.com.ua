@@ -7,20 +7,15 @@ import {
   LoginComponent,
   RegisterComponent,
   NotFoundComponent,
-  /* authenticated user components */
   EditProfileComponent,
   ResetPasswordComponent,
-  /* MANAGER role component */
   VlabsManagementComponent,
   CourseManagementComponent,
   DepartmentManagementComponent,
   FacultyManagementComponent,
   GroupManagementComponent,
-  /* ADMIN role component */
   UserManagementComponent,
   PartnerManagementComponent,
-
-  /* ADMIN, MANAGER role component */
   ModuleManagementComponent,
   EclassManagementComponent,
   EditEclassComponent,
@@ -49,7 +44,6 @@ export const routes: Routes = [
     component: RegisterComponent,
     canActivate: [GuestGuard]
   },
-  /* authenticated user role routes */
   {
     path: 'edit-profile',
     component: EditProfileComponent,
@@ -60,7 +54,6 @@ export const routes: Routes = [
     component: ResetPasswordComponent,
     canActivate: [AuthenticatedGuard]
   },
-  /* MANAGER role routes */
   {
     path: 'vlabs-management',
     component: VlabsManagementComponent,
@@ -91,7 +84,6 @@ export const routes: Routes = [
     component: GroupManagementComponent,
     canActivate: [ManagerGuard]
   },
-  //EClasses
   {
     path: 'eclass-management',
     component: EclassManagementComponent,
@@ -102,7 +94,6 @@ export const routes: Routes = [
     component: EditEclassComponent,
     canActivate: [ManagerGuard]
   },
-  /* ADMIN role routes */
   {
     path: 'user-management',
     component: UserManagementComponent,

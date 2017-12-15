@@ -6,6 +6,7 @@ export * from './vlab.service';
 export * from './course.service';
 export * from './department.service';
 export * from './eclass.service';
+export * from './celement.service';
 export * from './faculty.service';
 export * from './group.service';
 export * from './module.service';

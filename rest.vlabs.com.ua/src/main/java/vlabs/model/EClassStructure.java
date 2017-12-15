@@ -32,7 +32,7 @@ public class EClassStructure
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "structure_id", referencedColumnName = "id")
-    @OrderBy("sid DESC")
+    @OrderBy("sid")
     private List<CElement> cElements = new ArrayList<>();
 
     public Long getId() {

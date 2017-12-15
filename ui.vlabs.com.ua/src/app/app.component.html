@@ -2,7 +2,7 @@
     <mat-sidenav #sidenav class="sidenav">
         <div class="sidenav-content">
             
-            <div class="sidenav-scrollable-content">
+            <div class="sidenav-scrollable-content styles-not-selectable">
                 <mat-accordion multi="true" displayMode="flat">
                     <app-admin-sidenav *ngIf="authorizedFor('ADMIN')" (navigateEvent)="navigate($event)"></app-admin-sidenav>
                     <app-manager-sidenav *ngIf="authorizedFor('MANAGER')" (navigateEvent)="navigate($event)"></app-manager-sidenav>

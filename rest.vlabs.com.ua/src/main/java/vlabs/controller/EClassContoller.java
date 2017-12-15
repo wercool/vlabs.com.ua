@@ -19,9 +19,9 @@ import vlabs.common.EmptyJsonResponse;
 import vlabs.model.EClass;
 import vlabs.model.EClassFormat;
 import vlabs.model.EClassStructure;
-import vlabs.repository.EClassStructureRepository;
 import vlabs.service.EClassFormatService;
 import vlabs.service.EClassService;
+import vlabs.service.EClassStructureService;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -34,7 +34,7 @@ public class EClassContoller
     private EClassFormatService eClassFormatService;
 
     @Autowired
-    private EClassStructureRepository eClassStructureRepository;
+    private EClassStructureService eClassStructureService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/eclass/{eclassId}")
     public EClass loadById(@PathVariable Long eclassId) {
@@ -81,12 +81,12 @@ public class EClassContoller
     // EClass structure
     @RequestMapping(method = RequestMethod.GET, value = "/eclass/structure/{eClassId}/{formatId}")
     public EClassStructure getEClassStructure(@PathVariable Long eClassId,
-                                                    @PathVariable Long formatId) {
-        return eClassStructureRepository.findOneByEclassIdAndFormatId(eClassId, formatId);
+                                              @PathVariable Long formatId) {
+        return eClassStructureService.getEClassStructure(eClassId, formatId);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/eclass/structure/update")
-    public EClassStructure getEClassStructure(@RequestBody EClassStructure eClassStructure) {
-        return eClassStructureRepository.save(eClassStructure);
+    public EClassStructure updateEClassStructure(@RequestBody EClassStructure eClassStructure) {
+        return eClassStructureService.updateEClassStructure(eClassStructure);
     }
 }

@@ -1,0 +1,6 @@
+<span *ngIf="!cElementItemsCompleted" class="styles-info">loading...</span>
+<div *ngIf="cElementItemsCompleted" (click)="editNature()" style="float: left; margin-left: 10pt;">
+    <div *ngIf="!cElementItems[0].nature" style="color: grey; float: left; font-size: 6pt;">NO CONTENT</div>
+    <div *ngIf="cElementItems[0].nature" style="float: left; font-size: 10pt;">{{cElementItems[0].nature}}</div>
+    <mat-icon style="float: left; margin-left: 2pt;" class="md-18">mode_edit</mat-icon>
+</div>

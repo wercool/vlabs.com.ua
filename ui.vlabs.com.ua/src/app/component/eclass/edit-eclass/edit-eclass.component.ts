@@ -1,12 +1,14 @@
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 import { EclassManagementComponent } from '../../index';
 import { AddCelementDialogComponent } from '../../celement/add-celement-dialog/add-celement-dialog.component';
+import { EditPropertyDialogComponent } from "../../dialogs/edit-property-dialog/edit-property-dialog.component";
 import { ActivatedRoute, Router } from '@angular/router';
 import { EClass, EClassFormat, EClassStrcuture, CElement } from '../../../model/index';
-import { EClassService } from '../../../service/index';
+import { EClassService, CElementService } from '../../../service/index';
 import { MatSnackBar, MatDialog } from '@angular/material';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { DisplayMessage } from '../../../shared/models/display-message';
+import { EditedProperty } from '../../../shared/models/edited-property';
 
 @Component({
   selector: 'app-edit-eclass',
@@ -46,8 +48,10 @@ export class EditEclassComponent implements OnInit {
     private router: Router,
     private snackBar: MatSnackBar,
     private formBuilder: FormBuilder,
-    private eclassService: EClassService,
-    private addCelementDialog: MatDialog
+    private eClassService: EClassService,
+    private cElementService: CElementService,
+    private addCelementDialog: MatDialog,
+    private editPropertyDialog: MatDialog,
   ) { }
 
   ngOnInit() {
@@ -61,7 +65,7 @@ export class EditEclassComponent implements OnInit {
       formatId:  ['', Validators.compose([Validators.required])]
     });
 
-    this.eclassService.getFormats()
+    this.eClassService.getFormats()
     .delay(250)
     .subscribe(eclassFormats => {
         this.eClassFormats = eclassFormats;
@@ -90,13 +94,13 @@ export class EditEclassComponent implements OnInit {
         this.router.navigate(['eclass-management']);
       });
     } else {
-      this.eclassService.getById(id)
+      this.eClassService.getById(id)
       .delay(250)
       .subscribe(eclass => {
 
         this.eClass = eclass;
 
-        this.eclassService.getSummaryById(id)
+        this.eClassService.getSummaryById(id)
         .delay(250)
         .subscribe(result => {
             this.eclassSummary = result.data;
@@ -126,13 +130,13 @@ export class EditEclassComponent implements OnInit {
 
     this.eClassStrcutureNeedsUpdate = true;
 
-    this.eclassService.update(this.eClass)
+    this.eClassService.update(this.eClass)
     // show the animation
     .delay(250)
     .subscribe(eclass => {
 
       if (this.eclassSummary) {
-        this.eclassService.updateSummary(eclass.id, this.eclassSummary).subscribe(result => {
+        this.eClassService.updateSummary(eclass.id, this.eclassSummary).subscribe(result => {
           this.submitted = false;
           this.notification = { msgType: 'styles-success', msgBody: '<b>' + eclass.title + '</b>' + ' successfully updated' };
           setTimeout(() => { this.notification = undefined; }, 2000);
@@ -165,11 +169,11 @@ export class EditEclassComponent implements OnInit {
   eCLassStructureHeaderClicked($event) {
     if (!this.eClassStrcutureNeedsUpdate && this.eClassStrcuture) return;
     if (this.eClassStrcutureNeedsUpdate) this.structureCompleted = false;
-    this.eclassService.getStrcuture(this.eClass)
+    this.eClassService.getStrcuture(this.eClass)
     .delay(250)
     .subscribe(eClassStrcuture => {
       this.eClassStrcuture = eClassStrcuture;
-      console.log(this.eClassStrcuture);
+      // console.log(this.eClassStrcuture);
       this.structureCompleted = true;
       this.eClassStrcutureNeedsUpdate = false;
     },
@@ -183,7 +187,7 @@ export class EditEclassComponent implements OnInit {
   }
 
   addCElement() {
-    console.log(this.eClass);
+    // console.log(this.eClass);
     let dialogRef = this.addCelementDialog.open(AddCelementDialogComponent, {
       width: '80%',
       data: this.eClass
@@ -203,7 +207,7 @@ export class EditEclassComponent implements OnInit {
 
   updateEClassStructure(){
     this.cElementSaving = true;
-    this.eclassService.updateStructure(this.eClassStrcuture)
+    this.eClassService.updateStructure(this.eClassStrcuture)
     .delay(250)
     .subscribe(eClassStrcuture => {
       this.cElementSaving = false;
@@ -228,10 +232,38 @@ export class EditEclassComponent implements OnInit {
   }
 
   cElementTitleEdit(cElement:CElement) {
-    console.log(cElement);
+    // console.log(cElement);
+    let dialogRef = this.editPropertyDialog.open(EditPropertyDialogComponent, {
+      width: '80%',
+      data: { type: 'text-input', value: cElement.title, caption: 'Content Element Title', context: { property: 'title', object: cElement } }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        cElement.title = result.value;
+
+        this.cElementSaving = true;
+        this.cElementService.update(cElement)
+        .delay(250)
+        .subscribe(eClassStrcuture => {
+          this.cElementSaving = false;
+        },
+        error => {
+          this.cElementSaving = false;
+          this.snackBar.open(error.json().message, 'SERVER ERROR', {
+            panelClass: ['errorSnackBar'],
+            duration: 1000,
+            verticalPosition: 'top'
+          });
+        });
+      }
+    });
   }
 
   cElementSettings(cElement:CElement) {
+    console.log(cElement);
+  }
+
+  cElementDelete(cElement:CElement) {
     console.log(cElement);
   }
 }

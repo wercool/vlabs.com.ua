@@ -10,6 +10,7 @@ export * from './faculty';
 export * from './eclass';
 export * from './eclass_structure';
 export * from './celement';
+export * from './celement_item';
 export * from './eclass_format';
 export * from './department';
 export * from './partner';

@@ -41,12 +41,9 @@ import {
   NotFoundComponent,
   LoginComponent,
   RegisterComponent,
-  /* authenticated user components */
   EditProfileComponent,
   ResetPasswordComponent,
-  /* ROLE_USER components */
   UserSidenavComponent,
-  /* ROLE_MANAGER components */
   ManagerSidenavComponent,
   VlabsManagementComponent,
   NewVlabComponent,
@@ -64,13 +61,16 @@ import {
   NewGroupComponent,
   ModuleManagementComponent,
   NewModuleComponent,
-  /* ROLE_ADMIN components */
+  EditPropertyDialogComponent,
   AdminSidenavComponent,
   UserManagementComponent,
   AuthUserDialogComponent,
   EditUserDialogComponent,
   PartnerManagementComponent,
   NewPartnerComponent,
+  CElementItemComponent,
+  CelementLabelComponent,
+  CelementQuizComponent,
 } from './component';
 
 /* Services */
@@ -83,6 +83,7 @@ import {
   CourseService,
   DepartmentService,
   EClassService,
+  CElementService,
   FacultyService,
   GroupService,
   ModuleService,
@@ -110,6 +111,10 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 @NgModule({
   declarations:
   [
+    /* Pipes */
+    TruncatePipe,
+    CelementPipe,
+    /* Component */
     AppComponent,
     HeaderComponent,
     HomeComponent,
@@ -145,15 +150,18 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     NewEclassComponent,
     EditEclassComponent,
     AddCelementDialogComponent,
-    /* Pipes */
-    TruncatePipe,
-    CelementPipe
+    EditPropertyDialogComponent,
+    EditPropertyDialogComponent,
+    CElementItemComponent,
+    CelementLabelComponent,
+    CelementQuizComponent,
   ],
   /* Dialogs */
   entryComponents: [
     AuthUserDialogComponent,
     EditUserDialogComponent,
     AddCelementDialogComponent,
+    EditPropertyDialogComponent,
   ],
   imports:
   [
@@ -190,6 +198,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     CourseService,
     DepartmentService,
     EClassService,
+    CElementService,
     FacultyService,
     GroupService,
     ModuleService,
