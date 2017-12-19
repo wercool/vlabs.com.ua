@@ -1,7 +1,26 @@
-import VLab from '../vlabs.common.js/vlab';
+import * as THREE from 'three';
+import VLab from "../vlabs.assets/core/vlab";
 
-let vLab = new VLab();
+class VlabBase extends VLab {
+    constructor(initObj = {}) {
+        super(initObj);
+        super.initialize().then((result) => {
+            this.initialize();
+        });
+    }
 
-setTimeout(() => { 
-    console.log(vLab.getVesrion());
-}, 150);
+    initialize () {
+        this.loadScene().then((vLabScene) => {
+            vLabScene.traverse(function(obj) {
+                console.log(obj);
+            });
+        }).catch(error => {
+            console.error(error);
+        });
+    }
+}
+
+let vLabBase = new VlabBase({
+    "natureURL": "http://localhost:9001/vlab.base/resources/nature.json",
+    "webGLContainer": "webGLContainer"
+});

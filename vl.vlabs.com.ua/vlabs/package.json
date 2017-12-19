@@ -17,8 +17,10 @@
     "gulp-connect": "^5.0.0",
     "gulp-directory-sync": "^1.2.3",
     "gulp-livereload": "^3.8.1",
+    "gulp-purge-sourcemaps": "^1.0.0",
     "gulp-sourcemaps": "^2.6.1",
     "gulp-uglify": "^3.0.0",
+    "gulp-util": "^3.0.8",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "webpack": "^3.10.0"
