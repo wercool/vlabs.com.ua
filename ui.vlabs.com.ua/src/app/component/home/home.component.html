@@ -1,6 +1,6 @@
 <app-admin-home *ngIf="authorizedFor('ADMIN')"></app-admin-home>
 <app-user-home *ngIf="authorizedFor('USER') && !authorizedFor('ADMIN')"></app-user-home>
-
+<!-- 
 <div class="carousel-wrapper" *ngIf="!isLoggedIn()">
     <span id="target-item-1"></span>
     <span id="target-item-2"></span>
@@ -24,7 +24,7 @@
         <a class="arrow arrow-next" href="#target-item-1"></a>
     </div>
 </div>
-
+ -->
 <div *ngIf="!isLoggedIn()" fxLayout="row" fxLayoutAlign="center none">
     <mat-card class="directory-card-home">
         <mat-card-header>
