@@ -1,14 +1,18 @@
-import * as THREE from 'three';
-import THREEStats from 'stats.js';
-import * as HTTPUtils from "./utils/http.utils"
-import { Stats } from 'fs';
+import * as THREE                   from 'three';
+import THREEStats                   from 'stats.js';
+import * as HTTPUtils               from "./utils/http.utils"
+import { Stats }                    from 'fs';
 
-var ProgressBar = require('progressbar.js');
+var EventEmitter        = require('event-emitter-es6');
+var ProgressBar         = require('progressbar.js');
+var webglDetect         = require('webgl-detect');
+var OrbitControls       = require('three-orbit-controls')(THREE);
+var PointerLockControls = require('./three-pointerlock/index');
 
 /*
     initObj {
-        "natureURL": "",
-        "webGLContainer": ""
+        "natureURL": "nature.json",
+        "webGLContainer": "webGLContainer"
     }
 */
 
@@ -25,17 +29,48 @@ export default class VLab {
         this.nature = {};
         this.webGLContainer = undefined;
         this.webGLRenderer = undefined;
-        this.statsTHREE = undefined;
+
+        /*
+            VLabEvent {
+                type: [
+                    vLabSceneComplete
+                ]
+            }
+        */
+        this.eventBus = new EventEmitter();
 
         this.vLabScene = undefined;
         this.defaultCamera = undefined;
+        this.defaultCameraControls = undefined;
 
+        this.statsTHREE = undefined;
         this.progressBar = undefined;
         this.progressBarPrependText = "";
     }
 
     getVesrion() {
         return "0.0.2";
+    }
+
+    showErrorMessage(error) {
+        document.getElementById("overlayContainer").style.display = 'block';
+        document.getElementById("modalMessage").style.display = 'block';
+        document.getElementById("modalMessage").innerHTML = error.message;
+    }
+
+    preInitialize() {
+        return new Promise((resolve, reject) => {
+            if (!webglDetect) {
+                let error = { error: 'WebGL Not Supported', 
+                              message:'<h3>WebGL (interface allowing the display of the 3D on a website page) ' +
+                                      'is not activated or is configured incorrectly.</h3>' + 
+                                      '<p style="color: white;">Visit <a href="https://get.webgl.org/" target="_blank" style="color: white;">get.webgl.org</a> for more informaiton.</p>'
+                            };
+                reject(error);
+            } else {
+                resolve(true);
+            }
+        });
     }
 
     initialize() {
@@ -125,8 +160,8 @@ export default class VLab {
             return;
         }
 
-        if (this.nature.defaultSceneCamera) {
-            this.defaultCamera = this.vLabScene.getObjectByName(this.nature.defaultSceneCamera);
+        if (this.nature.defaultSceneCameraName) {
+            this.defaultCamera = this.vLabScene.getObjectByName(this.nature.defaultSceneCameraName);
         } else {
             this.defaultCamera = new THREE.PerspectiveCamera(70, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.1, 200);
         }
@@ -142,7 +177,7 @@ export default class VLab {
 
         this.vLabScene = (vLabScene) ? vLabScene : new THREE.Scene();
 
-        this.activate();
+        this.eventBus.emit('VLabEvent', {type: 'vLabSceneComplete'});
     }
 
     activate() {
@@ -154,7 +189,8 @@ export default class VLab {
 
         this.setDefaultCamera();
 
-        document.getElementById("progressBarContainer").style.display = 'none';
+        document.getElementById("overlayContainer").style.display = 'none';
+        document.getElementById("progressBar").style.display = 'none';
 
         this.webGLContainer.style.display = 'block';
         this.resiezeWebGLContainer();
@@ -166,6 +202,7 @@ export default class VLab {
     loadScene() {
         return new Promise((resolve, reject) => {
             let thisVLab = this;
+            thisVLab.progressBarPrependText = "The world of VLab is loaded by ";
             if (this.nature.sceneJSONFile) {
                 let loader = new THREE.ObjectLoader();
                 loader.convertUpAxis = true;
@@ -180,7 +217,6 @@ export default class VLab {
                         console.info(thisVLab.nature.title + " scene " + (loadedRel * 100).toFixed(2) + "% loaded");
 
                         if (thisVLab.progressBar) {
-                            thisVLab.progressBarPrependText = "The world of VLab is loaded by ";
                             thisVLab.progressBar.animate(loadedRel);
                         }
                     },
@@ -202,10 +238,13 @@ export default class VLab {
         if (this.initialized && !this.paused) {
             if (this.statsTHREE) this.statsTHREE.begin();
 
-                this.webGLRenderer.clear();
-                this.webGLRenderer.render(this.vLabScene, this.defaultCamera);
+            this.webGLRenderer.clear();
+            this.webGLRenderer.render(this.vLabScene, this.defaultCamera);
 
             if (this.statsTHREE) this.statsTHREE.end();
+
+            this.updateCameraControls();
+            this.eventBus.emit('VLabEvent', {type: 'newFrame'});
 
             requestAnimationFrame(this.render.bind(this));
         } else {
@@ -220,4 +259,36 @@ export default class VLab {
         this.statsTHREE.domElement.style.top = '0px';
         document.body.appendChild(this.statsTHREE.domElement);
     }
+
+/*
+    configObj {
+        "type": "orbit, pointerlock, assistant",
+        "target": "THREE.Vector3()"
+    }
+*/
+    switchCameraControls(configObj) {
+        switch (configObj.type) {
+            case 'orbit':
+                this.defaultCameraControls = new OrbitControls(this.defaultCamera, this.webGLContainer);
+                if (configObj.target) {
+                    this.defaultCameraControls.target = configObj.target;
+                }
+                this.defaultCameraControls.update();
+            break;
+            case 'pointerlock':
+                this.defaultCameraControls = new PointerLockControls(this.defaultCamera);
+                this.vLabScene.add(this.defaultCameraControls.getObject());
+                this.defaultCameraControls.enabled = true;
+                this.defaultCameraControls.update();
+            break;
+        }
+        this.defaultCameraControls.type = configObj.type;
+    }
+
+    updateCameraControls() {
+        if (this.defaultCameraControls.type === 'pointerlock') {
+            this.defaultCameraControls.update();
+        }
+    }
+
 }

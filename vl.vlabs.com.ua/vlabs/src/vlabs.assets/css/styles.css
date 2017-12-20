@@ -15,7 +15,7 @@ html, body {
     height: 100%;
 }
 
-#progressBarContainer {
+#overlayContainer {
     position: fixed;
     top: 0;
     left: 0;
@@ -29,4 +29,12 @@ html, body {
     top: 50%;
     width: 45%;
     height: 20px;
+}
+
+#modalMessage {
+    position: relative;
+    width: 80%;
+    top: 30%;
+    left: 10%;
+    color: rgb(228, 125, 28);
 }

@@ -2,6 +2,6 @@
     "title": "Base VLab",
     "resolutionFactor": "1.0",
     "sceneJSONFile": "./resources/scene/vlab.base.json",
-    "defaultSceneCamera": "defaultCamera",
+    "defaultSceneCameraName": "defaultCamera",
     "showTHREEStats": true
 }
