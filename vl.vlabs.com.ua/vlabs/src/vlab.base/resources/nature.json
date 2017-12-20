@@ -1,5 +1,7 @@
 {
     "title": "Base VLab",
-    "resolutionRatio": "1.0",
-    "sceneFile": "./resources/vlab.base.json"
+    "resolutionFactor": "1.0",
+    "sceneJSONFile": "./resources/scene/vlab.base.json",
+    "defaultSceneCamera": "defaultCamera",
+    "showTHREEStats": true
 }

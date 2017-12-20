@@ -1,0 +1,32 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    background-color: black;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+#webGLContainer {
+    background-color: black;
+    float: left;
+    width: 100%;
+    height: 100%;
+}
+
+#progressBarContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2e9;
+}
+
+#progressBar {
+    left: 25%;
+    top: 50%;
+    width: 45%;
+    height: 20px;
+}

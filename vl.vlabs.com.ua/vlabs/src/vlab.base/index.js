@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import VLab from "../vlabs.assets/core/vlab";
+import VLab from "../vlabs.core/vlab";
 
 class VlabBase extends VLab {
     constructor(initObj = {}) {
@@ -11,9 +11,7 @@ class VlabBase extends VLab {
 
     initialize () {
         this.loadScene().then((vLabScene) => {
-            vLabScene.traverse(function(obj) {
-                console.log(obj);
-            });
+            this.setVLabScene(vLabScene);
         }).catch(error => {
             console.error(error);
         });

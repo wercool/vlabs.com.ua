@@ -30,7 +30,7 @@ gulp.task("build-prod", ["sync"], function () {
 });
 
 gulp.task("build", ["sync"], function () {
-    console.log("vLabName = " + vLabName);
+    console.log("VLab directory name: " + vLabName);
     return browserify({
         entries: [
             "./index.js"
@@ -63,7 +63,7 @@ gulp.task("watch", ["build"], function () {
     gulp.watch("./**/*.js", ["build"]);
     gulp.watch("./**/*.json", ["build"]);
     gulp.watch("./**/*.html", ["build"]);
-    gulp.watch("../vlabs.assets/**/*.js", ["build"]);
+    gulp.watch("../vlabs.core/**/*.js", ["build"]);
 });
 
 //Start a test server with doc root at build folder and 

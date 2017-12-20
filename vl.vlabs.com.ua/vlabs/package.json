@@ -26,6 +26,8 @@
     "webpack": "^3.10.0"
   },
   "dependencies": {
+    "progressbar.js": "^1.0.1",
+    "stats.js": "^0.17.0",
     "three": "^0.89.0"
   }
 }
