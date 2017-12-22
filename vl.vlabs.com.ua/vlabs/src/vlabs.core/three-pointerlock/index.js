@@ -11,15 +11,23 @@ module.exports = function ( camera ) {
 
   var scope = this;
 
-  // camera.rotation.set( 0, 0, 0 );
+  var curCameraQuaternion = camera.quaternion.clone();
+  camera.rotation.set( 0, 0, 0 );
 
   this.lockCamera = false;
 
   var pitchObject = new THREE.Object3D();
+  pitchObject.name = "CameraPitchObject";
   pitchObject.add( camera );
 
   var yawObject = new THREE.Object3D();
+  yawObject.name = "CameraYawObject";
   yawObject.add( pitchObject );
+  yawObject.position.copy(camera.position.clone());
+  camera.position.set( 0, 0, 0 );
+
+  yawObject.quaternion.y = curCameraQuaternion.y;
+  pitchObject.quaternion.x = curCameraQuaternion.x;
 
   var moveForward = false;
   var moveBackward = false;
@@ -39,8 +47,8 @@ module.exports = function ( camera ) {
     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
     var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
-    yawObject.rotation.y -= movementX * 0.005;
-    pitchObject.rotation.x -= movementY * 0.005;
+    yawObject.rotation.y -= movementX * 0.003;
+    pitchObject.rotation.x -= movementY * 0.003;
 
     pitchObject.rotation.x = Math.max( - PI_2, Math.min( PI_2, pitchObject.rotation.x ) );
 
@@ -57,7 +65,8 @@ module.exports = function ( camera ) {
 
       case 37: // left
       case 65: // a
-        moveLeft = true; break;
+        moveLeft = true;
+        break;
 
       case 40: // down
       case 83: // s
@@ -70,12 +79,12 @@ module.exports = function ( camera ) {
         break;
 
       case 32: // whitespace
-          var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
-          if (havePointerLock) {
-            var element = document.body;
-            element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
-            element.requestPointerLock();
-          }
+        var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
+        if (havePointerLock) {
+          var element = document.body;
+          element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+          element.requestPointerLock();
+        }
         break;
 
       case 17: // left ctrl
@@ -109,16 +118,6 @@ module.exports = function ( camera ) {
         moveRight = false;
         break;
 
-      case 32: // whitespace
-        // var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
-        // if (havePointerLock) {
-        //   var element = document;
-        //   element.exitPointerLock = element.exitPointerLock || element.mozexitPointerLock || element.webkitexitPointerLock;
-        //   element.exitPointerLock();
-        // }
-        // scope.lockPointer = false;
-        break;
-
       case 17: // left ctrl
         scope.lockCamera = false;
         break;
@@ -126,9 +125,26 @@ module.exports = function ( camera ) {
 
   };
 
+  var onMouseDown = function ( event ) {
+    if (event.buttons == 1) {
+      exitPointerLock();
+    }
+  }
+
+  var exitPointerLock  = function (){
+    if (document.pointerLockElement === document.body || document.mozPointerLockElement === document.body || document.webkitPointerLockElement == document.body) {
+      var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
+      if (havePointerLock) {
+        document.exitPointerLock = document.exitPointerLock || document.mozexitPointerLock || document.webkitexitPointerLock;
+        document.exitPointerLock();
+      }
+    }
+  }
+
   document.addEventListener( 'mousemove', onMouseMove, false );
   document.addEventListener( 'keydown', onKeyDown, false );
   document.addEventListener( 'keyup', onKeyUp, false );
+  document.addEventListener( 'mousedown', onMouseDown, false );
 
   this.enabled = false;
 
@@ -169,11 +185,11 @@ module.exports = function ( camera ) {
       velocity.x -= velocity.x * 10.0 * delta;
       velocity.z -= velocity.z * 10.0 * delta;
 
-      if ( moveForward ) velocity.z -= 100.0 * delta;
-      if ( moveBackward ) velocity.z += 100.0 * delta;
+      if ( moveForward ) velocity.z -= 50.0 * delta;
+      if ( moveBackward ) velocity.z += 50.0 * delta;
 
-      if ( moveLeft ) velocity.x -= 100.0 * delta;
-      if ( moveRight ) velocity.x += 100.0 * delta;
+      if ( moveLeft ) velocity.x -= 50.0 * delta;
+      if ( moveRight ) velocity.x += 50.0 * delta;
 
       yawObject.translateX( velocity.x * delta );
       yawObject.translateY( velocity.y * delta );
@@ -182,4 +198,12 @@ module.exports = function ( camera ) {
 
     prevTime = time;
   };
+
+  this.dispose = function() {
+    exitPointerLock();
+    document.removeEventListener( 'mousemove', onMouseMove, false );
+    document.removeEventListener( 'keydown', onKeyDown, false );
+    document.removeEventListener( 'keyup', onKeyUp, false );
+    document.removeEventListener( 'mousedown', onMouseDown, false );
+  }
 };

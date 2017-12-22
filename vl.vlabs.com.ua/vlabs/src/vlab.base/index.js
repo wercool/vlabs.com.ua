@@ -4,6 +4,12 @@ import VLab         from "../vlabs.core/vlab";
 class VlabBase extends VLab {
     constructor(initObj = {}) {
         super(initObj);
+
+        addEventListener("redererFrameEvent",  this.onRedererFrameEvent.bind(this), false);
+        addEventListener("sceneCompleteEvent", this.onSceneCompleteEvent.bind(this), false);
+
+        document.addEventListener('keydown', this.onKeyDown.bind(this), false);
+
         super.preInitialize().then(() => {
             super.initialize().then((result) => {
                 this.initialize();
@@ -15,7 +21,6 @@ class VlabBase extends VLab {
     }
 
     initialize() {
-        this.eventBus.on('VLabEvent', this.eventHandler.bind(this));
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
         }).catch(error => {
@@ -23,17 +28,25 @@ class VlabBase extends VLab {
         });
     }
 
-    eventHandler(VLabEvent) {
-        switch(VLabEvent.type) {
-            case 'vLabSceneComplete':
-                super.activate();
-                // super.switchCameraControls({ type: 'orbit', target: this.vLabScene.getObjectByName("Cube").position });
-                super.switchCameraControls({ type: 'pointerlock' });
+    onKeyDown(event) {
+        switch (event.keyCode) {
+            case 79: // o
+                this.switchCameraControls({ type: 'orbit', targetObjectName: 'Cube'});
             break;
-            case 'newFrame':
-                
+            case 80: // p
+                this.switchCameraControls({ type: 'pointerlock'});
             break;
         }
+    }
+
+    onSceneCompleteEvent(event) {
+        super.activate();
+        // super.switchCameraControls(this.nature.cameraControls);
+        super.switchCameraControls({ type: 'pointerlock' });
+    }
+
+    onRedererFrameEvent(event) {
+        // console.log(event);
     }
 }
 

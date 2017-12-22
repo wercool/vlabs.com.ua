@@ -3,5 +3,9 @@
     "resolutionFactor": "1.0",
     "sceneJSONFile": "./resources/scene/vlab.base.json",
     "defaultSceneCameraName": "defaultCamera",
+    "cameraControls": {
+        "type": "orbit",
+        "targetObjectName": "Cube"
+    },
     "showTHREEStats": true
 }

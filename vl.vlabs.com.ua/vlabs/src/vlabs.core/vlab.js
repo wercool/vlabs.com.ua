@@ -1,27 +1,28 @@
 import * as THREE                   from 'three';
 import THREEStats                   from 'stats.js';
 import * as HTTPUtils               from "./utils/http.utils"
-import { Stats }                    from 'fs';
 
-var EventEmitter        = require('event-emitter-es6');
 var ProgressBar         = require('progressbar.js');
 var webglDetect         = require('webgl-detect');
 var OrbitControls       = require('three-orbit-controls')(THREE);
 var PointerLockControls = require('./three-pointerlock/index');
 
 /*
-    initObj {
-        "natureURL": "nature.json",
-        "webGLContainer": "webGLContainer"
-    }
+initObj {
+    "natureURL": "nature.json",
+    "webGLContainer": "webGLContainer"
+}
 */
-
 export default class VLab {
 
     constructor(initObj = {}) {
         if (this.constructor === VLab) {
             throw new TypeError("Cannot construct VLab instances directly");
         }
+
+        /* Events */
+        this.sceneCompleteEvent = new Event('sceneCompleteEvent');
+        this.redererFrameEvent  = new Event('redererFrameEvent');
 
         this.initObj = initObj;
         this.initialized = false;
@@ -30,17 +31,9 @@ export default class VLab {
         this.webGLContainer = undefined;
         this.webGLRenderer = undefined;
 
-        /*
-            VLabEvent {
-                type: [
-                    vLabSceneComplete
-                ]
-            }
-        */
-        this.eventBus = new EventEmitter();
-
         this.vLabScene = undefined;
         this.defaultCamera = undefined;
+        this.defaultCameraInitialPosition = undefined;
         this.defaultCameraControls = undefined;
 
         this.statsTHREE = undefined;
@@ -103,6 +96,11 @@ export default class VLab {
         this.webGLRenderer.setClearColor(0x000000);
 
         this.webGLContainer.appendChild(this.webGLRenderer.domElement);
+        this.webGLRenderer.domElement.addEventListener('contextmenu', function(event) {
+            if (event.button == 2) {
+                event.preventDefault();
+            }
+        });
 
         this.resiezeWebGLContainer();
 
@@ -165,6 +163,9 @@ export default class VLab {
         } else {
             this.defaultCamera = new THREE.PerspectiveCamera(70, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.1, 200);
         }
+        if (!this.defaultCameraInitialPosition) {
+            this.defaultCameraInitialPosition = this.defaultCamera.position.clone();
+        }
     }
 
     setVLabScene(vLabScene) {
@@ -177,7 +178,7 @@ export default class VLab {
 
         this.vLabScene = (vLabScene) ? vLabScene : new THREE.Scene();
 
-        this.eventBus.emit('VLabEvent', {type: 'vLabSceneComplete'});
+        dispatchEvent(this.sceneCompleteEvent);
     }
 
     activate() {
@@ -244,7 +245,8 @@ export default class VLab {
             if (this.statsTHREE) this.statsTHREE.end();
 
             this.updateCameraControls();
-            this.eventBus.emit('VLabEvent', {type: 'newFrame'});
+
+            dispatchEvent(this.redererFrameEvent);
 
             requestAnimationFrame(this.render.bind(this));
         } else {
@@ -261,28 +263,61 @@ export default class VLab {
     }
 
 /*
-    configObj {
-        "type": "orbit, pointerlock, assistant",
+    cameraControlConfig {
+        "type": "orbit",
+        "targetName": "target object name"
         "target": "THREE.Vector3()"
     }
+    cameraControlConfig {
+        "type": "pointerlock",
+    }
+    cameraControlConfig {
+        "type": "assistant",
+    }
 */
-    switchCameraControls(configObj) {
-        switch (configObj.type) {
+    switchCameraControls(cameraControlConfig) {
+        if (this.defaultCameraControls) {
+            if (this.defaultCameraControls.type) {
+                if (this.defaultCameraControls.type == cameraControlConfig.type)
+                    return;
+            }
+            this.defaultCameraControls.dispose();
+        }
+        switch (cameraControlConfig.type) {
             case 'orbit':
+                if (this.defaultCameraControls) {
+                    if (this.defaultCameraControls.type == 'pointerlock') {
+                        this.vLabScene.remove(this.vLabScene.getObjectByName("CameraYawObject"));
+                        if(!this.vLabScene.children[this.defaultCamera]) {
+                            this.vLabScene.add(this.defaultCamera);
+                            this.defaultCamera.position.copy(this.defaultCameraInitialPosition.clone());
+                        }
+                    }
+                }
                 this.defaultCameraControls = new OrbitControls(this.defaultCamera, this.webGLContainer);
-                if (configObj.target) {
-                    this.defaultCameraControls.target = configObj.target;
+                if (cameraControlConfig.target) {
+                    this.defaultCameraControls.target = cameraControlConfig.target;
+                }
+                if (cameraControlConfig.targetObjectName) {
+                    this.defaultCameraControls.target = this.vLabScene.getObjectByName(cameraControlConfig.targetObjectName).position.clone();
                 }
                 this.defaultCameraControls.update();
             break;
             case 'pointerlock':
+                if (this.defaultCameraControls) {
+                    if (this.defaultCameraControls.type == 'orbit') {
+                        this.defaultCamera.position.y = this.defaultCameraInitialPosition.y;
+                    }
+                }
                 this.defaultCameraControls = new PointerLockControls(this.defaultCamera);
                 this.vLabScene.add(this.defaultCameraControls.getObject());
                 this.defaultCameraControls.enabled = true;
                 this.defaultCameraControls.update();
             break;
+            case 'assistant':
+            break;
         }
-        this.defaultCameraControls.type = configObj.type;
+        this.defaultCameraControls.type = cameraControlConfig.type;
     }
 
     updateCameraControls() {
