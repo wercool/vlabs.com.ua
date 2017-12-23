@@ -41,8 +41,8 @@ class VlabBase extends VLab {
 
     onSceneCompleteEvent(event) {
         super.activate();
-        // super.switchCameraControls(this.nature.cameraControls);
-        super.switchCameraControls({ type: 'pointerlock' });
+        super.switchCameraControls(this.nature.cameraControls);
+        // super.switchCameraControls({ type: 'pointerlock' });
     }
 
     onRedererFrameEvent(event) {

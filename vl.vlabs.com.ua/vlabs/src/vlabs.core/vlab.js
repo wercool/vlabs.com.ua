@@ -4,7 +4,7 @@ import * as HTTPUtils               from "./utils/http.utils"
 
 var ProgressBar         = require('progressbar.js');
 var webglDetect         = require('webgl-detect');
-var OrbitControls       = require('three-orbit-controls')(THREE);
+var OrbitControls       = require('./three-orbit-controls/index')(THREE);
 var PointerLockControls = require('./three-pointerlock/index');
 
 /*
@@ -169,7 +169,7 @@ export default class VLab {
     }
 
     setVLabScene(vLabScene) {
-        // console.log(vLabScene);
+        console.log(vLabScene);
         // return;
 
         // vLabScene.traverse(function(obj) {
@@ -189,6 +189,8 @@ export default class VLab {
         }
 
         this.setDefaultCamera();
+        this.setDefaultLighting();
+        this.setupDefaultSprites();
 
         document.getElementById("overlayContainer").style.display = 'none';
         document.getElementById("progressBar").style.display = 'none';
@@ -262,24 +264,16 @@ export default class VLab {
         document.body.appendChild(this.statsTHREE.domElement);
     }
 
-/*
-    cameraControlConfig {
-        "type": "orbit",
-        "targetName": "target object name"
-        "target": "THREE.Vector3()"
-    }
-    cameraControlConfig {
-        "type": "pointerlock",
-    }
-    cameraControlConfig {
-        "type": "assistant",
-    }
-*/
     switchCameraControls(cameraControlConfig) {
         if (this.defaultCameraControls) {
             if (this.defaultCameraControls.type) {
-                if (this.defaultCameraControls.type == cameraControlConfig.type)
+                if (cameraControlConfig.type == 'pointerlock' && this.defaultCameraControls.type == 'pointerlock') {
+                    this.defaultCameraControls.lockCamera = false;
+                    this.defaultCameraControls.requestPointerLock();
+                }
+                if (this.defaultCameraControls.type == cameraControlConfig.type) {
                     return;
+                }
             }
             this.defaultCameraControls.dispose();
         }
@@ -288,10 +282,8 @@ export default class VLab {
                 if (this.defaultCameraControls) {
                     if (this.defaultCameraControls.type == 'pointerlock') {
                         this.vLabScene.remove(this.vLabScene.getObjectByName("CameraYawObject"));
-                        if(!this.vLabScene.children[this.defaultCamera]) {
-                            this.vLabScene.add(this.defaultCamera);
-                            this.defaultCamera.position.copy(this.defaultCameraInitialPosition.clone());
-                        }
+                        this.vLabScene.add(this.defaultCamera);
+                        this.defaultCamera.position.copy(this.defaultCameraInitialPosition.clone());
                     }
                 }
                 this.defaultCameraControls = new OrbitControls(this.defaultCamera, this.webGLContainer);
@@ -313,6 +305,7 @@ export default class VLab {
                 this.vLabScene.add(this.defaultCameraControls.getObject());
                 this.defaultCameraControls.enabled = true;
                 this.defaultCameraControls.update();
+                this.defaultCameraControls.requestPointerLock();
             break;
             case 'assistant':
             break;
@@ -326,4 +319,25 @@ export default class VLab {
         }
     }
 
+    setDefaultLighting() {
+        let ambientLight = new THREE.AmbientLight(0x111111);
+        ambientLight.name = 'ambient';
+        this.vLabScene.add(ambientLight);
+    }
+
+    setupDefaultSprites() {
+        var spriteMap = new THREE.TextureLoader().load('../vlabs.assets/img/crosshair.png');
+        // var spriteMaterial = new THREE.SpriteMaterial({ map: spriteMap, color: 0xffffff });
+        // var sprite = new THREE.Sprite(spriteMaterial);
+        // var width = spriteMap.width;
+        // var height = spriteMap.height;
+        // sprite.position.set(0, 0, 1);
+        // this.vLabScene.add(sprite);
+
+        var spriteMaterial = new THREE.SpriteMaterial({ map: spriteMap });
+        var sprite = new THREE.Sprite( spriteMaterial );
+        sprite.position.set(0, 1, 0);
+        sprite.scale.set(0.1, 0.1, 1.0);
+        this.vLabScene.add(sprite);
+    }
 }

@@ -12,7 +12,9 @@ module.exports = function ( camera ) {
   var scope = this;
 
   var curCameraQuaternion = camera.quaternion.clone();
+  var curCameraPosition = camera.position.clone();
   camera.rotation.set( 0, 0, 0 );
+  camera.position.set( 0, 0, 0 );
 
   this.lockCamera = false;
 
@@ -23,8 +25,7 @@ module.exports = function ( camera ) {
   var yawObject = new THREE.Object3D();
   yawObject.name = "CameraYawObject";
   yawObject.add( pitchObject );
-  yawObject.position.copy(camera.position.clone());
-  camera.position.set( 0, 0, 0 );
+  yawObject.position.copy(curCameraPosition);
 
   yawObject.quaternion.y = curCameraQuaternion.y;
   pitchObject.quaternion.x = curCameraQuaternion.x;
@@ -61,35 +62,27 @@ module.exports = function ( camera ) {
       case 38: // up
       case 87: // w
         moveForward = true;
-        break;
+      break;
 
       case 37: // left
       case 65: // a
         moveLeft = true;
-        break;
+      break;
 
       case 40: // down
       case 83: // s
         moveBackward = true;
-        break;
+      break;
 
       case 39: // right
       case 68: // d
         moveRight = true;
-        break;
-
-      case 32: // whitespace
-        var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
-        if (havePointerLock) {
-          var element = document.body;
-          element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
-          element.requestPointerLock();
-        }
-        break;
+      break;
 
       case 17: // left ctrl
         scope.lockCamera = true;
-        break;
+        scope.exitPointerLock();
+      break;
     }
 
   };
@@ -98,43 +91,47 @@ module.exports = function ( camera ) {
 
     switch( event.keyCode ) {
 
-      case 38: // up
-      case 87: // w
-        moveForward = false;
+        case 38: // up
+        case 87: // w
+          moveForward = false;
         break;
 
-      case 37: // left
-      case 65: // a
-        moveLeft = false;
+        case 37: // left
+        case 65: // a
+          moveLeft = false;
         break;
 
-      case 40: // down
-      case 83: // s
-        moveBackward = false;
+        case 40: // down
+        case 83: // s
+          moveBackward = false;
         break;
 
-      case 39: // right
-      case 68: // d
-        moveRight = false;
+        case 39: // right
+        case 68: // d
+          moveRight = false;
         break;
 
-      case 17: // left ctrl
-        scope.lockCamera = false;
+        case 17: // left ctrl
+          scope.lockCamera = false;
+          scope.requestPointerLock();
         break;
-    }
+      }
 
   };
 
-  var onMouseDown = function ( event ) {
-    if (event.buttons == 1) {
-      exitPointerLock();
+  this.requestPointerLock = function () {
+    var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
+    if (havePointerLock) {
+      var element = document.body;
+      element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+      element.requestPointerLock();
     }
   }
 
-  var exitPointerLock  = function (){
-    if (document.pointerLockElement === document.body || document.mozPointerLockElement === document.body || document.webkitPointerLockElement == document.body) {
-      var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
-      if (havePointerLock) {
+  this.exitPointerLock  = function () {
+    var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
+    if (havePointerLock) {
+      if (document.pointerLockElement === document.body || document.mozPointerLockElement === document.body || document.webkitPointerLockElement == document.body) {
         document.exitPointerLock = document.exitPointerLock || document.mozexitPointerLock || document.webkitexitPointerLock;
         document.exitPointerLock();
       }
@@ -144,7 +141,6 @@ module.exports = function ( camera ) {
   document.addEventListener( 'mousemove', onMouseMove, false );
   document.addEventListener( 'keydown', onKeyDown, false );
   document.addEventListener( 'keyup', onKeyUp, false );
-  document.addEventListener( 'mousedown', onMouseDown, false );
 
   this.enabled = false;
 
@@ -192,7 +188,6 @@ module.exports = function ( camera ) {
       if ( moveRight ) velocity.x += 50.0 * delta;
 
       yawObject.translateX( velocity.x * delta );
-      yawObject.translateY( velocity.y * delta );
       yawObject.translateZ( velocity.z * delta );
     }
 
@@ -200,10 +195,9 @@ module.exports = function ( camera ) {
   };
 
   this.dispose = function() {
-    exitPointerLock();
+    this.exitPointerLock();
     document.removeEventListener( 'mousemove', onMouseMove, false );
     document.removeEventListener( 'keydown', onKeyDown, false );
     document.removeEventListener( 'keyup', onKeyUp, false );
-    document.removeEventListener( 'mousedown', onMouseDown, false );
   }
 };
