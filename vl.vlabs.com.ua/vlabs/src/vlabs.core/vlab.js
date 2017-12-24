@@ -1,6 +1,7 @@
 import * as THREE                   from 'three';
 import THREEStats                   from 'stats.js';
 import * as HTTPUtils               from "./utils/http.utils"
+import * as TWEEN                   from 'tween.js';
 
 var ProgressBar         = require('progressbar.js');
 var webglDetect         = require('webgl-detect');
@@ -39,6 +40,11 @@ export default class VLab {
         this.statsTHREE = undefined;
         this.progressBar = undefined;
         this.progressBarPrependText = "";
+
+        this.mouseCoords = new THREE.Vector2();
+        this.iteractionRaycaster = new THREE.Raycaster();
+
+        this.interactiveObjects = [];
     }
 
     getVesrion() {
@@ -169,7 +175,7 @@ export default class VLab {
     }
 
     setVLabScene(vLabScene) {
-        console.log(vLabScene);
+        // console.log(vLabScene);
         // return;
 
         // vLabScene.traverse(function(obj) {
@@ -188,9 +194,14 @@ export default class VLab {
             this.setTHREEStats();
         }
 
+        this.webGLContainer.addEventListener("mousemove", this.onMouseMove.bind(this), false);
+        // this.webGLContainer.addEventListener("mousedown", this.onMouseDown.bind(this), false);
+        // this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
+
+        this.setInteractiveObjects();
         this.setDefaultCamera();
         this.setDefaultLighting();
-        this.setupDefaultSprites();
+        this.setupCrosshair();
 
         document.getElementById("overlayContainer").style.display = 'none';
         document.getElementById("progressBar").style.display = 'none';
@@ -237,7 +248,7 @@ export default class VLab {
         return HTTPUtils.getJSONFromURL(url);
     }
 
-    render() {
+    render(time) {
         if (this.initialized && !this.paused) {
             if (this.statsTHREE) this.statsTHREE.begin();
 
@@ -248,11 +259,19 @@ export default class VLab {
 
             this.updateCameraControls();
 
+            TWEEN.update(time);
+
             dispatchEvent(this.redererFrameEvent);
 
             requestAnimationFrame(this.render.bind(this));
         } else {
             setTimeout(this.render.bind(this), 250);
+        }
+    }
+
+    setInteractiveObjects() {
+        for (var interactiveObjectName of this.nature.interactiveObjects) {
+            this.interactiveObjects.push(this.vLabScene.getObjectByName(interactiveObjectName));
         }
     }
 
@@ -286,6 +305,7 @@ export default class VLab {
                         this.defaultCamera.position.copy(this.defaultCameraInitialPosition.clone());
                     }
                 }
+                this.crosshair.visible = false;
                 this.defaultCameraControls = new OrbitControls(this.defaultCamera, this.webGLContainer);
                 if (cameraControlConfig.target) {
                     this.defaultCameraControls.target = cameraControlConfig.target;
@@ -306,6 +326,7 @@ export default class VLab {
                 this.defaultCameraControls.enabled = true;
                 this.defaultCameraControls.update();
                 this.defaultCameraControls.requestPointerLock();
+                this.crosshair.visible = true;
             break;
             case 'assistant':
             break;
@@ -316,6 +337,17 @@ export default class VLab {
     updateCameraControls() {
         if (this.defaultCameraControls.type === 'pointerlock') {
             this.defaultCameraControls.update();
+
+            if (this.defaultCameraControls.active) {
+                this.iteractionRaycaster.setFromCamera({x: 0, y: 0}, this.defaultCamera);
+                var interactionObjectIntersects = this.iteractionRaycaster.intersectObjects(this.interactiveObjects);
+
+                if (interactionObjectIntersects.length > 0) {
+                    console.log(interactionObjectIntersects);
+                }
+
+                this.defaultCameraControls.active = false;
+            }
         }
     }
 
@@ -325,19 +357,27 @@ export default class VLab {
         this.vLabScene.add(ambientLight);
     }
 
-    setupDefaultSprites() {
-        var spriteMap = new THREE.TextureLoader().load('../vlabs.assets/img/crosshair.png');
-        // var spriteMaterial = new THREE.SpriteMaterial({ map: spriteMap, color: 0xffffff });
-        // var sprite = new THREE.Sprite(spriteMaterial);
-        // var width = spriteMap.width;
-        // var height = spriteMap.height;
-        // sprite.position.set(0, 0, 1);
-        // this.vLabScene.add(sprite);
+    setupCrosshair() {
+        var crosshairSpriteMap = [];
+        crosshairSpriteMap[0] = new THREE.TextureLoader().load('../vlabs.assets/img/crosshair.png');
+        var crosshairSpriteMaterial = new THREE.SpriteMaterial({ map: crosshairSpriteMap[0] });
+        this.crosshair = new THREE.Sprite(crosshairSpriteMaterial);
 
-        var spriteMaterial = new THREE.SpriteMaterial({ map: spriteMap });
-        var sprite = new THREE.Sprite( spriteMaterial );
-        sprite.position.set(0, 1, 0);
-        sprite.scale.set(0.1, 0.1, 1.0);
-        this.vLabScene.add(sprite);
+        this.crosshair.position.set(0, 0, -0.5);
+        this.crosshair.scale.set(0.025, 0.025, 1.0);
+        this.crosshair.visible = true;
+
+        this.crosshairPulsation = new TWEEN.Tween(this.crosshair.scale)
+        .to({x: 0.02, y: 0.02}, 500)
+        .repeat(Infinity)
+        .yoyo(true)
+        .easing(TWEEN.Easing.Cubic.InOut).start();
+
+
+        this.defaultCamera.add(this.crosshair);
+    }
+
+    onMouseMove(event) {
+        this.mouseCoords.set(event.x, event.y);
     }
 }

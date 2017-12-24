@@ -35,6 +35,12 @@ module.exports = function ( camera ) {
   var moveLeft = false;
   var moveRight = false;
 
+  this.active = true;
+
+  var mouseMoved = false;
+  var prevMouseX;
+  var prevMouseY;
+
   var prevTime = performance.now();
 
   var velocity = new THREE.Vector3();
@@ -43,10 +49,22 @@ module.exports = function ( camera ) {
 
   var onMouseMove = function ( event ) {
 
-    if ( scope.enabled === false || scope.lockCamera ) return;
+    var pointerLocked = false;
+    if (document.pointerLockElement === document.body || document.mozPointerLockElement === document.body || document.webkitPointerLockElement == document.body) {
+      pointerLocked = true;
+    }
+
+    if (scope.enabled === false || scope.lockCamera || !pointerLocked) return;
 
     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
     var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+
+    mouseMoved = false;
+    if (prevMouseX != movementX || prevMouseY != movementY)
+      mouseMoved = true;
+
+    prevMouseX = movementX;
+    prevMouseY = movementY;
 
     yawObject.rotation.y -= movementX * 0.003;
     pitchObject.rotation.x -= movementY * 0.003;
@@ -173,19 +191,29 @@ module.exports = function ( camera ) {
 
     if ( scope.enabled === false ) return;
 
+    var pointerLocked = false;
+    if (document.pointerLockElement === document.body || document.mozPointerLockElement === document.body || document.webkitPointerLockElement == document.body) {
+      pointerLocked = true;
+    }
+
+    this.active = false;
+    if (moveForward || moveBackward || moveLeft || moveRight || mouseMoved) {
+      this.active = true;
+    }
+
     var time = performance.now();
 
-    if (!scope.lockCamera) {
+    if (!scope.lockCamera || !scope.pointerLocked) {
       var delta = ( time - prevTime ) / 1000;
 
       velocity.x -= velocity.x * 10.0 * delta;
       velocity.z -= velocity.z * 10.0 * delta;
 
-      if ( moveForward ) velocity.z -= 50.0 * delta;
-      if ( moveBackward ) velocity.z += 50.0 * delta;
+      if ( moveForward ) velocity.z -= 40.0 * delta;
+      if ( moveBackward ) velocity.z += 40.0 * delta;
 
-      if ( moveLeft ) velocity.x -= 50.0 * delta;
-      if ( moveRight ) velocity.x += 50.0 * delta;
+      if ( moveLeft ) velocity.x -= 40.0 * delta;
+      if ( moveRight ) velocity.x += 40.0 * delta;
 
       yawObject.translateX( velocity.x * delta );
       yawObject.translateZ( velocity.z * delta );
