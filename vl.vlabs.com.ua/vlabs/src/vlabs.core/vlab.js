@@ -2,11 +2,13 @@ import * as THREE                   from 'three';
 import THREEStats                   from 'stats.js';
 import * as HTTPUtils               from "./utils/http.utils"
 import * as TWEEN                   from 'tween.js';
+import EffectComposer, { RenderPass, ShaderPass, CopyShader } from 'three-effectcomposer-es6'
+import OutlinePass                  from './postprocessing/OutlinePass'
 
-var ProgressBar         = require('progressbar.js');
-var webglDetect         = require('webgl-detect');
-var OrbitControls       = require('./three-orbit-controls/index')(THREE);
-var PointerLockControls = require('./three-pointerlock/index');
+var ProgressBar             = require('progressbar.js');
+var webglDetect             = require('webgl-detect');
+var OrbitControls           = require('./three-orbit-controls/index')(THREE);
+var PointerLockControls     = require('./three-pointerlock/index');
 
 /*
 initObj {
@@ -42,9 +44,11 @@ export default class VLab {
         this.progressBarPrependText = "";
 
         this.mouseCoords = new THREE.Vector2();
+        this.mouseCoordsRaycaster = new THREE.Vector2();
         this.iteractionRaycaster = new THREE.Raycaster();
 
         this.interactiveObjects = [];
+        this.selectedObjects = [];
     }
 
     getVesrion() {
@@ -96,7 +100,7 @@ export default class VLab {
         window.onresize = this.resiezeWebGLContainer.bind(this);
 
         this.webGLRenderer = new THREE.WebGLRenderer({
-
+            antialias: false
         });
 
         this.webGLRenderer.setClearColor(0x000000);
@@ -123,6 +127,11 @@ export default class VLab {
         } else {
             this.webGLRenderer.setSize(this.webGLContainer.clientWidth, this.webGLContainer.clientHeight);
         }
+
+        if (this.postprocessingComposer) {
+            this.postprocessingComposer.setSize(this.webGLRenderer.getSize());
+        }
+
         if (this.defaultCamera) {
             this.defaultCamera.aspect = (this.webGLContainer.clientWidth / this.webGLContainer.clientHeight);
             this.defaultCamera.updateProjectionMatrix();
@@ -200,6 +209,7 @@ export default class VLab {
 
         this.setInteractiveObjects();
         this.setDefaultCamera();
+        this.setPostprocessing();
         this.setDefaultLighting();
         this.setupCrosshair();
 
@@ -211,6 +221,16 @@ export default class VLab {
 
         this.initialized = true;
         this.paused = false;
+    }
+
+    setPostprocessing() {
+        // postprocessing
+        this.postprocessingComposer = new EffectComposer( this.webGLRenderer );
+        var renderPass = new RenderPass( this.vLabScene, this.defaultCamera );
+        this.postprocessingComposer.addPass( renderPass );
+        this.outlinePass = new OutlinePass( new THREE.Vector2( this.webGLRenderer.clientWidth, this.webGLRenderer.clientHeight ), this.vLabScene, this.defaultCamera );
+        this.postprocessingComposer.addPass( this.outlinePass );
+        this.postprocessingComposer.setSize(this.webGLRenderer.getSize());
     }
 
     loadScene() {
@@ -258,6 +278,8 @@ export default class VLab {
             if (this.statsTHREE) this.statsTHREE.end();
 
             this.updateCameraControls();
+
+            this.postprocessingComposer.render();
 
             TWEEN.update(time);
 
@@ -344,9 +366,22 @@ export default class VLab {
 
                 if (interactionObjectIntersects.length > 0) {
                     console.log(interactionObjectIntersects);
+                } else {
+                    // console.log("No Interactive Object");
                 }
 
                 this.defaultCameraControls.active = false;
+            }
+        } else if (this.defaultCameraControls.type === 'orbit') {
+            this.iteractionRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
+            var interactionObjectIntersects = this.iteractionRaycaster.intersectObjects(this.interactiveObjects);
+
+            if (interactionObjectIntersects.length > 0) {
+                this.selectedObjects = [];
+                this.selectedObjects.push(interactionObjectIntersects[0].object);
+                this.outlinePass.selectedObjects = this.selectedObjects;
+            } else {
+                this.selectedObjects = [];
             }
         }
     }
@@ -379,5 +414,6 @@ export default class VLab {
 
     onMouseMove(event) {
         this.mouseCoords.set(event.x, event.y);
+        this.mouseCoordsRaycaster.set((event.x / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.y / this.webGLContainer.clientHeight) * 2);
     }
 }

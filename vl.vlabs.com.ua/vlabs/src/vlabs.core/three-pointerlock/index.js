@@ -200,6 +200,7 @@ module.exports = function ( camera ) {
     if (moveForward || moveBackward || moveLeft || moveRight || mouseMoved) {
       this.active = true;
     }
+    mouseMoved = false;
 
     var time = performance.now();
 
