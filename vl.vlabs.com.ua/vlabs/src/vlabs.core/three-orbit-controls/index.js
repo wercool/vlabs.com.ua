@@ -16,6 +16,8 @@ module.exports = function( THREE ) {
 
 	function OrbitControls( object, domElement ) {
 
+		this.active = false;
+
 		this.object = object;
 
 		this.domElement = ( domElement !== undefined ) ? domElement : document;
@@ -52,7 +54,7 @@ module.exports = function( THREE ) {
 		// This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
 		// Set to false to disable zooming
 		this.enableZoom = true;
-		this.zoomSpeed = 1.0;
+		this.zoomSpeed = 0.5;
 
 		// Set to false to disable rotating
 		this.enableRotate = true;
@@ -653,6 +655,8 @@ module.exports = function( THREE ) {
 
 			if ( scope.enabled === false ) return;
 
+			scope.active = true;
+
 			event.preventDefault();
 
 			if ( event.button === scope.mouseButtons.ORBIT ) {
@@ -696,6 +700,8 @@ module.exports = function( THREE ) {
 
 			if ( scope.enabled === false ) return;
 
+			scope.active = true;
+
 			event.preventDefault();
 
 			if ( state === STATE.ROTATE ) {
@@ -724,6 +730,8 @@ module.exports = function( THREE ) {
 
 			if ( scope.enabled === false ) return;
 
+			scope.active = true;
+
 			handleMouseUp( event );
 
 			document.removeEventListener( 'mousemove', onMouseMove, false );
@@ -739,6 +747,8 @@ module.exports = function( THREE ) {
 
 			if ( scope.enabled === false || scope.enableZoom === false || ( state !== STATE.NONE && state !== STATE.ROTATE ) ) return;
 
+			scope.active = true;
+
 			event.preventDefault();
 			event.stopPropagation();
 
@@ -753,6 +763,8 @@ module.exports = function( THREE ) {
 
 			if ( scope.enabled === false || scope.enableKeys === false || scope.enablePan === false ) return;
 
+			scope.active = true;
+
 			handleKeyDown( event );
 
 		}
@@ -760,6 +772,8 @@ module.exports = function( THREE ) {
 		function onTouchStart( event ) {
 
 			if ( scope.enabled === false ) return;
+
+			scope.active = true;
 
 			switch ( event.touches.length ) {
 
@@ -811,6 +825,8 @@ module.exports = function( THREE ) {
 
 			if ( scope.enabled === false ) return;
 
+			scope.active = true;
+
 			event.preventDefault();
 			event.stopPropagation();
 
@@ -854,6 +870,8 @@ module.exports = function( THREE ) {
 		function onTouchEnd( event ) {
 
 			if ( scope.enabled === false ) return;
+
+			scope.active = false;
 
 			handleTouchEnd( event );
 

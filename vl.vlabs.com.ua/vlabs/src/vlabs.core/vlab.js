@@ -2,13 +2,12 @@ import * as THREE                   from 'three';
 import THREEStats                   from 'stats.js';
 import * as HTTPUtils               from "./utils/http.utils"
 import * as TWEEN                   from 'tween.js';
-import EffectComposer, { RenderPass, ShaderPass, CopyShader } from 'three-effectcomposer-es6'
-import OutlinePass                  from './postprocessing/OutlinePass'
 
 var ProgressBar             = require('progressbar.js');
 var webglDetect             = require('webgl-detect');
 var OrbitControls           = require('./three-orbit-controls/index')(THREE);
 var PointerLockControls     = require('./three-pointerlock/index');
+var TransformControls       = require('three-transformcontrols');
 
 /*
 initObj {
@@ -26,6 +25,7 @@ export default class VLab {
         /* Events */
         this.sceneCompleteEvent = new Event('sceneCompleteEvent');
         this.redererFrameEvent  = new Event('redererFrameEvent');
+        this.activatedEvent     = new Event('activatedEvent');
 
         this.initObj = initObj;
         this.initialized = false;
@@ -48,7 +48,11 @@ export default class VLab {
         this.iteractionRaycaster = new THREE.Raycaster();
 
         this.interactiveObjects = [];
-        this.selectedObjects = [];
+
+        this.hoveredObject = undefined;
+        this.preSelectedObject = undefined;
+        this.selectedObject = undefined;
+        this.selectionSphere = undefined;
     }
 
     getVesrion() {
@@ -105,6 +109,10 @@ export default class VLab {
 
         this.webGLRenderer.setClearColor(0x000000);
 
+        // // prevent logging
+        // this.webGLRenderer.context.getShaderInfoLog = function () { return '' };
+        // this.webGLRenderer.context.getProgramInfoLog = function () { return '' };
+
         this.webGLContainer.appendChild(this.webGLRenderer.domElement);
         this.webGLRenderer.domElement.addEventListener('contextmenu', function(event) {
             if (event.button == 2) {
@@ -126,10 +134,6 @@ export default class VLab {
             this.webGLRenderer.domElement.style.height = this.webGLContainer.clientHeight + 'px';
         } else {
             this.webGLRenderer.setSize(this.webGLContainer.clientWidth, this.webGLContainer.clientHeight);
-        }
-
-        if (this.postprocessingComposer) {
-            this.postprocessingComposer.setSize(this.webGLRenderer.getSize());
         }
 
         if (this.defaultCamera) {
@@ -203,15 +207,18 @@ export default class VLab {
             this.setTHREEStats();
         }
 
-        this.webGLContainer.addEventListener("mousemove", this.onMouseMove.bind(this), false);
-        // this.webGLContainer.addEventListener("mousedown", this.onMouseDown.bind(this), false);
+        this.webGLContainer.addEventListener("mousemove",   this.onMouseMove.bind(this), false);
+        this.webGLContainer.addEventListener("mousedown",   this.onMouseDown.bind(this), false);
+        this.webGLContainer.addEventListener("touchstart",  this.onTouchStart.bind(this), false);
+        // this.webGLContainer.addEventListener("touchend",    this.onTouchEnd.bind(this), false);
         // this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
 
         this.setInteractiveObjects();
         this.setDefaultCamera();
-        this.setPostprocessing();
         this.setDefaultLighting();
         this.setupCrosshair();
+        this.setupSelectionHelpers();
+        this.setManipulationControl();
 
         document.getElementById("overlayContainer").style.display = 'none';
         document.getElementById("progressBar").style.display = 'none';
@@ -221,16 +228,8 @@ export default class VLab {
 
         this.initialized = true;
         this.paused = false;
-    }
 
-    setPostprocessing() {
-        // postprocessing
-        this.postprocessingComposer = new EffectComposer( this.webGLRenderer );
-        var renderPass = new RenderPass( this.vLabScene, this.defaultCamera );
-        this.postprocessingComposer.addPass( renderPass );
-        this.outlinePass = new OutlinePass( new THREE.Vector2( this.webGLRenderer.clientWidth, this.webGLRenderer.clientHeight ), this.vLabScene, this.defaultCamera );
-        this.postprocessingComposer.addPass( this.outlinePass );
-        this.postprocessingComposer.setSize(this.webGLRenderer.getSize());
+        dispatchEvent(this.activatedEvent);
     }
 
     loadScene() {
@@ -278,8 +277,6 @@ export default class VLab {
             if (this.statsTHREE) this.statsTHREE.end();
 
             this.updateCameraControls();
-
-            this.postprocessingComposer.render();
 
             TWEEN.update(time);
 
@@ -357,33 +354,39 @@ export default class VLab {
     }
 
     updateCameraControls() {
+        var interactionObjectIntersects = undefined;
         if (this.defaultCameraControls.type === 'pointerlock') {
             this.defaultCameraControls.update();
-
             if (this.defaultCameraControls.active) {
                 this.iteractionRaycaster.setFromCamera({x: 0, y: 0}, this.defaultCamera);
-                var interactionObjectIntersects = this.iteractionRaycaster.intersectObjects(this.interactiveObjects);
-
-                if (interactionObjectIntersects.length > 0) {
-                    console.log(interactionObjectIntersects);
-                } else {
-                    // console.log("No Interactive Object");
-                }
-
-                this.defaultCameraControls.active = false;
+                interactionObjectIntersects = this.iteractionRaycaster.intersectObjects(this.interactiveObjects);
             }
         } else if (this.defaultCameraControls.type === 'orbit') {
-            this.iteractionRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
-            var interactionObjectIntersects = this.iteractionRaycaster.intersectObjects(this.interactiveObjects);
-
-            if (interactionObjectIntersects.length > 0) {
-                this.selectedObjects = [];
-                this.selectedObjects.push(interactionObjectIntersects[0].object);
-                this.outlinePass.selectedObjects = this.selectedObjects;
-            } else {
-                this.selectedObjects = [];
+            if (this.defaultCameraControls.active) {
+                this.iteractionRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
+                interactionObjectIntersects = this.iteractionRaycaster.intersectObjects(this.interactiveObjects);
             }
         }
+
+        if (interactionObjectIntersects) {
+            if (interactionObjectIntersects.length > 0) {
+                this.hoveredObject = interactionObjectIntersects[0].object;
+                this.selectionSphere = this.vLabScene.getObjectByName(interactionObjectIntersects[0].object.name + "_SELECTION");
+                this.selectionSphere.visible = true;
+            } else {
+                if (this.selectionSphere) {
+                    if (this.hoveredObject !== this.selectedObject) {
+                        this.selectionSphere.visible = false;
+                    }
+                    this.selectionSphere = undefined;
+                }
+                if (this.hoveredObject) {
+                    this.hoveredObject = undefined;
+                }
+            }
+        }
+
+        this.defaultCameraControls.active = false;
     }
 
     setDefaultLighting() {
@@ -406,7 +409,7 @@ export default class VLab {
         .to({x: 0.02, y: 0.02}, 500)
         .repeat(Infinity)
         .yoyo(true)
-        .easing(TWEEN.Easing.Cubic.InOut).start();
+        .easing(TWEEN.Easing.Quadratic.InOut).start();
 
 
         this.defaultCamera.add(this.crosshair);
@@ -415,5 +418,97 @@ export default class VLab {
     onMouseMove(event) {
         this.mouseCoords.set(event.x, event.y);
         this.mouseCoordsRaycaster.set((event.x / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.y / this.webGLContainer.clientHeight) * 2);
+        this.defaultCameraControls.active = true;
+    }
+
+    onMouseDown(event) {
+        this.mouseCoords.set(event.x, event.y);
+        this.mouseCoordsRaycaster.set((event.x / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.y / this.webGLContainer.clientHeight) * 2);
+        this.toggleSelectedObject();
+    }
+
+    onTouchStart() {
+        this.mouseCoords.set(event.touches[0].clientX, event.touches[0].clientY);
+        this.mouseCoordsRaycaster.set((event.touches[0].clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.touches[0].clientY / this.webGLContainer.clientHeight) * 2);
+        this.toggleSelectedObject();
+    }
+
+    setupSelectionHelpers() {
+        var canvas = document.createElement("canvas");
+        canvas.width = 128;
+        canvas.height = 128;
+        var ctx = canvas.getContext("2d");
+        var gradient = ctx.createLinearGradient(0, 0, 0, 128);
+        gradient.addColorStop(0.35, "black");
+        gradient.addColorStop(0.475, "white");
+        gradient.addColorStop(0.65, "black");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 128, 128);
+        var selectionAlphaTexture = new THREE.Texture(canvas);
+        selectionAlphaTexture.needsUpdate = true;
+
+        for (var interactiveObject of this.interactiveObjects) {
+            interactiveObject.geometry.computeBoundingSphere();
+            var sphereGeom = new THREE.SphereGeometry(interactiveObject.geometry.boundingSphere.radius * 1.1, 12, 8);
+            sphereGeom.rotateX(1.57);
+            var sphereMat = new THREE.MeshBasicMaterial({
+              color: new THREE.Color(1, 1, 0), // yellow ring
+              transparent: true, // to make our alphaMap work, we have to set this parameter to `true`
+              alphaMap: selectionAlphaTexture 
+            });
+            var sphere = new THREE.Mesh(sphereGeom, sphereMat);
+            sphere.name = interactiveObject.name + "_SELECTION";
+            sphere.visible = false;
+            sphere.position.copy(interactiveObject.geometry.boundingSphere.center.clone());
+            interactiveObject.add(sphere);
+            sphere.userData.pulsation = new TWEEN.Tween(sphere.scale)
+            .to({x: 1.2, y: 1.2}, 500)
+            .repeat(Infinity)
+            .yoyo(true)
+            .easing(TWEEN.Easing.Quadratic.InOut).start();;
+        }
+    }
+
+    setManipulationControl() {
+        this.manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        this.manipulationControl.setSize(1.0);
+        this.vLabScene.add(this.manipulationControl);
+    }
+
+    toggleSelectedObject() {
+        if (this.hoveredObject) {
+            if (this.hoveredObject === this.preSelectedObject) {
+                this.selectedObject = this.hoveredObject;
+                var selectionSphere = this.vLabScene.getObjectByName(this.selectedObject.name + "_SELECTION");
+                selectionSphere.material.color = new THREE.Color(0, 1, 0);
+            }
+        } else {
+            if(performance.now() - this.prevSelectionTime < 250) {
+                this.resetAllSelections();
+            }
+        }
+        this.preSelectedObject = this.hoveredObject;
+        this.prevSelectionTime = performance.now();
+        this.clearNotSelected();
+    }
+
+    resetAllSelections() {
+        for (var interactiveObject of this.interactiveObjects) {
+            var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
+            selectionSphere.visible = false;
+            selectionSphere.material.color = new THREE.Color(1, 1, 0);
+        }
+        this.selectedObject = undefined;
+        this.preSelectedObject = undefined;
+    }
+
+    clearNotSelected() {
+        for (var interactiveObject of this.interactiveObjects) {
+            if (this.selectedObject != interactiveObject) {
+                var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
+                selectionSphere.visible = false;
+                selectionSphere.material.color = new THREE.Color(1, 1, 0);
+            }
+        }
     }
 }

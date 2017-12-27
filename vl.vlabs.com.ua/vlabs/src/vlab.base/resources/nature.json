@@ -8,5 +8,5 @@
         "targetObjectName": "Cube"
     },
     "showTHREEStats": true,
-    "interactiveObjects": ["Sphere"]
+    "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001"]
 }

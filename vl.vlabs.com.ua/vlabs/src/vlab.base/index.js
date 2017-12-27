@@ -7,6 +7,7 @@ class VlabBase extends VLab {
 
         addEventListener("redererFrameEvent",  this.onRedererFrameEvent.bind(this), false);
         addEventListener("sceneCompleteEvent", this.onSceneCompleteEvent.bind(this), false);
+        addEventListener("activatedEvent", this.onActivatedEvent.bind(this), false);
 
         document.addEventListener('keydown', this.onKeyDown.bind(this), false);
 
@@ -45,12 +46,17 @@ class VlabBase extends VLab {
         // super.switchCameraControls({ type: 'pointerlock' });
     }
 
+    onActivatedEvent() {
+        // this.manipulationControl.attach(this.vLabScene.getObjectByName("Sphere.001"));
+        // this.manipulationControl.attach(this.vLabScene.getObjectByName("Sphere"));
+    }
+
     onRedererFrameEvent(event) {
         // console.log(event);
     }
 }
 
 let vLabBase = new VlabBase({
-    "natureURL": "http://localhost:9001/vlab.base/resources/nature.json",
+    "natureURL": "./resources/nature.json",
     "webGLContainer": "webGLContainer"
 });

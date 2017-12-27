@@ -9,6 +9,7 @@ var uglify              = require("gulp-uglify");
 var sourcemaps          = require("gulp-sourcemaps");
 var purgeSourcemaps     = require("gulp-purge-sourcemaps");
 var gutil               = require("gulp-util");
+var cors                = require('cors');
 
 var vLabName = __dirname.substr(__dirname.lastIndexOf("/") + 1);
 
@@ -72,7 +73,11 @@ gulp.task("server", function(){
     connect.server({
         root : "../../build",
         livereload : false,
-        port : 9001
+        port : 9001,
+        host: "0.0.0.0",
+        middleware: function() {
+            return [cors()];
+        }
     });
 });
 
