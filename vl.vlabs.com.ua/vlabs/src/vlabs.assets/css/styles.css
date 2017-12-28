@@ -1,3 +1,5 @@
+@import 'circular-menu.css';
+
 html, body {
     margin: 0;
     padding: 0;
@@ -51,5 +53,10 @@ html, body {
     background-color:rgba(14, 13, 13, 0.6);
     max-width: 500px;
     pointer-events:none;
+    z-index: 2e9;
+}
+
+#cMenu
+{
     z-index: 2e9;
 }

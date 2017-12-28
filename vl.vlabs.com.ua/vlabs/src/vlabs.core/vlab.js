@@ -8,6 +8,7 @@ var webglDetect             = require('webgl-detect');
 var OrbitControls           = require('./three-orbit-controls/index')(THREE);
 var PointerLockControls     = require('./three-pointerlock/index');
 var TransformControls       = require('three-transformcontrols');
+var CMenu                   = require('circular-menu/dist/js/circular-menu.js');
 
 /*
 initObj {
@@ -496,8 +497,45 @@ export default class VLab {
                 selectionSphere.material.color = new THREE.Color(0, 1, 0);
 
                 var screenPos = this.toScreenPosition(this.selectedObject);
-                console.log(screenPos);
-                this.setupCircularMenu();
+                this.cMenu.config({
+                    menus: [{
+                    title: "GitHub",
+                    icon: "fa fa-github",
+                    href: {
+                        url: "http://github.com",
+                        blank: true
+                    }
+                    }, {
+                    title: "GitLab",
+                    icon: ["fa fa-gitlab", '#4078c0'],
+                    }, {
+                    title: "subMenu",
+                    icon: "my-icon icon1",
+                    menus: [{
+                        title: 'subMenu1',
+                        icon: 'fa fa-firefox'
+                    }, {
+                        title: 'subMenu2',
+                        icon: 'fa fa-file'
+                    }]
+                    }, {
+                    title: "subMenu",
+                    icon: "my-icon icon2"
+                    }, {
+                    title: "click",
+                    icon: "my-icon icon3"
+                    }, {
+                    title: "hash-href",
+                    href: "#someHash"
+                    }, {
+                    title: "clickMe!",
+                    click: this.test
+                    }, {
+                    disabled: true,
+                    title: "disabled"
+                    }]
+                });
+                this.cMenu.show([screenPos.x, screenPos.y]);
             }
         } else {
             if(performance.now() - this.prevSelectionTime < 250) {
@@ -552,7 +590,7 @@ export default class VLab {
     };
 
     setupCircularMenu() {
-        
+        this.cMenu = CMenu("#cMenu");
     }
 
     tooltipShow(obj) {
@@ -573,5 +611,9 @@ export default class VLab {
         tooltip.style.left = '0px';
         tooltip.style.top = '0px';
         tooltip.style.display = 'none';
+    }
+
+    test(value) {
+        console.log("TEST", value);
     }
 }
