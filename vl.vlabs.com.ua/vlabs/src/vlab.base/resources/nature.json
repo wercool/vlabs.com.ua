@@ -16,5 +16,48 @@
             "en": "Central interactive object",
             "ru": "Центральный интерактивный объект"
         }
+    },
+    "objectMenus": {
+        "Sphere": {
+            "en": [{
+                    "title": "GitHub",
+                    "icon": "fa fa-github"
+                    }, {
+                    "title": "GitLab",
+                    "icon": ["fa fa-gitlab", "#4078c0"]
+                    }, {
+                    "title": "subMenu",
+                    "icon": "my-icon icon1"
+                    }, {
+                    "title": "click",
+                    "icon": "my-icon icon3"
+                    }, {
+                    "title": "clickMe!",
+                    "click": "this.test"
+                    }, {
+                    "disabled": true,
+                    "title": "disabled"
+                    }],
+                "ru": [{
+                    "title": "Взять",
+                    "icon": "fa fa-hand-rock"
+                    }, {
+                    "title": "GitLab",
+                    "icon": ["fa fa-gitlab", "#4078c0"]
+                    }, {
+                    "title": "subMenu",
+                    "icon": "my-icon icon1"
+                    }, {
+                    "title": "click",
+                    "icon": "my-icon icon3"
+                    }, {
+                    "title": "clickMe!",
+                    "click": "test",
+                    "args": {"value": "Test Value"}
+                    }, {
+                    "disabled": true,
+                    "title": "disabled"
+                    }]
+        }
     }
 }

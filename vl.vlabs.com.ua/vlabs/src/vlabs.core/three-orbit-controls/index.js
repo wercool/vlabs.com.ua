@@ -14,11 +14,15 @@ module.exports = function( THREE ) {
 //    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
 //    Pan - right mouse, or arrow keys / touch: three finter swipe
 
-	function OrbitControls( object, domElement ) {
+	function OrbitControls( object, domElement , initialPos) {
 
 		this.active = false;
 
 		this.object = object;
+
+		if (initialPos) {
+			this.object.position.copy(initialPos);
+		}
 
 		this.domElement = ( domElement !== undefined ) ? domElement : document;
 

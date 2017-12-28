@@ -1,6 +1,6 @@
 /* line 3, ../../sass/circular-menu.scss */
 .circular-menu {
-  font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", "STHeitiSC-Light", "Microsoft YaHei", Arial, sans-serif;
+  font-family: 'Roboto Condensed', sans-serif;
   z-index: 1040;
   border-radius: 50%;
   background: transparent;
@@ -12,6 +12,10 @@
   transform: scale(0.1);
   pointer-events: none;
   overflow: hidden;
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  user-select: none;          /* Likely future */ 
   /*cover to prevent extra space of anchors from being clickable*/
 }
 /* line 17, ../../sass/circular-menu.scss */
@@ -93,10 +97,10 @@
 /* line 85, ../../sass/circular-menu.scss */
 .circular-menu ul li a span.text {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1;
   position: relative;
-  font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", "STHeitiSC-Light", "Microsoft YaHei", Arial, sans-serif;
+  font-family: 'Roboto Condensed', sans-serif;
 }
 /* line 95, ../../sass/circular-menu.scss */
 .circular-menu ul li a .cn-icon:before {

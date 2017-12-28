@@ -7,8 +7,8 @@ var ProgressBar             = require('progressbar.js');
 var webglDetect             = require('webgl-detect');
 var OrbitControls           = require('./three-orbit-controls/index')(THREE);
 var PointerLockControls     = require('./three-pointerlock/index');
-var TransformControls       = require('three-transformcontrols');
-var CMenu                   = require('circular-menu/dist/js/circular-menu.js');
+var TransformControls       = require('./three-transformcontrols/index');
+var CMenu                   = require('../vlabs.assets/js/circular-menu.js');
 
 /*
 initObj {
@@ -208,11 +208,11 @@ export default class VLab {
             this.setTHREEStats();
         }
 
-        window.addEventListener("mousedown",   this.onMouseDownWindow.bind(this), false);
+        window.addEventListener("mousedown", this.onMouseDownWindow.bind(this), false);
         this.webGLContainer.addEventListener("mousemove",   this.onMouseMove.bind(this), false);
         this.webGLContainer.addEventListener("mousedown",   this.onMouseDown.bind(this), false);
         this.webGLContainer.addEventListener("touchstart",  this.onTouchStart.bind(this), false);
-        // this.webGLContainer.addEventListener("touchend",    this.onTouchEnd.bind(this), false);
+        this.webGLContainer.addEventListener("touchend",    this.onTouchEnd.bind(this), false);
         // this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
 
         this.setInteractiveObjects();
@@ -328,7 +328,11 @@ export default class VLab {
                     }
                 }
                 this.crosshair.visible = false;
-                this.defaultCameraControls = new OrbitControls(this.defaultCamera, this.webGLContainer);
+                var initialPos = undefined;
+                if (cameraControlConfig.targetPos) {
+                    initialPos = cameraControlConfig.targetPos.clone();
+                }
+                this.defaultCameraControls = new OrbitControls(this.defaultCamera, this.webGLContainer, initialPos);
                 if (cameraControlConfig.target) {
                     this.defaultCameraControls.target = cameraControlConfig.target;
                 }
@@ -377,17 +381,20 @@ export default class VLab {
                 this.selectionSphere = this.vLabScene.getObjectByName(interactionObjectIntersects[0].object.name + "_SELECTION");
                 this.selectionSphere.visible = true;
                 this.tooltipShow(this.hoveredObject);
+                this.webGLContainer.style.cursor = 'pointer';
             } else {
                 if (this.selectionSphere) {
                     if (this.hoveredObject !== this.selectedObject) {
                         this.clearNotSelected();
                     }
                     this.selectionSphere = undefined;
+                    this.cMenu.hide();
                 }
                 if (this.hoveredObject) {
                     this.hoveredObject = undefined;
                 }
                 this.tooltipHide();
+                this.webGLContainer.style.cursor = 'auto';
             }
         }
 
@@ -436,7 +443,8 @@ export default class VLab {
         if (this.defaultCameraControls.type === 'pointerlock') {
             this.mouseCoords.set(event.clientX, event.clientY);
             this.mouseCoordsRaycaster.set((event.clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.clientY / this.webGLContainer.clientHeight) * 2);
-            this.toggleSelectedObject();
+            this.switchCameraControls({ type: 'orbit', targetPos: this.defaultCameraControls.getObject().position});
+            this.toggleSelectedObject(false, true);
         }
     }
 
@@ -444,6 +452,14 @@ export default class VLab {
         this.mouseCoords.set(event.touches[0].clientX, event.touches[0].clientY);
         this.mouseCoordsRaycaster.set((event.touches[0].clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.touches[0].clientY / this.webGLContainer.clientHeight) * 2);
         this.toggleSelectedObject(true);
+    }
+
+    onTouchEnd() {
+        if (this.selectedObject) {
+            if (this.selectedObject == this.hoveredObject) {
+                this.showObjectSpecificCircularMenu();
+            }
+        }
     }
 
     setupSelectionHelpers() {
@@ -489,53 +505,21 @@ export default class VLab {
         this.vLabScene.add(this.manipulationControl);
     }
 
-    toggleSelectedObject(touch = false) {
+    toggleSelectedObject(touch = false, pointerlock = false) {
         if (this.hoveredObject) {
             if (!touch || (touch && this.hoveredObject == this.preSelectedObject)) {
                 this.selectedObject = this.hoveredObject;
                 var selectionSphere = this.vLabScene.getObjectByName(this.selectedObject.name + "_SELECTION");
                 selectionSphere.material.color = new THREE.Color(0, 1, 0);
 
-                var screenPos = this.toScreenPosition(this.selectedObject);
-                this.cMenu.config({
-                    menus: [{
-                    title: "GitHub",
-                    icon: "fa fa-github",
-                    href: {
-                        url: "http://github.com",
-                        blank: true
+                if (!touch) {
+                    if (!pointerlock) {
+                        this.showObjectSpecificCircularMenu();
+                    } else {
+                        var self = this;
+                        setTimeout(self.showObjectSpecificCircularMenu(self), 500);
                     }
-                    }, {
-                    title: "GitLab",
-                    icon: ["fa fa-gitlab", '#4078c0'],
-                    }, {
-                    title: "subMenu",
-                    icon: "my-icon icon1",
-                    menus: [{
-                        title: 'subMenu1',
-                        icon: 'fa fa-firefox'
-                    }, {
-                        title: 'subMenu2',
-                        icon: 'fa fa-file'
-                    }]
-                    }, {
-                    title: "subMenu",
-                    icon: "my-icon icon2"
-                    }, {
-                    title: "click",
-                    icon: "my-icon icon3"
-                    }, {
-                    title: "hash-href",
-                    href: "#someHash"
-                    }, {
-                    title: "clickMe!",
-                    click: this.test
-                    }, {
-                    disabled: true,
-                    title: "disabled"
-                    }]
-                });
-                this.cMenu.show([screenPos.x, screenPos.y]);
+                }
             }
         } else {
             if(performance.now() - this.prevSelectionTime < 250) {
@@ -591,6 +575,32 @@ export default class VLab {
 
     setupCircularMenu() {
         this.cMenu = CMenu("#cMenu");
+        this.cMenu.setContext(this);
+    }
+
+    showObjectSpecificCircularMenu(context) {
+        var self = (context) ? context : this;
+        if (self.nature.objectMenus[self.selectedObject.name])
+        {
+            if (self.nature.objectMenus[self.selectedObject.name][self.nature.lang]) {
+                self.cMenu.config({
+                    menus: self.nature.objectMenus[self.selectedObject.name][self.nature.lang]
+                });
+
+                var screenPos = self.toScreenPosition(self.selectionSphere);
+                var cMenuPos = { x: screenPos.x, y: screenPos.y };
+                if (cMenuPos.x + 150 > self.webGLContainer.clientWidth) {
+                    cMenuPos.x -= cMenuPos.x + 150 - self.webGLContainer.clientWidth;
+                }
+                if (cMenuPos.x - 150 < 0) {
+                    cMenuPos.x += 150 - cMenuPos.x;
+                }
+                if (cMenuPos.y - 150 < 0) {
+                    cMenuPos.y += 150 - cMenuPos.y;
+                }
+                self.cMenu.show([cMenuPos.x, cMenuPos.y]);
+            }
+        }
     }
 
     tooltipShow(obj) {
@@ -611,9 +621,5 @@ export default class VLab {
         tooltip.style.left = '0px';
         tooltip.style.top = '0px';
         tooltip.style.display = 'none';
-    }
-
-    test(value) {
-        console.log("TEST", value);
     }
 }

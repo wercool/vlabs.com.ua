@@ -54,6 +54,10 @@ class VlabBase extends VLab {
     onRedererFrameEvent(event) {
         // console.log(event);
     }
+
+    test(value) {
+        console.log("TEST", value);
+    }
 }
 
 let vLabBase = new VlabBase({
