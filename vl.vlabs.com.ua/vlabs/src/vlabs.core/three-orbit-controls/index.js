@@ -871,7 +871,7 @@ module.exports = function( THREE ) {
 
 			if ( scope.enabled === false ) return;
 
-			scope.active = false;
+			scope.active = true;
 
 			handleTouchEnd( event );
 

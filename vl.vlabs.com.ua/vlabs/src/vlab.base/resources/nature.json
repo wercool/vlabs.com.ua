@@ -2,11 +2,19 @@
     "title": "Base VLab",
     "resolutionFactor": "1.0",
     "sceneJSONFile": "./resources/scene/vlab.base.json",
+    "lang": "ru",
     "defaultSceneCameraName": "defaultCamera",
     "cameraControls": {
         "type": "orbit",
         "targetObjectName": "Cube"
     },
     "showTHREEStats": true,
-    "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001"]
+    "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001"],
+    "tooltips": {
+        "timesToShow": 5,
+        "Sphere": {
+            "en": "Central interactive object",
+            "ru": "Центральный интерактивный объект"
+        }
+    }
 }

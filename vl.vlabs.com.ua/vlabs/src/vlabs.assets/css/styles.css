@@ -17,6 +17,7 @@ html, body {
 
 #overlayContainer {
     position: fixed;
+    background-color:rgba(15, 15, 15, 0.85);
     top: 0;
     left: 0;
     width: 100%;
@@ -37,4 +38,18 @@ html, body {
     top: 30%;
     left: 10%;
     color: rgb(228, 125, 28);
+}
+
+#tooltip
+{
+    color:rgba(255, 255, 255, 0.75);
+    position: fixed;
+    padding:5px;
+    -moz-border-radius:5px;  /* for Firefox */
+    -webkit-border-radius:5px; /* for Webkit-Browsers */
+    border-radius:5px; /* regular */
+    background-color:rgba(14, 13, 13, 0.6);
+    max-width: 500px;
+    pointer-events:none;
+    z-index: 2e9;
 }

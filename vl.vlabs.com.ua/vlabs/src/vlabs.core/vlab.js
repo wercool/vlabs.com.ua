@@ -207,6 +207,7 @@ export default class VLab {
             this.setTHREEStats();
         }
 
+        window.addEventListener("mousedown",   this.onMouseDownWindow.bind(this), false);
         this.webGLContainer.addEventListener("mousemove",   this.onMouseMove.bind(this), false);
         this.webGLContainer.addEventListener("mousedown",   this.onMouseDown.bind(this), false);
         this.webGLContainer.addEventListener("touchstart",  this.onTouchStart.bind(this), false);
@@ -219,6 +220,7 @@ export default class VLab {
         this.setupCrosshair();
         this.setupSelectionHelpers();
         this.setManipulationControl();
+        this.setupCircularMenu();
 
         document.getElementById("overlayContainer").style.display = 'none';
         document.getElementById("progressBar").style.display = 'none';
@@ -373,16 +375,18 @@ export default class VLab {
                 this.hoveredObject = interactionObjectIntersects[0].object;
                 this.selectionSphere = this.vLabScene.getObjectByName(interactionObjectIntersects[0].object.name + "_SELECTION");
                 this.selectionSphere.visible = true;
+                this.tooltipShow(this.hoveredObject);
             } else {
                 if (this.selectionSphere) {
                     if (this.hoveredObject !== this.selectedObject) {
-                        this.selectionSphere.visible = false;
+                        this.clearNotSelected();
                     }
                     this.selectionSphere = undefined;
                 }
                 if (this.hoveredObject) {
                     this.hoveredObject = undefined;
                 }
+                this.tooltipHide();
             }
         }
 
@@ -427,10 +431,18 @@ export default class VLab {
         this.toggleSelectedObject();
     }
 
+    onMouseDownWindow(event) {
+        if (this.defaultCameraControls.type === 'pointerlock') {
+            this.mouseCoords.set(event.clientX, event.clientY);
+            this.mouseCoordsRaycaster.set((event.clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.clientY / this.webGLContainer.clientHeight) * 2);
+            this.toggleSelectedObject();
+        }
+    }
+
     onTouchStart() {
         this.mouseCoords.set(event.touches[0].clientX, event.touches[0].clientY);
         this.mouseCoordsRaycaster.set((event.touches[0].clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.touches[0].clientY / this.webGLContainer.clientHeight) * 2);
-        this.toggleSelectedObject();
+        this.toggleSelectedObject(true);
     }
 
     setupSelectionHelpers() {
@@ -454,18 +466,19 @@ export default class VLab {
             var sphereMat = new THREE.MeshBasicMaterial({
               color: new THREE.Color(1, 1, 0), // yellow ring
               transparent: true, // to make our alphaMap work, we have to set this parameter to `true`
-              alphaMap: selectionAlphaTexture 
+              alphaMap: selectionAlphaTexture
             });
             var sphere = new THREE.Mesh(sphereGeom, sphereMat);
             sphere.name = interactiveObject.name + "_SELECTION";
             sphere.visible = false;
             sphere.position.copy(interactiveObject.geometry.boundingSphere.center.clone());
             interactiveObject.add(sphere);
-            sphere.userData.pulsation = new TWEEN.Tween(sphere.scale)
+
+            new TWEEN.Tween(sphere.scale)
             .to({x: 1.2, y: 1.2}, 500)
             .repeat(Infinity)
             .yoyo(true)
-            .easing(TWEEN.Easing.Quadratic.InOut).start();;
+            .easing(TWEEN.Easing.Quadratic.InOut).start();
         }
     }
 
@@ -475,12 +488,16 @@ export default class VLab {
         this.vLabScene.add(this.manipulationControl);
     }
 
-    toggleSelectedObject() {
+    toggleSelectedObject(touch = false) {
         if (this.hoveredObject) {
-            if (this.hoveredObject === this.preSelectedObject) {
+            if (!touch || (touch && this.hoveredObject == this.preSelectedObject)) {
                 this.selectedObject = this.hoveredObject;
                 var selectionSphere = this.vLabScene.getObjectByName(this.selectedObject.name + "_SELECTION");
                 selectionSphere.material.color = new THREE.Color(0, 1, 0);
+
+                var screenPos = this.toScreenPosition(this.selectedObject);
+                console.log(screenPos);
+                this.setupCircularMenu();
             }
         } else {
             if(performance.now() - this.prevSelectionTime < 250) {
@@ -500,6 +517,7 @@ export default class VLab {
         }
         this.selectedObject = undefined;
         this.preSelectedObject = undefined;
+        this.tooltipHide();
     }
 
     clearNotSelected() {
@@ -510,5 +528,50 @@ export default class VLab {
                 selectionSphere.material.color = new THREE.Color(1, 1, 0);
             }
         }
+        this.tooltipHide();
+    }
+
+    toScreenPosition(obj)
+    {
+        var vector = new THREE.Vector3();
+
+        var widthHalf = 0.5 * this.webGLContainer.clientWidth;
+        var heightHalf = 0.5 * this.webGLContainer.clientHeight;
+
+        obj.updateMatrixWorld();
+        vector.setFromMatrixPosition(obj.matrixWorld);
+        vector.project(this.defaultCamera);
+
+        vector.x = (vector.x * widthHalf) + widthHalf;
+        vector.y = -(vector.y * heightHalf) + heightHalf;
+
+        return {
+            x: vector.x,
+            y: vector.y
+        };
+    };
+
+    setupCircularMenu() {
+        
+    }
+
+    tooltipShow(obj) {
+        var tooltip = document.getElementById("tooltip");
+        if (obj.userData.tooltipShown === undefined) obj.userData.tooltipShown = 0;
+        if (this.nature.tooltips[obj.name] && obj.userData.tooltipShown < this.nature.tooltips.timesToShow && tooltip.style.display !== 'block') {
+            var screenPos = this.toScreenPosition(obj);
+            tooltip.innerText = this.nature.tooltips[obj.name][this.nature.lang];
+            tooltip.style.left = screenPos.x + 'px';
+            tooltip.style.top = screenPos.y + 25 + 'px';
+            tooltip.style.display = 'block';
+            obj.userData.tooltipShown++;
+        }
+    }
+
+    tooltipHide() {
+        tooltip.innerText = "";
+        tooltip.style.left = '0px';
+        tooltip.style.top = '0px';
+        tooltip.style.display = 'none';
     }
 }
