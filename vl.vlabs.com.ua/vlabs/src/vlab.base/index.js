@@ -1,5 +1,5 @@
 import * as THREE   from 'three';
-import VLab         from "../vlabs.core/vlab";
+import VLab         from '../vlabs.core/vlab';
 
 class VlabBase extends VLab {
     constructor(initObj = {}) {
@@ -30,11 +30,13 @@ class VlabBase extends VLab {
     }
 
     onKeyDown(event) {
+        // console.log(event.keyCode);
         switch (event.keyCode) {
             case 79: // o
-                this.switchCameraControls({ type: 'orbit', targetObjectName: 'Cube'});
+                this.switchCameraControls({ type: 'orbit', targetObjectName: 'Cube' });
             break;
             case 80: // p
+            case 32: // whitespace
                 this.switchCameraControls({ type: 'pointerlock'});
             break;
         }
@@ -43,12 +45,11 @@ class VlabBase extends VLab {
     onSceneCompleteEvent(event) {
         super.activate();
         super.switchCameraControls(this.nature.cameraControls);
-        // super.switchCameraControls({ type: 'pointerlock' });
     }
 
     onActivatedEvent() {
-        // this.manipulationControl.attach(this.vLabScene.getObjectByName("Sphere.001"));
         // this.manipulationControl.attach(this.vLabScene.getObjectByName("Sphere"));
+        // this.manipulationControl.attach(this.vLabScene.getObjectByName("Sphere001"));
     }
 
     onRedererFrameEvent(event) {

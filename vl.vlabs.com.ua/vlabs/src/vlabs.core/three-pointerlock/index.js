@@ -16,8 +16,6 @@ module.exports = function ( camera ) {
   camera.rotation.set( 0, 0, 0 );
   camera.position.set( 0, 0, 0 );
 
-  this.lockCamera = false;
-
   var pitchObject = new THREE.Object3D();
   pitchObject.name = "CameraPitchObject";
   pitchObject.add( camera );
@@ -54,7 +52,7 @@ module.exports = function ( camera ) {
       pointerLocked = true;
     }
 
-    if (scope.enabled === false || scope.lockCamera || !pointerLocked) return;
+    if (scope.enabled === false || !pointerLocked) return;
 
     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
     var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
@@ -96,11 +94,6 @@ module.exports = function ( camera ) {
       case 68: // d
         moveRight = true;
       break;
-
-      case 17: // left ctrl
-        scope.lockCamera = true;
-        scope.exitPointerLock();
-      break;
     }
 
   };
@@ -127,11 +120,6 @@ module.exports = function ( camera ) {
         case 39: // right
         case 68: // d
           moveRight = false;
-        break;
-
-        case 17: // left ctrl
-          scope.lockCamera = false;
-          scope.requestPointerLock();
         break;
       }
 
@@ -204,7 +192,7 @@ module.exports = function ( camera ) {
 
     var time = performance.now();
 
-    if (!scope.lockCamera || !scope.pointerLocked) {
+    if (!scope.pointerLocked) {
       var delta = ( time - prevTime ) / 1000;
 
       velocity.x -= velocity.x * 10.0 * delta;

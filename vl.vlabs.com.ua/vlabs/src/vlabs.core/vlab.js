@@ -2,6 +2,7 @@ import * as THREE                   from 'three';
 import THREEStats                   from 'stats.js';
 import * as HTTPUtils               from "./utils/http.utils"
 import * as TWEEN                   from 'tween.js';
+import iziToast                     from 'izitoast';
 
 var ProgressBar             = require('progressbar.js');
 var webglDetect             = require('webgl-detect');
@@ -208,11 +209,12 @@ export default class VLab {
             this.setTHREEStats();
         }
 
-        window.addEventListener("mousedown", this.onMouseDownWindow.bind(this), false);
+        window.addEventListener("mouseup", this.onMouseUpWindow.bind(this), false);
         this.webGLContainer.addEventListener("mousemove",   this.onMouseMove.bind(this), false);
         this.webGLContainer.addEventListener("mousedown",   this.onMouseDown.bind(this), false);
         this.webGLContainer.addEventListener("touchstart",  this.onTouchStart.bind(this), false);
         this.webGLContainer.addEventListener("touchend",    this.onTouchEnd.bind(this), false);
+        document.addEventListener("pointerlockchange", this.onPointerLockChanged.bind(this), false);
         // this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
 
         this.setInteractiveObjects();
@@ -297,23 +299,81 @@ export default class VLab {
         }
     }
 
-    setTHREEStats() {
-        this.statsTHREE = new THREEStats();
-        this.statsTHREE.domElement.style.position = 'absolute';
-        this.statsTHREE.domElement.style.left = '0px';
-        this.statsTHREE.domElement.style.top = '0px';
-        document.body.appendChild(this.statsTHREE.domElement);
+    onMouseMove(event) {
+        this.mouseCoords.set(event.x, event.y);
+        this.mouseCoordsRaycaster.set((event.x / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.y / this.webGLContainer.clientHeight) * 2);
+        this.defaultCameraControls.active = true;
+    }
+
+    onMouseDown(event) {
+        this.mouseCoords.set(event.x, event.y);
+        this.mouseCoordsRaycaster.set((event.x / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.y / this.webGLContainer.clientHeight) * 2);
+        this.toggleSelectedObject();
+    }
+
+    onMouseUpWindow(event) {
+        if (this.defaultCameraControls.type === 'pointerlock') {
+            this.mouseCoords.set(event.clientX, event.clientY);
+            this.mouseCoordsRaycaster.set((event.clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.clientY / this.webGLContainer.clientHeight) * 2);
+            this.toggleSelectedObject();
+            if (this.selectedObject) {
+                if (this.selectedObject == this.hoveredObject) {
+                    if (this.nature.objectMenus[this.selectedObject.name]) {
+                        if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
+                            this.switchCameraControls({ type: 'orbit', 
+                                                        targetPos: this.defaultCameraControls.getObject().position,
+                                                        targetObjectName: this.selectedObject.name });
+                            this.webGLContainer.style.cursor = 'none';
+                            this.showObjectSpecificCircularMenu();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    onTouchStart(event) {
+        this.mouseCoords.set(event.touches[0].clientX, event.touches[0].clientY);
+        this.mouseCoordsRaycaster.set((event.touches[0].clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.touches[0].clientY / this.webGLContainer.clientHeight) * 2);
+    }
+
+    onTouchEnd(event) {
+        this.toggleSelectedObject(true);
+    }
+
+    onPointerLockChanged(event) {
+        if (!document.pointerLockElement) {
+            if (this.defaultCameraControls.getObject) {
+                this.switchCameraControls({ type: 'orbit', 
+                                            targetPos: this.defaultCameraControls.getObject().position,
+                                            target: this.defaultCamera.getWorldDirection().add(this.defaultCameraControls.getObject().position) });
+            }
+        }
     }
 
     switchCameraControls(cameraControlConfig) {
         if (this.defaultCameraControls) {
             if (this.defaultCameraControls.type) {
-                if (cameraControlConfig.type == 'pointerlock' && this.defaultCameraControls.type == 'pointerlock') {
-                    this.defaultCameraControls.lockCamera = false;
-                    this.defaultCameraControls.requestPointerLock();
-                }
+
                 if (this.defaultCameraControls.type == cameraControlConfig.type) {
                     return;
+                }
+
+                if (cameraControlConfig.type == 'pointerlock' && this.defaultCameraControls.type != 'pointerlock') {
+                    var center = new THREE.Vector2(this.webGLContainer.clientWidth / 2, this.webGLContainer.clientHeight / 2);
+                    if (this.mouseCoords.distanceTo(center) > 5) {
+                        iziToast.warning({
+                            title: 'Caution',
+                            message: 'Place mouse pointer closer to the center to request Pointer Lock. Distance = ' + this.mouseCoords.distanceTo(center).toFixed(1),
+                            timeout: 2500
+                        });
+                        this.crosshair.scale.set(0.2, 0.2, 0.2);
+                        this.crosshair.visible = true;
+                        if (this.crosshairHelper) clearTimeout(this.crosshairHelper);
+                        this.crosshairHelper = setTimeout(() => {this.crosshair.visible = false;}, 2500 );
+                        return;
+                    }
+                    if (this.crosshairHelper) clearTimeout(this.crosshairHelper);
                 }
             }
             this.defaultCameraControls.dispose();
@@ -401,6 +461,76 @@ export default class VLab {
         this.defaultCameraControls.active = false;
     }
 
+    toggleSelectedObject(touch = false) {
+        if (this.hoveredObject) {
+            if (!touch || (touch && this.hoveredObject == this.preSelectedObject)) {
+                this.selectedObject = this.hoveredObject;
+                this.selectionSphere = this.vLabScene.getObjectByName(this.selectedObject.name + "_SELECTION");
+                this.cMenu.hide();
+                this.selectionSphere.material.color = new THREE.Color(0, 1, 1);
+
+                if (this.nature.objectMenus[this.selectedObject.name])
+                {
+                    if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
+                        this.selectionSphere.material.color = new THREE.Color(0, 1, 0);
+                    }
+                }
+
+                if (this.defaultCameraControls.type == 'orbit') {
+                    new TWEEN.Tween(this.defaultCameraControls.target)
+                    .to({x: this.selectedObject.position.x, z: this.selectedObject.position.z}, 500)
+                    .easing(TWEEN.Easing.Cubic.InOut)
+                    .onUpdate(() => { 
+                        this.defaultCameraControls.update(); 
+                    })
+                    .onComplete(() => { 
+                        if (!touch) {
+                            this.showObjectSpecificCircularMenu();
+                        } else {
+                            if (this.selectedObject) {
+                                if (this.selectedObject == this.hoveredObject) {
+                                    this.showObjectSpecificCircularMenu();
+                                    this.tooltipHide();
+                                }
+                            }
+                        }
+                     })
+                    .start();
+                }
+            }
+        } else {
+            if(performance.now() - this.prevSelectionTime < 250) {
+                this.resetAllSelections();
+            }
+        }
+        this.preSelectedObject = this.hoveredObject;
+        this.prevSelectionTime = performance.now();
+        this.clearNotSelected();
+    }
+
+    resetAllSelections() {
+        for (var interactiveObject of this.interactiveObjects) {
+            var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
+            selectionSphere.visible = false;
+            selectionSphere.material.color = new THREE.Color(1, 1, 0);
+        }
+        this.selectedObject = undefined;
+        this.preSelectedObject = undefined;
+        this.tooltipHide();
+        this.cMenu.hide();
+    }
+
+    clearNotSelected() {
+        for (var interactiveObject of this.interactiveObjects) {
+            if (this.selectedObject != interactiveObject) {
+                var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
+                selectionSphere.visible = false;
+                selectionSphere.material.color = new THREE.Color(1, 1, 0);
+            }
+        }
+        this.tooltipHide();
+    }
+
     setDefaultLighting() {
         let ambientLight = new THREE.AmbientLight(0x111111);
         ambientLight.name = 'ambient';
@@ -427,40 +557,25 @@ export default class VLab {
         this.defaultCamera.add(this.crosshair);
     }
 
-    onMouseMove(event) {
-        this.mouseCoords.set(event.x, event.y);
-        this.mouseCoordsRaycaster.set((event.x / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.y / this.webGLContainer.clientHeight) * 2);
-        this.defaultCameraControls.active = true;
-    }
+    toScreenPosition(obj)
+    {
+        var vector = new THREE.Vector3();
 
-    onMouseDown(event) {
-        this.mouseCoords.set(event.x, event.y);
-        this.mouseCoordsRaycaster.set((event.x / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.y / this.webGLContainer.clientHeight) * 2);
-        this.toggleSelectedObject();
-    }
+        var widthHalf = 0.5 * this.webGLContainer.clientWidth;
+        var heightHalf = 0.5 * this.webGLContainer.clientHeight;
 
-    onMouseDownWindow(event) {
-        if (this.defaultCameraControls.type === 'pointerlock') {
-            this.mouseCoords.set(event.clientX, event.clientY);
-            this.mouseCoordsRaycaster.set((event.clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.clientY / this.webGLContainer.clientHeight) * 2);
-            this.switchCameraControls({ type: 'orbit', targetPos: this.defaultCameraControls.getObject().position});
-            this.toggleSelectedObject(false, true);
-        }
-    }
+        obj.updateMatrixWorld();
+        vector.setFromMatrixPosition(obj.matrixWorld);
+        vector.project(this.defaultCamera);
 
-    onTouchStart() {
-        this.mouseCoords.set(event.touches[0].clientX, event.touches[0].clientY);
-        this.mouseCoordsRaycaster.set((event.touches[0].clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.touches[0].clientY / this.webGLContainer.clientHeight) * 2);
-        this.toggleSelectedObject(true);
-    }
+        vector.x = (vector.x * widthHalf) + widthHalf;
+        vector.y = -(vector.y * heightHalf) + heightHalf;
 
-    onTouchEnd() {
-        if (this.selectedObject) {
-            if (this.selectedObject == this.hoveredObject) {
-                this.showObjectSpecificCircularMenu();
-            }
-        }
-    }
+        return {
+            x: vector.x,
+            y: vector.y
+        };
+    };
 
     setupSelectionHelpers() {
         var canvas = document.createElement("canvas");
@@ -505,92 +620,24 @@ export default class VLab {
         this.vLabScene.add(this.manipulationControl);
     }
 
-    toggleSelectedObject(touch = false, pointerlock = false) {
-        if (this.hoveredObject) {
-            if (!touch || (touch && this.hoveredObject == this.preSelectedObject)) {
-                this.selectedObject = this.hoveredObject;
-                var selectionSphere = this.vLabScene.getObjectByName(this.selectedObject.name + "_SELECTION");
-                selectionSphere.material.color = new THREE.Color(0, 1, 0);
-
-                if (!touch) {
-                    if (!pointerlock) {
-                        this.showObjectSpecificCircularMenu();
-                    } else {
-                        var self = this;
-                        setTimeout(self.showObjectSpecificCircularMenu(self), 500);
-                    }
-                }
-            }
-        } else {
-            if(performance.now() - this.prevSelectionTime < 250) {
-                this.resetAllSelections();
-            }
-        }
-        this.preSelectedObject = this.hoveredObject;
-        this.prevSelectionTime = performance.now();
-        this.clearNotSelected();
-    }
-
-    resetAllSelections() {
-        for (var interactiveObject of this.interactiveObjects) {
-            var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
-            selectionSphere.visible = false;
-            selectionSphere.material.color = new THREE.Color(1, 1, 0);
-        }
-        this.selectedObject = undefined;
-        this.preSelectedObject = undefined;
-        this.tooltipHide();
-    }
-
-    clearNotSelected() {
-        for (var interactiveObject of this.interactiveObjects) {
-            if (this.selectedObject != interactiveObject) {
-                var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
-                selectionSphere.visible = false;
-                selectionSphere.material.color = new THREE.Color(1, 1, 0);
-            }
-        }
-        this.tooltipHide();
-    }
-
-    toScreenPosition(obj)
-    {
-        var vector = new THREE.Vector3();
-
-        var widthHalf = 0.5 * this.webGLContainer.clientWidth;
-        var heightHalf = 0.5 * this.webGLContainer.clientHeight;
-
-        obj.updateMatrixWorld();
-        vector.setFromMatrixPosition(obj.matrixWorld);
-        vector.project(this.defaultCamera);
-
-        vector.x = (vector.x * widthHalf) + widthHalf;
-        vector.y = -(vector.y * heightHalf) + heightHalf;
-
-        return {
-            x: vector.x,
-            y: vector.y
-        };
-    };
-
     setupCircularMenu() {
         this.cMenu = CMenu("#cMenu");
         this.cMenu.setContext(this);
     }
 
-    showObjectSpecificCircularMenu(context) {
-        var self = (context) ? context : this;
-        if (self.nature.objectMenus[self.selectedObject.name])
+    showObjectSpecificCircularMenu() {
+        if (this.nature.objectMenus[this.selectedObject.name])
         {
-            if (self.nature.objectMenus[self.selectedObject.name][self.nature.lang]) {
-                self.cMenu.config({
-                    menus: self.nature.objectMenus[self.selectedObject.name][self.nature.lang]
+            if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
+                this.cMenu.config({
+                    menus: this.nature.objectMenus[this.selectedObject.name][this.nature.lang]
                 });
 
-                var screenPos = self.toScreenPosition(self.selectionSphere);
+                var selectionSphere = this.vLabScene.getObjectByName(this.selectedObject.name + "_SELECTION");
+                var screenPos = this.toScreenPosition(selectionSphere);
                 var cMenuPos = { x: screenPos.x, y: screenPos.y };
-                if (cMenuPos.x + 150 > self.webGLContainer.clientWidth) {
-                    cMenuPos.x -= cMenuPos.x + 150 - self.webGLContainer.clientWidth;
+                if (cMenuPos.x + 150 > this.webGLContainer.clientWidth) {
+                    cMenuPos.x -= cMenuPos.x + 150 - this.webGLContainer.clientWidth;
                 }
                 if (cMenuPos.x - 150 < 0) {
                     cMenuPos.x += 150 - cMenuPos.x;
@@ -598,7 +645,7 @@ export default class VLab {
                 if (cMenuPos.y - 150 < 0) {
                     cMenuPos.y += 150 - cMenuPos.y;
                 }
-                self.cMenu.show([cMenuPos.x, cMenuPos.y]);
+                this.cMenu.show([cMenuPos.x, cMenuPos.y]);
             }
         }
     }
@@ -621,5 +668,13 @@ export default class VLab {
         tooltip.style.left = '0px';
         tooltip.style.top = '0px';
         tooltip.style.display = 'none';
+    }
+
+    setTHREEStats() {
+        this.statsTHREE = new THREEStats();
+        this.statsTHREE.domElement.style.position = 'absolute';
+        this.statsTHREE.domElement.style.left = '0px';
+        this.statsTHREE.domElement.style.top = '0px';
+        document.body.appendChild(this.statsTHREE.domElement);
     }
 }

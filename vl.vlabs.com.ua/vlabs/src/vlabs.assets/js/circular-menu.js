@@ -575,11 +575,11 @@
 
     const defaultConfig = {
         totalAngle: 360,//deg,
-        spaceDeg: 0,//deg
-        background: "#323232",
-        backgroundHover: "#515151",
-        pageBackground: "transparent",
-        percent: 0.32,//%
+        spaceDeg: 1,//deg
+        background: "#2e4b2e",
+        backgroundHover: "#2e4b2e",
+        pageBackground: "#2e4b2e",
+        percent: 0.30,//%
         diameter: 300,//px
         position: 'top',
         horizontal: true,

@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "circular-menu": "^1.0.6",
+    "izitoast": "^1.2.0",
     "progressbar.js": "^1.0.1",
     "stats.js": "^0.17.0",
     "three": "^0.89.0",
