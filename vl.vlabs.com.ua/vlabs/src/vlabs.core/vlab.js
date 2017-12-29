@@ -9,7 +9,7 @@ var webglDetect             = require('webgl-detect');
 var OrbitControls           = require('./three-orbit-controls/index')(THREE);
 var PointerLockControls     = require('./three-pointerlock/index');
 var TransformControls       = require('./three-transformcontrols/index');
-var CMenu                   = require('../vlabs.assets/js/circular-menu.js');
+var CMenu                   = require('./circular-menu/circular-menu.js');
 
 /*
 initObj {
@@ -237,10 +237,10 @@ export default class VLab {
         dispatchEvent(this.activatedEvent);
     }
 
-    loadScene() {
+    loadScene(loaderMessage) {
         return new Promise((resolve, reject) => {
             let thisVLab = this;
-            thisVLab.progressBarPrependText = "The world of VLab is loaded by ";
+            thisVLab.progressBarPrependText = (loaderMessage)? loaderMessage : "The world of VLab is loaded by ";
             if (this.nature.sceneJSONFile) {
                 let loader = new THREE.ObjectLoader();
                 loader.convertUpAxis = true;
@@ -264,6 +264,41 @@ export default class VLab {
                     });
             } else {
                 reject("Scene File is missing in VLab nature!");
+            }
+        });
+    }
+
+    loadVLabItem(itemURL, vlabItemName) {
+        return new Promise((resolve, reject) => {
+            let thisVLab = this;
+            document.getElementById("overlayContainer").style.display = 'block';
+            document.getElementById("progressBar").style.display = 'block';
+            thisVLab.progressBarPrependText = (vlabItemName)? "VLab Item [" + vlabItemName + "] is loaded by " : "VLab item is loaded by ";
+            if (itemURL) {
+                let loader = new THREE.ObjectLoader();
+                loader.convertUpAxis = true;
+                loader.load(itemURL, 
+                    // onLoad callback
+                    function (vLabItem) {
+                        resolve(vLabItem);
+                        document.getElementById("overlayContainer").style.display = 'none';
+                        document.getElementById("progressBar").style.display = 'none';
+                    },
+                    // onProgress callback
+                    function (bytes) {
+                        let loadedRel = (bytes.loaded / bytes.total).toFixed(2);
+                        console.info("VLab Item" + ((vlabItemName) ? (" [" + vlabItemName) + "] " : " ") + (loadedRel * 100).toFixed(2) + "% loaded");
+
+                        if (thisVLab.progressBar) {
+                            thisVLab.progressBar.animate(loadedRel);
+                        }
+                    },
+                    // onError callback
+                    function (error) {
+                        reject('An error happened while loading VLab Item', error);
+                    });
+            } else {
+                reject("VLab Item File is missing!");
             }
         });
     }
@@ -578,6 +613,12 @@ export default class VLab {
     };
 
     setupSelectionHelpers() {
+        for (var interactiveObject of this.interactiveObjects) {
+            this.addSelectionSphereToObject(interactiveObject);
+        }
+    }
+
+    addSelectionSphereToObject(interactiveObject) {
         var canvas = document.createElement("canvas");
         canvas.width = 128;
         canvas.height = 128;
@@ -591,27 +632,25 @@ export default class VLab {
         var selectionAlphaTexture = new THREE.Texture(canvas);
         selectionAlphaTexture.needsUpdate = true;
 
-        for (var interactiveObject of this.interactiveObjects) {
-            interactiveObject.geometry.computeBoundingSphere();
-            var sphereGeom = new THREE.SphereGeometry(interactiveObject.geometry.boundingSphere.radius * 1.1, 12, 8);
-            sphereGeom.rotateX(1.57);
-            var sphereMat = new THREE.MeshBasicMaterial({
-              color: new THREE.Color(1, 1, 0), // yellow ring
-              transparent: true, // to make our alphaMap work, we have to set this parameter to `true`
-              alphaMap: selectionAlphaTexture
-            });
-            var sphere = new THREE.Mesh(sphereGeom, sphereMat);
-            sphere.name = interactiveObject.name + "_SELECTION";
-            sphere.visible = false;
-            sphere.position.copy(interactiveObject.geometry.boundingSphere.center.clone());
-            interactiveObject.add(sphere);
+        interactiveObject.geometry.computeBoundingSphere();
+        var sphereGeom = new THREE.SphereGeometry(interactiveObject.geometry.boundingSphere.radius * 1.1, 12, 8);
+        sphereGeom.rotateX(1.57);
+        var sphereMat = new THREE.MeshBasicMaterial({
+          color: new THREE.Color(1, 1, 0), // yellow ring
+          transparent: true, // to make our alphaMap work, we have to set this parameter to `true`
+          alphaMap: selectionAlphaTexture
+        });
+        var sphere = new THREE.Mesh(sphereGeom, sphereMat);
+        sphere.name = interactiveObject.name + "_SELECTION";
+        sphere.visible = false;
+        sphere.position.copy(interactiveObject.geometry.boundingSphere.center.clone());
+        interactiveObject.add(sphere);
 
-            new TWEEN.Tween(sphere.scale)
-            .to({x: 1.2, y: 1.2}, 500)
-            .repeat(Infinity)
-            .yoyo(true)
-            .easing(TWEEN.Easing.Quadratic.InOut).start();
-        }
+        new TWEEN.Tween(sphere.scale)
+        .to({x: 1.2, y: 1.2}, 500)
+        .repeat(Infinity)
+        .yoyo(true)
+        .easing(TWEEN.Easing.Quadratic.InOut).start();
     }
 
     setManipulationControl() {
@@ -653,7 +692,7 @@ export default class VLab {
     tooltipShow(obj) {
         var tooltip = document.getElementById("tooltip");
         if (obj.userData.tooltipShown === undefined) obj.userData.tooltipShown = 0;
-        if (this.nature.tooltips[obj.name] && obj.userData.tooltipShown < this.nature.tooltips.timesToShow && tooltip.style.display !== 'block') {
+        if (this.nature.tooltips[obj.name] && obj.userData.tooltipShown < this.nature.tooltips[obj.name].timesToShow && tooltip.style.display !== 'block') {
             var screenPos = this.toScreenPosition(obj);
             tooltip.innerText = this.nature.tooltips[obj.name][this.nature.lang];
             tooltip.style.left = screenPos.x + 'px';

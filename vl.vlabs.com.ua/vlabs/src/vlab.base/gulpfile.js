@@ -49,7 +49,7 @@ gulp.task("build", ["sync"], function () {
     .pipe(gulp.dest("../../build/" + vLabName));
 });
 
-gulp.task("sync", function() {
+gulp.task("sync", ["sync-vlab-items", "sync-vlabs-assets"], function() {
     return gulp.src("")
         .pipe(dirSync("./", "../../build/" + vLabName, { 
             ignore: [
@@ -60,11 +60,30 @@ gulp.task("sync", function() {
         }));
 });
 
+gulp.task("sync-vlabs-assets", function() {
+    return gulp.src("")
+        .pipe(dirSync("../vlabs.assets", "../../build/vlabs.assets", { 
+            ignore: [],
+            printSummary: true
+        }));
+});
+
+gulp.task("sync-vlab-items", function() {
+    return gulp.src("")
+        .pipe(dirSync("../vlabs.items", "../../build/vlabs.items", { 
+            ignore: ["index.js"],
+            printSummary: true
+        }));
+});
+
 gulp.task("watch", ["build"], function () {
-    gulp.watch("./**/*.js", ["build"]);
-    gulp.watch("./**/*.json", ["build"]);
-    gulp.watch("./**/*.html", ["build"]);
-    gulp.watch("../vlabs.core/**/*.js", ["build"]);
+    gulp.watch(["./**/*.js",
+                "./**/*.json",
+                "./**/*.html",
+                "../vlabs.core/**/*.*",
+                "../vlabs.items/**/*.*",
+                "../vlabs.assets/**/*.*"
+                ], ["build"]);
 });
 
 //Start a test server with doc root at build folder and 

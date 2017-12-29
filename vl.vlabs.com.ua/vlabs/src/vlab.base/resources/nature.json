@@ -11,10 +11,10 @@
     "showTHREEStats": true,
     "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001"],
     "tooltips": {
-        "timesToShow": 5,
         "Sphere": {
             "en": "Central interactive object",
-            "ru": "Центральный интерактивный объект"
+            "ru": "Центральный интерактивный объект",
+            "timesToShow": 5
         }
     },
     "objectMenus": {

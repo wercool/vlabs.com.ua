@@ -1,5 +1,7 @@
-import * as THREE   from 'three';
-import VLab         from '../vlabs.core/vlab';
+import * as THREE           from 'three';
+import VLab                 from '../vlabs.core/vlab';
+
+import VLabAssistant       from '../vlabs.items/vlab.assistant';
 
 class VlabBase extends VLab {
     constructor(initObj = {}) {
@@ -9,7 +11,7 @@ class VlabBase extends VLab {
         addEventListener("sceneCompleteEvent", this.onSceneCompleteEvent.bind(this), false);
         addEventListener("activatedEvent", this.onActivatedEvent.bind(this), false);
 
-        document.addEventListener('keydown', this.onKeyDown.bind(this), false);
+        document.addEventListener("keydown", this.onKeyDown.bind(this), false);
 
         super.preInitialize().then(() => {
             super.initialize().then((result) => {
@@ -24,6 +26,26 @@ class VlabBase extends VLab {
     initialize() {
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
+
+            // VLab Items
+            this.VLabsAssistant1 = new VLabAssistant({
+                context: this,
+                initPos: new THREE.Vector3(0, 0, -1.5),
+                name: "VLabsAssistant1",
+                title: "Алексей Майстренко"
+            });
+            this.VLabsAssistant2 = new VLabAssistant({
+                context: this,
+                initPos: new THREE.Vector3(-1.5, 0, -1.5),
+                name: "VLabsAssistant2",
+                title: "Karsten Gerhardt"
+            });
+            this.VLabsAssistant3 = new VLabAssistant({
+                context: this,
+                initPos: new THREE.Vector3(1.5, 0, -1.5),
+                name: "VLabsAssistant3"
+            });
+
         }).catch(error => {
             console.error(error);
         });
