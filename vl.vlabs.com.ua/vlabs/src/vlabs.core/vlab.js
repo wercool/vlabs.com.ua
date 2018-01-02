@@ -316,7 +316,7 @@ export default class VLab {
 
             if (this.statsTHREE) this.statsTHREE.end();
 
-            this.updateCameraControls();
+            this.updateCameraControlsCheckIntersections();
 
             TWEEN.update(time);
 
@@ -418,6 +418,7 @@ export default class VLab {
                 if (this.defaultCameraControls) {
                     if (this.defaultCameraControls.type == 'pointerlock') {
                         this.vLabScene.remove(this.vLabScene.getObjectByName("CameraYawObject"));
+                        this.vLabScene.remove(this.vLabScene.getObjectByName("CameraPitchObject"));
                         this.vLabScene.add(this.defaultCamera);
                         this.defaultCamera.position.copy(this.defaultCameraInitialPosition.clone());
                     }
@@ -445,9 +446,9 @@ export default class VLab {
                 this.defaultCameraControls = new PointerLockControls(this.defaultCamera);
                 this.vLabScene.add(this.defaultCameraControls.getObject());
                 this.defaultCameraControls.enabled = true;
-                this.defaultCameraControls.update();
                 this.defaultCameraControls.requestPointerLock();
                 this.crosshair.visible = true;
+                this.defaultCameraControls.update();
             break;
             case 'assistant':
             break;
@@ -455,7 +456,7 @@ export default class VLab {
         this.defaultCameraControls.type = cameraControlConfig.type;
     }
 
-    updateCameraControls() {
+    updateCameraControlsCheckIntersections() {
         var interactionObjectIntersects = undefined;
         if (this.defaultCameraControls.type === 'pointerlock') {
             this.defaultCameraControls.update();

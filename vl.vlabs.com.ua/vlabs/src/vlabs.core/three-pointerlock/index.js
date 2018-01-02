@@ -12,6 +12,7 @@ module.exports = function ( camera ) {
   var scope = this;
 
   var curCameraQuaternion = camera.quaternion.clone();
+
   var curCameraPosition = camera.position.clone();
   camera.rotation.set( 0, 0, 0 );
   camera.position.set( 0, 0, 0 );
