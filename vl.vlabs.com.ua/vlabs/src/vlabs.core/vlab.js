@@ -176,6 +176,9 @@ export default class VLab {
     setDefaultCamera(defaultCamera) {
         if (defaultCamera) {
             this.defaultCamera = defaultCamera;
+            if (!this.vLabScene.getObjectByName(defaultCamera.name)) {
+                this.vLabScene.add(defaultCamera);
+            }
             return;
         }
 
@@ -183,10 +186,13 @@ export default class VLab {
             this.defaultCamera = this.vLabScene.getObjectByName(this.nature.defaultSceneCameraName);
         } else {
             this.defaultCamera = new THREE.PerspectiveCamera(70, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.1, 200);
+            this.defaultCamera.name = 'defaultCamera';
         }
         if (!this.defaultCameraInitialPosition) {
             this.defaultCameraInitialPosition = this.defaultCamera.position.clone();
         }
+        // var cameraHelper = new THREE.CameraHelper( this.defaultCamera );
+        // this.vLabScene.add( cameraHelper );
     }
 
     setVLabScene(vLabScene) {
@@ -379,9 +385,11 @@ export default class VLab {
     onPointerLockChanged(event) {
         if (!document.pointerLockElement) {
             if (this.defaultCameraControls.getObject) {
+                var orbitTarget = new THREE.Vector3().subVectors(this.defaultCamera.getWorldDirection(), this.defaultCameraControls.getObject().position.clone().normalize());
+                orbitTarget.add(this.defaultCameraControls.getObject().position.clone());
                 this.switchCameraControls({ type: 'orbit', 
                                             targetPos: this.defaultCameraControls.getObject().position,
-                                            target: this.defaultCamera.getWorldDirection().add(this.defaultCameraControls.getObject().position) });
+                                            target: orbitTarget });
             }
         }
     }
@@ -405,7 +413,7 @@ export default class VLab {
                         this.crosshair.scale.set(0.2, 0.2, 0.2);
                         this.crosshair.visible = true;
                         if (this.crosshairHelper) clearTimeout(this.crosshairHelper);
-                        this.crosshairHelper = setTimeout(() => {this.crosshair.visible = false;}, 2500 );
+                        this.crosshairHelper = setTimeout(() => { this.crosshair.visible = false; }, 2500 );
                         return;
                     }
                     if (this.crosshairHelper) clearTimeout(this.crosshairHelper);
@@ -417,9 +425,9 @@ export default class VLab {
             case 'orbit':
                 if (this.defaultCameraControls) {
                     if (this.defaultCameraControls.type == 'pointerlock') {
-                        this.vLabScene.remove(this.vLabScene.getObjectByName("CameraYawObject"));
                         this.vLabScene.remove(this.vLabScene.getObjectByName("CameraPitchObject"));
-                        this.vLabScene.add(this.defaultCamera);
+                        this.vLabScene.remove(this.vLabScene.getObjectByName("CameraYawObject"));
+                        this.setDefaultCamera(this.defaultCamera);
                         this.defaultCamera.position.copy(this.defaultCameraInitialPosition.clone());
                     }
                 }
@@ -443,10 +451,9 @@ export default class VLab {
                         this.defaultCamera.position.y = this.defaultCameraInitialPosition.y;
                     }
                 }
-                this.defaultCameraControls = new PointerLockControls(this.defaultCamera);
-                this.vLabScene.add(this.defaultCameraControls.getObject());
-                this.defaultCameraControls.enabled = true;
+                this.defaultCameraControls = new PointerLockControls(this.defaultCamera, this.vLabScene);
                 this.defaultCameraControls.requestPointerLock();
+                this.defaultCameraControls.enabled = true;
                 this.crosshair.visible = true;
                 this.defaultCameraControls.update();
             break;
@@ -473,6 +480,10 @@ export default class VLab {
 
         if (interactionObjectIntersects) {
             if (interactionObjectIntersects.length > 0) {
+                if (interactionObjectIntersects[0].object !== this.hoveredObject && this.hoveredObject != this.selectedObject && this.selectionSphere) {
+                    this.selectionSphere.visible = false;
+                    this.tooltipHide();
+                }
                 this.hoveredObject = interactionObjectIntersects[0].object;
                 this.selectionSphere = this.vLabScene.getObjectByName(interactionObjectIntersects[0].object.name + "_SELECTION");
                 this.selectionSphere.visible = true;
@@ -513,25 +524,27 @@ export default class VLab {
                 }
 
                 if (this.defaultCameraControls.type == 'orbit') {
-                    new TWEEN.Tween(this.defaultCameraControls.target)
-                    .to({x: this.selectedObject.position.x, z: this.selectedObject.position.z}, 500)
-                    .easing(TWEEN.Easing.Cubic.InOut)
-                    .onUpdate(() => { 
-                        this.defaultCameraControls.update(); 
-                    })
-                    .onComplete(() => { 
-                        if (!touch) {
-                            this.showObjectSpecificCircularMenu();
-                        } else {
-                            if (this.selectedObject) {
-                                if (this.selectedObject == this.hoveredObject) {
-                                    this.showObjectSpecificCircularMenu();
-                                    this.tooltipHide();
+                    if (this.selectedObject == this.preSelectedObject) {
+                        new TWEEN.Tween(this.defaultCameraControls.target)
+                        .to({ x: this.selectedObject.position.x, z: this.selectedObject.position.z }, 500)
+                        .easing(TWEEN.Easing.Cubic.InOut)
+                        .onUpdate(() => { 
+                            this.defaultCameraControls.update(); 
+                        })
+                        .onComplete(() => { 
+                            if (!touch) {
+                                this.showObjectSpecificCircularMenu();
+                            } else {
+                                if (this.selectedObject) {
+                                    if (this.selectedObject == this.hoveredObject) {
+                                        this.showObjectSpecificCircularMenu();
+                                        this.tooltipHide();
+                                    }
                                 }
                             }
-                        }
-                     })
-                    .start();
+                         })
+                        .start();
+                    }
                 }
             }
         } else {
@@ -569,7 +582,8 @@ export default class VLab {
 
     setDefaultLighting() {
         let ambientLight = new THREE.AmbientLight(0x111111);
-        ambientLight.name = 'ambient';
+        ambientLight.intensity = 3.0;
+        ambientLight.name = 'ambientLight';
         this.vLabScene.add(ambientLight);
     }
 
@@ -641,6 +655,8 @@ export default class VLab {
           transparent: true, // to make our alphaMap work, we have to set this parameter to `true`
           alphaMap: selectionAlphaTexture
         });
+        sphereMat.depthTest = false;
+        sphereMat.depthWrite = false;
         var sphere = new THREE.Mesh(sphereGeom, sphereMat);
         sphere.name = interactiveObject.name + "_SELECTION";
         sphere.visible = false;

@@ -5,15 +5,15 @@
  * Adopted to common js by Javier Zapata
  */
 
-module.exports = function ( camera ) {
+module.exports = function ( camera, scene ) {
 
   var THREE = window.THREE || require('three');
 
   var scope = this;
 
   var curCameraQuaternion = camera.quaternion.clone();
-
   var curCameraPosition = camera.position.clone();
+
   camera.rotation.set( 0, 0, 0 );
   camera.position.set( 0, 0, 0 );
 
@@ -26,8 +26,10 @@ module.exports = function ( camera ) {
   yawObject.add( pitchObject );
   yawObject.position.copy(curCameraPosition);
 
-  yawObject.quaternion.y = curCameraQuaternion.y;
-  pitchObject.quaternion.x = curCameraQuaternion.x;
+  yawObject.quaternion.y = curCameraQuaternion.y * ((curCameraQuaternion.w > 0) ? 1 : -1);
+  pitchObject.quaternion.x = curCameraQuaternion.x * ((curCameraQuaternion.w > 0) ? 1 : -1);
+
+  scene.add(yawObject);
 
   var moveForward = false;
   var moveBackward = false;
@@ -217,5 +219,6 @@ module.exports = function ( camera ) {
     document.removeEventListener( 'mousemove', onMouseMove, false );
     document.removeEventListener( 'keydown', onKeyDown, false );
     document.removeEventListener( 'keyup', onKeyUp, false );
-  }
+  };
+
 };
