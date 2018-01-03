@@ -385,11 +385,10 @@ export default class VLab {
     onPointerLockChanged(event) {
         if (!document.pointerLockElement) {
             if (this.defaultCameraControls.getObject) {
-                var orbitTarget = new THREE.Vector3().subVectors(this.defaultCamera.getWorldDirection(), this.defaultCameraControls.getObject().position.clone().normalize());
-                orbitTarget.add(this.defaultCameraControls.getObject().position.clone());
+                var curPos = this.defaultCameraControls.getObject().position.clone();
                 this.switchCameraControls({ type: 'orbit', 
-                                            targetPos: this.defaultCameraControls.getObject().position,
-                                            target: orbitTarget });
+                                            targetPos: curPos,
+                                            target: curPos.clone().setLength(curPos.length() * 0.85) });
             }
         }
     }
@@ -452,10 +451,10 @@ export default class VLab {
                     }
                 }
                 this.defaultCameraControls = new PointerLockControls(this.defaultCamera, this.vLabScene);
-                this.defaultCameraControls.requestPointerLock();
                 this.defaultCameraControls.enabled = true;
                 this.crosshair.visible = true;
                 this.defaultCameraControls.update();
+                this.defaultCameraControls.requestPointerLock();
             break;
             case 'assistant':
             break;
@@ -529,7 +528,7 @@ export default class VLab {
                         .to({ x: this.selectedObject.position.x, z: this.selectedObject.position.z }, 500)
                         .easing(TWEEN.Easing.Cubic.InOut)
                         .onUpdate(() => { 
-                            this.defaultCameraControls.update(); 
+                            this.defaultCameraControls.update();
                         })
                         .onComplete(() => { 
                             if (!touch) {
@@ -593,8 +592,8 @@ export default class VLab {
         var crosshairSpriteMaterial = new THREE.SpriteMaterial({ map: crosshairSpriteMap[0] });
         this.crosshair = new THREE.Sprite(crosshairSpriteMaterial);
 
-        this.crosshair.position.set(0, 0, -0.5);
-        this.crosshair.scale.set(0.025, 0.025, 1.0);
+        this.crosshair.position.set(0, 0, -0.25);
+        this.crosshair.scale.set(0.01, 0.01, 1.0);
         this.crosshair.visible = true;
 
         this.crosshairPulsation = new TWEEN.Tween(this.crosshair.scale)

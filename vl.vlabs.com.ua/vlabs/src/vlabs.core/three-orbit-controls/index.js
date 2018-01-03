@@ -6,6 +6,9 @@ module.exports = function( THREE ) {
 	 * @author WestLangley / http://github.com/WestLangley
 	 * @author erich666 / http://erichaines.com
 	 */
+	/*
+	* Adopted to VLabs  by Alexey Maistrenko
+	*/
 
 // This set of controls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
@@ -66,7 +69,7 @@ module.exports = function( THREE ) {
 
 		// Set to false to disable panning
 		this.enablePan = true;
-		this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
+		this.keyPanSpeed = 2.0;	// pixels moved per arrow key push
 
 		// Set to true to automatically rotate around the target
 		// If auto-rotate is enabled, you must call controls.update() in your animation loop

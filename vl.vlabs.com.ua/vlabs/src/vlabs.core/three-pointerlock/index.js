@@ -3,8 +3,8 @@
  * Source: https://github.com/mrdoob/three.js/blob/master/examples/js/controls/PointerLockControls.js
  *
  * Adopted to common js by Javier Zapata
+ * Adopted to VLabs  by Alexey Maistrenko
  */
-
 module.exports = function ( camera, scene ) {
 
   var THREE = window.THREE || require('three');
@@ -13,6 +13,7 @@ module.exports = function ( camera, scene ) {
 
   var curCameraQuaternion = camera.quaternion.clone();
   var curCameraPosition = camera.position.clone();
+  var curCameraDirection = camera.getWorldDirection();
 
   camera.rotation.set( 0, 0, 0 );
   camera.position.set( 0, 0, 0 );
@@ -26,10 +27,23 @@ module.exports = function ( camera, scene ) {
   yawObject.add( pitchObject );
   yawObject.position.copy(curCameraPosition);
 
-  yawObject.quaternion.y = curCameraQuaternion.y * ((curCameraQuaternion.w > 0) ? 1 : -1);
-  pitchObject.quaternion.x = curCameraQuaternion.x * ((curCameraQuaternion.w > 0) ? 1 : -1);
+  var yaxis = new THREE.Vector3(0, 1, 0);
+  var zaxis = new THREE.Vector3(0, 0, 1);
+  var direction = zaxis.clone();
+  // Apply the camera's quaternion onto the unit vector of one of the axes of our desired rotation plane (the z axis of the xz plane, in this case).
+  direction.applyQuaternion(curCameraQuaternion);
+  // Project the direction vector onto the y axis to get the y component of the direction.
+  var ycomponent = yaxis.clone().multiplyScalar(direction.dot(yaxis));
+  // Subtract the y component from the direction vector so that we are left with the x and z components.
+  direction.sub(ycomponent);
+  // Normalize the direction into a unit vector again.
+  direction.normalize();
+  // Set the yawObject's quaternion to the rotation required to get from the z axis to the xz component of the camera's direction.
+  yawObject.quaternion.setFromUnitVectors(zaxis, direction);
 
   scene.add(yawObject);
+
+  pitchObject.quaternion.x = curCameraQuaternion.x;
 
   var moveForward = false;
   var moveBackward = false;
@@ -67,7 +81,7 @@ module.exports = function ( camera, scene ) {
     prevMouseX = movementX;
     prevMouseY = movementY;
 
-    yawObject.rotation.y -= movementX * 0.003;
+    yawObject.rotation.y += ((curCameraDirection.z < 0) ? -1 : 1) * movementX * 0.003;
     pitchObject.rotation.x -= movementY * 0.003;
 
     pitchObject.rotation.x = Math.max( - PI_2, Math.min( PI_2, pitchObject.rotation.x ) );
