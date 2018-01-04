@@ -48,6 +48,7 @@ class VlabBase extends VLab {
 
         }).catch(error => {
             console.error(error);
+            this.showErrorMessage(error);
         });
     }
 

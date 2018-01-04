@@ -48,8 +48,10 @@ export default class VLab {
         this.mouseCoords = new THREE.Vector2();
         this.mouseCoordsRaycaster = new THREE.Vector2();
         this.iteractionRaycaster = new THREE.Raycaster();
+        this.responsiveRaycaster = new THREE.Raycaster();
 
         this.interactiveObjects = [];
+        this.responosiveObjects = [];
 
         this.hoveredObject = undefined;
         this.preSelectedObject = undefined;
@@ -224,6 +226,7 @@ export default class VLab {
         // this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
 
         this.setInteractiveObjects();
+        this.setReponsiveObjects();
         this.setDefaultCamera();
         this.setDefaultLighting();
         this.setupCrosshair();
@@ -337,6 +340,12 @@ export default class VLab {
     setInteractiveObjects() {
         for (var interactiveObjectName of this.nature.interactiveObjects) {
             this.interactiveObjects.push(this.vLabScene.getObjectByName(interactiveObjectName));
+        }
+    }
+
+    setReponsiveObjects() {
+        for (var responsiveObjectName of this.nature.responsiveObjects) {
+            this.responosiveObjects.push(this.vLabScene.getObjectByName(responsiveObjectName));
         }
     }
 
@@ -488,6 +497,7 @@ export default class VLab {
                 this.selectionSphere.visible = true;
                 this.tooltipShow(this.hoveredObject);
                 this.webGLContainer.style.cursor = 'pointer';
+// console.log(interactionObjectIntersects[0]);
             } else {
                 if (this.selectionSphere) {
                     if (this.hoveredObject !== this.selectedObject) {
@@ -501,6 +511,19 @@ export default class VLab {
                 }
                 this.tooltipHide();
                 this.webGLContainer.style.cursor = 'auto';
+            }
+        }
+
+        if (this.defaultCameraControls.active) {
+            var responsiveObjectsItersects = undefined;
+
+            this.responsiveRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
+            responsiveObjectsItersects = this.responsiveRaycaster.intersectObjects(this.responosiveObjects);
+    
+            if (responsiveObjectsItersects) {
+                if (responsiveObjectsItersects.length > 0) {
+                    
+                }
             }
         }
 

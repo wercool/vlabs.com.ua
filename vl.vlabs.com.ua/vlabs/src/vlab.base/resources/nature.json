@@ -10,6 +10,7 @@
     },
     "showTHREEStats": true,
     "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001"],
+    "responsiveObjects": ["Cube"],
     "tooltips": {
         "Sphere": {
             "en": "Central interactive object",
