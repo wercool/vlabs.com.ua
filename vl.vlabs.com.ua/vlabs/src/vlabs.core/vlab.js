@@ -57,6 +57,12 @@ export default class VLab {
         this.preSelectedObject = undefined;
         this.selectedObject = undefined;
         this.selectionSphere = undefined;
+
+        this.hoveredResponsiveObjectObject = undefined;
+
+        this.takenObjects = {
+            count: 0
+        };
     }
 
     getVesrion() {
@@ -218,11 +224,12 @@ export default class VLab {
         }
 
         window.addEventListener("mouseup", this.onMouseUpWindow.bind(this), false);
-        this.webGLContainer.addEventListener("mousemove",   this.onMouseMove.bind(this), false);
-        this.webGLContainer.addEventListener("mousedown",   this.onMouseDown.bind(this), false);
-        this.webGLContainer.addEventListener("touchstart",  this.onTouchStart.bind(this), false);
-        this.webGLContainer.addEventListener("touchend",    this.onTouchEnd.bind(this), false);
+        this.webGLContainer.addEventListener("mousemove", this.onMouseMove.bind(this), false);
+        this.webGLContainer.addEventListener("mousedown", this.onMouseDown.bind(this), false);
+        this.webGLContainer.addEventListener("touchstart", this.onTouchStart.bind(this), false);
+        this.webGLContainer.addEventListener("touchend", this.onTouchEnd.bind(this), false);
         document.addEventListener("pointerlockchange", this.onPointerLockChanged.bind(this), false);
+        document.getElementById("fullscreen").addEventListener("mouseup", this.toggleFullscreen.bind(this), false);
         // this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
 
         this.setInteractiveObjects();
@@ -397,7 +404,7 @@ export default class VLab {
                 var curPos = this.defaultCameraControls.getObject().position.clone();
                 this.switchCameraControls({ type: 'orbit', 
                                             targetPos: curPos,
-                                            target: curPos.clone().setLength(curPos.length() * 0.85) });
+                                            target: new THREE.Vector3() });
             }
         }
     }
@@ -460,7 +467,6 @@ export default class VLab {
                     }
                 }
                 this.defaultCameraControls = new PointerLockControls(this.defaultCamera, this.vLabScene);
-                this.defaultCameraControls.enabled = true;
                 this.crosshair.visible = true;
                 this.defaultCameraControls.update();
                 this.defaultCameraControls.requestPointerLock();
@@ -469,6 +475,8 @@ export default class VLab {
             break;
         }
         this.defaultCameraControls.type = cameraControlConfig.type;
+        this.defaultCameraControls.enabled = true;
+        this.tooltipHide();
     }
 
     updateCameraControlsCheckIntersections() {
@@ -485,49 +493,59 @@ export default class VLab {
                 interactionObjectIntersects = this.iteractionRaycaster.intersectObjects(this.interactiveObjects);
             }
         }
-
-        if (interactionObjectIntersects) {
-            if (interactionObjectIntersects.length > 0) {
-                if (interactionObjectIntersects[0].object !== this.hoveredObject && this.hoveredObject != this.selectedObject && this.selectionSphere) {
-                    this.selectionSphere.visible = false;
-                    this.tooltipHide();
-                }
-                this.hoveredObject = interactionObjectIntersects[0].object;
-                this.selectionSphere = this.vLabScene.getObjectByName(interactionObjectIntersects[0].object.name + "_SELECTION");
-                this.selectionSphere.visible = true;
-                this.tooltipShow(this.hoveredObject);
-                this.webGLContainer.style.cursor = 'pointer';
-// console.log(interactionObjectIntersects[0]);
-            } else {
-                if (this.selectionSphere) {
-                    if (this.hoveredObject !== this.selectedObject) {
-                        this.clearNotSelected();
-                    }
-                    this.selectionSphere = undefined;
-                    this.cMenu.hide();
-                }
-                if (this.hoveredObject) {
-                    this.hoveredObject = undefined;
-                }
-                this.tooltipHide();
-                this.webGLContainer.style.cursor = 'auto';
-            }
-        }
-
         if (this.defaultCameraControls.active) {
-            var responsiveObjectsItersects = undefined;
-
-            this.responsiveRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
-            responsiveObjectsItersects = this.responsiveRaycaster.intersectObjects(this.responosiveObjects);
-    
-            if (responsiveObjectsItersects) {
-                if (responsiveObjectsItersects.length > 0) {
-                    
+            if (interactionObjectIntersects) {
+                if (interactionObjectIntersects.length > 0) {
+                    if (interactionObjectIntersects[0].object !== this.hoveredObject && this.hoveredObject != this.selectedObject && this.selectionSphere) {
+                        this.selectionSphere.visible = false;
+                    }
+                    this.tooltipShow(interactionObjectIntersects[0].object);
+                    this.hoveredObject = interactionObjectIntersects[0].object;
+                    this.selectionSphere = this.vLabScene.getObjectByName(interactionObjectIntersects[0].object.name + "_SELECTION");
+                    this.selectionSphere.visible = true;
+                    this.webGLContainer.style.cursor = 'pointer';
+                } else {
+                    if (this.selectionSphere) {
+                        if (this.hoveredObject !== this.selectedObject) {
+                            this.clearNotSelected();
+                        }
+                        this.selectionSphere = undefined;
+                        this.cMenu.hide();
+                    }
+                    if (this.hoveredObject) {
+                        this.hoveredObject = undefined;
+                    }
+                    this.webGLContainer.style.cursor = 'auto';
                 }
             }
-        }
 
-        this.defaultCameraControls.active = false;
+            if (!this.hoveredObject) {
+                var responsiveObjectsItersects = undefined;
+
+                this.responsiveRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
+                responsiveObjectsItersects = this.responsiveRaycaster.intersectObjects(this.responosiveObjects);
+        
+                if (responsiveObjectsItersects) {
+                    if (responsiveObjectsItersects.length > 0) {
+                        this.tooltipShow(responsiveObjectsItersects[0].object);
+                        this.hoveredResponsiveObjectObject = responsiveObjectsItersects[0].object;
+                        this.hoveredResponsiveObjectObject.material.emissive = new THREE.Color(0.1, 0.1, 0.1);
+                    } else {
+                        if (this.hoveredResponsiveObjectObject) {
+                            this.hoveredResponsiveObjectObject.material.emissive = new THREE.Color(0, 0, 0);
+                            this.hoveredResponsiveObjectObject = undefined;
+                            this.tooltipHide();
+                        }
+                    }
+                }
+            } else {
+                if (this.hoveredResponsiveObjectObject) {
+                    this.hoveredResponsiveObjectObject.material.emissive = new THREE.Color(0, 0, 0);
+                    this.hoveredResponsiveObjectObject = undefined;
+                }
+            }
+            this.defaultCameraControls.active = false;
+        }
     }
 
     toggleSelectedObject(touch = false) {
@@ -552,6 +570,7 @@ export default class VLab {
                         .easing(TWEEN.Easing.Cubic.InOut)
                         .onUpdate(() => { 
                             this.defaultCameraControls.update();
+                            this.tooltipHide();
                         })
                         .onComplete(() => { 
                             if (!touch) {
@@ -670,11 +689,12 @@ export default class VLab {
         selectionAlphaTexture.needsUpdate = true;
 
         interactiveObject.geometry.computeBoundingSphere();
-        var sphereGeom = new THREE.SphereGeometry(interactiveObject.geometry.boundingSphere.radius * 1.1, 12, 8);
+        var sphereGeom = new THREE.SphereGeometry(interactiveObject.geometry.boundingSphere.radius, 12, 8);
         sphereGeom.rotateX(1.57);
         var sphereMat = new THREE.MeshBasicMaterial({
           color: new THREE.Color(1, 1, 0), // yellow ring
           transparent: true, // to make our alphaMap work, we have to set this parameter to `true`
+          opacity: 0.75,
           alphaMap: selectionAlphaTexture
         });
         sphereMat.depthTest = false;
@@ -704,6 +724,9 @@ export default class VLab {
     }
 
     showObjectSpecificCircularMenu() {
+        if (!this.selectedObject) {
+            return;
+        }
         if (this.nature.objectMenus[this.selectedObject.name])
         {
             if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
@@ -724,6 +747,8 @@ export default class VLab {
                     cMenuPos.y += 150 - cMenuPos.y;
                 }
                 this.cMenu.show([cMenuPos.x, cMenuPos.y]);
+
+                this.defaultCameraControls.enabled = false;
             }
         }
     }
@@ -731,13 +756,16 @@ export default class VLab {
     tooltipShow(obj) {
         var tooltip = document.getElementById("tooltip");
         if (obj.userData.tooltipShown === undefined) obj.userData.tooltipShown = 0;
-        if (this.nature.tooltips[obj.name] && obj.userData.tooltipShown < this.nature.tooltips[obj.name].timesToShow && tooltip.style.display !== 'block') {
+        if (this.nature.tooltips[obj.name] && (obj.userData.tooltipShown <= this.nature.tooltips[obj.name].timesToShow || !this.nature.tooltips[obj.name].timesToShow)) {
             var screenPos = this.toScreenPosition(obj);
             tooltip.innerText = this.nature.tooltips[obj.name][this.nature.lang];
             tooltip.style.left = screenPos.x + 'px';
             tooltip.style.top = screenPos.y + 25 + 'px';
             tooltip.style.display = 'block';
-            obj.userData.tooltipShown++;
+            if (obj !== this.hoveredObject)
+                obj.userData.tooltipShown++;
+        } else {
+            this.tooltipHide();
         }
     }
 
@@ -754,5 +782,51 @@ export default class VLab {
         this.statsTHREE.domElement.style.left = '0px';
         this.statsTHREE.domElement.style.top = '0px';
         document.body.appendChild(this.statsTHREE.domElement);
+    }
+
+    toggleFullscreen() {
+        var element = document.body;
+        var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
+        if (!fullscreenElement) {
+            if(element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if(element.mozRequestFullScreen) {
+                element.mozRequestFullScreen();
+            } else if(element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } else if(element.msRequestFullscreen) {
+                element.msRequestFullscreen();
+            }
+            this.cMenu.hide();
+            document.getElementById("fullscreen").style.backgroundImage = "url('../vlabs.assets/img/fullscreen-exit.png')";
+        } else {
+            if(document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if(document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if(document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+            document.getElementById("fullscreen").style.backgroundImage = "url('../vlabs.assets/img/fullscreen.png')";
+        }
+    }
+
+    takeObject() {
+        var screenWidthFactor = 360 / (this.webGLContainer.clientWidth * 6.5);
+        this.defaultCamera.add(this.selectedObject);
+        this.selectedObject.rotation.x = -0.75;
+        this.selectedObject.rotation.y = -0.1;
+        this.selectedObject.geometry.computeBoundingSphere();
+        this.selectedObject.position.set(0.18 - screenWidthFactor, 0.075 - this.takenObjects.count / 15, -0.2);
+        this.selectedObject.scale.multiplyScalar(0.01 / this.selectedObject.geometry.boundingSphere.radius);
+        this.selectedObject.takenRotation = new TWEEN.Tween(this.selectedObject.rotation)
+        .to({z: Math.PI}, 10000)
+        .repeat(Infinity)
+        .yoyo(true)
+        .easing(TWEEN.Easing.Quadratic.InOut).start();
+        this.selectedObject.material.emissive = new THREE.Color(0.2, 0.2, 0.2);
+        this.takenObjects[this.selectedObject.name] = this.selectedObject;
+        this.takenObjects.count++;
+        this.resetAllSelections();
     }
 }

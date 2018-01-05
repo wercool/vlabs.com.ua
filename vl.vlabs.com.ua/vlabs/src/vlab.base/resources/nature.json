@@ -16,6 +16,10 @@
             "en": "Central interactive object",
             "ru": "Центральный интерактивный объект",
             "timesToShow": 5
+        },
+        "Cube": {
+            "en": "Just a Cube",
+            "ru": "Просто куб"
         }
     },
     "objectMenus": {
@@ -41,7 +45,50 @@
                     }],
                 "ru": [{
                     "title": "Взять",
-                    "icon": "fa fa-hand-rock"
+                    "icon": "fa fa-hand-rock",
+                    "click": "takeObject"
+                    }, {
+                    "title": "GitLab",
+                    "icon": ["fa fa-gitlab", "#4078c0"]
+                    }, {
+                    "title": "subMenu",
+                    "icon": "my-icon icon1"
+                    }, {
+                    "title": "click",
+                    "icon": "my-icon icon3"
+                    }, {
+                    "title": "clickMe!",
+                    "click": "test",
+                    "args": {"value": "Test Value"}
+                    }, {
+                    "disabled": true,
+                    "title": "disabled"
+                    }]
+        },
+        "CubeInteractive": {
+            "en": [{
+                    "title": "GitHub",
+                    "icon": "fa fa-github"
+                    }, {
+                    "title": "GitLab",
+                    "icon": ["fa fa-gitlab", "#4078c0"]
+                    }, {
+                    "title": "subMenu",
+                    "icon": "my-icon icon1"
+                    }, {
+                    "title": "click",
+                    "icon": "my-icon icon3"
+                    }, {
+                    "title": "clickMe!",
+                    "click": "this.test"
+                    }, {
+                    "disabled": true,
+                    "title": "disabled"
+                    }],
+                "ru": [{
+                    "title": "Взять",
+                    "icon": "fa fa-hand-rock",
+                    "click": "takeObject"
                     }, {
                     "title": "GitLab",
                     "icon": ["fa fa-gitlab", "#4078c0"]

@@ -61,7 +61,7 @@ module.exports = function( THREE ) {
 		// This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
 		// Set to false to disable zooming
 		this.enableZoom = true;
-		this.zoomSpeed = 0.5;
+		this.zoomSpeed = 0.25;
 
 		// Set to false to disable rotating
 		this.enableRotate = true;

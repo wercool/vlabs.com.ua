@@ -46,6 +46,49 @@ class VlabBase extends VLab {
                 name: "VLabsAssistant3"
             });
 
+            this.nature.objectMenus["VLabsAssistant3"] = {
+                    "en": [{
+                            "title": "GitHub",
+                            "icon": "fa fa-github"
+                            }, {
+                            "title": "GitLab",
+                            "icon": ["fa fa-gitlab", "#4078c0"]
+                            }, {
+                            "title": "subMenu",
+                            "icon": "my-icon icon1"
+                            }, {
+                            "title": "click",
+                            "icon": "my-icon icon3"
+                            }, {
+                            "title": "clickMe!",
+                            "click": "this.test"
+                            }, {
+                            "disabled": true,
+                            "title": "disabled"
+                            }],
+                        "ru": [{
+                            "title": "Взять",
+                            "icon": "fa fa-hand-rock",
+                            "click": "takeObject"
+                            }, {
+                            "title": "GitLab",
+                            "icon": ["fa fa-gitlab", "#4078c0"]
+                            }, {
+                            "title": "subMenu",
+                            "icon": "my-icon icon1"
+                            }, {
+                            "title": "click",
+                            "icon": "my-icon icon3"
+                            }, {
+                            "title": "clickMe!",
+                            "click": "test",
+                            "args": {"value": "Test Value"}
+                            }, {
+                            "disabled": true,
+                            "title": "disabled"
+                            }]
+            };
+
         }).catch(error => {
             console.error(error);
             this.showErrorMessage(error);

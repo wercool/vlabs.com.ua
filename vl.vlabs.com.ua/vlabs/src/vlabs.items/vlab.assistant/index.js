@@ -31,8 +31,7 @@ initObj {
             }
             this.context.nature.tooltips[this.model.name] = {
                 "en": "VLab Assistant" + ((this.initObj.title) ? "\n" + this.initObj.title : ""),
-                "ru": "VLab Ассистент" + ((this.initObj.title) ? "\n" + this.initObj.title : ""),
-                "timesToShow": 1e6
+                "ru": "VLab Ассистент" + ((this.initObj.title) ? "\n" + this.initObj.title : "")
             };
 
             this.context.interactiveObjects.push(this.model);

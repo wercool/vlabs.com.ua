@@ -627,6 +627,7 @@
 
     function hide () {
         classed(this._container, 'opened-nav', false);
+        this._context.defaultCameraControls.enabled = true;
         return this;
     }
 
