@@ -107,5 +107,10 @@
                     "title": "disabled"
                     }]
         }
+    },
+    "interactions": {
+        "CubeInteractive<->Cube": {
+            
+        }
     }
 }

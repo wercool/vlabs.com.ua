@@ -58,11 +58,10 @@ export default class VLab {
         this.selectedObject = undefined;
         this.selectionSphere = undefined;
 
-        this.hoveredResponsiveObjectObject = undefined;
+        this.hoveredResponsiveObject = undefined;
+        this.takenObjectsToResponsiveObjectsArrows = {};
 
-        this.takenObjects = {
-            count: 0
-        };
+        this.takenObjects = {};
     }
 
     getVesrion() {
@@ -230,6 +229,7 @@ export default class VLab {
         this.webGLContainer.addEventListener("touchend", this.onTouchEnd.bind(this), false);
         document.addEventListener("pointerlockchange", this.onPointerLockChanged.bind(this), false);
         document.getElementById("fullscreen").addEventListener("mouseup", this.toggleFullscreen.bind(this), false);
+        document.getElementById("resetview").addEventListener("mouseup", this.resetView.bind(this), false);
         // this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
 
         this.setInteractiveObjects();
@@ -336,6 +336,8 @@ export default class VLab {
 
             TWEEN.update(time);
 
+            this.takenToResponsiveArrowsUpdate();
+
             dispatchEvent(this.redererFrameEvent);
 
             requestAnimationFrame(this.render.bind(this));
@@ -413,7 +415,7 @@ export default class VLab {
         if (this.defaultCameraControls) {
             if (this.defaultCameraControls.type) {
 
-                if (this.defaultCameraControls.type == cameraControlConfig.type) {
+                if (this.defaultCameraControls.type == cameraControlConfig.type && !cameraControlConfig.forced) {
                     return;
                 }
 
@@ -443,7 +445,6 @@ export default class VLab {
                         this.vLabScene.remove(this.vLabScene.getObjectByName("CameraPitchObject"));
                         this.vLabScene.remove(this.vLabScene.getObjectByName("CameraYawObject"));
                         this.setDefaultCamera(this.defaultCamera);
-                        this.defaultCamera.position.copy(this.defaultCameraInitialPosition.clone());
                     }
                 }
                 this.crosshair.visible = false;
@@ -528,20 +529,21 @@ export default class VLab {
                 if (responsiveObjectsItersects) {
                     if (responsiveObjectsItersects.length > 0) {
                         this.tooltipShow(responsiveObjectsItersects[0].object);
-                        this.hoveredResponsiveObjectObject = responsiveObjectsItersects[0].object;
-                        this.hoveredResponsiveObjectObject.material.emissive = new THREE.Color(0.1, 0.1, 0.1);
+                        this.hoveredResponsiveObject = responsiveObjectsItersects[0].object;
+                        this.hoveredResponsiveObject.intersectionPoint = responsiveObjectsItersects[0].point;
+                        this.hoveredResponsiveObject.material.emissive = new THREE.Color(0.1, 0.1, 0.1);
                     } else {
-                        if (this.hoveredResponsiveObjectObject) {
-                            this.hoveredResponsiveObjectObject.material.emissive = new THREE.Color(0, 0, 0);
-                            this.hoveredResponsiveObjectObject = undefined;
+                        if (this.hoveredResponsiveObject) {
+                            this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
+                            this.hoveredResponsiveObject = undefined;
                             this.tooltipHide();
                         }
                     }
                 }
             } else {
-                if (this.hoveredResponsiveObjectObject) {
-                    this.hoveredResponsiveObjectObject.material.emissive = new THREE.Color(0, 0, 0);
-                    this.hoveredResponsiveObjectObject = undefined;
+                if (this.hoveredResponsiveObject) {
+                    this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
+                    this.hoveredResponsiveObject = undefined;
                 }
             }
             this.defaultCameraControls.active = false;
@@ -563,29 +565,33 @@ export default class VLab {
                     }
                 }
 
-                if (this.defaultCameraControls.type == 'orbit') {
-                    if (this.selectedObject == this.preSelectedObject) {
-                        new TWEEN.Tween(this.defaultCameraControls.target)
-                        .to({ x: this.selectedObject.position.x, z: this.selectedObject.position.z }, 500)
-                        .easing(TWEEN.Easing.Cubic.InOut)
-                        .onUpdate(() => { 
-                            this.defaultCameraControls.update();
-                            this.tooltipHide();
-                        })
-                        .onComplete(() => { 
-                            if (!touch) {
-                                this.showObjectSpecificCircularMenu();
-                            } else {
-                                if (this.selectedObject) {
-                                    if (this.selectedObject == this.hoveredObject) {
-                                        this.showObjectSpecificCircularMenu();
-                                        this.tooltipHide();
+                if (!this.takenObjects[this.selectedObject.name]) {
+                    if (this.defaultCameraControls.type == 'orbit') {
+                        if (this.selectedObject == this.preSelectedObject) {
+                            new TWEEN.Tween(this.defaultCameraControls.target)
+                            .to({ x: this.selectedObject.position.x, z: this.selectedObject.position.z }, 500)
+                            .easing(TWEEN.Easing.Cubic.InOut)
+                            .onUpdate(() => { 
+                                this.defaultCameraControls.update();
+                                this.tooltipHide();
+                            })
+                            .onComplete(() => { 
+                                if (!touch) {
+                                    this.showObjectSpecificCircularMenu();
+                                } else {
+                                    if (this.selectedObject) {
+                                        if (this.selectedObject == this.hoveredObject) {
+                                            this.showObjectSpecificCircularMenu();
+                                            this.tooltipHide();
+                                        }
                                     }
                                 }
-                            }
-                         })
-                        .start();
+                             })
+                            .start();
+                        }
                     }
+                } else {
+                    this.tooltipHide();
                 }
             }
         } else {
@@ -646,6 +652,15 @@ export default class VLab {
 
 
         this.defaultCamera.add(this.crosshair);
+    }
+
+    getWorldPosition(obj) {
+        var worldPosition = new THREE.Vector3();
+
+        obj.updateMatrixWorld();
+        worldPosition.setFromMatrixPosition(obj.matrixWorld);
+
+        return worldPosition;
     }
 
     toScreenPosition(obj)
@@ -749,6 +764,7 @@ export default class VLab {
                 this.cMenu.show([cMenuPos.x, cMenuPos.y]);
 
                 this.defaultCameraControls.enabled = false;
+                this.paused = true;
             }
         }
     }
@@ -811,22 +827,80 @@ export default class VLab {
         }
     }
 
+    resetView() {
+        this.switchCameraControls({ type: 'orbit', 
+                                    forced: true,
+                                    targetPos: this.defaultCameraInitialPosition.clone(),
+                                    target: this.vLabScene.getObjectByName(this.nature.cameraControls.targetObjectName).position.clone() });
+    }
+
     takeObject() {
-        var screenWidthFactor = 360 / (this.webGLContainer.clientWidth * 6.5);
+        if(Object.keys(this.takenObjects).length > 3) {
+            iziToast.info({
+                title: 'Info',
+                message: 'You can carry maximum 3 objects',
+                timeout: 3000
+            });
+            return;
+        }
+        this.selectedObject.traverse(function(node) {
+            if (node.type === "Mesh") {
+                if (node.material.type === "MeshPhongMaterial") {
+                    node.material.emissive = new THREE.Color(0.5, 0.5, 0.5);
+                }
+                if (!node.material.transparent) {
+                    node.material.transparent = true;
+                    node.material.opacity = 0.5;
+                }
+            }
+        });
+        var cameraAspectOffset = 0.075 / this.defaultCamera.aspect;
         this.defaultCamera.add(this.selectedObject);
         this.selectedObject.rotation.x = -0.75;
         this.selectedObject.rotation.y = -0.1;
         this.selectedObject.geometry.computeBoundingSphere();
-        this.selectedObject.position.set(0.18 - screenWidthFactor, 0.075 - this.takenObjects.count / 15, -0.2);
+        this.selectedObject.position.set(0.17 - cameraAspectOffset, 0.075 - Object.keys(this.takenObjects).length / 15, -0.2);
         this.selectedObject.scale.multiplyScalar(0.01 / this.selectedObject.geometry.boundingSphere.radius);
         this.selectedObject.takenRotation = new TWEEN.Tween(this.selectedObject.rotation)
         .to({z: Math.PI}, 10000)
         .repeat(Infinity)
         .yoyo(true)
         .easing(TWEEN.Easing.Quadratic.InOut).start();
-        this.selectedObject.material.emissive = new THREE.Color(0.2, 0.2, 0.2);
         this.takenObjects[this.selectedObject.name] = this.selectedObject;
-        this.takenObjects.count++;
         this.resetAllSelections();
+    }
+
+    takenToResponsiveArrowsUpdate() {
+        if (this.hoveredResponsiveObject && Object.keys(this.takenObjects).length > 0 && this.defaultCameraControls.type == 'orbit' && this.defaultCameraControls.staticMode) {
+            for (let [takenObjectName, takenObject] of Object.entries(this.takenObjects)) {
+                if (this.takenObjects[takenObjectName]) {
+                    if (this.hoveredResponsiveObject.name == "Cube") {
+                        var takenObjectPosition = this.getWorldPosition(this.takenObjects[takenObjectName]);
+                        var hoveredResponsiveObjectDirection = this.hoveredResponsiveObject.intersectionPoint.clone().sub(takenObjectPosition.clone());
+                        var hoveredResponsiveObjectDirectionVectorLength = hoveredResponsiveObjectDirection.clone().length();
+                        hoveredResponsiveObjectDirection.normalize();
+                        if (!this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName]) {
+                            this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName] = new THREE.ArrowHelper(
+                                hoveredResponsiveObjectDirection, takenObjectPosition, hoveredResponsiveObjectDirectionVectorLength, 0xffffd5, 0.2, 0.01);
+                                this.vLabScene.add(this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName]);
+                        } else {
+                            this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName].visible = true;
+                            if (this.selectedObject === this.takenObjects[takenObjectName]) {
+                                this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName].setColor(new THREE.Color(0x00ff00));
+                            } else {
+                                this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName].setColor(new THREE.Color(0xffffd5));
+                            }
+                            this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName].position.copy(takenObjectPosition);
+                            this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName].setDirection(hoveredResponsiveObjectDirection);
+                            this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName].setLength(hoveredResponsiveObjectDirectionVectorLength, 0.2, 0.01);
+                        }
+                    }
+                }
+            }
+        } else {
+            for (let [arrowName, arrowHelper] of Object.entries(this.takenObjectsToResponsiveObjectsArrows)) {
+                arrowHelper.visible = false;
+            }
+        }
     }
 }

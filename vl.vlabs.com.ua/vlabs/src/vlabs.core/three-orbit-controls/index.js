@@ -21,6 +21,8 @@ module.exports = function( THREE ) {
 
 		this.active = false;
 
+		this.staticMode = true;
+
 		this.object = object;
 
 		if (initialPos) {
@@ -77,7 +79,7 @@ module.exports = function( THREE ) {
 		this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
 
 		// Set to false to disable use of the keys
-		this.enableKeys = true;
+		this.enableKeys = false;
 
 		// The four arrow keys
 		this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
@@ -708,6 +710,7 @@ module.exports = function( THREE ) {
 			if ( scope.enabled === false ) return;
 
 			scope.active = true;
+			scope.staticMode = false;
 
 			event.preventDefault();
 
@@ -731,6 +734,7 @@ module.exports = function( THREE ) {
 
 			}
 
+			if (state === STATE.NONE) scope.staticMode = true;
 		}
 
 		function onMouseUp( event ) {
@@ -745,6 +749,7 @@ module.exports = function( THREE ) {
 			document.removeEventListener( 'mouseup', onMouseUp, false );
 
 			scope.dispatchEvent( endEvent );
+			scope.staticMode = true;
 
 			state = STATE.NONE;
 
@@ -764,6 +769,8 @@ module.exports = function( THREE ) {
 			scope.dispatchEvent( startEvent ); // not sure why these are here...
 			scope.dispatchEvent( endEvent );
 
+			scope.staticMode = true;
+
 		}
 
 		function onKeyDown( event ) {
@@ -771,6 +778,7 @@ module.exports = function( THREE ) {
 			if ( scope.enabled === false || scope.enableKeys === false || scope.enablePan === false ) return;
 
 			scope.active = true;
+			scope.staticMode = false;
 
 			handleKeyDown( event );
 
@@ -781,6 +789,7 @@ module.exports = function( THREE ) {
 			if ( scope.enabled === false ) return;
 
 			scope.active = true;
+			scope.staticMode = false;
 
 			switch ( event.touches.length ) {
 
@@ -879,6 +888,7 @@ module.exports = function( THREE ) {
 			if ( scope.enabled === false ) return;
 
 			scope.active = true;
+			scope.staticMode = true;
 
 			handleTouchEnd( event );
 

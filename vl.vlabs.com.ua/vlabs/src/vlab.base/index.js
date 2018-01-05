@@ -119,7 +119,7 @@ class VlabBase extends VLab {
     }
 
     onRedererFrameEvent(event) {
-        // console.log(event);
+
     }
 
     test(value) {
