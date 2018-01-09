@@ -1,6 +1,7 @@
 @import 'circular-menu.css';
 @import './fontawesome/css/fontawesome-all.min.css';
 @import 'iziToast.min.css';
+@import 'popupS.min.css';
 
 html, body {
     margin: 0;

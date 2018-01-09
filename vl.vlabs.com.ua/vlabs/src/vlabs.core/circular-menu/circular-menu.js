@@ -637,7 +637,7 @@
 
     function styles (styles) {
         if(!styles instanceof Object) return this;
-        
+
         for(var k in styles){
             if(styles.hasOwnProperty(k)) style(this._container, k, styles[k]);
         }
@@ -651,7 +651,7 @@
 
     function CMenu(element, pMenu){
         this._container = element;
-        
+
         if(pMenu) this._pMenu = pMenu;
     }
 

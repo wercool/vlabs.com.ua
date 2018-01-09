@@ -10,6 +10,7 @@ var OrbitControls           = require('./three-orbit-controls/index')(THREE);
 var PointerLockControls     = require('./three-pointerlock/index');
 var TransformControls       = require('./three-transformcontrols/index');
 var CMenu                   = require('./circular-menu/circular-menu.js');
+var popupS                  = require('./popups/popupS.min.js');
 
 /*
 initObj {
@@ -574,7 +575,7 @@ export default class VLab {
                 }
             }
 
-            if (!this.hoveredObject && this.selectedObject) {
+            if (this.selectedObject) {
                 var responsiveObjectsItersects = undefined;
 
                 this.responsiveRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
@@ -722,8 +723,7 @@ export default class VLab {
         return worldPosition;
     }
 
-    toScreenPosition(obj)
-    {
+    toScreenPosition(obj) {
         var vector = new THREE.Vector3();
 
         var widthHalf = 0.5 * this.webGLContainer.clientWidth;
@@ -803,6 +803,7 @@ export default class VLab {
         }
         if (this.nature.objectMenus[this.selectedObject.name])
         {
+            document.getElementById("cMenu").innerHTML = "";
             if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
                 this.cMenu.config({
                     menus: this.nature.objectMenus[this.selectedObject.name][this.nature.lang]
@@ -1079,6 +1080,24 @@ export default class VLab {
         } else {
             this.helpers.placeHelper.sprite.visible = false;
             this.takenObjectsToResponsiveObjectsArrow.visible = false;
+        }
+    }
+
+    showInfo(value) {
+        if (value.url) {
+            popupS.ajax({
+                title: value.title,
+                ajax: {
+                    url: value.url,
+                }
+            });
+        } else  if (value.html) {
+            popupS.modal({
+                title:   value.title,
+                content: {
+                    html: value.html
+                }
+            });
         }
     }
 }

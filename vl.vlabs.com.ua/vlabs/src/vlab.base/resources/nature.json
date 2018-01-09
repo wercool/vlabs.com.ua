@@ -10,7 +10,7 @@
     },
     "showTHREEStats": true,
     "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001"],
-    "responsiveObjects": [],
+    "responsiveObjects": ["Cube", "CubeResponosive"],
     "tooltips": {
         "Sphere": {
             "en": "Central interactive object",
@@ -29,23 +29,22 @@
     "objectMenus": {
         "Sphere": {
             "en": [{
-                    "title": "GitHub",
-                    "icon": "fa fa-github"
+                    "title": "Pick",
+                    "icon": "fa fa-hand-rock",
+                    "click": "takeObject"
                     }, {
-                    "title": "GitLab",
-                    "icon": ["fa fa-gitlab", "#4078c0"]
-                    }, {
-                    "title": "subMenu",
-                    "icon": "my-icon icon1"
-                    }, {
-                    "title": "click",
-                    "icon": "my-icon icon3"
+                    "title": "Info",
+                    "icon": ["fa fa-info"],
+                    "click": "showInfo",
+                    "args": {"html": "test"}
                     }, {
                     "title": "clickMe!",
-                    "click": "this.test"
+                    "click": "test",
+                    "args": {"value": "Test Value"}
                     }, {
-                    "disabled": true,
-                    "title": "disabled"
+                    "disabled": true
+                    }, {
+                    "disabled": true
                     }],
                 "ru": [{
                     "title": "Взять",
@@ -53,11 +52,18 @@
                     "click": "takeObject"
                     }, {
                     "title": "Инфо",
-                    "icon": ["fa fa-info"]
+                    "icon": ["fa fa-info"],
+                    "click": "showInfo",
+                    "args": {
+                            "html": "<iframe style=\"height: 400px; width: 80%;\" src=\"https:\/\/www.youtube.com\/embed\/R_w4HYXuo9M\" frameborder=\"0\" gesture=\"media\" allow=\"encrypted-media\" allowfullscreen><\/iframe>",
+                            "title": "Spehere Help"
+                        }
                     }, {
                     "title": "clickMe!",
                     "click": "test",
                     "args": {"value": "Test Value"}
+                    }, {
+                    "disabled": true
                     }, {
                     "disabled": true
                     }]
