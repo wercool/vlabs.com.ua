@@ -23,6 +23,8 @@ module.exports = function( THREE ) {
 
 		this.staticMode = true;
 
+		this.zoomMode = false;
+
 		this.object = object;
 
 		if (initialPos) {

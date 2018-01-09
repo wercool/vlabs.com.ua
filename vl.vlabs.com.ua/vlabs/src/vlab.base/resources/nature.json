@@ -10,7 +10,7 @@
     },
     "showTHREEStats": true,
     "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001"],
-    "responsiveObjects": ["Cube"],
+    "responsiveObjects": [],
     "tooltips": {
         "Sphere": {
             "en": "Central interactive object",
@@ -20,6 +20,10 @@
         "Cube": {
             "en": "Just a Cube",
             "ru": "Просто куб"
+        },
+        "CubeResponosive": {
+            "en": "Small parallelepiped",
+            "ru": "Маленький параллелепипед"
         }
     },
     "objectMenus": {
@@ -48,21 +52,14 @@
                     "icon": "fa fa-hand-rock",
                     "click": "takeObject"
                     }, {
-                    "title": "GitLab",
-                    "icon": ["fa fa-gitlab", "#4078c0"]
-                    }, {
-                    "title": "subMenu",
-                    "icon": "my-icon icon1"
-                    }, {
-                    "title": "click",
-                    "icon": "my-icon icon3"
+                    "title": "Инфо",
+                    "icon": ["fa fa-info"]
                     }, {
                     "title": "clickMe!",
                     "click": "test",
                     "args": {"value": "Test Value"}
                     }, {
-                    "disabled": true,
-                    "title": "disabled"
+                    "disabled": true
                     }]
         },
         "CubeInteractive": {
@@ -88,7 +85,8 @@
                 "ru": [{
                     "title": "Взять",
                     "icon": "fa fa-hand-rock",
-                    "click": "takeObject"
+                    "click": "takeObject",
+                    "afterTaken": "CubeInteractiveTaken"
                     }, {
                     "title": "GitLab",
                     "icon": ["fa fa-gitlab", "#4078c0"]
@@ -109,7 +107,13 @@
         }
     },
     "interactions": {
-        "CubeInteractive<->Cube": {
+        "CubeInteractive|Cube": {
+            
+        },
+        "CubeInteractive|CubeResponosive": {
+            
+        },
+        "Sphere|CubeResponosive": {
             
         }
     }

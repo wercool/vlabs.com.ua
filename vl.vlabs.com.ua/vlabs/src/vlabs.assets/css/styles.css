@@ -63,6 +63,19 @@ html, body {
     background-image: url("../img/reset-view.png");
 }
 
+#back {
+    bottom: 10px;
+    position: absolute;
+    cursor: pointer;
+    width: 128px;
+    height: 128px;
+    left: 50%;
+    right: 25%;
+    margin-left:-64px;
+    background-image: url("../img/back.png");
+    display: none;
+}
+
 #tooltip {
     color:rgba(255, 255, 255, 0.75);
     position: fixed;

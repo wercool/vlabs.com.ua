@@ -45,10 +45,25 @@ export default class VLab {
         this.progressBar = undefined;
         this.progressBarPrependText = "";
 
+        this.helpers = {
+            "zoomHelper": {
+                "url": "../vlabs.assets/img/magnifier.png",
+                "texture": undefined,
+                "assigned": [],
+                "selected": undefined
+            },
+            "placeHelper": {
+                "url": "../vlabs.assets/img/place.png",
+                "texture": undefined,
+                "sprite": undefined
+            }
+        };
+
         this.mouseCoords = new THREE.Vector2();
         this.mouseCoordsRaycaster = new THREE.Vector2();
         this.iteractionRaycaster = new THREE.Raycaster();
         this.responsiveRaycaster = new THREE.Raycaster();
+        this.helpersRaycaster = new THREE.Raycaster();
 
         this.interactiveObjects = [];
         this.responosiveObjects = [];
@@ -59,7 +74,6 @@ export default class VLab {
         this.selectionSphere = undefined;
 
         this.hoveredResponsiveObject = undefined;
-        this.takenObjectsToResponsiveObjectsArrows = {};
 
         this.takenObjects = {};
     }
@@ -227,7 +241,16 @@ export default class VLab {
         this.webGLContainer.addEventListener("mousedown", this.onMouseDown.bind(this), false);
         this.webGLContainer.addEventListener("touchstart", this.onTouchStart.bind(this), false);
         this.webGLContainer.addEventListener("touchend", this.onTouchEnd.bind(this), false);
+
         document.addEventListener("pointerlockchange", this.onPointerLockChanged.bind(this), false);
+        document.addEventListener("mozpointerlockchange", this.onPointerLockChanged.bind(this), false);
+        document.addEventListener("webkitpointerlockchange", this.onPointerLockChanged.bind(this), false);
+
+        document.addEventListener("fullscreenchange", this.onFullscreenChanged.bind(this), false);
+        document.addEventListener("mozfullscreenchange", this.onFullscreenChanged.bind(this), false);
+        document.addEventListener("webkitfullscreenchange", this.onFullscreenChanged.bind(this), false);
+        document.addEventListener("msfullscreenchange", this.onFullscreenChanged.bind(this), false);
+
         document.getElementById("fullscreen").addEventListener("mouseup", this.toggleFullscreen.bind(this), false);
         document.getElementById("resetview").addEventListener("mouseup", this.resetView.bind(this), false);
         // this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
@@ -240,6 +263,7 @@ export default class VLab {
         this.setupSelectionHelpers();
         this.setManipulationControl();
         this.setupCircularMenu();
+        this.prepareHelperAssets();
 
         document.getElementById("overlayContainer").style.display = 'none';
         document.getElementById("progressBar").style.display = 'none';
@@ -347,14 +371,22 @@ export default class VLab {
     }
 
     setInteractiveObjects() {
+        this.interactiveObjects = [];
         for (var interactiveObjectName of this.nature.interactiveObjects) {
             this.interactiveObjects.push(this.vLabScene.getObjectByName(interactiveObjectName));
         }
     }
 
-    setReponsiveObjects() {
+    setReponsiveObjects(except) {
+        this.responosiveObjects = [];
         for (var responsiveObjectName of this.nature.responsiveObjects) {
-            this.responosiveObjects.push(this.vLabScene.getObjectByName(responsiveObjectName));
+            if ((Array.isArray(except) && !except.includes(responsiveObjectName)) || (!Array.isArray(except) && except !== responsiveObjectName)) {
+                this.responosiveObjects.push(this.vLabScene.getObjectByName(responsiveObjectName));
+            }
+        }
+        this.nature.responsiveObjects = [];
+        for (var responsiveObject of this.responosiveObjects) {
+            this.nature.responsiveObjects.push(responsiveObject.name);
         }
     }
 
@@ -388,6 +420,10 @@ export default class VLab {
                     }
                 }
             }
+            return;
+        }
+        if (this.defaultCameraControls.type === 'orbit') {
+            this.helpersTrigger();
         }
     }
 
@@ -398,6 +434,7 @@ export default class VLab {
 
     onTouchEnd(event) {
         this.toggleSelectedObject(true);
+        this.helpersTrigger();
     }
 
     onPointerLockChanged(event) {
@@ -408,6 +445,20 @@ export default class VLab {
                                             targetPos: curPos,
                                             target: new THREE.Vector3() });
             }
+        }
+    }
+
+    onFullscreenChanged() {
+        var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
+        if(!fullscreenElement) {
+            if(document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if(document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if(document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+            document.getElementById("fullscreen").style.backgroundImage = "url('../vlabs.assets/img/fullscreen.png')";
         }
     }
 
@@ -481,6 +532,9 @@ export default class VLab {
     }
 
     updateCameraControlsCheckIntersections() {
+        if (this.defaultCameraControls.zoomMode) {
+            return;
+        }
         var interactionObjectIntersects = undefined;
         if (this.defaultCameraControls.type === 'pointerlock') {
             this.defaultCameraControls.update();
@@ -520,23 +574,24 @@ export default class VLab {
                 }
             }
 
-            if (!this.hoveredObject) {
+            if (!this.hoveredObject && this.selectedObject) {
                 var responsiveObjectsItersects = undefined;
 
                 this.responsiveRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
                 responsiveObjectsItersects = this.responsiveRaycaster.intersectObjects(this.responosiveObjects);
         
                 if (responsiveObjectsItersects) {
+                    if (this.hoveredResponsiveObject) {
+                        this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
+                        this.hoveredResponsiveObject = undefined;
+                        this.tooltipHide();
+                    }
                     if (responsiveObjectsItersects.length > 0) {
-                        this.tooltipShow(responsiveObjectsItersects[0].object);
-                        this.hoveredResponsiveObject = responsiveObjectsItersects[0].object;
-                        this.hoveredResponsiveObject.intersectionPoint = responsiveObjectsItersects[0].point;
-                        this.hoveredResponsiveObject.material.emissive = new THREE.Color(0.1, 0.1, 0.1);
-                    } else {
-                        if (this.hoveredResponsiveObject) {
-                            this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
-                            this.hoveredResponsiveObject = undefined;
-                            this.tooltipHide();
+                        if (this.nature.interactions[this.selectedObject.name + "|" + responsiveObjectsItersects[0].object.name]) {
+                            this.tooltipShow(responsiveObjectsItersects[0].object);
+                            this.hoveredResponsiveObject = responsiveObjectsItersects[0].object;
+                            this.hoveredResponsiveObject.intersectionPoint = responsiveObjectsItersects[0].point;
+                            this.hoveredResponsiveObject.material.emissive = new THREE.Color(0.0, 0.2, 0.0);
                         }
                     }
                 }
@@ -546,11 +601,15 @@ export default class VLab {
                     this.hoveredResponsiveObject = undefined;
                 }
             }
+
             this.defaultCameraControls.active = false;
         }
     }
 
     toggleSelectedObject(touch = false) {
+        if (this.defaultCameraControls.zoomMode) {
+            return;
+        }
         if (this.hoveredObject) {
             if (!touch || (touch && this.hoveredObject == this.preSelectedObject)) {
                 this.selectedObject = this.hoveredObject;
@@ -832,6 +891,133 @@ export default class VLab {
                                     forced: true,
                                     targetPos: this.defaultCameraInitialPosition.clone(),
                                     target: this.vLabScene.getObjectByName(this.nature.cameraControls.targetObjectName).position.clone() });
+        document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
+        document.getElementById("back").style.display = 'none';
+        if (this.helpers.zoomHelper.selected) this.helpers.zoomHelper.selected.visible = true;
+    }
+
+    prepareHelperAssets() {
+        var textureLoader = new THREE.TextureLoader();
+        return Promise.all([
+            textureLoader.load(this.helpers.zoomHelper.url),
+            textureLoader.load(this.helpers.placeHelper.url),
+        ])
+        .then((result) => {
+            this.helpers.zoomHelper.texture = result[0];
+            this.helpers.placeHelper.texture = result[1];
+
+            this.prepareHelpers();
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    }
+
+    prepareHelpers() {
+        this.takenObjectsToResponsiveObjectsArrow = new THREE.ArrowHelper(new THREE.Vector3(), new THREE.Vector3(), new THREE.Color(0x00ff00));
+        this.vLabScene.add(this.takenObjectsToResponsiveObjectsArrow);
+        this.takenObjectsToResponsiveObjectsArrow.visible = false;
+
+        var placeHelperMaterial = new THREE.SpriteMaterial({
+            map: this.helpers.placeHelper.texture,
+            color: 0xffffff,
+            blending: THREE.NormalBlending
+        });
+        placeHelperMaterial.depthTest = false;
+        placeHelperMaterial.depthWrite = false;
+        this.helpers.placeHelper.sprite = new THREE.Sprite(placeHelperMaterial);
+        this.helpers.placeHelper.sprite.scale.set(0.15, 0.15, 0.15);
+        this.helpers.placeHelper.sprite.visible = false;
+        this.vLabScene.add(this.helpers.placeHelper.sprite);
+    }
+
+    helpersTrigger() {
+        if (this.defaultCameraControls.type !== 'orbit' || this.paused || this.defaultCameraControls.zoomMode) {
+            return;
+        }
+        this.helpersRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
+        var zoomHelpersIntersects = this.helpersRaycaster.intersectObjects(this.helpers.zoomHelper.assigned);
+        if (zoomHelpersIntersects.length > 0) {
+            this.helpers.zoomHelper.selected = zoomHelpersIntersects[0].object;
+            this.helpers.zoomHelper.selected.visible = false;
+            this.defaultCameraControls.backState = {
+                minDistance: this.defaultCameraControls.minDistance,
+                maxDistance: this.defaultCameraControls.maxDistance,
+                position: this.defaultCameraControls.object.position.clone(),
+                target: this.defaultCameraControls.target.clone()
+            };
+            var zoomTarget = this.getWorldPosition(zoomHelpersIntersects[0].object.parent);
+            this.defaultCameraControls.enableZoom = false;
+            this.defaultCameraControls.enablePan = false;
+            this.defaultCameraControls.minDistance = 0.25;
+            this.defaultCameraControls.zoomMode = true;
+            new TWEEN.Tween(this.defaultCameraControls.target)
+            .to({ x: zoomTarget.x, y: zoomTarget.y, z: zoomTarget.z }, 500)
+            .easing(TWEEN.Easing.Cubic.InOut)
+            .onUpdate(() => {
+                this.defaultCameraControls.update();
+                this.tooltipHide();
+            })
+            .onComplete(() => { 
+                new TWEEN.Tween(this.defaultCameraControls)
+                .to({ maxDistance: 0.25 }, 750)
+                .easing(TWEEN.Easing.Cubic.InOut)
+                .onUpdate(() => { 
+                    this.defaultCameraControls.update();
+                })
+                .onComplete(() => { 
+                    document.getElementById("back").style.display = 'block';
+                    document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
+                    document.getElementById("back").addEventListener("mouseup", this.resetZoomView.bind(this), false);
+                 })
+                .start();
+             })
+            .start();
+        }
+    }
+
+    resetZoomView() {
+        if (this.defaultCameraControls.backState) {
+            var prevTarget = this.defaultCameraControls.backState.target;
+
+            this.defaultCameraControls.maxDistance = this.defaultCameraControls.backState.maxDistance;
+
+            new TWEEN.Tween(this.defaultCameraControls)
+            .to({ minDistancex: this.defaultCameraControls.backState.minDistance }, 250)
+            .easing(TWEEN.Easing.Cubic.InOut)
+            .onUpdate(() => { 
+                this.defaultCameraControls.update();
+            })
+            .onComplete(() => {
+                var prevPosition = this.defaultCameraControls.backState.position.clone();
+                new TWEEN.Tween(this.defaultCameraControls.object.position)
+                .to({ x: prevPosition.x, y: prevPosition.y, z: prevPosition.z }, 500)
+                .easing(TWEEN.Easing.Cubic.InOut)
+                .onUpdate(() => { 
+                    this.defaultCameraControls.update();
+                })
+                .onComplete(() => {
+                    new TWEEN.Tween(this.defaultCameraControls.target)
+                    .to({ x: prevTarget.x, y: prevTarget.y, z: prevTarget.z }, 250)
+                    .easing(TWEEN.Easing.Cubic.InOut)
+                    .onUpdate(() => { 
+                        this.defaultCameraControls.update();
+                    })
+                    .onComplete(() => {
+                        this.defaultCameraControls.enableZoom = true;
+                        this.defaultCameraControls.enablePan = true;
+                        this.defaultCameraControls.zoomMode = false;
+                        this.defaultCameraControls.backState = undefined;
+                        document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
+                        this.helpers.zoomHelper.selected.visible = true;
+                    })
+                    .start();
+                 })
+                .start();
+            })
+            .start();
+        }
+        document.getElementById("back").style.display = 'none';
     }
 
     takeObject() {
@@ -850,7 +1036,7 @@ export default class VLab {
                 }
                 if (!node.material.transparent) {
                     node.material.transparent = true;
-                    node.material.opacity = 0.5;
+                    node.material.opacity = 0.75;
                 }
             }
         });
@@ -871,36 +1057,28 @@ export default class VLab {
     }
 
     takenToResponsiveArrowsUpdate() {
-        if (this.hoveredResponsiveObject && Object.keys(this.takenObjects).length > 0 && this.defaultCameraControls.type == 'orbit' && this.defaultCameraControls.staticMode) {
-            for (let [takenObjectName, takenObject] of Object.entries(this.takenObjects)) {
-                if (this.takenObjects[takenObjectName]) {
-                    if (this.hoveredResponsiveObject.name == "Cube") {
-                        var takenObjectPosition = this.getWorldPosition(this.takenObjects[takenObjectName]);
-                        var hoveredResponsiveObjectDirection = this.hoveredResponsiveObject.intersectionPoint.clone().sub(takenObjectPosition.clone());
-                        var hoveredResponsiveObjectDirectionVectorLength = hoveredResponsiveObjectDirection.clone().length();
-                        hoveredResponsiveObjectDirection.normalize();
-                        if (!this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName]) {
-                            this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName] = new THREE.ArrowHelper(
-                                hoveredResponsiveObjectDirection, takenObjectPosition, hoveredResponsiveObjectDirectionVectorLength, 0xffffd5, 0.2, 0.01);
-                                this.vLabScene.add(this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName]);
-                        } else {
-                            this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName].visible = true;
-                            if (this.selectedObject === this.takenObjects[takenObjectName]) {
-                                this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName].setColor(new THREE.Color(0x00ff00));
-                            } else {
-                                this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName].setColor(new THREE.Color(0xffffd5));
-                            }
-                            this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName].position.copy(takenObjectPosition);
-                            this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName].setDirection(hoveredResponsiveObjectDirection);
-                            this.takenObjectsToResponsiveObjectsArrows[this.hoveredResponsiveObject.name+takenObjectName].setLength(hoveredResponsiveObjectDirectionVectorLength, 0.2, 0.01);
-                        }
-                    }
-                }
+        if (this.hoveredResponsiveObject && Object.keys(this.takenObjects).length > 0 && this.selectedObject && this.defaultCameraControls.type == 'orbit' && this.defaultCameraControls.staticMode) {
+            if (this.nature.interactions[this.selectedObject.name + "|" + this.hoveredResponsiveObject.name]) 
+            {
+                var takenObjectPosition = this.getWorldPosition(this.takenObjects[this.selectedObject.name]);
+                var hoveredResponsiveObjectDirection = this.hoveredResponsiveObject.intersectionPoint.clone().sub(takenObjectPosition.clone());
+                var hoveredResponsiveObjectDirectionVectorLength = hoveredResponsiveObjectDirection.clone().length();
+                hoveredResponsiveObjectDirection.normalize();
+                this.takenObjectsToResponsiveObjectsArrow.visible = true;
+                this.takenObjectsToResponsiveObjectsArrow.setColor(new THREE.Color(0x00ff00));
+                this.takenObjectsToResponsiveObjectsArrow.position.copy(takenObjectPosition);
+                this.takenObjectsToResponsiveObjectsArrow.setDirection(hoveredResponsiveObjectDirection);
+                this.takenObjectsToResponsiveObjectsArrow.setLength(hoveredResponsiveObjectDirectionVectorLength, 0.2, 0.01);
+                this.helpers.placeHelper.sprite.position.copy(this.hoveredResponsiveObject.intersectionPoint);
+                this.helpers.placeHelper.sprite.position.y += 0.065; 
+                this.helpers.placeHelper.sprite.visible = true;
+            } else {
+                this.helpers.placeHelper.sprite.visible = false;
+                this.takenObjectsToResponsiveObjectsArrow.visible = false;
             }
         } else {
-            for (let [arrowName, arrowHelper] of Object.entries(this.takenObjectsToResponsiveObjectsArrows)) {
-                arrowHelper.visible = false;
-            }
+            this.helpers.placeHelper.sprite.visible = false;
+            this.takenObjectsToResponsiveObjectsArrow.visible = false;
         }
     }
 }

@@ -125,6 +125,12 @@ class VlabBase extends VLab {
     test(value) {
         console.log("TEST", value);
     }
+
+    CubeInteractiveTaken() {
+        this.nature.responsiveObjects.push("Cube");
+        this.nature.responsiveObjects.push("CubeResponosive");
+        this.setReponsiveObjects();
+    }
 }
 
 let vLabBase = new VlabBase({

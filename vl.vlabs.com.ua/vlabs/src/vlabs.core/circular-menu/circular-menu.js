@@ -369,6 +369,9 @@
         function clickCallBack(e, data) {
             if (data.click) {
                 self._cMenu._context[data.click].call(self._cMenu._context, data.args);
+                if (data.afterTaken) {
+                    self._cMenu._context[data.afterTaken].call(self._cMenu._context, data.args);
+                }
             }
             if(self._config.hideAfterClick) {
                 self._cMenu.hide();
