@@ -34,8 +34,9 @@ initObj {
                 "ru": "VLab Ассистент" + ((this.initObj.title) ? "\n" + this.initObj.title : "")
             };
 
-            this.context.interactiveObjects.push(this.model);
             this.context.addSelectionSphereToObject(this.model);
+            this.context.nature.interactiveObjects.push(this.model.name);
+            this.context.setInteractiveObjects();
 
             var VlabsAssistantDisplayZoomHelperMaterial = new THREE.SpriteMaterial({
                 map: this.context.helpers.zoomHelper.texture,

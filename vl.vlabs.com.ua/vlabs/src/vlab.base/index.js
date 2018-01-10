@@ -130,6 +130,13 @@ class VlabBase extends VLab {
         this.setReponsiveObjects();
     }
 
+    CubeInteractiveToCubeResponsive(args) {
+        this.takeOffObject(true);
+        this.vLabScene.getObjectByName("CubeInteractive").position.set(0.0, 1.5, 0.0);
+        this.setInteractiveObjects("CubeInteractive");
+        console.log(this.interactiveObjects);
+    }
+
 }
 
 let vLabBase = new VlabBase({

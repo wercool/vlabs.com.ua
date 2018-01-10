@@ -361,7 +361,7 @@ export default class VLab {
 
             TWEEN.update(time);
 
-            this.takenToResponsiveArrowsUpdate();
+            this.takenToResponsiveArrowUpdate();
 
             dispatchEvent(this.redererFrameEvent);
 
@@ -371,10 +371,16 @@ export default class VLab {
         }
     }
 
-    setInteractiveObjects() {
+    setInteractiveObjects(except) {
         this.interactiveObjects = [];
         for (var interactiveObjectName of this.nature.interactiveObjects) {
-            this.interactiveObjects.push(this.vLabScene.getObjectByName(interactiveObjectName));
+            if ((Array.isArray(except) && !except.includes(interactiveObjectName)) || (!Array.isArray(except) && except !== interactiveObjectName)) {
+                this.interactiveObjects.push(this.vLabScene.getObjectByName(interactiveObjectName));
+            }
+        }
+        this.nature.interactiveObjects = [];
+        for (var interactiveObject of this.interactiveObjects) {
+            this.nature.interactiveObjects.push(interactiveObject.name);
         }
     }
 
@@ -401,6 +407,7 @@ export default class VLab {
         this.mouseCoords.set(event.x, event.y);
         this.mouseCoordsRaycaster.set((event.x / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.y / this.webGLContainer.clientHeight) * 2);
         this.toggleSelectedObject();
+        this.executeActions();
     }
 
     onMouseUpWindow(event) {
@@ -436,6 +443,7 @@ export default class VLab {
     onTouchEnd(event) {
         this.toggleSelectedObject(true);
         this.helpersTrigger();
+        this.executeActions();
     }
 
     onPointerLockChanged(event) {
@@ -549,17 +557,30 @@ export default class VLab {
                 interactionObjectIntersects = this.iteractionRaycaster.intersectObjects(this.interactiveObjects);
             }
         }
+
+
         if (this.defaultCameraControls.active) {
             if (interactionObjectIntersects) {
                 if (interactionObjectIntersects.length > 0) {
                     if (interactionObjectIntersects[0].object !== this.hoveredObject && this.hoveredObject != this.selectedObject && this.selectionSphere) {
                         this.selectionSphere.visible = false;
                     }
+
+                    if (this.hoveredResponsiveObject) {
+                        this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
+                        this.hoveredResponsiveObject = undefined;
+                        this.tooltipHide();
+                    }
+
                     this.tooltipShow(interactionObjectIntersects[0].object);
                     this.hoveredObject = interactionObjectIntersects[0].object;
                     this.selectionSphere = this.vLabScene.getObjectByName(interactionObjectIntersects[0].object.name + "_SELECTION");
                     this.selectionSphere.visible = true;
                     this.webGLContainer.style.cursor = 'pointer';
+
+                    this.defaultCameraControls.active = false;
+                    return;
+
                 } else {
                     if (this.selectionSphere) {
                         if (this.hoveredObject !== this.selectedObject) {
@@ -576,23 +597,25 @@ export default class VLab {
             }
 
             if (this.selectedObject) {
-                var responsiveObjectsItersects = undefined;
+                if (this.takenObjects[this.selectedObject.name]) {
+                    var responsiveObjectsItersects = undefined;
 
-                this.responsiveRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
-                responsiveObjectsItersects = this.responsiveRaycaster.intersectObjects(this.responosiveObjects);
-        
-                if (responsiveObjectsItersects) {
-                    if (this.hoveredResponsiveObject) {
-                        this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
-                        this.hoveredResponsiveObject = undefined;
-                        this.tooltipHide();
-                    }
-                    if (responsiveObjectsItersects.length > 0) {
-                        if (this.nature.interactions[this.selectedObject.name + "|" + responsiveObjectsItersects[0].object.name]) {
-                            this.tooltipShow(responsiveObjectsItersects[0].object);
-                            this.hoveredResponsiveObject = responsiveObjectsItersects[0].object;
-                            this.hoveredResponsiveObject.intersectionPoint = responsiveObjectsItersects[0].point;
-                            this.hoveredResponsiveObject.material.emissive = new THREE.Color(0.0, 0.2, 0.0);
+                    this.responsiveRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
+                    responsiveObjectsItersects = this.responsiveRaycaster.intersectObjects(this.responosiveObjects);
+            
+                    if (responsiveObjectsItersects) {
+                        if (this.hoveredResponsiveObject) {
+                            this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
+                            this.hoveredResponsiveObject = undefined;
+                            this.tooltipHide();
+                        }
+                        if (responsiveObjectsItersects.length > 0) {
+                            if (this.nature.interactions[this.selectedObject.name + "|" + responsiveObjectsItersects[0].object.name]) {
+                                this.tooltipShow(responsiveObjectsItersects[0].object);
+                                this.hoveredResponsiveObject = responsiveObjectsItersects[0].object;
+                                this.hoveredResponsiveObject.intersectionPoint = responsiveObjectsItersects[0].point;
+                                this.hoveredResponsiveObject.material.emissive = new THREE.Color(0.0, 0.2, 0.0);
+                            }
                         }
                     }
                 }
@@ -617,6 +640,11 @@ export default class VLab {
                 this.selectionSphere = this.vLabScene.getObjectByName(this.selectedObject.name + "_SELECTION");
                 this.cMenu.hide();
                 this.selectionSphere.material.color = new THREE.Color(0, 1, 1);
+
+                if (this.hoveredResponsiveObject) {
+                    this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
+                    this.hoveredResponsiveObject = undefined;
+                }
 
                 if (this.nature.objectMenus[this.selectedObject.name])
                 {
@@ -667,8 +695,10 @@ export default class VLab {
     resetAllSelections() {
         for (var interactiveObject of this.interactiveObjects) {
             var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
-            selectionSphere.visible = false;
-            selectionSphere.material.color = new THREE.Color(1, 1, 0);
+            if (selectionSphere) {
+                selectionSphere.visible = false;
+                selectionSphere.material.color = new THREE.Color(1, 1, 0);
+            }
         }
         this.selectedObject = undefined;
         this.preSelectedObject = undefined;
@@ -801,8 +831,7 @@ export default class VLab {
         if (!this.selectedObject) {
             return;
         }
-        if (this.nature.objectMenus[this.selectedObject.name])
-        {
+        if (this.nature.objectMenus[this.selectedObject.name]) {
             document.getElementById("cMenu").innerHTML = "";
             if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
                 this.cMenu.config({
@@ -1042,7 +1071,7 @@ export default class VLab {
             }
         });
         var cameraAspectOffset = 0.075 / this.defaultCamera.aspect;
-        this.defaultCamera.add(this.selectedObject);
+        this.selectedObject.beforeTakenRotation = this.selectedObject.rotation.clone();
         this.selectedObject.rotation.x = -0.75;
         this.selectedObject.rotation.y = -0.1;
         this.selectedObject.geometry.computeBoundingSphere();
@@ -1054,11 +1083,61 @@ export default class VLab {
         .yoyo(true)
         .easing(TWEEN.Easing.Quadratic.InOut).start();
         this.takenObjects[this.selectedObject.name] = this.selectedObject;
+        this.defaultCamera.add(this.selectedObject);
         this.resetAllSelections();
     }
 
-    takenToResponsiveArrowsUpdate() {
-        if (this.hoveredResponsiveObject && Object.keys(this.takenObjects).length > 0 && this.selectedObject && this.defaultCameraControls.type == 'orbit' && this.defaultCameraControls.staticMode) {
+    rearrangeTakenObjects() {
+        var cameraAspectOffset = 0.075 / this.defaultCamera.aspect;
+        var i = 0;
+        for (var takenObjectName in this.takenObjects) {
+            var takenObject = this.takenObjects[takenObjectName];
+            takenObject.position.set(0.17 - cameraAspectOffset, 0.075 - i / 15, -0.2);
+            i++;
+        }
+    }
+
+    takeOffObject(resetToBeforeTakenState) {
+        if (!this.selectedObject) {
+            return;
+        }
+        var self = this;
+        this.selectedObject.takenRotation.stop();
+        this.selectedObject.traverse(function(node) {
+            if (node.type === "Mesh") {
+                if (node.name !== self.selectedObject.name + "_SELECTION") {
+                    if (node.material.type === "MeshPhongMaterial") {
+                        node.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+                    }
+                    if (node.material.transparent) {
+                        node.material.transparent = false;
+                        node.material.opacity = 1.0;
+                    }
+                }
+            }
+        });
+        this.defaultCamera.remove(this.selectedObject);
+        this.takenObjects[this.selectedObject.name] = undefined;
+        delete this.takenObjects[this.selectedObject.name];
+        this.rearrangeTakenObjects();
+        this.selectedObject.scale.set(1.0, 1.0, 1.0);
+        if (resetToBeforeTakenState) {
+            this.selectedObject.rotation.copy(this.selectedObject.beforeTakenRotation);
+        } else {
+            this.selectedObject.rotation.set(0.0, 0.0, 0.0);
+        }
+        this.vLabScene.add(this.selectedObject);
+        this.resetAllSelections();
+    }
+
+    takenToResponsiveArrowUpdate() {
+        if (this.defaultCameraControls.type !== 'orbit' || !this.defaultCameraControls.staticMode || !this.selectedObject) {
+            this.helpers.placeHelper.sprite.visible = false;
+            this.takenObjectsToResponsiveObjectsArrow.visible = false;
+            return;
+        }
+
+        if (this.hoveredResponsiveObject && Object.keys(this.takenObjects).length > 0 && this.takenObjects[this.selectedObject.name]) {
             if (this.nature.interactions[this.selectedObject.name + "|" + this.hoveredResponsiveObject.name]) 
             {
                 var takenObjectPosition = this.getWorldPosition(this.takenObjects[this.selectedObject.name]);
@@ -1098,6 +1177,20 @@ export default class VLab {
                     html: value.html
                 }
             });
+        }
+    }
+
+    executeActions() {
+        if (this.defaultCameraControls.type !== 'orbit' || !this.defaultCameraControls.staticMode || !this.selectedObject) {
+            return;
+        }
+        if (this.hoveredResponsiveObject && Object.keys(this.takenObjects).length > 0 && this.takenObjects[this.selectedObject.name]) {
+            var interaction = this.nature.interactions[this.selectedObject.name + "|" + this.hoveredResponsiveObject.name];
+            if (interaction) {
+                if (this[interaction.applyFn]) {
+                    this[interaction.applyFn].call(this, interaction.applyFnArgs);
+                }
+            }
         }
     }
 }
