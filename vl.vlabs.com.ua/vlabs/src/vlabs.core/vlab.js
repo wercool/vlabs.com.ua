@@ -163,6 +163,7 @@ export default class VLab {
         if (this.defaultCamera) {
             this.defaultCamera.aspect = (this.webGLContainer.clientWidth / this.webGLContainer.clientHeight);
             this.defaultCamera.updateProjectionMatrix();
+            this.rearrangeTakenObjects();
         }
     }
 
@@ -443,7 +444,7 @@ export default class VLab {
     onTouchEnd(event) {
         this.toggleSelectedObject(true);
         this.helpersTrigger();
-        this.executeActions();
+        this.executeActions(true);
     }
 
     onPointerLockChanged(event) {
@@ -718,10 +719,11 @@ export default class VLab {
     }
 
     setDefaultLighting() {
-        let ambientLight = new THREE.AmbientLight(0x111111);
-        ambientLight.intensity = 3.0;
-        ambientLight.name = 'ambientLight';
-        this.vLabScene.add(ambientLight);
+        this.ambientLight = new THREE.AmbientLight(0x111111);
+        this.ambientLight.intensity = 3.0;
+        this.ambientLight.defaultSettings = {color: new THREE.Color(0x111111), intensity: 3.0};
+        this.ambientLight.name = 'ambientLight';
+        this.vLabScene.add(this.ambientLight);
     }
 
     setupCrosshair() {
@@ -1180,8 +1182,8 @@ export default class VLab {
         }
     }
 
-    executeActions() {
-        if (this.defaultCameraControls.type !== 'orbit' || !this.defaultCameraControls.staticMode || !this.selectedObject) {
+    executeActions(touch) {
+        if (this.defaultCameraControls.type !== 'orbit' || (!this.defaultCameraControls.staticMode && !touch) || !this.selectedObject) {
             return;
         }
         if (this.hoveredResponsiveObject && Object.keys(this.takenObjects).length > 0 && this.takenObjects[this.selectedObject.name]) {

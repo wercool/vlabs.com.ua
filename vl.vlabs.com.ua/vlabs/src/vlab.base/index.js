@@ -1,7 +1,8 @@
 import * as THREE           from 'three';
 import VLab                 from '../vlabs.core/vlab';
 
-import VLabAssistant       from '../vlabs.items/vlab.assistant';
+import VLabAssistant        from '../vlabs.items/vlab.assistant';
+import SpriteFireEffect     from '../vlabs.items/sprite-fire-effect';
 
 class VlabBase extends VLab {
     constructor(initObj = {}) {
@@ -89,6 +90,12 @@ class VlabBase extends VLab {
                             }]
             };
 
+            this.SpriteFireEffect1 = new SpriteFireEffect({ context: this,
+                                                            type: 'burning', 
+                                                            pos: this.vLabScene.getObjectByName("CubeResponosive").position,
+                                                            scale: new THREE.Vector3(0.75, 0.5, 0,75) });
+
+            console.log("initialized");
         }).catch(error => {
             console.error(error);
             this.showErrorMessage(error);
@@ -127,14 +134,14 @@ class VlabBase extends VLab {
     }
 
     CubeInteractiveTaken() {
-        this.setReponsiveObjects();
+
     }
 
     CubeInteractiveToCubeResponsive(args) {
         this.takeOffObject(true);
         this.vLabScene.getObjectByName("CubeInteractive").position.set(0.0, 1.5, 0.0);
         this.setInteractiveObjects("CubeInteractive");
-        console.log(this.interactiveObjects);
+        this.SpriteFireEffect1.start();
     }
 
 }

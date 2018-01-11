@@ -49,7 +49,7 @@ module.exports = function( THREE ) {
 
 		// How far you can orbit vertically, upper and lower limits.
 		// Range is 0 to Math.PI radians.
-		this.minPolarAngle = 0; // radians
+		this.minPolarAngle = 0.57; // radians
 		this.maxPolarAngle = Math.PI * 0.4; // radians
 
 		// How far you can orbit horizontally, upper and lower limits.
