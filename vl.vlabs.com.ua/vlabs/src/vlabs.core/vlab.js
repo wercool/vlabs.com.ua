@@ -855,7 +855,7 @@ export default class VLab {
                 this.cMenu.show([cMenuPos.x, cMenuPos.y]);
 
                 this.defaultCameraControls.enabled = false;
-                this.paused = true;
+                // this.paused = true;
             }
         }
     }
