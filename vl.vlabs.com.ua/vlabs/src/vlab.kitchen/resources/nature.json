@@ -1,0 +1,19 @@
+{
+    "title": "VLab Kitchen",
+    "resolutionFactor": "1.0",
+    "sceneJSONFile": "./resources/scene/kitchen.json",
+    "lang": "ru",
+    "defaultSceneCameraName": "defaultCamera",
+    "cameraControls": {
+        "type": "orbit"
+    },
+    "showTHREEStats": true,
+    "interactiveObjects": [],
+    "responsiveObjects": [],
+    "tooltips": {
+    },
+    "objectMenus": {
+    },
+    "interactions": {
+    }
+}
