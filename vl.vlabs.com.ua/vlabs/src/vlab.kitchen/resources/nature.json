@@ -5,7 +5,15 @@
     "lang": "ru",
     "defaultSceneCameraName": "defaultCamera",
     "cameraControls": {
-        "type": "orbit"
+        "allowedSpaceMapObjectName": "allowedSpacePlane",
+        "type": "orbit",
+        "target": {
+            "x": 1.0,
+            "y": 0.9,
+            "z": 0.0
+        },
+        "maxDistance": 2.0,
+        "minPolarAngle": 0.7
     },
     "showTHREEStats": true,
     "interactiveObjects": [],

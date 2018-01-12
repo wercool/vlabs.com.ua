@@ -41,7 +41,7 @@ module.exports = function( THREE ) {
 
 		// How far you can dolly in and out ( PerspectiveCamera only )
 		this.minDistance = 1.0;
-		this.maxDistance = 5.0;
+		this.maxDistance = 3.0;
 
 		// How far you can zoom in and out ( OrthographicCamera only )
 		this.minZoom = 0;

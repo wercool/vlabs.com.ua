@@ -38,23 +38,11 @@ initObj {
             this.context.nature.interactiveObjects.push(this.model.name);
             this.context.setInteractiveObjects();
 
-            var VlabsAssistantDisplayZoomHelperMaterial = new THREE.SpriteMaterial({
-                map: this.context.helpers.zoomHelper.texture,
-                color: 0xffffff,
-                blending: THREE.AdditiveBlending,
-                transparent: true,
-                opacity: 0.5,
-                rotation: Math.PI
-            });
-            VlabsAssistantDisplayZoomHelperMaterial.depthTest = false;
-            VlabsAssistantDisplayZoomHelperMaterial.depthWrite = false;
-            var VlabsAssistantDisplayZoomHelperSprite = new THREE.Sprite(VlabsAssistantDisplayZoomHelperMaterial);
-            VlabsAssistantDisplayZoomHelperSprite.scale.set(0.2, 0.2, 0.2);
-            VlabsAssistantDisplayZoomHelperSprite.position.z += 0.1;
-            VlabsAssistantDisplayZoomHelperSprite.position.x -= 0.025;
-            this.model.getObjectByName("VlabsAssistantDisplay").add(VlabsAssistantDisplayZoomHelperSprite);
-            this.context.helpers.zoomHelper.assigned.push(VlabsAssistantDisplayZoomHelperSprite);
-
+            this.context.addZoomHelper("VlabsAssistantDisplay", 
+                                       this.model, 
+                                       new THREE.Vector3(-0.025, 0.0 ,0.1), 
+                                       new THREE.Vector3(0.2, 0.2, 0.2),
+                                       Math.PI);
         }).catch(error => {
             console.error(error);
         });

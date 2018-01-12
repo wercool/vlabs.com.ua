@@ -25,9 +25,6 @@ class VlabKitchen extends VLab {
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
 
-
-
-            console.log("initialized");
         }).catch(error => {
             console.error(error);
             this.showErrorMessage(error);
@@ -35,7 +32,15 @@ class VlabKitchen extends VLab {
     }
 
     onKeyDown(event) {
-
+        // switch (event.keyCode) {
+        //     case 79: // o
+        //         this.switchCameraControls({ type: 'orbit' });
+        //     break;
+        //     case 80: // p
+        //     case 32: // whitespace
+        //         this.switchCameraControls({ type: 'pointerlock'});
+        //     break;
+        // }
     }
 
     onSceneCompleteEvent(event) {
@@ -44,12 +49,21 @@ class VlabKitchen extends VLab {
     }
 
     onActivatedEvent() {
-        // this.manipulationControl.attach(this.vLabScene.getObjectByName("Sphere"));
+        console.log("Kitchen VLab activated");
+        // this.manipulationControl.attach(this.vLabScene.getObjectByName("faucetHandle"));
         // this.manipulationControl.attach(this.vLabScene.getObjectByName("Sphere001"));
+
+        this.vLabScene.getObjectByName("faucetHandle").rotateX(THREE.Math.degToRad(-45.0));
+        this.vLabScene.getObjectByName("faucetHandle").rotateY(THREE.Math.degToRad(25.0));
+
+        this.addZoomHelper("faucetHandle", 
+                           undefined, 
+                           new THREE.Vector3(0.01, 0.0, 0.0), 
+                           new THREE.Vector3(0.1, 0.1, 0.1));
     }
 
     onRedererFrameEvent(event) {
-
+        
     }
 
 }

@@ -65,6 +65,10 @@ export default class VLab {
         this.iteractionRaycaster = new THREE.Raycaster();
         this.responsiveRaycaster = new THREE.Raycaster();
         this.helpersRaycaster = new THREE.Raycaster();
+        this.allowedSpaceRaycaster = new THREE.Raycaster();
+
+        this.allowedSpaceCanvas = undefined;
+        this.allowedSpaceMapObject = undefined;
 
         this.interactiveObjects = [];
         this.responosiveObjects = [];
@@ -213,6 +217,20 @@ export default class VLab {
         }
         if (!this.defaultCameraInitialPosition) {
             this.defaultCameraInitialPosition = this.defaultCamera.position.clone();
+        }
+        if (this.nature.cameraControls.target) {
+            this.nature.cameraControls.target = new THREE.Vector3(this.nature.cameraControls.target.x, this.nature.cameraControls.target.y, this.nature.cameraControls.target.z);
+        }
+        this.allowedSpaceMapObject = this.vLabScene.getObjectByName(this.nature.cameraControls.allowedSpaceMapObjectName);
+        if (this.allowedSpaceMapObject) {
+            var alowedSpaceMap = this.allowedSpaceMapObject.material.map;
+            this.allowedSpaceMapObject.material = new THREE.MeshBasicMaterial({ map: alowedSpaceMap });
+
+            var alowedSpaceMapImage = this.allowedSpaceMapObject.material.map.image;
+            this.allowedSpaceCanvas = document.createElement('canvas');
+            this.allowedSpaceCanvas.width = alowedSpaceMapImage.width;
+            this.allowedSpaceCanvas.height = alowedSpaceMapImage.height;
+            this.allowedSpaceCanvas.getContext('2d').drawImage(alowedSpaceMapImage, 0, 0, alowedSpaceMapImage.width, alowedSpaceMapImage.height);
         }
         // var cameraHelper = new THREE.CameraHelper( this.defaultCamera );
         // this.vLabScene.add( cameraHelper );
@@ -499,6 +517,8 @@ export default class VLab {
             }
             this.defaultCameraControls.dispose();
         }
+
+
         switch (cameraControlConfig.type) {
             case 'orbit':
                 if (this.defaultCameraControls) {
@@ -519,6 +539,15 @@ export default class VLab {
                 }
                 if (cameraControlConfig.targetObjectName) {
                     this.defaultCameraControls.target = this.vLabScene.getObjectByName(cameraControlConfig.targetObjectName).position.clone();
+                }
+                if (this.nature.cameraControls.maxDistance) {
+                    this.defaultCameraControls.maxDistance = this.nature.cameraControls.maxDistance;
+                }
+                if (this.nature.cameraControls.maxPolarAngle) {
+                    this.defaultCameraControls.maxPolarAngle = this.nature.cameraControls.maxPolarAngle;
+                }
+                if (this.nature.cameraControls.minPolarAngle) {
+                    this.defaultCameraControls.minPolarAngle = this.nature.cameraControls.minPolarAngle;
                 }
                 this.defaultCameraControls.update();
             break;
@@ -603,7 +632,7 @@ export default class VLab {
 
                     this.responsiveRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
                     responsiveObjectsItersects = this.responsiveRaycaster.intersectObjects(this.responosiveObjects);
-            
+
                     if (responsiveObjectsItersects) {
                         if (this.hoveredResponsiveObject) {
                             this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
@@ -624,6 +653,39 @@ export default class VLab {
                 if (this.hoveredResponsiveObject) {
                     this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
                     this.hoveredResponsiveObject = undefined;
+                }
+            }
+
+            if (this.allowedSpaceMapObject && this.defaultCameraControls.enabled) {
+                if (this.defaultCameraControls.type === 'orbit') {
+                    this.allowedSpaceRaycaster.set(this.defaultCamera.position, new THREE.Vector3(0, -1, 0));
+                }
+                if (this.defaultCameraControls.type === 'pointerlock') {
+                    this.allowedSpaceRaycaster.set(this.defaultCameraControls.getObject().position, new THREE.Vector3(0, -1, 0));
+                }
+                var allowedSpaceIntersections = this.allowedSpaceRaycaster.intersectObject(this.allowedSpaceMapObject, true);
+                var allowed = false;
+                if (allowedSpaceIntersections[0]) {
+                    var uv = allowedSpaceIntersections[0].uv;
+                    var pixelData = this.allowedSpaceCanvas.getContext('2d').getImageData(255 * uv.x, 255 * uv.y, 1, 1).data;
+                    if (pixelData[1] == 255) allowed = true;
+                }
+                if (allowed) {
+                    if (this.defaultCameraControls.type === 'orbit') {
+                        this.prevAllowedCameraControlPosition = this.defaultCamera.position.clone();
+                    }
+                    if (this.defaultCameraControls.type === 'pointerlock') {
+                        this.prevAllowedCameraControlPosition =  this.defaultCameraControls.getObject().position.clone();
+                    }
+                } else {
+                    this.defaultCameraControls.enabled = false;
+                    if (this.defaultCameraControls.type === 'orbit') {
+                        this.defaultCamera.position.copy(this.prevAllowedCameraControlPosition);
+                    }
+                    if (this.defaultCameraControls.type === 'pointerlock') {
+                        this.defaultCameraControls.getObject().position.copy(this.prevAllowedCameraControlPosition);
+                    }
+                    this.defaultCameraControls.enabled = true;
                 }
             }
 
@@ -919,10 +981,17 @@ export default class VLab {
     }
 
     resetView() {
+        var targetPos = new THREE.Vector3(0.0, 0.0, 0.0);
+        if (this.nature.cameraControls.targetObjectName) {
+            targetPos = this.vLabScene.getObjectByName(this.nature.cameraControls.targetObjectName).position.clone();
+        }
+        if (this.nature.cameraControls.target) {
+            targetPos = this.nature.cameraControls.target.clone();
+        }
         this.switchCameraControls({ type: 'orbit', 
                                     forced: true,
                                     targetPos: this.defaultCameraInitialPosition.clone(),
-                                    target: this.vLabScene.getObjectByName(this.nature.cameraControls.targetObjectName).position.clone() });
+                                    target:  targetPos });
         document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
         document.getElementById("back").style.display = 'none';
         if (this.helpers.zoomHelper.selected) this.helpers.zoomHelper.selected.visible = true;
@@ -943,6 +1012,41 @@ export default class VLab {
         .catch(error => {
             console.error(error);
         });
+    }
+
+    addZoomHelper(objectName, parent, positionDeltas, scale, rotation) {
+        if (!this.helpers.zoomHelper.texture) {
+            var self = this;
+            setTimeout(() => {
+                console.log("Wainting for Zoom Helper texture...");
+                self.addZoomHelper(objectName, parent, positionDeltas, scale);
+            }, 250);
+            return;
+        }
+
+        var zoomHelperMaterial = new THREE.SpriteMaterial({
+            map: this.helpers.zoomHelper.texture,
+            color: 0xfeffc2,
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            opacity: 0.5,
+            rotation: (rotation) ? rotation : 0.0,
+            depthTest: false,
+            depthWrite: false
+        });
+
+        var zoomHelperSprite = new THREE.Sprite(zoomHelperMaterial);
+        zoomHelperSprite.scale.copy(scale);
+        zoomHelperSprite.position.x += positionDeltas.x;
+        zoomHelperSprite.position.y += positionDeltas.y;
+        zoomHelperSprite.position.z += positionDeltas.z;
+
+        if (parent) {
+            parent.getObjectByName(objectName).add(zoomHelperSprite);
+        } else {
+            this.vLabScene.getObjectByName(objectName).add(zoomHelperSprite);
+        }
+        this.helpers.zoomHelper.assigned.push(zoomHelperSprite);
     }
 
     prepareHelpers() {
