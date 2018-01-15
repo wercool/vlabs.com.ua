@@ -232,6 +232,11 @@ export default class VLab {
             this.allowedSpaceCanvas.height = alowedSpaceMapImage.height;
             this.allowedSpaceCanvas.getContext('2d').drawImage(alowedSpaceMapImage, 0, 0, alowedSpaceMapImage.width, alowedSpaceMapImage.height);
         }
+        var yPanDeltaUp = (this.nature.cameraControls.yPanDeltaUp) ? this.nature.cameraControls.yPanDeltaUp : 0.5;
+        var yPanDeltaDown = (this.nature.cameraControls.yPanDeltaDown) ? this.nature.cameraControls.yPanDeltaDown : 0.5;
+        this.yPanUp = this.defaultCameraInitialPosition.y + yPanDeltaUp;
+        this.yPanDown = this.defaultCameraInitialPosition.y - yPanDeltaDown;
+
         // var cameraHelper = new THREE.CameraHelper( this.defaultCamera );
         // this.vLabScene.add( cameraHelper );
     }
@@ -293,6 +298,8 @@ export default class VLab {
 
         this.initialized = true;
         this.paused = false;
+
+        this.resetView();
 
         dispatchEvent(this.activatedEvent);
     }
@@ -669,6 +676,11 @@ export default class VLab {
                     var uv = allowedSpaceIntersections[0].uv;
                     var pixelData = this.allowedSpaceCanvas.getContext('2d').getImageData(255 * uv.x, 255 * uv.y, 1, 1).data;
                     if (pixelData[1] == 255) allowed = true;
+                    if (this.defaultCameraControls.type === 'orbit') {
+                        if (this.defaultCamera.position.y > this.yPanUp || this.defaultCamera.position.y < this.yPanDown) {
+                            allowed = false;
+                        }
+                    }
                 }
                 if (allowed) {
                     if (this.defaultCameraControls.type === 'orbit') {
@@ -992,6 +1004,7 @@ export default class VLab {
                                     forced: true,
                                     targetPos: this.defaultCameraInitialPosition.clone(),
                                     target:  targetPos });
+
         document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
         document.getElementById("back").style.display = 'none';
         if (this.helpers.zoomHelper.selected) this.helpers.zoomHelper.selected.visible = true;
@@ -1014,7 +1027,7 @@ export default class VLab {
         });
     }
 
-    addZoomHelper(objectName, parent, positionDeltas, scale, rotation) {
+    addZoomHelper(objectName, parent, positionDeltas, scale, rotation, colorHex) {
         if (!this.helpers.zoomHelper.texture) {
             var self = this;
             setTimeout(() => {
@@ -1024,9 +1037,11 @@ export default class VLab {
             return;
         }
 
+        console.log("Zoom Helper texture loaded");
+
         var zoomHelperMaterial = new THREE.SpriteMaterial({
             map: this.helpers.zoomHelper.texture,
-            color: 0xfeffc2,
+            color: colorHex,
             blending: THREE.AdditiveBlending,
             transparent: true,
             opacity: 0.5,
