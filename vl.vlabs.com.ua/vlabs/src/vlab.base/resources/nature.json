@@ -6,10 +6,12 @@
     "defaultSceneCameraName": "defaultCamera",
     "cameraControls": {
         "type": "orbit",
-        "targetObjectName": "Cube"
+        "targetObjectName": "Cube",
+        "maxDistance": 5.0
     },
     "showTHREEStats": true,
     "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001"],
+    "interactiveObjectOutlined": false,
     "responsiveObjects": ["Cube", "CubeResponosive"],
     "tooltips": {
         "Sphere": {

@@ -11,7 +11,6 @@ var PointerLockControls     = require('./three-pointerlock/index');
 var TransformControls       = require('./three-transformcontrols/index');
 var CMenu                   = require('./circular-menu/circular-menu.js');
 var popupS                  = require('./popups/popupS.min.js');
-
 /*
 initObj {
     "natureURL": "nature.json",
@@ -599,8 +598,10 @@ export default class VLab {
         if (this.defaultCameraControls.active) {
             if (interactionObjectIntersects) {
                 if (interactionObjectIntersects.length > 0) {
-                    if (interactionObjectIntersects[0].object !== this.hoveredObject && this.hoveredObject != this.selectedObject && this.selectionSphere) {
-                        this.selectionSphere.visible = false;
+                    if (interactionObjectIntersects[0].object !== this.hoveredObject && this.hoveredObject != this.selectedObject) {
+                        if (!this.nature.interactiveObjectOutlined) {
+                            if (this.selectionSphere) this.selectionSphere.visible = false;
+                        }
                     }
 
                     if (this.hoveredResponsiveObject) {
@@ -611,20 +612,28 @@ export default class VLab {
 
                     this.tooltipShow(interactionObjectIntersects[0].object);
                     this.hoveredObject = interactionObjectIntersects[0].object;
-                    this.selectionSphere = this.vLabScene.getObjectByName(interactionObjectIntersects[0].object.name + "_SELECTION");
-                    this.selectionSphere.visible = true;
                     this.webGLContainer.style.cursor = 'pointer';
+                    if (!this.nature.interactiveObjectOutlined) {
+                        this.selectionSphere = this.vLabScene.getObjectByName(interactionObjectIntersects[0].object.name + "_SELECTION");
+                        this.selectionSphere.visible = true;
+                    } else {
+                        // TODO
+                    }
 
                     this.defaultCameraControls.active = false;
                     return;
 
                 } else {
-                    if (this.selectionSphere) {
-                        if (this.hoveredObject !== this.selectedObject) {
-                            this.clearNotSelected();
+                    if (!this.nature.interactiveObjectOutlined) {
+                        if (this.selectionSphere) {
+                            if (this.hoveredObject !== this.selectedObject) {
+                                this.clearNotSelected();
+                            }
+                            this.selectionSphere = undefined;
+                            this.cMenu.hide();
                         }
-                        this.selectionSphere = undefined;
-                        this.cMenu.hide();
+                    } else {
+                        // TODO
                     }
                     if (this.hoveredObject) {
                         this.hoveredObject = undefined;
@@ -712,9 +721,11 @@ export default class VLab {
         if (this.hoveredObject) {
             if (!touch || (touch && this.hoveredObject == this.preSelectedObject)) {
                 this.selectedObject = this.hoveredObject;
-                this.selectionSphere = this.vLabScene.getObjectByName(this.selectedObject.name + "_SELECTION");
                 this.cMenu.hide();
-                this.selectionSphere.material.color = new THREE.Color(0, 1, 1);
+                if (!this.nature.interactiveObjectOutlined) {
+                    this.selectionSphere = this.vLabScene.getObjectByName(this.selectedObject.name + "_SELECTION");
+                    this.selectionSphere.material.color = new THREE.Color(0, 1, 1);
+                }
 
                 if (this.hoveredResponsiveObject) {
                     this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
@@ -724,7 +735,9 @@ export default class VLab {
                 if (this.nature.objectMenus[this.selectedObject.name])
                 {
                     if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
-                        this.selectionSphere.material.color = new THREE.Color(0, 1, 0);
+                        if (!this.nature.interactiveObjectOutlined) {
+                            this.selectionSphere.material.color = new THREE.Color(0, 1, 0);
+                        }
                     }
                 }
 
@@ -769,10 +782,12 @@ export default class VLab {
 
     resetAllSelections() {
         for (var interactiveObject of this.interactiveObjects) {
-            var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
-            if (selectionSphere) {
-                selectionSphere.visible = false;
-                selectionSphere.material.color = new THREE.Color(1, 1, 0);
+            if (!this.nature.interactiveObjectOutlined) {
+                var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
+                if (selectionSphere) {
+                    selectionSphere.visible = false;
+                    selectionSphere.material.color = new THREE.Color(1, 1, 0);
+                }
             }
         }
         this.selectedObject = undefined;
@@ -784,9 +799,11 @@ export default class VLab {
     clearNotSelected() {
         for (var interactiveObject of this.interactiveObjects) {
             if (this.selectedObject != interactiveObject) {
-                var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
-                selectionSphere.visible = false;
-                selectionSphere.material.color = new THREE.Color(1, 1, 0);
+                if (!this.nature.interactiveObjectOutlined) {
+                    var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
+                    selectionSphere.visible = false;
+                    selectionSphere.material.color = new THREE.Color(1, 1, 0);
+                }
             }
         }
         this.tooltipHide();
@@ -849,8 +866,12 @@ export default class VLab {
     };
 
     setupSelectionHelpers() {
-        for (var interactiveObject of this.interactiveObjects) {
-            this.addSelectionSphereToObject(interactiveObject);
+        if (!this.nature.interactiveObjectOutlined) {
+            for (var interactiveObject of this.interactiveObjects) {
+                this.addSelectionSphereToObject(interactiveObject);
+            }
+        } else {
+            console.log("interactiveObjectOutlined");
         }
     }
 
@@ -914,8 +935,7 @@ export default class VLab {
                     menus: this.nature.objectMenus[this.selectedObject.name][this.nature.lang]
                 });
 
-                var selectionSphere = this.vLabScene.getObjectByName(this.selectedObject.name + "_SELECTION");
-                var screenPos = this.toScreenPosition(selectionSphere);
+                var screenPos = this.toScreenPosition(this.selectedObject);
                 var cMenuPos = { x: screenPos.x, y: screenPos.y };
                 if (cMenuPos.x + 150 > this.webGLContainer.clientWidth) {
                     cMenuPos.x -= cMenuPos.x + 150 - this.webGLContainer.clientWidth;
