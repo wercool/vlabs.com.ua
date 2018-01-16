@@ -75,7 +75,7 @@ export default class VLab {
         this.hoveredObject = undefined;
         this.preSelectedObject = undefined;
         this.selectedObject = undefined;
-        this.selectionSphere = undefined;
+        this.selectionHelper = undefined;
 
         this.hoveredResponsiveObject = undefined;
 
@@ -599,9 +599,7 @@ export default class VLab {
             if (interactionObjectIntersects) {
                 if (interactionObjectIntersects.length > 0) {
                     if (interactionObjectIntersects[0].object !== this.hoveredObject && this.hoveredObject != this.selectedObject) {
-                        if (!this.nature.interactiveObjectOutlined) {
-                            if (this.selectionSphere) this.selectionSphere.visible = false;
-                        }
+                        if (this.selectionHelper) this.selectionHelper.visible = false;
                     }
 
                     if (this.hoveredResponsiveObject) {
@@ -613,27 +611,19 @@ export default class VLab {
                     this.tooltipShow(interactionObjectIntersects[0].object);
                     this.hoveredObject = interactionObjectIntersects[0].object;
                     this.webGLContainer.style.cursor = 'pointer';
-                    if (!this.nature.interactiveObjectOutlined) {
-                        this.selectionSphere = this.vLabScene.getObjectByName(interactionObjectIntersects[0].object.name + "_SELECTION");
-                        this.selectionSphere.visible = true;
-                    } else {
-                        // TODO
-                    }
+                    this.selectionHelper = this.vLabScene.getObjectByName(interactionObjectIntersects[0].object.name + "_SELECTION");
+                    this.selectionHelper.visible = true;
 
                     this.defaultCameraControls.active = false;
                     return;
 
                 } else {
-                    if (!this.nature.interactiveObjectOutlined) {
-                        if (this.selectionSphere) {
-                            if (this.hoveredObject !== this.selectedObject) {
-                                this.clearNotSelected();
-                            }
-                            this.selectionSphere = undefined;
-                            this.cMenu.hide();
+                    if (this.selectionHelper) {
+                        if (this.hoveredObject !== this.selectedObject) {
+                            this.clearNotSelected();
                         }
-                    } else {
-                        // TODO
+                        this.selectionHelper = undefined;
+                        this.cMenu.hide();
                     }
                     if (this.hoveredObject) {
                         this.hoveredObject = undefined;
@@ -722,10 +712,8 @@ export default class VLab {
             if (!touch || (touch && this.hoveredObject == this.preSelectedObject)) {
                 this.selectedObject = this.hoveredObject;
                 this.cMenu.hide();
-                if (!this.nature.interactiveObjectOutlined) {
-                    this.selectionSphere = this.vLabScene.getObjectByName(this.selectedObject.name + "_SELECTION");
-                    this.selectionSphere.material.color = new THREE.Color(0, 1, 1);
-                }
+                this.selectionHelper = this.vLabScene.getObjectByName(this.selectedObject.name + "_SELECTION");
+                this.selectionHelper.material.color = new THREE.Color(0, 1, 1);
 
                 if (this.hoveredResponsiveObject) {
                     this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
@@ -735,9 +723,7 @@ export default class VLab {
                 if (this.nature.objectMenus[this.selectedObject.name])
                 {
                     if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
-                        if (!this.nature.interactiveObjectOutlined) {
-                            this.selectionSphere.material.color = new THREE.Color(0, 1, 0);
-                        }
+                        this.selectionHelper.material.color = new THREE.Color(0, 1, 0);
                     }
                 }
 
@@ -782,12 +768,10 @@ export default class VLab {
 
     resetAllSelections() {
         for (var interactiveObject of this.interactiveObjects) {
-            if (!this.nature.interactiveObjectOutlined) {
-                var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
-                if (selectionSphere) {
-                    selectionSphere.visible = false;
-                    selectionSphere.material.color = new THREE.Color(1, 1, 0);
-                }
+            var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
+            if (selectionSphere) {
+                selectionSphere.visible = false;
+                selectionSphere.material.color = new THREE.Color(1, 1, 0);
             }
         }
         this.selectedObject = undefined;
@@ -799,11 +783,9 @@ export default class VLab {
     clearNotSelected() {
         for (var interactiveObject of this.interactiveObjects) {
             if (this.selectedObject != interactiveObject) {
-                if (!this.nature.interactiveObjectOutlined) {
-                    var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
-                    selectionSphere.visible = false;
-                    selectionSphere.material.color = new THREE.Color(1, 1, 0);
-                }
+                var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
+                selectionSphere.visible = false;
+                selectionSphere.material.color = new THREE.Color(1, 1, 0);
             }
         }
         this.tooltipHide();
@@ -866,51 +848,69 @@ export default class VLab {
     };
 
     setupSelectionHelpers() {
-        if (!this.nature.interactiveObjectOutlined) {
-            for (var interactiveObject of this.interactiveObjects) {
-                this.addSelectionSphereToObject(interactiveObject);
-            }
-        } else {
-            console.log("interactiveObjectOutlined");
+        for (var interactiveObject of this.interactiveObjects) {
+            this.addSelectionHelperToObject(interactiveObject);
         }
     }
 
-    addSelectionSphereToObject(interactiveObject) {
+    addSelectionHelperToObject(interactiveObject) {
+        var selectionHelper = undefined;
         var canvas = document.createElement("canvas");
         canvas.width = 128;
         canvas.height = 128;
         var ctx = canvas.getContext("2d");
-        var gradient = ctx.createLinearGradient(0, 0, 0, 128);
-        gradient.addColorStop(0.35, "black");
-        gradient.addColorStop(0.475, "white");
-        gradient.addColorStop(0.65, "black");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, 128, 128);
-        var selectionAlphaTexture = new THREE.Texture(canvas);
-        selectionAlphaTexture.needsUpdate = true;
+        if (!this.nature.advancedSelectionHelper) {
+            var gradient = ctx.createLinearGradient(0, 0, 0, 128);
+            gradient.addColorStop(0.35, "black");
+            gradient.addColorStop(0.475, "white");
+            gradient.addColorStop(0.65, "black");
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 128, 128);
+            var selectionAlphaTexture = new THREE.Texture(canvas);
+            selectionAlphaTexture.needsUpdate = true;
+            interactiveObject.geometry.computeBoundingSphere();
+            var sphereGeom = new THREE.SphereGeometry(interactiveObject.geometry.boundingSphere.radius, 12, 8);
+            sphereGeom.rotateX(1.57);
+            var sphereMat = new THREE.MeshBasicMaterial({
+              color: new THREE.Color(1, 1, 0), // yellow ring
+              transparent: true,
+              opacity: 0.75,
+              alphaMap: selectionAlphaTexture
+            });
+            sphereMat.depthTest = false;
+            sphereMat.depthWrite = false;
+            var selectionHelper = new THREE.Mesh(sphereGeom, sphereMat);
+            selectionHelper.position.copy(interactiveObject.geometry.boundingSphere.center.clone());
+            interactiveObject.add(selectionHelper);
 
-        interactiveObject.geometry.computeBoundingSphere();
-        var sphereGeom = new THREE.SphereGeometry(interactiveObject.geometry.boundingSphere.radius, 12, 8);
-        sphereGeom.rotateX(1.57);
-        var sphereMat = new THREE.MeshBasicMaterial({
-          color: new THREE.Color(1, 1, 0), // yellow ring
-          transparent: true, // to make our alphaMap work, we have to set this parameter to `true`
-          opacity: 0.75,
-          alphaMap: selectionAlphaTexture
-        });
-        sphereMat.depthTest = false;
-        sphereMat.depthWrite = false;
-        var sphere = new THREE.Mesh(sphereGeom, sphereMat);
-        sphere.name = interactiveObject.name + "_SELECTION";
-        sphere.visible = false;
-        sphere.position.copy(interactiveObject.geometry.boundingSphere.center.clone());
-        interactiveObject.add(sphere);
+            new TWEEN.Tween(selectionHelper.scale)
+            .to({x: 1.2, y: 1.2}, 500)
+            .repeat(Infinity)
+            .yoyo(true)
+            .easing(TWEEN.Easing.Quadratic.InOut).start();
+        } else {
+            var outlineMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffff00,
+                transparent: true,
+                opacity: 0.45,
+                flatShading: true,
+                side: THREE.BackSide,
+                blending: THREE.AdditiveBlending,
+                depthTest: false
+            });
+            selectionHelper = new THREE.Mesh(interactiveObject.geometry, outlineMaterial);
+            selectionHelper.scale.multiplyScalar(1.1);
 
-        new TWEEN.Tween(sphere.scale)
-        .to({x: 1.2, y: 1.2}, 500)
-        .repeat(Infinity)
-        .yoyo(true)
-        .easing(TWEEN.Easing.Quadratic.InOut).start();
+            new TWEEN.Tween(selectionHelper.material)
+            .to({opacity: 0.05}, 1000)
+            .repeat(Infinity)
+            .yoyo(true)
+            .easing(TWEEN.Easing.Quadratic.InOut).start();
+        }
+
+        selectionHelper.name = interactiveObject.name + "_SELECTION";
+        selectionHelper.visible = false;
+        interactiveObject.add(selectionHelper);
     }
 
     setManipulationControl() {
@@ -1047,7 +1047,7 @@ export default class VLab {
         });
     }
 
-    addZoomHelper(objectName, parent, positionDeltas, scale, rotation, colorHex) {
+    addZoomHelper(objectName, parent, positionDeltas, scale, rotation = 0, colorHex = 0xffffff) {
         if (!this.helpers.zoomHelper.texture) {
             var self = this;
             setTimeout(() => {
