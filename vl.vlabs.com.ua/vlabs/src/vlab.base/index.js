@@ -3,6 +3,7 @@ import VLab                 from '../vlabs.core/vlab';
 
 import VLabAssistant        from '../vlabs.items/vlab.assistant';
 import SpriteFireEffect     from '../vlabs.items/sprite-fire-effect';
+import ParticleFireEffect   from '../vlabs.items/particle-fire-effect';
 
 class VlabBase extends VLab {
     constructor(initObj = {}) {
@@ -90,10 +91,17 @@ class VlabBase extends VLab {
                             }]
             };
 
-            this.SpriteFireEffect1 = new SpriteFireEffect({ context: this,
+            this.spriteFireEffect1 = new SpriteFireEffect({ context: this,
                                                             type: 'burning', 
                                                             pos: this.vLabScene.getObjectByName("CubeResponosive").position,
                                                             scale: new THREE.Vector3(0.75, 0.5, 0,75) });
+
+            this.particleFireEffect1 = new ParticleFireEffect({ context: this,
+                                                                color: 0xff2200,
+                                                                fireRadius: 0.05,
+                                                                fireHeight: 0.35,
+                                                                particleCount: 200,
+                                                                pos: this.vLabScene.getObjectByName("CubeResponosive").position });
 
             console.log("initialized");
         }).catch(error => {
@@ -141,7 +149,15 @@ class VlabBase extends VLab {
         this.takeOffObject(true);
         this.vLabScene.getObjectByName("CubeInteractive").position.set(0.0, 1.5, 0.0);
         this.setInteractiveObjects("CubeInteractive");
-        this.SpriteFireEffect1.start();
+        this.spriteFireEffect1.start();
+        this.particleFireEffect1.stop();
+    }
+
+    SphereToCubeResponsive() {
+        this.takeOffObject(true);
+        this.vLabScene.getObjectByName("Sphere").position.copy(this.vLabScene.getObjectByName("CubeResponosive").position.clone());
+        this.setInteractiveObjects("Sphere");
+        this.particleFireEffect1.start();
     }
 
 }

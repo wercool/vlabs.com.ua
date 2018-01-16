@@ -378,6 +378,7 @@ export default class VLab {
             if (this.statsTHREE) this.statsTHREE.begin();
 
             this.webGLRenderer.clear();
+
             this.webGLRenderer.render(this.vLabScene, this.defaultCamera);
 
             if (this.statsTHREE) this.statsTHREE.end();
@@ -891,18 +892,19 @@ export default class VLab {
         } else {
             var outlineMaterial = new THREE.MeshBasicMaterial({
                 color: 0xffff00,
-                transparent: true,
-                opacity: 0.45,
-                flatShading: true,
                 side: THREE.BackSide,
+                transparent: true,
+                opacity: 1.0,
                 blending: THREE.AdditiveBlending,
-                depthTest: false
+                // depthTest: false,
             });
+
             selectionHelper = new THREE.Mesh(interactiveObject.geometry, outlineMaterial);
-            selectionHelper.scale.multiplyScalar(1.1);
+            interactiveObject.geometry.computeBoundingSphere();
+            selectionHelper.scale.multiplyScalar(1.0 + 0.01 * (1.0 / interactiveObject.geometry.boundingSphere.radius));
 
             new TWEEN.Tween(selectionHelper.material)
-            .to({opacity: 0.05}, 1000)
+            .to({opacity: 0.1}, 500)
             .repeat(Infinity)
             .yoyo(true)
             .easing(TWEEN.Easing.Quadratic.InOut).start();

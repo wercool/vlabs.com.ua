@@ -1,11 +1,14 @@
 import * as THREE           from 'three';
 import * as TWEEN           from 'tween.js';
 
+var self = undefined;
+
 export default class SpriteFireEffect {
     constructor(initObj) {
         this.initObj = initObj;
         this.clock = new THREE.Clock();
         this.prepareSprite();
+        self = this;
     }
 
     prepareSprite() {
@@ -116,7 +119,7 @@ export default class SpriteFireEffect {
             this.currentTileAlt = 0;
             this.initObj.context.ambientLight.color = new THREE.Color(0x775a00);
         }
-        addEventListener("redererFrameEvent",  this.onRedererFrameEvent.bind(this), false);
+        addEventListener("redererFrameEvent",  this.onRedererFrameEvent);
     }
 
     stop() {
@@ -124,44 +127,45 @@ export default class SpriteFireEffect {
         if (this.initObj.type === 'burning') {
             this.spriteAlt.visible = false;
         }
+        removeEventListener("redererFrameEvent",  this.onRedererFrameEvent);
     }
 
     onRedererFrameEvent(event) {
-        if (this.sprite.visible) {
-            var delta = this.clock.getDelta() * 1000;
-            this.currentDisplayTime += delta;
-            this.lightEffectTime += delta;
-            if (this.currentDisplayTime > this.tileDisplayDuration)
+        if (self.sprite.visible) {
+            var delta = self.clock.getDelta() * 1000;
+            self.currentDisplayTime += delta;
+            self.lightEffectTime += delta;
+            if (self.currentDisplayTime > self.tileDisplayDuration)
             {
-                this.currentDisplayTime = 0;
+                self.currentDisplayTime = 0;
 
-                this.currentTile++;
-                if (this.currentTile == this.numberOfTiles) this.currentTile = 0;
-                var currentColumn = this.currentTile % this.tilesHorizontal;
-                var currentRow = Math.floor( this.currentTile / this.tilesHorizontal );
+                self.currentTile++;
+                if (self.currentTile == self.numberOfTiles) self.currentTile = 0;
+                var currentColumn = self.currentTile % self.tilesHorizontal;
+                var currentRow = Math.floor( self.currentTile / self.tilesHorizontal );
 
-                this.texture.offset.x = currentColumn / this.tilesHorizontal;
-                this.texture.offset.y = currentRow / this.tilesVertical;
+                self.texture.offset.x = currentColumn / self.tilesHorizontal;
+                self.texture.offset.y = currentRow / self.tilesVertical;
             }
-            if (this.initObj.type === 'burning') {
+            if (self.initObj.type === 'burning') {
 
-                if (this.lightEffectTime > 50) {
-                    this.initObj.context.ambientLight.intensity = 0.2 + 0.5 * Math.random();
-                    this.lightEffectTime = 0;
+                if (self.lightEffectTime > 50) {
+                    self.initObj.context.ambientLight.intensity = 0.2 + 0.5 * Math.random();
+                    self.lightEffectTime = 0;
                 }
 
-                this.currentDisplayTimeAlt += delta;
-                if (this.currentDisplayTimeAlt > this.tileDisplayDurationAlt)
+                self.currentDisplayTimeAlt += delta;
+                if (self.currentDisplayTimeAlt > self.tileDisplayDurationAlt)
                 {
-                    this.currentDisplayTimeAlt = 0;
+                    self.currentDisplayTimeAlt = 0;
 
-                    this.currentTileAlt++;
-                    if (this.currentTileAlt == this.numberOfTiles) this.currentTileAlt = 0;
-                    var currentColumn = this.currentTileAlt % this.tilesHorizontal;
-                    var currentRow = Math.floor( this.currentTileAlt / this.tilesHorizontal );
+                    self.currentTileAlt++;
+                    if (self.currentTileAlt == self.numberOfTiles) self.currentTileAlt = 0;
+                    var currentColumn = self.currentTileAlt % self.tilesHorizontal;
+                    var currentRow = Math.floor( self.currentTileAlt / self.tilesHorizontal );
 
-                    this.textureAlt.offset.x = currentColumn / this.tilesHorizontal;
-                    this.textureAlt.offset.y = currentRow / this.tilesVertical;
+                    self.textureAlt.offset.x = currentColumn / self.tilesHorizontal;
+                    self.textureAlt.offset.y = currentRow / self.tilesVertical;
                 }
             }
         }

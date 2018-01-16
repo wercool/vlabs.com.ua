@@ -34,6 +34,7 @@
     "stats.js": "^0.17.0",
     "three": "^0.89.0",
     "three-orbit-controls": "^82.1.0",
+    "three-particle-fire": "0.0.0",
     "three-pointerlock": "0.0.2",
     "three-transformcontrols": "^0.78.1",
     "tween.js": "^16.6.0",

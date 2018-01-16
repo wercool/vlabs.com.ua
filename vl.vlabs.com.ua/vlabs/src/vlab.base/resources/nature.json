@@ -10,7 +10,7 @@
         "maxDistance": 5.0
     },
     "showTHREEStats": true,
-    "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001"],
+    "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001", "Suzanne"],
     "advancedSelectionHelper": true,
     "responsiveObjects": ["Cube", "CubeResponosive"],
     "tooltips": {
@@ -123,7 +123,8 @@
             "applyFnArgs": {}
         },
         "Sphere|CubeResponosive": {
-            
+            "applyFn": "SphereToCubeResponsive",
+            "applyFnArgs": {}
         }
     }
 }
