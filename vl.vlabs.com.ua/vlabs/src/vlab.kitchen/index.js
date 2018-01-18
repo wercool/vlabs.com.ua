@@ -1,5 +1,6 @@
 import * as THREE           from 'three';
 import VLab                 from '../vlabs.core/vlab';
+import WaterStream          from '../vlabs.items/water-stream';
 
 class VlabKitchen extends VLab {
     constructor(initObj = {}) {
@@ -62,6 +63,15 @@ class VlabKitchen extends VLab {
                            new THREE.Vector3(0.1, 0.1, 0.1),
                            undefined,
                            0xfeffc2);
+
+        this.WaterStream = new WaterStream({
+            context: this,
+            name: 'waterStream1',
+            pos: new THREE.Vector3(-1.37251, 1.13471, 0.45518),
+            startsAt: new THREE.Vector3(0, 0, 0),
+            endsAt: new THREE.Vector3(0, -0.44, 0),
+            radius: 0.01
+        });
     }
 
     onRedererFrameEvent(event) {

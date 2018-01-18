@@ -91,17 +91,21 @@ class VlabBase extends VLab {
                             }]
             };
 
-            this.spriteFireEffect1 = new SpriteFireEffect({ context: this,
-                                                            type: 'burning', 
-                                                            pos: this.vLabScene.getObjectByName("CubeResponosive").position,
-                                                            scale: new THREE.Vector3(0.75, 0.5, 0,75) });
+            this.spriteFireEffect1 = new SpriteFireEffect({
+                context: this,
+                type: 'burning', 
+                pos: this.vLabScene.getObjectByName("CubeResponosive").position,
+                scale: new THREE.Vector3(0.75, 0.5, 0,75)
+            });
 
-            this.particleFireEffect1 = new ParticleFireEffect({ context: this,
-                                                                color: 0xff2200,
-                                                                fireRadius: 0.05,
-                                                                fireHeight: 0.35,
-                                                                particleCount: 200,
-                                                                pos: this.vLabScene.getObjectByName("CubeResponosive").position });
+            this.particleFireEffect1 = new ParticleFireEffect({
+                context: this,
+                color: 0xff2200,
+                fireRadius: 0.05,
+                fireHeight: 0.35,
+                particleCount: 200,
+                pos: this.vLabScene.getObjectByName("CubeResponosive").position
+            });
 
             console.log("initialized");
         }).catch(error => {
