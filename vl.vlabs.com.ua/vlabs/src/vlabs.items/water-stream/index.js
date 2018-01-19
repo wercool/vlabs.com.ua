@@ -10,7 +10,9 @@ export default class WaterStream {
         this.clock = new THREE.Clock();
 
         var map = '/vlabs.items/water-stream/maps/map.png';
-        var envMap = '/vlabs.items/water-stream/maps/envMap.png';
+        var envMap = '/vlabs.items/water-stream/maps/envMap.jpg';
+        var dispMap = '/vlabs.items/water-stream/maps/dispMap.jpg';
+        var alphaMap = '/vlabs.items/water-stream/maps/alphaMap.jpg';
 
         var loader = new THREE.TextureLoader();
         loader.load(
@@ -20,12 +22,29 @@ export default class WaterStream {
                 self.map = loadedTexture;
                 self.map.wrapS = self.map.wrapT = THREE.RepeatWrapping; 
 
-                var loader = new THREE.TextureLoader();
-                loader.load(
+                var envMapLoader = new THREE.TextureLoader();
+                envMapLoader.load(
                     envMap,
                     function(envMap) {
                         self.envMap = envMap;
-                        self.initialize();
+
+                        var dispMapLoader = new THREE.TextureLoader();
+                        dispMapLoader.load(
+                            dispMap,
+                            function(dispMap) {
+                                self.dispMap = dispMap;
+
+                                var alphaMapLoader = new THREE.TextureLoader();
+                                alphaMapLoader.load(
+                                    alphaMap,
+                                    function(alphaMap) {
+                                        self.alphaMap = alphaMap;
+
+                                        self.initialize();
+                                    }
+                                );
+                            }
+                        );
                     }
                 );
             },
@@ -46,10 +65,10 @@ export default class WaterStream {
         this.streamPath.type = 'chordal';
         this.streamPath.closed = false;
 
-        this.radialSegments = (this.initObj.radialSegments) ? this.initObj.radialSegments : 5
+        this.radialSegments = (this.initObj.radialSegments) ? this.initObj.radialSegments : 12
 
         this.geometry = new THREE.TubeBufferGeometry(this.streamPath,
-            (this.initObj.tubularSegments) ? this.initObj.tubularSegments : 10, 
+            (this.initObj.tubularSegments) ? this.initObj.tubularSegments : 8, 
             this.initObj.radius, 
             this.radialSegments, 
             false);
@@ -61,9 +80,12 @@ export default class WaterStream {
             bumpMap: (this.initObj.context.nature.bumpMaps) ? this.envMap : undefined,
             bumpScale: 1.0,
             refractionRatio: (this.initObj.context.nature.bumpMaps) ? 0.95 : 0.15,
-            transparent: true,
             specular: 0xffffff,
-            shininess: 5,
+            displacementMap: self.dispMap,
+            displacementScale: 0.15,
+            alphaMap: self.alphaMap,
+            shininess: 2,
+            transparent: true,
             opacity: 0.55,
             wireframe: false
         });
@@ -123,7 +145,7 @@ export default class WaterStream {
                 self.map.offset.y = 0;
             }
             self.geometry.attributes.position.needsUpdate = true;
-            self.map.offset.x -= 0.065;
+            self.map.offset.x -= 0.035;
             self.map.offset.y -= 0.001;
         }
     }
