@@ -5,10 +5,10 @@ var self = undefined;
 
 export default class ParticleFireEffect {
     constructor(initObj) {
+        self = this;
         this.initObj = initObj;
         this.clock = new THREE.Clock();
         this.initializeEffect();
-        self = this;
     }
 
     initializeEffect() {

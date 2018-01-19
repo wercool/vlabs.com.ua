@@ -67,11 +67,19 @@ class VlabKitchen extends VLab {
         this.WaterStream = new WaterStream({
             context: this,
             name: 'waterStream1',
-            pos: new THREE.Vector3(-1.37251, 1.13471, 0.45518),
-            startsAt: new THREE.Vector3(0, 0, 0),
-            endsAt: new THREE.Vector3(0, -0.44, 0),
-            radius: 0.01
+            pos: new THREE.Vector3(1.37251, 1.135, 0.45518),
+            streamPathPoints: [
+                new THREE.Vector3(0, 0, 0),
+                new THREE.Vector3(0, -0.44, 0)
+            ],
+            radius: 0.01,
+            laminar: false,
+            turbulence: 2.0
         });
+
+        setTimeout(() => {
+            this.WaterStream.start();
+        }, 1000);
     }
 
     onRedererFrameEvent(event) {

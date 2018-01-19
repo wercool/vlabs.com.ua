@@ -5,10 +5,10 @@ var self = undefined;
 
 export default class SpriteFireEffect {
     constructor(initObj) {
+        self = this;
         this.initObj = initObj;
         this.clock = new THREE.Clock();
         this.prepareSprite();
-        self = this;
     }
 
     prepareSprite() {

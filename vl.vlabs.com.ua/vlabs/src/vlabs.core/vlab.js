@@ -1156,7 +1156,7 @@ export default class VLab {
             this.defaultCameraControls.maxDistance = this.defaultCameraControls.backState.maxDistance;
 
             new TWEEN.Tween(this.defaultCameraControls)
-            .to({ minDistancex: this.defaultCameraControls.backState.minDistance }, 250)
+            .to({ minDistance: this.defaultCameraControls.backState.minDistance }, 250)
             .easing(TWEEN.Easing.Cubic.InOut)
             .onUpdate(() => { 
                 this.defaultCameraControls.update();
@@ -1170,21 +1170,27 @@ export default class VLab {
                     this.defaultCameraControls.update();
                 })
                 .onComplete(() => {
-                    new TWEEN.Tween(this.defaultCameraControls.target)
-                    .to({ x: prevTarget.x, y: prevTarget.y, z: prevTarget.z }, 250)
-                    .easing(TWEEN.Easing.Cubic.InOut)
-                    .onUpdate(() => { 
-                        this.defaultCameraControls.update();
-                    })
-                    .onComplete(() => {
-                        this.defaultCameraControls.enableZoom = true;
-                        this.defaultCameraControls.enablePan = true;
-                        this.defaultCameraControls.zoomMode = false;
-                        this.defaultCameraControls.backState = undefined;
-                        document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
-                        this.helpers.zoomHelper.selected.visible = true;
-                    })
-                    .start();
+                    // new TWEEN.Tween(this.defaultCameraControls.target)
+                    // .to({ x: prevTarget.x, y: prevTarget.y, z: prevTarget.z }, 250)
+                    // .easing(TWEEN.Easing.Cubic.InOut)
+                    // .onUpdate(() => { 
+                    //     this.defaultCameraControls.update();
+                    // })
+                    // .onComplete(() => {
+                    //     this.defaultCameraControls.enableZoom = true;
+                    //     this.defaultCameraControls.enablePan = true;
+                    //     this.defaultCameraControls.zoomMode = false;
+                    //     this.defaultCameraControls.backState = undefined;
+                    //     document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
+                    //     this.helpers.zoomHelper.selected.visible = true;
+                    // })
+                    // .start();
+                    this.defaultCameraControls.enableZoom = true;
+                    this.defaultCameraControls.enablePan = true;
+                    this.defaultCameraControls.zoomMode = false;
+                    this.defaultCameraControls.backState = undefined;
+                    document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
+                    this.helpers.zoomHelper.selected.visible = true;
                  })
                 .start();
             })

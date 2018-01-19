@@ -3,9 +3,11 @@
     "resolutionFactor": "1.0",
     "sceneJSONFile": "./resources/scene/kitchen.json",
     "lang": "ru",
+    "bumpMaps": true,
+    "displacementMaps": true,
     "defaultSceneCameraName": "defaultCamera",
     "cameraControls": {
-        "allowedSpaceMapObjectName": "allowedSpacePlane",
+        "allowedSpaceMapObjectName": "_allowedSpacePlane",
         "type": "orbit",
         "target": {
             "x": 1.0,
