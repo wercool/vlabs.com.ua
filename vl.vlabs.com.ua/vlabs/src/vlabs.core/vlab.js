@@ -1,3 +1,8 @@
+import 'babel-polyfill';
+
+require('es6-promise').polyfill();
+require('isomorphic-fetch');
+
 import * as THREE                   from 'three';
 import THREEStats                   from 'stats.js';
 import * as HTTPUtils               from "./utils/http.utils"
@@ -89,7 +94,7 @@ export default class VLab {
     showErrorMessage(error) {
         document.getElementById("overlayContainer").style.display = 'block';
         document.getElementById("modalMessage").style.display = 'block';
-        document.getElementById("modalMessage").innerHTML = error.message;
+        document.getElementById("modalMessage").innerHTML = error;
     }
 
     preInitialize() {
@@ -326,10 +331,10 @@ export default class VLab {
                     },
                     // onError callback
                     function (error) {
-                        reject('An error happened while loading vLab scene', error);
+                        reject('An error happened while loading VLab scene', error);
                     });
             } else {
-                reject("Scene File is missing in VLab nature!");
+                reject("Scene File is missing in VLab  nature :~( <br/> VLab title: [" + this.nature.title + "]" + "<br/>VLab nature file: [" + this.nature.sceneJSONFile + "]");
             }
         });
     }
