@@ -28,21 +28,23 @@ export default class WaterStream {
                     function(envMap) {
                         self.envMap = envMap;
 
-                        var dispMapLoader = new THREE.TextureLoader();
-                        dispMapLoader.load(
-                            dispMap,
-                            function(dispMap) {
-                                self.dispMap = dispMap;
+                        var alphaMapLoader = new THREE.TextureLoader();
+                        alphaMapLoader.load(
+                            alphaMap,
+                            function(alphaMap) {
+                                self.alphaMap = alphaMap;
 
-                                var alphaMapLoader = new THREE.TextureLoader();
-                                alphaMapLoader.load(
-                                    alphaMap,
-                                    function(alphaMap) {
-                                        self.alphaMap = alphaMap;
+                                // var dispMapLoader = new THREE.TextureLoader();
+                                // dispMapLoader.load(
+                                //     dispMap,
+                                //     function(dispMap) {
+                                //         self.dispMap = dispMap;
 
-                                        self.initialize();
-                                    }
-                                );
+                                //         self.initialize();
+                                //     }
+                                // );
+
+                                self.initialize();
                             }
                         );
                     }
@@ -81,8 +83,8 @@ export default class WaterStream {
             bumpScale: 1.0,
             refractionRatio: (this.initObj.context.nature.bumpMaps) ? 0.95 : 0.15,
             specular: 0xffffff,
-            displacementMap: self.dispMap,
-            displacementScale: 0.15,
+            // displacementMap: self.dispMap,
+            // displacementScale: 0.15,
             alphaMap: self.alphaMap,
             shininess: 2,
             transparent: true,
