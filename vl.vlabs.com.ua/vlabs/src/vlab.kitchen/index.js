@@ -1,6 +1,7 @@
 import * as THREE           from 'three';
 import VLab                 from '../vlabs.core/vlab';
 import WaterStream          from '../vlabs.items/water-stream';
+import WaterFiller          from '../vlabs.items/water-filler';
 
 class VlabKitchen extends VLab {
     constructor(initObj = {}) {
@@ -77,8 +78,16 @@ class VlabKitchen extends VLab {
             turbulence: 2.0
         });
 
+        this.WaterFiller = new WaterFiller({
+            context: this,
+            pos: new THREE.Vector3(1.37251, 0.71, 0.45518),
+            ws: 3,
+            hs: 3
+        });
+
         setTimeout(() => {
             this.WaterStream.start();
+            this.WaterFiller.start();
         }, 1000);
     }
 
