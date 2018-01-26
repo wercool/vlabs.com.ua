@@ -83,9 +83,8 @@ class VlabKitchen extends VLab {
             pos: new THREE.Vector3(1.37251, 0.71, 0.45518),
             fillableObj: this.vLabScene.getObjectByName('mainSurface'),
             w: 0.15,
-            h: 0.18,
-            ws: 5,
-            hs: 7
+            h: 0.15,
+            whs: 6
         });
 
         setTimeout(() => {
