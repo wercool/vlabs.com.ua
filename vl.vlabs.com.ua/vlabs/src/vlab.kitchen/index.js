@@ -81,8 +81,11 @@ class VlabKitchen extends VLab {
         this.WaterFiller = new WaterFiller({
             context: this,
             pos: new THREE.Vector3(1.37251, 0.71, 0.45518),
-            ws: 3,
-            hs: 3
+            fillableObj: this.vLabScene.getObjectByName('mainSurface'),
+            w: 0.15,
+            h: 0.18,
+            ws: 5,
+            hs: 7
         });
 
         setTimeout(() => {
