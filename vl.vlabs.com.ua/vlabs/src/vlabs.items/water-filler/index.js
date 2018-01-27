@@ -37,30 +37,38 @@ export default class WaterFiller {
 
         this.concentricContours = [];
         var c = 0;
-        var n = this.initObj.whs + 2;
+        var n = this.initObj.whs;
         while (true) {
             var angle = -Math.PI / 4;
             this.concentricContours.push([]);
-            n -= 2;
-            for (var i = 0; i < n; i++) {
-                angle -= (Math.PI / 2) / n;
+            /* > */
+            for (var i = this.initObj.whs * c + 2 * c; i < c * this.initObj.whs + n + 2 * c; i++) {
                 this.verticesTuples[i].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
                 this.concentricContours[c].push(this.verticesTuples[i]);
-            }
-            for (var i = 0; i < n; i++) {
                 angle -= (Math.PI / 2) / n;
-                this.verticesTuples[(i + 1) * n + i].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
-                this.concentricContours[c].push(this.verticesTuples[(i + 1) * n + i]);
+            }
+            /* v */
+            for (var i = this.initObj.whs * c + this.initObj.whs; i < Math.pow(this.initObj.whs, 2) - this.initObj.whs * c + n + this.initObj.whs; i += n + 1 + c * 2) {
+                this.verticesTuples[i].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
+                this.concentricContours[c].push(this.verticesTuples[i]);
+                angle -= (Math.PI / 2) / n;
+            }
+            /* < */
+            for (var i = Math.pow(this.initObj.whs, 2) - this.initObj.whs * c + n + this.initObj.whs; i > Math.pow(this.initObj.whs, 2) - this.initObj.whs * c + n + this.initObj.whs - n; i--) {
+                this.verticesTuples[i].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
+                this.concentricContours[c].push(this.verticesTuples[i]);
+                angle -= (Math.PI / 2) / n;
+            }
+            /* ^ */
+            for (var i = Math.pow(this.initObj.whs, 2) + this.initObj.whs - this.initObj.whs * c; i > (this.initObj.whs + 2) * c; i -= this.initObj.whs + 1) {
+                this.verticesTuples[i].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
+                this.concentricContours[c].push(this.verticesTuples[i]);
+                angle -= (Math.PI / 2) / n;
             }
             c++;
-            break;
+            n -= 2;
+            if (n < 2) break;
         }
-        // console.log(this.verticesTuples);
-        // var i = 7;
-        // this.geometry.attributes.position.array[this.verticesTuples[i].vpi[0]] += 0.0;
-        // this.geometry.attributes.position.array[this.verticesTuples[i].vpi[1]] += 0.1;
-        // this.geometry.attributes.position.array[this.verticesTuples[i].vpi[2]] += 0.0;
-        // this.geometry.attributes.position.needsUpdate = true;
     }
 
     conformFillableSpace() {
@@ -83,17 +91,17 @@ export default class WaterFiller {
                 var intersects = this.fillableSpaceRaycaster.intersectObject(this.initObj.fillableObj);
     
                 if (intersects.length > 0) {
-                    // var vconformedpos = this.mesh.worldToLocal(intersects[0].point);
-                    // this.geometry.attributes.position.array[contour[i].vpi[0]] = vconformedpos.x * (1 - c / this.concentricContours.length);
-                    // this.geometry.attributes.position.array[contour[i].vpi[1]] = vconformedpos.y;
-                    // this.geometry.attributes.position.array[contour[i].vpi[2]] = vconformedpos.z * (1 - c / this.concentricContours.length);
+                    var bouindigVertexPos = this.mesh.worldToLocal(intersects[0].point);
+                    this.geometry.attributes.position.array[contour[i].vpi[0]] = bouindigVertexPos.x * (1 - (c / this.concentricContours.length));
+                    this.geometry.attributes.position.array[contour[i].vpi[1]] = bouindigVertexPos.y;
+                    this.geometry.attributes.position.array[contour[i].vpi[2]] = bouindigVertexPos.z * (1 - (c / this.concentricContours.length));
     
-                    var arrowHelper = new THREE.ArrowHelper(new THREE.Vector3(), new THREE.Vector3());
-                    arrowHelper.setColor(new THREE.Color(0x00ff00));
-                    this.initObj.context.vLabScene.add(arrowHelper);
-                    arrowHelper.position.copy(vgp);
-                    arrowHelper.setDirection(contour[i].dir);
-                    arrowHelper.setLength(intersects[0].distance, 0.02, 0.005);
+                    // var arrowHelper = new THREE.ArrowHelper(new THREE.Vector3(), new THREE.Vector3());
+                    // arrowHelper.setColor(new THREE.Color(0x00ff00));
+                    // this.initObj.context.vLabScene.add(arrowHelper);
+                    // arrowHelper.position.copy(vgp);
+                    // arrowHelper.setDirection(contour[i].dir);
+                    // arrowHelper.setLength(intersects[0].distance, 0.02, 0.005);
                 }
     
             }

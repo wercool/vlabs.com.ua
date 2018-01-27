@@ -74,6 +74,7 @@ class VlabKitchen extends VLab {
                 new THREE.Vector3(0, -0.44, 0)
             ],
             radius: 0.01,
+            tubularSegments: 12,
             laminar: false,
             turbulence: 2.0
         });
@@ -82,9 +83,9 @@ class VlabKitchen extends VLab {
             context: this,
             pos: new THREE.Vector3(1.37251, 0.71, 0.45518),
             fillableObj: this.vLabScene.getObjectByName('mainSurface'),
-            w: 0.15,
-            h: 0.15,
-            whs: 6
+            w: 0.02,
+            h: 0.02,
+            whs: 12
         });
 
         setTimeout(() => {
