@@ -35,39 +35,78 @@ export default class WaterFiller {
             });
         }
 
+        // this.concentricContours = [];
+        // var c = 0;
+        // var n = this.initObj.whs;
+        // while (true) {
+        //     var angle = -Math.PI / 4;
+        //     this.concentricContours.push([]);
+        //     /* > */
+        //     for (var i = this.initObj.whs * c + 2 * c; i < c * this.initObj.whs + n + 2 * c; i++) {
+        //         this.verticesTuples[i].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
+        //         this.concentricContours[c].push(this.verticesTuples[i]);
+        //         angle -= (Math.PI / 2) / n;
+        //     }
+        //     /* v */
+        //     for (var i = this.initObj.whs * c + this.initObj.whs; i < Math.pow(this.initObj.whs, 2) - this.initObj.whs * c + n + this.initObj.whs; i += n + 1 + c * 2) {
+        //         this.verticesTuples[i].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
+        //         this.concentricContours[c].push(this.verticesTuples[i]);
+        //         angle -= (Math.PI / 2) / n;
+        //     }
+        //     /* < */
+        //     for (var i = Math.pow(this.initObj.whs, 2) - this.initObj.whs * c + n + this.initObj.whs; i > Math.pow(this.initObj.whs, 2) - this.initObj.whs * c + n + this.initObj.whs - n; i--) {
+        //         this.verticesTuples[i].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
+        //         this.concentricContours[c].push(this.verticesTuples[i]);
+        //         angle -= (Math.PI / 2) / n;
+        //     }
+        //     /* ^ */
+        //     for (var i = Math.pow(this.initObj.whs, 2) + this.initObj.whs - this.initObj.whs * c; i > (this.initObj.whs + 2) * c; i -= this.initObj.whs + 1) {
+        //         this.verticesTuples[i].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
+        //         this.concentricContours[c].push(this.verticesTuples[i]);
+        //         angle -= (Math.PI / 2) / n;
+        //     }
+        //     c++;
+        //     n -= 2;
+        //     if (n < 2) break;
+        // }
+
         this.concentricContours = [];
-        var c = 0;
-        var n = this.initObj.whs;
-        while (true) {
-            var angle = -Math.PI / 4;
+        var n = this.initObj.whs + 1;
+        var nc = n - 1;
+        var angle = -Math.PI / 4;
+        for (var c = 0; true; c++) {
+            if (nc < 2) break;
+            var idx = c * (n + 1);
             this.concentricContours.push([]);
             /* > */
-            for (var i = this.initObj.whs * c + 2 * c; i < c * this.initObj.whs + n + 2 * c; i++) {
-                this.verticesTuples[i].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
-                this.concentricContours[c].push(this.verticesTuples[i]);
-                angle -= (Math.PI / 2) / n;
+            for (var i = 0; i < nc; i++) {
+                this.verticesTuples[idx].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
+                this.concentricContours[c].push(this.verticesTuples[idx]);
+                idx++;
+                angle -= (Math.PI / 2) / nc;
             }
             /* v */
-            for (var i = this.initObj.whs * c + this.initObj.whs; i < Math.pow(this.initObj.whs, 2) - this.initObj.whs * c + n + this.initObj.whs; i += n + 1 + c * 2) {
-                this.verticesTuples[i].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
-                this.concentricContours[c].push(this.verticesTuples[i]);
-                angle -= (Math.PI / 2) / n;
+            for (var i = 0; i < nc; i++) {
+                this.verticesTuples[idx].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
+                this.concentricContours[c].push(this.verticesTuples[idx]);
+                idx += n;
+                angle -= (Math.PI / 2) / nc;
             }
             /* < */
-            for (var i = Math.pow(this.initObj.whs, 2) - this.initObj.whs * c + n + this.initObj.whs; i > Math.pow(this.initObj.whs, 2) - this.initObj.whs * c + n + this.initObj.whs - n; i--) {
-                this.verticesTuples[i].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
-                this.concentricContours[c].push(this.verticesTuples[i]);
-                angle -= (Math.PI / 2) / n;
+            for (var i = 0; i < nc; i++) {
+                this.verticesTuples[idx].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
+                this.concentricContours[c].push(this.verticesTuples[idx]);
+                idx--;
+                angle -= (Math.PI / 2) / nc;
             }
             /* ^ */
-            for (var i = Math.pow(this.initObj.whs, 2) + this.initObj.whs - this.initObj.whs * c; i > (this.initObj.whs + 2) * c; i -= this.initObj.whs + 1) {
-                this.verticesTuples[i].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
-                this.concentricContours[c].push(this.verticesTuples[i]);
-                angle -= (Math.PI / 2) / n;
+            for (var i = 0; i < nc; i++) {
+                this.verticesTuples[idx].dir = new THREE.Vector3(-1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).normalize();
+                this.concentricContours[c].push(this.verticesTuples[idx]);
+                idx -= n;
+                angle -= (Math.PI / 2) / nc;
             }
-            c++;
-            n -= 2;
-            if (n < 2) break;
+            nc -= 2;
         }
     }
 
