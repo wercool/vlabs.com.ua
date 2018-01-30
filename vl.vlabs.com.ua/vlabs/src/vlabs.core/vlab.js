@@ -881,7 +881,9 @@ export default class VLab {
               color: new THREE.Color(1, 1, 0), // yellow ring
               transparent: true,
               opacity: 0.75,
-              alphaMap: selectionAlphaTexture
+              alphaMap: selectionAlphaTexture,
+              depthTest: false,
+              depthWrite: false
             });
             sphereMat.depthTest = false;
             sphereMat.depthWrite = false;
@@ -897,11 +899,12 @@ export default class VLab {
         } else {
             var outlineMaterial = new THREE.MeshBasicMaterial({
                 color: 0xffff00,
-                side: THREE.BackSide,
+                side: THREE.FrontSide,
                 transparent: true,
-                opacity: 1.0,
+                opacity: 0.65,
                 blending: THREE.AdditiveBlending,
-                // depthTest: false,
+                depthTest: false,
+                depthWrite: false
             });
 
             selectionHelper = new THREE.Mesh(interactiveObject.geometry, outlineMaterial);
@@ -909,7 +912,7 @@ export default class VLab {
             selectionHelper.scale.multiplyScalar(1.0 + 0.01 * (1.0 / interactiveObject.geometry.boundingSphere.radius));
 
             new TWEEN.Tween(selectionHelper.material)
-            .to({opacity: 0.1}, 500)
+            .to({opacity: 0.1}, 750)
             .repeat(Infinity)
             .yoyo(true)
             .easing(TWEEN.Easing.Quadratic.InOut).start();
