@@ -1,5 +1,6 @@
 import * as THREE           from 'three';
 import VLab                 from '../vlabs.core/vlab';
+import Valter               from '../vlabs.items/valter';
 import WaterStream          from '../vlabs.items/water-stream';
 import WaterFiller          from '../vlabs.items/water-filler';
 
@@ -64,6 +65,12 @@ class VlabKitchen extends VLab {
                            new THREE.Vector3(0.1, 0.1, 0.1),
                            undefined,
                            0xfeffc2);
+
+        this.Valter =  new Valter({
+            context: this,
+            pos: new THREE.Vector3(0, 0, 1.0),
+            name: "Valter"
+        });
 
         this.WaterStream = new WaterStream({
             context: this,

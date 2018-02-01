@@ -16,6 +16,7 @@
         },
         "maxDistance": 2.0,
         "minPolarAngle": 0.7,
+        "maxPolarAngle": 1.75,
         "yPanDeltaUp": 0.5,
         "yPanDeltaDown": 1.5
     },
