@@ -1,10 +1,8 @@
 import * as THREE           from 'three';
 import VLab                 from '../vlabs.core/vlab';
 import Valter               from '../vlabs.items/valter';
-import WaterStream          from '../vlabs.items/water-stream';
-import WaterFiller          from '../vlabs.items/water-filler';
 
-class VlabKitchen extends VLab {
+class VlabApartment extends VLab {
     constructor(initObj = {}) {
         super(initObj);
 
@@ -52,47 +50,16 @@ class VlabKitchen extends VLab {
     }
 
     onActivatedEvent() {
-        console.log("Kitchen VLab activated");
-        // this.manipulationControl.attach(this.vLabScene.getObjectByName("faucetHandle"));
-        // this.manipulationControl.attach(this.vLabScene.getObjectByName("Sphere001"));
+        console.log("Apartment VLab activated");
 
-        this.vLabScene.getObjectByName("faucetHandle").rotateX(THREE.Math.degToRad(-45.0));
-        this.vLabScene.getObjectByName("faucetHandle").rotateY(THREE.Math.degToRad(25.0));
+        var ambientLight = new THREE.AmbientLight(0xfffff5, 1.0);
+        this.vLabScene.add(ambientLight);
 
-        this.addZoomHelper("faucetTube", 
-                           undefined, 
-                           new THREE.Vector3(0.01, 0.0, 0.05), 
-                           new THREE.Vector3(0.1, 0.1, 0.1),
-                           undefined,
-                           0xfeffc2);
-
-        this.WaterStream = new WaterStream({
+        this.Valter =  new Valter({
             context: this,
-            name: 'waterStream1',
-            pos: new THREE.Vector3(1.37251, 1.135, 0.45518),
-            streamPathPoints: [
-                new THREE.Vector3(0, 0, 0),
-                new THREE.Vector3(0, -0.44, 0)
-            ],
-            radius: 0.01,
-            tubularSegments: 12,
-            laminar: false,
-            turbulence: 2.0
+            pos: new THREE.Vector3(0, 0, 1.0),
+            name: "Valter"
         });
-
-        this.WaterFiller = new WaterFiller({
-            context: this,
-            pos: new THREE.Vector3(1.37251, 0.71, 0.45518),
-            fillableObj: this.vLabScene.getObjectByName('mainKitchenSurface'),
-            w: 0.02,
-            h: 0.02,
-            whs: 12
-        });
-
-        setTimeout(() => {
-            this.WaterStream.start();
-            this.WaterFiller.start();
-        }, 1000);
     }
 
     onRedererFrameEvent(event) {
@@ -101,7 +68,7 @@ class VlabKitchen extends VLab {
 
 }
 
-let vlabKitchen = new VlabKitchen({
+let vlabApartment = new VlabApartment({
     "natureURL": "./resources/nature.json",
     "webGLContainer": "webGLContainer"
 });

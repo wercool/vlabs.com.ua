@@ -1,0 +1,28 @@
+{
+    "title": "VLab Apartment",
+    "resolutionFactor": "1.0",
+    "sceneJSONFile": "./resources/scene/apartment.json",
+    "lang": "en",
+    "bumpMaps": true,
+    "displacementMaps": true,
+    "defaultSceneCameraName": "defaultCamera",
+    "cameraControls": {
+        "type": "orbit",
+        "target": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0
+        },
+        "maxDistance": 50.0,
+        "minDistance": 0.01
+    },
+    "showTHREEStats": true,
+    "interactiveObjects": [],
+    "responsiveObjects": [],
+    "tooltips": {
+    },
+    "objectMenus": {
+    },
+    "interactions": {
+    }
+}
