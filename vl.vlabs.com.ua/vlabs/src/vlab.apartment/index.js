@@ -52,13 +52,22 @@ class VlabApartment extends VLab {
     onActivatedEvent() {
         console.log("Apartment VLab activated");
 
-        var ambientLight = new THREE.AmbientLight(0xfffff5, 1.0);
-        this.vLabScene.add(ambientLight);
+        var light0 = new THREE.AmbientLight(0xffffff, 0.4);
+        this.vLabScene.add(light0);
+
+        var light1 = new THREE.PointLight(0xffffff, 0.5);
+        light1.position.set(0.0, 6.0, 1.0);
+        this.vLabScene.add(light1);
+
+        // var light2 = new THREE.PointLight(0xffffff, 0.65);
+        // light2.position.set(0, 6.0, -10);
+        // this.vLabScene.add(light2);
 
         this.Valter =  new Valter({
             context: this,
             pos: new THREE.Vector3(0, 0, 1.0),
-            name: "Valter"
+            name: "Valter",
+            manipulation: true
         });
     }
 

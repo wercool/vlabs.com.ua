@@ -1,5 +1,7 @@
 import * as THREE           from 'three';
 
+var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
+
 export default class Valter {
 /*
 initObj {
@@ -27,6 +29,12 @@ initObj {
                 this.model.position.copy(this.pos);
             } else {
                 console.error("Valter is not set");
+            }
+            if (this.initObj.manipulation) {
+                this.manipulationControl = new TransformControls(this.context.defaultCamera, this.context.webGLRenderer.domElement);
+                this.manipulationControl.setSize(1.0);
+                this.context.vLabScene.add(this.manipulationControl);
+                this.context.manipulationControl.attach(this.model);
             }
         }).catch(error => {
             console.error(error);
