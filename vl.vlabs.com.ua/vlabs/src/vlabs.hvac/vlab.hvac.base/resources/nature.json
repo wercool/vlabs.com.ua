@@ -1,0 +1,18 @@
+{
+    "title": "HVAC Base VLab",
+    "resolutionFactor": "1.0",
+    "sceneJSONFile": "./resources/scene/vlab.hvac.base.json",
+    "lang": "en",
+    "defaultSceneCameraName": "defaultCamera",
+    "cameraControls": {
+        "type": "orbit",
+        "target": {
+            "x": 0.0,
+            "y": 0.5,
+            "z": 1.0
+        }
+    },
+    "showTHREEStats": true,
+    "interactiveObjects": [],
+    "responsiveObjects": []
+}
