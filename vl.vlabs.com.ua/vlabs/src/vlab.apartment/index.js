@@ -52,16 +52,19 @@ class VlabApartment extends VLab {
     onActivatedEvent() {
         console.log("Apartment VLab activated");
 
-        var light0 = new THREE.AmbientLight(0xffffff, 0.4);
+        var defaultCameraPos = this.getWorldPosition(this.defaultCamera);
+        this.prevDefaultCameraPos = defaultCameraPos;
+
+        var light0 = new THREE.AmbientLight(0xffffff, 0.35);
         this.vLabScene.add(light0);
 
-        var light1 = new THREE.PointLight(0xffffff, 0.5);
-        light1.position.set(0.0, 6.0, 1.0);
-        this.vLabScene.add(light1);
+        // this.PointLight1 = new THREE.PointLight(0xffffff, 1.0);
+        // this.PointLight1.position.set(0.0, 6.0, 1.0);
+        // this.vLabScene.add(this.PointLight1);
 
-        // var light2 = new THREE.PointLight(0xffffff, 0.65);
-        // light2.position.set(0, 6.0, -10);
-        // this.vLabScene.add(light2);
+        this.SpotLight1 = new THREE.PointLight(0xffffff, 0.55);
+        this.SpotLight1.position.set(defaultCameraPos.x, 3.0, defaultCameraPos.z);
+        this.vLabScene.add(this.SpotLight1);
 
         this.Valter =  new Valter({
             context: this,
@@ -72,7 +75,11 @@ class VlabApartment extends VLab {
     }
 
     onRedererFrameEvent(event) {
-        
+        var defaultCameraPos = this.getWorldPosition(this.defaultCamera);
+        if (!this.prevDefaultCameraPos.equals(defaultCameraPos)) {
+            this.prevDefaultCameraPos = defaultCameraPos;
+            this.SpotLight1.position.set(defaultCameraPos.x, 3.0, defaultCameraPos.z);
+        }
     }
 
 }
