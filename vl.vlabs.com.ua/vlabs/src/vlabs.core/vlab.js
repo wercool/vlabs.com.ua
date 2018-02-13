@@ -728,10 +728,12 @@ export default class VLab {
                     this.hoveredResponsiveObject = undefined;
                 }
 
-                if (this.nature.objectMenus[this.selectedObject.name])
-                {
-                    if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
-                        this.selectionHelper.material.color = new THREE.Color(0, 1, 0);
+                if (this.nature.objectMenus) {
+                    if (this.nature.objectMenus[this.selectedObject.name])
+                    {
+                        if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
+                            this.selectionHelper.material.color = new THREE.Color(0, 1, 0);
+                        }
                     }
                 }
 
@@ -967,6 +969,8 @@ export default class VLab {
     }
 
     tooltipShow(obj) {
+        if (this.nature.tooltips === undefined) return;
+
         var tooltip = document.getElementById("tooltip");
         if (obj.userData.tooltipShown === undefined) obj.userData.tooltipShown = 0;
         if (this.nature.tooltips[obj.name] && (obj.userData.tooltipShown <= this.nature.tooltips[obj.name].timesToShow || !this.nature.tooltips[obj.name].timesToShow)) {
@@ -1059,12 +1063,12 @@ export default class VLab {
         });
     }
 
-    addZoomHelper(objectName, parent, positionDeltas, scale, rotation = 0, colorHex = 0xffffff) {
+    addZoomHelper(objectName, parent, positionDeltas, scale, rotation = 0, colorHex = 0xffffff, inDepthTest = false, minDistance = 0.25) {
         if (!this.helpers.zoomHelper.texture) {
             var self = this;
             setTimeout(() => {
                 console.log("Wainting for Zoom Helper texture...");
-                self.addZoomHelper(objectName, parent, positionDeltas, scale);
+                self.addZoomHelper(objectName, parent, positionDeltas, scale, rotation, colorHex, inDepthTest, minDistance);
             }, 250);
             return;
         }
@@ -1078,8 +1082,8 @@ export default class VLab {
             transparent: true,
             opacity: 0.5,
             rotation: (rotation) ? rotation : 0.0,
-            depthTest: false,
-            depthWrite: false
+            depthTest: inDepthTest,
+            depthWrite: inDepthTest
         });
 
         var zoomHelperSprite = new THREE.Sprite(zoomHelperMaterial);
@@ -1087,6 +1091,8 @@ export default class VLab {
         zoomHelperSprite.position.x += positionDeltas.x;
         zoomHelperSprite.position.y += positionDeltas.y;
         zoomHelperSprite.position.z += positionDeltas.z;
+
+        zoomHelperSprite.minDistance = minDistance;
 
         if (parent) {
             parent.getObjectByName(objectName).add(zoomHelperSprite);
@@ -1132,7 +1138,7 @@ export default class VLab {
             var zoomTarget = this.getWorldPosition(zoomHelpersIntersects[0].object.parent);
             this.defaultCameraControls.enableZoom = false;
             this.defaultCameraControls.enablePan = false;
-            this.defaultCameraControls.minDistance = 0.25;
+            this.defaultCameraControls.minDistance = zoomHelpersIntersects[0].object.minDistance;
             this.defaultCameraControls.zoomMode = true;
             new TWEEN.Tween(this.defaultCameraControls.target)
             .to({ x: zoomTarget.x, y: zoomTarget.y, z: zoomTarget.z }, 500)

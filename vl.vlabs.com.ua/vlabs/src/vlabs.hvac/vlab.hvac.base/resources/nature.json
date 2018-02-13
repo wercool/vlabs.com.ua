@@ -9,10 +9,20 @@
         "target": {
             "x": 0.0,
             "y": 0.5,
-            "z": 1.0
+            "z": 0.0
         }
     },
     "showTHREEStats": true,
-    "interactiveObjects": [],
-    "responsiveObjects": []
+    "interactiveObjects": ["frameCapBolt9", "frameCapBolt10"],
+    "responsiveObjects": [],
+    "tooltips": {
+        "frameCapBolt9": {
+            "en": "Heat Pump hull cap screw #9",
+            "timesToShow": 10
+        },
+        "frameCapBolt10": {
+            "en": "Heat Pump hull cap screw #10",
+            "timesToShow": 10
+        }
+    }
 }

@@ -60,8 +60,26 @@ class VlabBase extends VLab {
     }
 
     onActivatedEvent() {
-        // this.manipulationControl.attach(this.vLabScene.getObjectByName("Sphere"));
-        // this.manipulationControl.attach(this.vLabScene.getObjectByName("Sphere001"));
+
+        this.addZoomHelper(
+            "frameCapBolt10", 
+            undefined, 
+            new THREE.Vector3(0.0, -0.04, 0.0), 
+            new THREE.Vector3(0.1, 0.1, 0.1),
+            Math.PI,
+            0xfff495);
+
+        this.addZoomHelper(
+            "bryantB225B-heatPumpCompressorElectricConnector", 
+            undefined, 
+            new THREE.Vector3(-0.05, 0.0, 0.05), 
+            new THREE.Vector3(0.1, 0.1, 0.1),
+            Math.PI,
+            0xfff495,
+            true,
+            0.35);
+
+        this.manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B-heatPumpFrameCap"));
     }
 
     onRedererFrameEvent(event) {
