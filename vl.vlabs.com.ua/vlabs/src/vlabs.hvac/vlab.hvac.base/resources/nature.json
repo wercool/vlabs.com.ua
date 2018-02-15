@@ -13,8 +13,9 @@
         }
     },
     "showTHREEStats": true,
-    "interactiveObjects": ["frameCapBolt9", "frameCapBolt10"],
-    "responsiveObjects": [],
+    "advancedSelectionHelper": false,
+    "interactiveObjects": [],
+    "responsiveObjects": ["frameCapBolt9", "frameCapBolt10"],
     "tooltips": {
         "frameCapBolt9": {
             "en": "Heat Pump hull cap screw #9",
@@ -23,6 +24,17 @@
         "frameCapBolt10": {
             "en": "Heat Pump hull cap screw #10",
             "timesToShow": 10
+        }
+    },
+    "objectMenus": {},
+    "interactions": {
+        "BoshScrewdriver|frameCapBolt9": {
+            "applyFn": "frameCapBoltUnscrew",
+            "applyFnArgs": {"arg": "frameCapBolt9"}
+        },
+        "BoshScrewdriver|frameCapBolt10": {
+            "applyFn": "frameCapBoltUnscrew",
+            "applyFnArgs": {"arg": "frameCapBolt10"}
         }
     }
 }

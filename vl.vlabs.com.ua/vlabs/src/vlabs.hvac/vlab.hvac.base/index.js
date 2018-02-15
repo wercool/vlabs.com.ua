@@ -1,5 +1,8 @@
 import * as THREE           from 'three';
 import VLab                 from '../../vlabs.core/vlab';
+import BoshScrewdriver      from '../../vlabs.items/boshScrewdriver';
+
+var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
 
 class VlabBase extends VLab {
     constructor(initObj = {}) {
@@ -79,7 +82,43 @@ class VlabBase extends VLab {
             true,
             0.35);
 
-        this.manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B-heatPumpFrameCap"));
+        this.addZoomHelper(
+            "bryantB225B-reversingValve", 
+            undefined, 
+            new THREE.Vector3(-0.05, 0.0, 0.05), 
+            new THREE.Vector3(0.1, 0.1, 0.1),
+            Math.PI,
+            0xfff495,
+            true,
+            0.25);
+
+        this.addZoomHelper(
+            "suctionServiceValve", 
+            undefined, 
+            new THREE.Vector3(-0.05, 0.0, 0.05), 
+            new THREE.Vector3(0.1, 0.1, 0.1),
+            Math.PI,
+            0xfff495,
+            true,
+            0.35);
+
+        this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        this.heatPumpFrameCap_manipulationControl.setSize(0.5);
+        this.vLabScene.add(this.heatPumpFrameCap_manipulationControl);
+        this.heatPumpFrameCap_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B-heatPumpFrameCap"));
+
+        this.heatPumpFrameServicePanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        this.heatPumpFrameServicePanel_manipulationControl.setSize(0.5);
+        this.vLabScene.add(this.heatPumpFrameServicePanel_manipulationControl);
+        this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B-heatPumpFrameServicePanel"));
+
+        this.BoshScrewdriver =  new BoshScrewdriver({
+            context: this,
+            pos: new THREE.Vector3(0.5, 0.2, 0.0),
+            name: "BoshScrewdriver",
+            manipulation: false,
+            interactive: true
+        });
     }
 
     onRedererFrameEvent(event) {
@@ -88,6 +127,10 @@ class VlabBase extends VLab {
 
     test(value) {
         console.log("TEST", value);
+    }
+
+    frameCapBoltUnscrew(arg) {
+        console.log(arg);
     }
 
 }
