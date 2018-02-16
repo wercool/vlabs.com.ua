@@ -13,9 +13,20 @@
         }
     },
     "showTHREEStats": true,
-    "advancedSelectionHelper": false,
+    "advancedSelectionHelper": true,
+    "interactivesSuppressorsObjects": [
+        "bryantB225B-heatPumpFrontVentPanel", 
+        "bryantB225B-heatPumpLeftVentPanel",
+        "bryantB225B-heatPumpFrame",
+        "bryantB225B-heatPumpFanGrid",
+        "bryantB225B-heatPumpFrameCap",
+        "bryantB225B-heatPumpFrameServicePanel"
+    ],
     "interactiveObjects": [],
-    "responsiveObjects": ["frameCapBolt9", "frameCapBolt10"],
+    "responsiveObjects": [
+        "frameCapBolt9", 
+        "frameCapBolt10"
+    ],
     "tooltips": {
         "frameCapBolt9": {
             "en": "Heat Pump hull cap screw #9",

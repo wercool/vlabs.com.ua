@@ -1,12 +1,17 @@
 import * as THREE           from 'three';
 import VLab                 from '../../vlabs.core/vlab';
 import BoshScrewdriver      from '../../vlabs.items/boshScrewdriver';
+import Inventory            from '../../vlabs.items/inventory';
 
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
 
-class VlabBase extends VLab {
+var self = undefined;
+
+class VlabHVACBase extends VLab {
     constructor(initObj = {}) {
         super(initObj);
+
+        self = this;
 
         addEventListener("redererFrameEvent",  this.onRedererFrameEvent.bind(this), false);
         addEventListener("sceneCompleteEvent", this.onSceneCompleteEvent.bind(this), false);
@@ -27,8 +32,6 @@ class VlabBase extends VLab {
     initialize() {
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
-
-
 
             var light0 = new THREE.AmbientLight(0xffffff, 0.4);
             this.vLabScene.add(light0);
@@ -112,12 +115,17 @@ class VlabBase extends VLab {
         this.vLabScene.add(this.heatPumpFrameServicePanel_manipulationControl);
         this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B-heatPumpFrameServicePanel"));
 
-        this.BoshScrewdriver =  new BoshScrewdriver({
+        this.inventory = new Inventory({
+            context: this
+        });
+
+        this.BoshScrewdriver = new BoshScrewdriver({
             context: this,
             pos: new THREE.Vector3(0.5, 0.2, 0.0),
             name: "BoshScrewdriver",
             manipulation: false,
-            interactive: true
+            interactive: true,
+            inventory: this.inventory
         });
     }
 
@@ -130,12 +138,12 @@ class VlabBase extends VLab {
     }
 
     frameCapBoltUnscrew(arg) {
-        console.log(arg);
+        console.log("frameCapBoltUnscrew", arg);
     }
 
 }
 
-let vLabBase = new VlabBase({
+let vlabHVACBase = new VlabHVACBase({
     "natureURL": "./resources/nature.json",
     "webGLContainer": "webGLContainer"
 });

@@ -76,6 +76,7 @@ export default class VLab {
 
         this.interactiveObjects = [];
         this.responosiveObjects = [];
+        this.interactivesSuppressorsObjects = [];
 
         this.hoveredObject = undefined;
         this.preSelectedObject = undefined;
@@ -415,6 +416,16 @@ export default class VLab {
         for (var interactiveObject of this.interactiveObjects) {
             this.nature.interactiveObjects.push(interactiveObject.name);
         }
+        //interactive suppressors
+        this.interactivesSuppressorsObjects = [];
+        for (var interactivesSuppressorObjectName of this.nature.interactivesSuppressorsObjects) {
+            var interactivesSuppressorsObject = this.vLabScene.getObjectByName(interactivesSuppressorObjectName);
+            if (interactivesSuppressorsObject) {
+                this.interactivesSuppressorsObjects.push(interactivesSuppressorsObject);
+            } else {
+                console.error(interactivesSuppressorObjectName + "interactive suppressor Object is undefined");
+            }
+        }
     }
 
     setReponsiveObjects(except) {
@@ -588,24 +599,29 @@ export default class VLab {
         if (this.defaultCameraControls.zoomMode) {
             return;
         }
-        var interactionObjectIntersects = undefined;
+
+        var interactionObjectIntersects = [];
+
+        var interactiveObjectsWithInteractiveSuppressors = this.interactiveObjects.concat(this.interactivesSuppressorsObjects);
+
         if (this.defaultCameraControls.type === 'pointerlock') {
             this.defaultCameraControls.update();
             if (this.defaultCameraControls.active) {
                 this.iteractionRaycaster.setFromCamera({x: 0, y: 0}, this.defaultCamera);
-                interactionObjectIntersects = this.iteractionRaycaster.intersectObjects(this.interactiveObjects);
+                interactionObjectIntersects = this.iteractionRaycaster.intersectObjects(interactiveObjectsWithInteractiveSuppressors);
             }
         } else if (this.defaultCameraControls.type === 'orbit') {
             if (this.defaultCameraControls.active) {
                 this.iteractionRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
-                interactionObjectIntersects = this.iteractionRaycaster.intersectObjects(this.interactiveObjects);
+                interactionObjectIntersects = this.iteractionRaycaster.intersectObjects(interactiveObjectsWithInteractiveSuppressors);
             }
         }
 
-
         if (this.defaultCameraControls.active) {
-            if (interactionObjectIntersects) {
-                if (interactionObjectIntersects.length > 0) {
+            if (interactionObjectIntersects.length > 0) {
+
+                if (this.interactivesSuppressorsObjects.indexOf(interactionObjectIntersects[0].object) == -1) {
+
                     if (interactionObjectIntersects[0].object !== this.hoveredObject && this.hoveredObject != this.selectedObject) {
                         if (this.selectionHelper) this.selectionHelper.visible = false;
                     }
@@ -624,20 +640,20 @@ export default class VLab {
 
                     this.defaultCameraControls.active = false;
                     return;
-
-                } else {
-                    if (this.selectionHelper) {
-                        if (this.hoveredObject !== this.selectedObject) {
-                            this.clearNotSelected();
-                        }
-                        this.selectionHelper = undefined;
-                        this.cMenu.hide();
-                    }
-                    if (this.hoveredObject) {
-                        this.hoveredObject = undefined;
-                    }
-                    this.webGLContainer.style.cursor = 'auto';
                 }
+
+            } else {
+                if (this.selectionHelper) {
+                    if (this.hoveredObject !== this.selectedObject) {
+                        this.clearNotSelected();
+                    }
+                    this.selectionHelper = undefined;
+                    this.cMenu.hide();
+                }
+                if (this.hoveredObject) {
+                    this.hoveredObject = undefined;
+                }
+                this.webGLContainer.style.cursor = 'auto';
             }
 
             if (this.selectedObject) {
@@ -645,15 +661,19 @@ export default class VLab {
                     var responsiveObjectsItersects = undefined;
 
                     this.responsiveRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
-                    responsiveObjectsItersects = this.responsiveRaycaster.intersectObjects(this.responosiveObjects);
 
-                    if (responsiveObjectsItersects) {
+                    var responsiveObjectsWithInteractiveSuppressors = this.responosiveObjects.concat(this.interactivesSuppressorsObjects);
+
+                    responsiveObjectsItersects = this.responsiveRaycaster.intersectObjects(responsiveObjectsWithInteractiveSuppressors);
+
+                    if (responsiveObjectsItersects.length > 0) {
                         if (this.hoveredResponsiveObject) {
                             this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
                             this.hoveredResponsiveObject = undefined;
                             this.tooltipHide();
                         }
-                        if (responsiveObjectsItersects.length > 0) {
+
+                        if (this.interactivesSuppressorsObjects.indexOf(responsiveObjectsItersects[0].object) == -1) {
                             if (this.nature.interactions[this.selectedObject.name + "|" + responsiveObjectsItersects[0].object.name]) {
                                 this.tooltipShow(responsiveObjectsItersects[0].object);
                                 this.hoveredResponsiveObject = responsiveObjectsItersects[0].object;
@@ -670,6 +690,7 @@ export default class VLab {
                 }
             }
 
+            //Is in allowed space check
             if (this.allowedSpaceMapObject && this.defaultCameraControls.enabled) {
                 if (this.defaultCameraControls.type === 'orbit') {
                     this.allowedSpaceRaycaster.set(this.defaultCamera.position, new THREE.Vector3(0, -1, 0));
@@ -903,12 +924,12 @@ export default class VLab {
         } else {
             var outlineMaterial = new THREE.MeshBasicMaterial({
                 color: 0xffff00,
-                side: THREE.FrontSide,
+                side: THREE.BackSide,
                 transparent: true,
                 opacity: 0.65,
                 blending: THREE.AdditiveBlending,
-                depthTest: false,
-                depthWrite: false
+                depthTest: true,
+                depthWrite: true
             });
 
             selectionHelper = new THREE.Mesh(interactiveObject.geometry, outlineMaterial);
@@ -1115,7 +1136,7 @@ export default class VLab {
         placeHelperMaterial.depthTest = false;
         placeHelperMaterial.depthWrite = false;
         this.helpers.placeHelper.sprite = new THREE.Sprite(placeHelperMaterial);
-        this.helpers.placeHelper.sprite.scale.set(0.15, 0.15, 0.15);
+        this.helpers.placeHelper.sprite.scale.set(0.1, 0.1, 0.1);
         this.helpers.placeHelper.sprite.visible = false;
         this.vLabScene.add(this.helpers.placeHelper.sprite);
     }
@@ -1125,8 +1146,16 @@ export default class VLab {
             return;
         }
         this.helpersRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
-        var zoomHelpersIntersects = this.helpersRaycaster.intersectObjects(this.helpers.zoomHelper.assigned);
+
+        var zoomHelpersIntersectsExceptinteractivesObjectsSuppressors = this.helpers.zoomHelper.assigned.concat(this.interactivesSuppressorsObjects);
+
+        //var zoomHelpersIntersects = this.helpersRaycaster.intersectObjects(this.helpers.zoomHelper.assigned);
+
+        var zoomHelpersIntersects = this.helpersRaycaster.intersectObjects(zoomHelpersIntersectsExceptinteractivesObjectsSuppressors);
+
         if (zoomHelpersIntersects.length > 0) {
+            if (this.interactivesSuppressorsObjects.indexOf(zoomHelpersIntersects[0].object) > -1) return;
+
             this.helpers.zoomHelper.selected = zoomHelpersIntersects[0].object;
             this.helpers.zoomHelper.selected.visible = false;
             this.defaultCameraControls.backState = {

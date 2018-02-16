@@ -44,6 +44,7 @@ html, body {
     left: 10%;
     color: rgb(228, 125, 28);
 }
+
 #fullscreen {
     right: 10px;
     bottom: 10px;
@@ -92,6 +93,61 @@ html, body {
     -moz-user-select: none;     /* Firefox all */
     -ms-user-select: none;      /* IE 10+ */
     user-select: none;          /* Likely future */ 
+}
+
+/* Inventory */
+#inventoryContainer {
+    width: calc(90vw - 15pt);
+    height: 85vh;
+    background-color: #0a283dc0;
+    display: none;
+    z-index: 2e9;
+    margin-top: 5vh;
+    margin-left: 5vw;
+    border-radius: 20pt;
+    -moz-box-shadow: 0 0 10px #ccc;
+    -webkit-box-shadow: 0 0 10px #ccc;
+    box-shadow: 0 0 10px #ccc;
+    padding: 10pt;
+}
+
+#inventoryWebGLContainer {
+    width: 100%;
+    height: 40vh;
+    -moz-box-shadow: 0 0 5px #ccc;
+    -webkit-box-shadow: 0 0 5px #ccc;
+    box-shadow: 0 0 5px #ccc;
+}
+
+#inventoryCloseButton {
+    height: 60px;
+    width: 60px;
+    background-image: url('../img/closeInventory.png');
+    background-repeat: no-repeat;
+    margin-left: calc(45vw - 30px);
+    margin-top: 10pt;
+    cursor: pointer;
+}
+
+#inventoryInfoBox {
+    width: 100%;
+    height: calc(40vh - 15pt - 30px);
+    margin-top: 20pt;
+    -moz-box-shadow: 0 0 5px #ccc;
+    -webkit-box-shadow: 0 0 5px #ccc;
+    box-shadow: 0 0 5px #ccc;
+
+    background-color: grey;
+}
+
+#toolbox {
+    right: 15px;
+    top: 15px;
+    position: absolute;
+    cursor: pointer;
+    width: 64px;
+    height: 36px;
+    background-image: url("../img/toolbox.png");
 }
 
 #cMenu {
