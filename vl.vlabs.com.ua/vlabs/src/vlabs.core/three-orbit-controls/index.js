@@ -19,6 +19,8 @@ module.exports = function( THREE ) {
 
 	function OrbitControls( object, domElement , initialPos) {
 
+		this.initialState = true;
+
 		this.active = false;
 
 		this.staticMode = true;
@@ -78,6 +80,7 @@ module.exports = function( THREE ) {
 		// Set to true to automatically rotate around the target
 		// If auto-rotate is enabled, you must call controls.update() in your animation loop
 		this.autoRotate = false;
+		this.autoRotateInitialOnly = true;
 		this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
 
 		// Set to false to disable use of the keys
@@ -151,7 +154,8 @@ module.exports = function( THREE ) {
 
 				if ( scope.autoRotate && state === STATE.NONE ) {
 
-					rotateLeft( getAutoRotationAngle() );
+					if ((scope.autoRotateInitialOnly && scope.initialState) || !scope.autoRotateInitialOnly)
+						rotateLeft( getAutoRotationAngle() );
 
 				}
 
@@ -665,6 +669,8 @@ module.exports = function( THREE ) {
 		function onMouseDown( event ) {
 
 			if ( scope.enabled === false ) return;
+
+			scope.initialState = false;
 
 			scope.active = true;
 

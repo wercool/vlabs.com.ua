@@ -98,7 +98,7 @@ html, body {
 /* Inventory */
 #inventoryContainer {
     width: calc(90vw - 15pt);
-    height: 85vh;
+    height: calc(85vh - 24px + 5pt);
     background-color: #0a283dc0;
     display: none;
     z-index: 2e9;
@@ -120,24 +120,26 @@ html, body {
 }
 
 #inventoryCloseButton {
-    height: 60px;
-    width: 60px;
+    position: fixed;
+    height: 48px;
+    width: 48px;
     background-image: url('../img/closeInventory.png');
     background-repeat: no-repeat;
-    margin-left: calc(45vw - 30px);
-    margin-top: 10pt;
+    left: calc(50% - 24px);
+    bottom: 5pt;
     cursor: pointer;
 }
 
 #inventoryInfoBox {
-    width: 100%;
-    height: calc(40vh - 15pt - 30px);
-    margin-top: 20pt;
+    width: calc(100% - 10pt);
+    height: 40vh;
+    margin-top: 10pt;
+    border-radius: 5pt;
     -moz-box-shadow: 0 0 5px #ccc;
     -webkit-box-shadow: 0 0 5px #ccc;
     box-shadow: 0 0 5px #ccc;
-
-    background-color: grey;
+    padding: 5pt;
+    overflow: auto;
 }
 
 #toolbox {

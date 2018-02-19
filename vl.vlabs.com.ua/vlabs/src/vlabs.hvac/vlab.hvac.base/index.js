@@ -1,6 +1,7 @@
 import * as THREE           from 'three';
 import VLab                 from '../../vlabs.core/vlab';
 import BoshScrewdriver      from '../../vlabs.items/boshScrewdriver';
+import ClampMeterUEIDL479   from '../../vlabs.items/clampMeterUEIDL479';
 import Inventory            from '../../vlabs.items/inventory';
 
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
@@ -126,6 +127,14 @@ class VlabHVACBase extends VLab {
             manipulation: false,
             interactive: true,
             inventory: this.inventory
+        });
+
+        this.clampMeterUEIDL479 = new ClampMeterUEIDL479({
+            context: this,
+            pos: new THREE.Vector3(1.0, 0.2, 0.0),
+            name: "ClampMeterUEIDL479",
+            manipulation: false,
+            interactive: false
         });
     }
 

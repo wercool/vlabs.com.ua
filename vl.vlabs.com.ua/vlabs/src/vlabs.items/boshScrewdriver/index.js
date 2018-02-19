@@ -37,7 +37,7 @@ initObj {
                     "icon": ["fa fa-info"],
                     "click": "showInfo",
                     "args": {   "title": "Bosch IXO III 3.6-Volt Multipurpose Screwdriver",
-                                "html": '<div style="text-align: center; padding-top: 5pt;"><iframe width="600" height="300" src="https://www.youtube.com/embed/VXADzvSTosc" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>'}
+                                "html": '<div style="text-align: center; padding-top: 5pt;"><iframe width="90%" height="300" src="https://www.youtube.com/embed/VXADzvSTosc" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>'}
                     }, {
                     "disabled": true
                     }, {

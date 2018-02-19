@@ -418,12 +418,14 @@ export default class VLab {
         }
         //interactive suppressors
         this.interactivesSuppressorsObjects = [];
-        for (var interactivesSuppressorObjectName of this.nature.interactivesSuppressorsObjects) {
-            var interactivesSuppressorsObject = this.vLabScene.getObjectByName(interactivesSuppressorObjectName);
-            if (interactivesSuppressorsObject) {
-                this.interactivesSuppressorsObjects.push(interactivesSuppressorsObject);
-            } else {
-                console.error(interactivesSuppressorObjectName + "interactive suppressor Object is undefined");
+        if (this.nature.interactivesSuppressorsObjects) {
+            for (var interactivesSuppressorObjectName of this.nature.interactivesSuppressorsObjects) {
+                var interactivesSuppressorsObject = this.vLabScene.getObjectByName(interactivesSuppressorObjectName);
+                if (interactivesSuppressorsObject) {
+                    this.interactivesSuppressorsObjects.push(interactivesSuppressorsObject);
+                } else {
+                    console.error(interactivesSuppressorObjectName + "interactive suppressor Object is undefined");
+                }
             }
         }
     }
