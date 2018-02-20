@@ -4,6 +4,8 @@ import Inventory from '../../vlabs.items/inventory';
 
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
 
+var self = undefined;
+
 export default class BoshScrewdriver {
 /*
 initObj {
@@ -17,6 +19,13 @@ initObj {
        this.context = initObj.context;
        this.pos = initObj.pos;
 
+       this.interactiveElements = [];
+       this.interactiveSuppressElements = [];
+
+       this.accessableInteractiveELements = [];
+
+       self = this;
+
        this.initialize();
     }
 
@@ -27,11 +36,26 @@ initObj {
                 this.model.name = this.initObj.name;
             }
 
+            this.model.getObjectByName("boschScrewdriverButton").mousePressHandler = this.boschScrewdriverButtonPress;
+            this.model.getObjectByName("boschScrewdriverButton").mouseReleaseHandler = this.boschScrewdriverButtonRelease;
+
+            this.interactiveElements.push(this.model.getObjectByName("boschScrewdriverButton"));
+
+            this.interactiveSuppressElements.push(this.model);
+
+            this.accessableInteractiveELements = this.interactiveElements.concat(this.interactiveSuppressElements);
+
+            this.boschScrewdriverButtonPressSound = new Audio('/vlabs.items/boshScrewdriver/sounds/sound1.mp3');
+
             this.context.nature.objectMenus[this.model.name] = {
                 "en": [{
                     "title": "Pick",
                     "icon": "fa fa-hand-rock",
                     "click": "takeObject"
+                    },{
+                        "title": "To Inventory",
+                        "icon": "toolboxMenuIcon",
+                        "click": "takeObjectToInventory"
                     }, {
                     "title": "Info",
                     "icon": ["fa fa-info"],
@@ -49,7 +73,9 @@ initObj {
 
             if (this.initObj.inventory) {
                 this.initObj.inventory.addItem({
-                    item: this.model
+                    item: this.model,
+                    initObj: this.initObj,
+                    vLabItem: this
                 });
                 console.log("BoshScrewdriver added to Inventory");
             } else {
@@ -83,5 +109,42 @@ initObj {
         }).catch(error => {
             console.error(error);
         });
+    }
+
+    redererFrameEventHandler(time) {
+        this.initObj.inventory.iteractionRaycaster.setFromCamera(this.initObj.inventory.mouseCoordsRaycaster, this.initObj.inventory.defaultCamera);
+        var interactionObjectIntersects = this.initObj.inventory.iteractionRaycaster.intersectObjects(this.accessableInteractiveELements);
+        if (interactionObjectIntersects.length > 0) {
+            this.hoveredObject = interactionObjectIntersects[0].object;
+            if (this.hoveredObject.mousePressHandler) {
+                this.initObj.inventory.webGLContainer.style.cursor = 'pointer';
+                if (this.initObj.inventory.mouseDown) {
+                    this.hoveredObject.mousePressHandler.call();
+                }
+            }
+        } else {
+            this.initObj.inventory.webGLContainer.style.cursor = 'auto';
+        }
+    }
+
+    mouseUpHandler(event) {
+        self.boschScrewdriverButtonRelease();
+    }
+
+    boschScrewdriverButtonPress() {
+        if (!self.boschScrewdriverButtonPressed) {
+            console.log("boschScrewdriverButtonPressed");
+            self.boschScrewdriverButtonPressed = true;
+            self.boschScrewdriverButtonPressSound.play();
+        }
+    }
+
+    boschScrewdriverButtonRelease() {
+        if (self.boschScrewdriverButtonPressed) {
+            console.log("boschScrewdriverButtonReleased");
+            self.boschScrewdriverButtonPressSound.pause();
+            self.boschScrewdriverButtonPressSound.currentTime = 0;
+        }
+        self.boschScrewdriverButtonPressed = false;
     }
 }

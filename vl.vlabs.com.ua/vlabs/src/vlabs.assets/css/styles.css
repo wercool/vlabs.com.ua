@@ -119,6 +119,37 @@ html, body {
     box-shadow: 0 0 5px #ccc;
 }
 
+#nextItemButton {
+    position: fixed;
+    height: 48px;
+    width: 48px;
+    background-image: url('../img/next.png');
+    background-repeat: no-repeat;
+    left: calc(85% - 24px);
+    top: 25%;
+    cursor: pointer;
+}
+
+#prevItemButton {
+    position: fixed;
+    height: 48px;
+    width: 48px;
+    background-image: url('../img/prev.png');
+    background-repeat: no-repeat;
+    left: calc(15% - 24px);
+    top: 25%;
+    cursor: pointer;
+}
+
+#takeButton {
+    position: fixed;
+    left: calc(50% - 17pt);
+    top: 40%;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.63);
+    font-size: 34pt;
+}
+
 #inventoryCloseButton {
     position: fixed;
     height: 48px;
@@ -150,6 +181,10 @@ html, body {
     width: 64px;
     height: 36px;
     background-image: url("../img/toolbox.png");
+}
+
+.toolboxMenuIcon {
+    background-image: url("../img/toolbox-menu-icon.png");
 }
 
 #cMenu {

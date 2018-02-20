@@ -4,7 +4,7 @@ import Inventory from '../../vlabs.items/inventory';
 
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
 
-export default class ClampMeterUEIDL479 {
+export default class FatMaxScrewdriver {
 /*
 initObj {
     "context": VLab,
@@ -21,7 +21,7 @@ initObj {
     }
 
     initialize() {
-        this.context.loadVLabItem("/vlabs.items/clampMeterUEIDL479/clampMeterUEIDL479.json", "clampMeterUEIDL479").then((scene) => {
+        this.context.loadVLabItem("/vlabs.items/fatMaxScrewdriver/fatMaxScrewdriver.json", "FatMaxScrewdriver").then((scene) => {
             this.model = scene.children[0];
             if (this.initObj.name) {
                 this.model.name = this.initObj.name;
@@ -36,21 +36,10 @@ initObj {
                     "title": "Info",
                     "icon": ["fa fa-info"],
                     "click": "showInfo",
-                    "args": {   "title": "CLAMP METER UEi DL479",
-                                "html": '<ul style="color: white;">\
-                                <li>True RMS</li>\
-                                <li>600A AC</li>\
-                                <li>750V AC/600V DC</li>\
-                                <li>Resistance 60MO</li>\
-                                <li>Capacitance 2000µF</li>\
-                                <li>Temperature 14° to 752°F (-10° to 400°C)</li>\
-                                <li>DC microamps 2000µA</li>\
-                                <li>Frequency/Duty cycle</li>\
-                                <li>Diode test</li>\
-                                <li>Non-contact voltage detection</li>\
-                                <li>Audible continuity</li>\
-                                <li>2-Year limited warranty</li>\
-                                </ul>'}
+                    "args": {   "title": "Stanley 69-189 Ratchet Multi Bit Screwdriver",
+                                "html": '<span style="color: white;">\
+                                The Stanley 69-189 Ratcheting Multi-Bit Screwdriver is a multi-bit ratcheting screwdriver that holds 6 bits securely in the handle. The handle is made from a bi-material texture for torque. Its ratcheting mechanism works in 3 different positions. The bits are made of chrome vanadium steel. It features a 3-position ratcheting mechanism which enables clockwise, counter clockwise and locked ratcheting positions. The quick release magnetic bit holder provides for fast and secure bit change capability. Bi-material textured handle for torque. Includes: 6 chrome vanadium (CRV) bits stored inside the handle for easy access. Dimensions (L x W x H): 11.8" x 3.6" x 1.3" Made in Taiwan\
+                                </span>'}
                     }, {
                     "disabled": true
                     }, {
@@ -65,13 +54,13 @@ initObj {
                     item: this.model,
                     initObj: this.initObj
                 });
-                console.log("ClampMeterUEIDL479 added to Inventory");
+                console.log("FatMaxScrewdriver added to Inventory");
             } else {
                 this.context.vLabScene.add(this.model);
                 if (this.pos) {
                     this.model.position.copy(this.pos);
                 } else {
-                    console.error("ClampMeterUEIDL479 is not set");
+                    console.error("FatMaxScrewdriver is not set");
                 }
                 if (this.initObj.manipulation) {
                     this.manipulationControl = new TransformControls(this.context.defaultCamera, this.context.webGLRenderer.domElement);

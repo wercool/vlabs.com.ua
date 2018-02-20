@@ -772,11 +772,15 @@ export default class VLab {
                             })
                             .onComplete(() => { 
                                 if (!touch) {
-                                    this.showObjectSpecificCircularMenu();
+                                    setTimeout(()=>{
+                                        this.showObjectSpecificCircularMenu();
+                                    }, 500);
                                 } else {
                                     if (this.selectedObject) {
                                         if (this.selectedObject == this.hoveredObject) {
-                                            this.showObjectSpecificCircularMenu();
+                                            setTimeout(()=>{
+                                                this.showObjectSpecificCircularMenu();
+                                            }, 500);
                                             this.tooltipHide();
                                         }
                                     }
@@ -1246,11 +1250,44 @@ export default class VLab {
         document.getElementById("back").style.display = 'none';
     }
 
+    takeObjectToInventory() {
+        if (this.inventory) {
+
+            var self = this;
+            this.selectedObject.takenRotation.stop();
+            this.selectedObject.traverse(function(node) {
+                if (node.type === "Mesh") {
+                    if (node.name !== self.selectedObject.name + "_SELECTION") {
+                        if (node.material.type === "MeshPhongMaterial") {
+                            node.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+                        }
+                        if (node.material.transparent) {
+                            node.material.transparent = false;
+                            node.material.opacity = 1.0;
+                        }
+                    } else {
+                        node.visible = false;
+                    }
+                }
+            });
+
+            this.selectedObject.rotationX = 0.0;
+            this.selectedObject.rotationY = 0.0;
+            this.selectedObject.rotationZ = 0.0;
+            this.selectedObject.position.set(0,0,0);
+
+            this.inventory.addItem({
+                item: this.selectedObject,
+                initObj: this.selectedObject.userData["initObj"]
+            });
+        }
+    }
+
     takeObject() {
         if(Object.keys(this.takenObjects).length > 3) {
             iziToast.info({
                 title: 'Info',
-                message: 'You can carry maximum 3 objects',
+                message: 'You can carry maximum 3 objects at once',
                 timeout: 3000
             });
             return;
