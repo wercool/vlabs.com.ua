@@ -1278,7 +1278,8 @@ export default class VLab {
 
             this.inventory.addItem({
                 item: this.selectedObject,
-                initObj: this.selectedObject.userData["initObj"]
+                initObj: this.selectedObject.userData["initObj"],
+                vLabItem: this.selectedObject.userData["VLabItem"]
             });
         }
     }

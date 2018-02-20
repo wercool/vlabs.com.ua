@@ -440,7 +440,7 @@ module.exports = function( THREE ) {
 
 		function handleMouseDownPan( event ) {
 
-			//console.log( 'handleMouseDownPan' );
+			// console.log( 'handleMouseDownPan', event.clientX, event.clientY );
 
 			panStart.set( event.clientX, event.clientY );
 

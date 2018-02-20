@@ -1,6 +1,7 @@
 import * as THREE           from 'three';
-import VLab from '../../vlabs.core/vlab';
-import Inventory from '../../vlabs.items/inventory';
+import * as TWEEN           from 'tween.js';
+import VLab                 from '../../vlabs.core/vlab';
+import Inventory            from '../../vlabs.items/inventory';
 
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
 
@@ -27,6 +28,8 @@ initObj {
        self = this;
 
        this.initialize();
+
+       this.prevTime = 0;
     }
 
     initialize() {
@@ -46,6 +49,7 @@ initObj {
             this.accessableInteractiveELements = this.interactiveElements.concat(this.interactiveSuppressElements);
 
             this.boschScrewdriverButtonPressSound = new Audio('/vlabs.items/boshScrewdriver/sounds/sound1.mp3');
+            this.boschScrewdriverButtonPressSoundTime = 0;
 
             this.context.nature.objectMenus[this.model.name] = {
                 "en": [{
@@ -125,6 +129,19 @@ initObj {
         } else {
             this.initObj.inventory.webGLContainer.style.cursor = 'auto';
         }
+
+        if (self.boschScrewdriverButtonPressed) {
+            this.boschScrewdriverButtonPressSoundTime += (time - this.prevTime) / 1000;
+            if (this.boschScrewdriverButtonPressSoundTime > 4.2) {
+                self.boschScrewdriverButtonPressSound.currentTime = 0.3;
+                this.boschScrewdriverButtonPressSoundTime = 0;
+            }
+            self.model.getObjectByName("boschScrewdriverBitHolder").rotateZ(self.boschScrewdriverBitHolderSpeed);
+        }
+
+        TWEEN.update(time);
+
+        this.prevTime = time;
     }
 
     mouseUpHandler(event) {
@@ -135,16 +152,30 @@ initObj {
         if (!self.boschScrewdriverButtonPressed) {
             console.log("boschScrewdriverButtonPressed");
             self.boschScrewdriverButtonPressed = true;
+            self.model.getObjectByName("boschScrewdriverButton").rotation.y = THREE.Math.degToRad(7);
+            self.boschScrewdriverButtonPressSoundTime = 0;
+            self.boschScrewdriverButtonPressSound.currentTime = 0;
             self.boschScrewdriverButtonPressSound.play();
+            if (self.boschScrewdriverBitHolderStopTween) self.boschScrewdriverBitHolderStopTween.stop();
+            self.boschScrewdriverBitHolderSpeed = 0.6;
         }
     }
 
     boschScrewdriverButtonRelease() {
         if (self.boschScrewdriverButtonPressed) {
             console.log("boschScrewdriverButtonReleased");
-            self.boschScrewdriverButtonPressSound.pause();
-            self.boschScrewdriverButtonPressSound.currentTime = 0;
+            self.boschScrewdriverButtonPressSound.currentTime = 4.05;
+            self.model.getObjectByName("boschScrewdriverButton").rotation.y = THREE.Math.degToRad(0);
+            self.boschScrewdriverButtonPressed = false;
+
+            self.boschScrewdriverBitHolderStopTween = new TWEEN.Tween(self)
+            .to({ boschScrewdriverBitHolderSpeed: 0.0 }, 2000)
+            .easing(TWEEN.Easing.Cubic.Out)
+            .onUpdate(() => { 
+                self.model.getObjectByName("boschScrewdriverBitHolder").rotateZ(self.boschScrewdriverBitHolderSpeed);
+            })
+            .start();
+
         }
-        self.boschScrewdriverButtonPressed = false;
     }
 }

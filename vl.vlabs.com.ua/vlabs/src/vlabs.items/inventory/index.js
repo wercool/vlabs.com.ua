@@ -57,10 +57,11 @@ export default class Inventory {
             });
 
             this.scene = new THREE.Scene();
-            this.defaultCamera = new THREE.PerspectiveCamera(70, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.1, 200);
+            this.defaultCamera = new THREE.PerspectiveCamera(70, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.01, 5.0);
 
-            this.defaultCameraControls = new OrbitControls(this.defaultCamera, this.webGLContainer, new THREE.Vector3(0, 0, 0.35));
-            this.defaultCameraControls.minDistance = 0.2;
+            this.defaultCameraControls = new OrbitControls(this.defaultCamera, this.webGLContainer, new THREE.Vector3(0, 0.2, 0.25));
+            this.defaultCameraControls.enablePan = true;
+            this.defaultCameraControls.minDistance = 0.1;
             this.defaultCameraControls.maxDistance = 0.35;
             this.defaultCameraControls.maxPolarAngle = Math.PI;
             this.defaultCameraControls.minPolarAngle = 0.0;
@@ -177,8 +178,6 @@ export default class Inventory {
     }
 
     setCurrentItem(itemObj) {
-        this.defaultCameraControls.target = itemObj.item.position;
-
         var currentItemIdx = 0;
         for (var itemName in this.items) {
             if (itemName !== itemObj.item.name) {
@@ -210,7 +209,8 @@ export default class Inventory {
         }
 
         this.defaultCameraControls.initialState = true;
-        this.defaultCameraControls.object.position.copy(new THREE.Vector3(0, 0.2, 0.35));
+        this.defaultCameraControls.object.position.copy(new THREE.Vector3(0, 0.2, 0.25));
+        this.defaultCameraControls.target.copy(itemObj.item.position);
     }
 
     setPrevItem() {
@@ -260,12 +260,14 @@ export default class Inventory {
     }
 
     onMouseDown(event) {
+        event.preventDefault();
         var webGLContainerOffset = DOMUtils.cumulativeDOMElementOffset(this.webGLContainer);
         this.mouseCoordsRaycaster.set(((event.clientX - webGLContainerOffset.left) / this.webGLContainer.clientWidth) * 2 - 1, 1 -((event.clientY - webGLContainerOffset.top) / this.webGLContainer.clientHeight) * 2);
         this.mouseDown = true;
     }
 
     onMouseUp(event) {
+        event.preventDefault();
         this.mouseDown = false;
         var itemsKeys = Object.keys(this.items);
         if (this.items[itemsKeys[this.currentItemIdx]].vLabItem) {
