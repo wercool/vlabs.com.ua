@@ -75,7 +75,9 @@ class VlabHVACBase extends VLab {
             new THREE.Vector3(0.0, -0.04, 0.0), 
             new THREE.Vector3(0.1, 0.1, 0.1),
             Math.PI,
-            0xfff495);
+            0xfff495,
+            true,
+            0.35);
 
         this.addZoomHelper(
             "bryantB225B-heatPumpCompressorElectricConnector", 
