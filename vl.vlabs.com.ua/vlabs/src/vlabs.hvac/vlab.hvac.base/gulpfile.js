@@ -93,6 +93,7 @@ gulp.task("server", function(){
         root : "../../../build",
         livereload : false,
         port : 9001,
+        // port : 5555,
         host: "0.0.0.0",
         middleware: function() {
             return [cors()];
