@@ -55,7 +55,7 @@
                 opacity: 0.2
             });
 
-            ValterLabRef = new ValterLab("webGLContainer", {{#if test}}true{{else}}false{{/if}});
+            ValterLabRef = new ValterLab("webGLContainer", false);
 
             executeScriptDialog = $("#execute-script-dialog").dialog({
                 autoOpen: false,
@@ -78,7 +78,6 @@
 </body>
     <div id="execute-script-dialog" title="Execute Script">
 <textarea id="scriptText" style="width:95%; height:95%">
-{{#if test}}
 Navigate_-1.85_2.5
 Navigate_-1.85_1.2
 BodyYaw_-10.0
@@ -280,6 +279,5 @@ BodyTilt_0.0
 RightShoulder_0.0
 RightLimb_0.0
 RightForearmRoll_90.0
-{{/if}}
 </textarea></div>
 </html>
