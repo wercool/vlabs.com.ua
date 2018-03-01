@@ -8,10 +8,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 
 @Configuration
 public class ConnectorConfig {
+
+
+  @Value("${vlabs.redirector.http}")
+  private int httpPort;
+
+  @Value("${vlabs.redirector.https}")
+  private int httpsPort;
 
   @Autowired
   private Environment environment;
@@ -43,9 +51,9 @@ public class ConnectorConfig {
   private Connector redirectConnector() {
     Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
     connector.setScheme("http");
-    connector.setPort(8090);
+    connector.setPort(httpPort);
     connector.setSecure(false);
-    connector.setRedirectPort(8443);
+    connector.setRedirectPort(httpsPort);
 
     return connector;
   }
