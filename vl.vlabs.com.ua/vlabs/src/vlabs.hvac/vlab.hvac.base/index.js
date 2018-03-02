@@ -119,6 +119,16 @@ class VlabHVACBase extends VLab {
             true,
             0.25);
 
+        this.addZoomHelper(
+            "contactror_proxy", 
+            undefined, 
+            new THREE.Vector3(0.0, 0.0, 0.1), 
+            new THREE.Vector3(0.1, 0.1, 0.1),
+            Math.PI,
+            0xfff495,
+            true,
+            0.25);
+
         this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
         this.heatPumpFrameCap_manipulationControl.setSize(0.5);
         this.vLabScene.add(this.heatPumpFrameCap_manipulationControl);
