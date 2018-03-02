@@ -20,6 +20,8 @@
         "bryantB225B-heatPumpFrame",
         "bryantB225B-heatPumpFanGrid",
         "bryantB225B-heatPumpFrameCap",
+        "bryantB225B-heatPumpFrameServicePanel",
+        "bryantB225B-heatPumpFrameElectricalPanel",
         "bryantB225B-heatPumpFrameServicePanel"
     ],
     "interactiveObjects": [],
