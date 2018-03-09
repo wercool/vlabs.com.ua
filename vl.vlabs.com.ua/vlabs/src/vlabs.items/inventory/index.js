@@ -48,6 +48,8 @@ export default class Inventory {
             this.webGLContainer.addEventListener("mousemove", this.onMouseMove.bind(this), false);
             this.webGLContainer.addEventListener("mousedown", this.onMouseDown.bind(this), false);
             this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
+            this.webGLContainer.addEventListener("touchstart", this.onTouchStart.bind(this), false);
+            this.webGLContainer.addEventListener("touchend", this.onTouchEnd.bind(this), false);
 
             this.webGLContainer.appendChild(this.webGLRenderer.domElement);
             this.webGLRenderer.domElement.addEventListener('contextmenu', function(event) {
@@ -268,6 +270,20 @@ export default class Inventory {
 
     onMouseUp(event) {
         event.preventDefault();
+        this.releaseGesture();
+    }
+
+    onTouchStart(event) {
+        var webGLContainerOffset = DOMUtils.cumulativeDOMElementOffset(this.webGLContainer);
+        this.mouseCoordsRaycaster.set(((event.touches[0].clientX - webGLContainerOffset.left) / this.webGLContainer.clientWidth) * 2 - 1, 1 -((event.touches[0].clientY - webGLContainerOffset.top) / this.webGLContainer.clientHeight) * 2);
+        this.mouseDown = true;
+    }
+
+    onTouchEnd(event) {
+        this.releaseGesture();
+    }
+
+    releaseGesture() {
         this.mouseDown = false;
         var itemsKeys = Object.keys(this.items);
         if (this.items[itemsKeys[this.currentItemIdx]].vLabItem) {
