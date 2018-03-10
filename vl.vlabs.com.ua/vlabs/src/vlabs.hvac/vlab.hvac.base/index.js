@@ -3,7 +3,7 @@ import VLab                 from '../../vlabs.core/vlab';
 import BoshScrewdriver      from '../../vlabs.items/boshScrewdriver';
 import ClampMeterUEIDL479   from '../../vlabs.items/clampMeterUEIDL479';
 import FatMaxScrewdriver    from '../../vlabs.items/fatMaxScrewdriver';
-import Inventory            from '../../vlabs.items/inventory';
+import Inventory            from '../../vlabs.core/inventory';
 
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
 

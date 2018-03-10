@@ -53,6 +53,7 @@ html, body {
     width: 48px;
     height: 48px;
     background-image: url("../img/fullscreen.png");
+    display: none;
 }
 
 #resetview {
@@ -63,6 +64,7 @@ html, body {
     width: 48px;
     height: 48px;
     background-image: url("../img/reset-view.png");
+    display: none;
 }
 
 #back {
@@ -167,6 +169,7 @@ html, body {
     left: calc(50% - 24px);
     bottom: 5pt;
     cursor: pointer;
+    z-index: 2e12;
 }
 
 #inventoryInfoBox {

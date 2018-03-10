@@ -29,6 +29,7 @@ export default class Inventory {
             this.toolboxBtn.id = 'toolbox';
             document.getElementById("webGLContainer").appendChild(this.toolboxBtn);
             this.toolboxBtn.addEventListener("mousedown", this.activate.bind(this), false);
+            this.toolboxBtn.addEventListener("touchstart", this.activate.bind(this), false);
 
             this.container = document.createElement('div');
             this.container.id = 'inventoryContainer';
@@ -126,6 +127,9 @@ export default class Inventory {
                 this.takeButton.style.display = 'none';
             }
 
+            document.getElementById("fullscreen").style.display = 'none';
+            document.getElementById("resetview").style.display = 'none';
+
             this.paused = false;
             this.resiezeWebGLContainer();
             this.render();
@@ -169,6 +173,9 @@ export default class Inventory {
         this.context.paused = false;
         this.context.statsTHREE.domElement.style.display = 'block';
         document.getElementById("toolbox").style.display = 'block';
+
+        document.getElementById("fullscreen").style.display = 'block';
+        document.getElementById("resetview").style.display = 'block';
 
         console.log("Inventory closed");
     }
@@ -274,12 +281,16 @@ export default class Inventory {
     }
 
     onTouchStart(event) {
+        event.preventDefault();
+        event.stopPropagation();
         var webGLContainerOffset = DOMUtils.cumulativeDOMElementOffset(this.webGLContainer);
         this.mouseCoordsRaycaster.set(((event.touches[0].clientX - webGLContainerOffset.left) / this.webGLContainer.clientWidth) * 2 - 1, 1 -((event.touches[0].clientY - webGLContainerOffset.top) / this.webGLContainer.clientHeight) * 2);
         this.mouseDown = true;
     }
 
     onTouchEnd(event) {
+        event.preventDefault();
+        event.stopPropagation();
         this.releaseGesture();
     }
 

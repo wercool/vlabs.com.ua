@@ -1,7 +1,7 @@
 import * as THREE           from 'three';
 import * as TWEEN           from 'tween.js';
 import VLab                 from '../../vlabs.core/vlab';
-import Inventory            from '../../vlabs.items/inventory';
+import Inventory            from '../../vlabs.core/inventory';
 
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
 

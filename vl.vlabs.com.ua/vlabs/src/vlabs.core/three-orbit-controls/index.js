@@ -798,6 +798,7 @@ module.exports = function( THREE ) {
 
 			scope.active = true;
 			scope.staticMode = false;
+			scope.initialState = false;
 
 			switch ( event.touches.length ) {
 

@@ -285,7 +285,12 @@ export default class VLab {
 
         document.getElementById("fullscreen").addEventListener("mouseup", this.toggleFullscreen.bind(this), false);
         document.getElementById("resetview").addEventListener("mouseup", this.resetView.bind(this), false);
+        document.getElementById("fullscreen").addEventListener("touchend", this.toggleFullscreen.bind(this), false);
+        document.getElementById("resetview").addEventListener("touchend", this.resetView.bind(this), false);
         // this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
+
+        document.getElementById("fullscreen").style.display = 'block';
+        document.getElementById("resetview").style.display = 'block';
 
         this.setInteractiveObjects();
         this.setReponsiveObjects();
@@ -482,11 +487,13 @@ export default class VLab {
     }
 
     onTouchStart(event) {
+        event.preventDefault();
         this.mouseCoords.set(event.touches[0].clientX, event.touches[0].clientY);
         this.mouseCoordsRaycaster.set((event.touches[0].clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.touches[0].clientY / this.webGLContainer.clientHeight) * 2);
     }
 
     onTouchEnd(event) {
+        event.preventDefault();
         this.toggleSelectedObject(true);
         this.helpersTrigger();
         this.executeActions(true);
@@ -1069,6 +1076,7 @@ export default class VLab {
                                     target:  targetPos });
 
         document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
+        document.getElementById("back").removeEventListener("touchend", this.resetView);
         document.getElementById("back").style.display = 'none';
         if (this.helpers.zoomHelper.selected) this.helpers.zoomHelper.selected.visible = true;
     }
@@ -1192,7 +1200,9 @@ export default class VLab {
                 .onComplete(() => { 
                     document.getElementById("back").style.display = 'block';
                     document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
+                    document.getElementById("back").removeEventListener("touchend", this.resetView);
                     document.getElementById("back").addEventListener("mouseup", this.resetZoomView.bind(this), false);
+                    document.getElementById("back").addEventListener("touchend", this.resetZoomView.bind(this), false);
                  })
                 .start();
              })
@@ -1221,26 +1231,13 @@ export default class VLab {
                     this.defaultCameraControls.update();
                 })
                 .onComplete(() => {
-                    // new TWEEN.Tween(this.defaultCameraControls.target)
-                    // .to({ x: prevTarget.x, y: prevTarget.y, z: prevTarget.z }, 250)
-                    // .easing(TWEEN.Easing.Cubic.InOut)
-                    // .onUpdate(() => { 
-                    //     this.defaultCameraControls.update();
-                    // })
-                    // .onComplete(() => {
-                    //     this.defaultCameraControls.enableZoom = true;
-                    //     this.defaultCameraControls.enablePan = true;
-                    //     this.defaultCameraControls.zoomMode = false;
-                    //     this.defaultCameraControls.backState = undefined;
-                    //     document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
-                    //     this.helpers.zoomHelper.selected.visible = true;
-                    // })
-                    // .start();
                     this.defaultCameraControls.enableZoom = true;
                     this.defaultCameraControls.enablePan = true;
                     this.defaultCameraControls.zoomMode = false;
                     this.defaultCameraControls.backState = undefined;
                     document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
+                    document.getElementById("back").removeEventListener("touchend", this.resetView);
+
                     this.helpers.zoomHelper.selected.visible = true;
                  })
                 .start();
@@ -1382,7 +1379,7 @@ export default class VLab {
                 this.takenObjectsToResponsiveObjectsArrow.setColor(new THREE.Color(0x00ff00));
                 this.takenObjectsToResponsiveObjectsArrow.position.copy(takenObjectPosition);
                 this.takenObjectsToResponsiveObjectsArrow.setDirection(hoveredResponsiveObjectDirection);
-                this.takenObjectsToResponsiveObjectsArrow.setLength(hoveredResponsiveObjectDirectionVectorLength, 0.2, 0.01);
+                this.takenObjectsToResponsiveObjectsArrow.setLength(hoveredResponsiveObjectDirectionVectorLength, 0.001, 0.0001);
                 this.helpers.placeHelper.sprite.position.copy(this.hoveredResponsiveObject.intersectionPoint);
                 this.helpers.placeHelper.sprite.position.y += 0.065; 
                 this.helpers.placeHelper.sprite.visible = true;
