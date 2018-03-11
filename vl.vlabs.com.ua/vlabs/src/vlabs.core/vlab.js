@@ -313,6 +313,9 @@ export default class VLab {
 
         this.resetView();
 
+        this.defaultAudioListener = new THREE.AudioListener();
+        this.defaultCamera.add(this.defaultAudioListener);
+
         dispatchEvent(this.activatedEvent);
     }
 

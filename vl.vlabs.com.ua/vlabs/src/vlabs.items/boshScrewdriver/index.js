@@ -48,8 +48,17 @@ initObj {
 
             this.accessableInteractiveELements = this.interactiveElements.concat(this.interactiveSuppressElements);
 
-            this.boschScrewdriverButtonPressSound = new Audio('/vlabs.items/boshScrewdriver/sounds/sound1.mp3');
+
+            // Sounds
+            this.boschScrewdriverButtonPressSound = new THREE.Audio(this.context.defaultAudioListener);
+            // load a sound and set it as the Audio object's buffer
+            var audioLoader = new THREE.AudioLoader();
+            audioLoader.load('/vlabs.items/boshScrewdriver/sounds/sound1.mp3', function(buffer) {
+                self.boschScrewdriverButtonPressSound.setBuffer(buffer);
+            });
             this.boschScrewdriverButtonPressSoundTime = 0;
+
+
 
             this.context.nature.objectMenus[this.model.name] = {
                 "en": [{
@@ -133,7 +142,9 @@ initObj {
         if (self.boschScrewdriverButtonPressed) {
             this.boschScrewdriverButtonPressSoundTime += (time - this.prevTime) / 1000;
             if (this.boschScrewdriverButtonPressSoundTime > 4.2) {
-                self.boschScrewdriverButtonPressSound.currentTime = 0.3;
+                self.boschScrewdriverButtonPressSound.pause();
+                self.boschScrewdriverButtonPressSound.offset = 0.3;
+                self.boschScrewdriverButtonPressSound.play();
                 this.boschScrewdriverButtonPressSoundTime = 0;
             }
             self.model.getObjectByName("boschScrewdriverBitHolder").rotateZ(self.boschScrewdriverBitHolderSpeed);
@@ -154,8 +165,8 @@ initObj {
             self.boschScrewdriverButtonPressed = true;
             self.model.getObjectByName("boschScrewdriverButton").rotation.y = THREE.Math.degToRad(7);
             self.boschScrewdriverButtonPressSoundTime = 0;
-            self.boschScrewdriverButtonPressSound.currentTime = 0;
-            self.boschScrewdriverButtonPressSound.play();
+            self.boschScrewdriverButtonPressSound.offset = 0;
+            if (!self.boschScrewdriverButtonPressSound.isPlaying) self.boschScrewdriverButtonPressSound.play();
             if (self.boschScrewdriverBitHolderStopTween) self.boschScrewdriverBitHolderStopTween.stop();
             self.boschScrewdriverBitHolderSpeed = 0.6;
         }
@@ -164,7 +175,9 @@ initObj {
     boschScrewdriverButtonRelease() {
         if (self.boschScrewdriverButtonPressed) {
             console.log("boschScrewdriverButtonReleased");
-            self.boschScrewdriverButtonPressSound.currentTime = 4.05;
+            self.boschScrewdriverButtonPressSound.pause();
+            self.boschScrewdriverButtonPressSound.offset = 4.05;
+            self.boschScrewdriverButtonPressSound.play();
             self.model.getObjectByName("boschScrewdriverButton").rotation.y = THREE.Math.degToRad(0);
             self.boschScrewdriverButtonPressed = false;
 
