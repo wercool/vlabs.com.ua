@@ -1,0 +1,32 @@
+=================Blender fixing opacity export============================
+
+https://github.com/mrdoob/three.js/pull/11167/commits/6cb9db1878e6a442c78e7bd66dab43adb02cf93a
+
+[exporters/blender/addons/io_three/exporter/material.py]
+----------------
+         if api.material.transparent(self.node):
+              self[constants.TRANSPARENT] = True
+ +            self[constants.OPACITY] = api.material.opacity(self.node)
+  
+          if api.material.double_sided(self.node):
+              self[constants.SIDE] = constants.SIDE_DOUBLE
+----------------
+
+=================Blender export to Threejs.json bug, objects has been rotated #12806============================
+[exporters/blender/addons/io_three/exporter/api/mesh.py]
+def flip_axes (a, dir=XYZ):
+    """
+
+    :function to swap vectors:
+
+    """
+
+#    if dir == XZ_Y:
+#        a = (a[0], a[2], -a[1])
+#    elif dir == X_ZY:
+#        a = (a[0], -a[2], a[1])
+#    elif dir == _XY_Z:
+#        a = (-a[0], -a[1], a[2])
+
+    return (a[0], a[1], a[2])
+
