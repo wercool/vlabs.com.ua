@@ -5,6 +5,8 @@ import VLabAssistant        from '../vlabs.items/vlab.assistant';
 import SpriteFireEffect     from '../vlabs.items/sprite-fire-effect';
 import ParticleFireEffect   from '../vlabs.items/particle-fire-effect';
 
+import DetailedView         from '../vlabs.core/detailed-view';
+
 class VlabBase extends VLab {
     constructor(initObj = {}) {
         super(initObj);
@@ -107,7 +109,14 @@ class VlabBase extends VLab {
                 pos: this.vLabScene.getObjectByName("CubeResponosive").position
             });
 
-            console.log("initialized");
+            this.DetailedView_testCone = new DetailedView({
+                context: this,
+                targetObjectName: "testCone",
+                scale: new THREE.Vector3(0.2, 0.2, 0.2),
+                positionDeltas: new THREE.Vector3(0.0, 0.0, 0.025)
+            });
+
+            console.log("VLab Base initialized");
         }).catch(error => {
             console.error(error);
             this.showErrorMessage(error);

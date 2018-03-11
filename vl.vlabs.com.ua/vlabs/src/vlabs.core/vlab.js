@@ -50,6 +50,14 @@ export default class VLab {
         this.progressBar = undefined;
         this.progressBarPrependText = "";
 
+        this.webGLContainerEventsSubcribers = {
+            mousemove: {},
+            mousedown: {},
+            mouseup: {},
+            touchstart: {},
+            touchend: {}
+        };
+
         this.helpers = {
             "zoomHelper": {
                 "url": "../vlabs.assets/img/magnifier.png",
@@ -268,9 +276,9 @@ export default class VLab {
             this.setTHREEStats();
         }
 
-        window.addEventListener("mouseup", this.onMouseUpWindow.bind(this), false);
         this.webGLContainer.addEventListener("mousemove", this.onMouseMove.bind(this), false);
         this.webGLContainer.addEventListener("mousedown", this.onMouseDown.bind(this), false);
+        window.addEventListener("mouseup", this.onMouseUpWindow.bind(this), false);
         this.webGLContainer.addEventListener("touchstart", this.onTouchStart.bind(this), false);
         this.webGLContainer.addEventListener("touchend", this.onTouchEnd.bind(this), false);
 
@@ -487,6 +495,10 @@ export default class VLab {
         if (this.defaultCameraControls.type === 'orbit') {
             this.helpersTrigger();
         }
+
+        for (var mouseUpEventSubscriberName in this.webGLContainerEventsSubcribers.mouseup) {
+            this.webGLContainerEventsSubcribers.mouseup[mouseUpEventSubscriberName].call(this, event);
+        }
     }
 
     onTouchStart(event) {
@@ -500,6 +512,10 @@ export default class VLab {
         this.toggleSelectedObject(true);
         this.helpersTrigger();
         this.executeActions(true);
+
+        for (var touchEndEventSubscriberName in this.webGLContainerEventsSubcribers.touchend) {
+            this.webGLContainerEventsSubcribers.touchend[touchEndEventSubscriberName].call(this, event);
+        }
     }
 
     onPointerLockChanged(event) {
