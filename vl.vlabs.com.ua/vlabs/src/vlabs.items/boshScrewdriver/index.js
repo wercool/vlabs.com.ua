@@ -74,7 +74,7 @@ initObj {
                     "icon": ["fa fa-info"],
                     "click": "showInfo",
                     "args": {   "title": "Bosch IXO III 3.6-Volt Multipurpose Screwdriver",
-                                "html": '<div style="text-align: center; padding-top: 5pt;"><iframe width="90%" height="300" src="https://www.youtube.com/embed/VXADzvSTosc" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>'}
+                                "html": '<div style="text-align: center; padding-top: 5pt;"><iframe width="90%" height="300" src="https://www.youtube.com/embed/VXADzvSTosc" frameborder="0" encrypted-media" allowfullscreen></iframe></div>'}
                     }, {
                     "disabled": true
                     }, {
@@ -108,15 +108,6 @@ initObj {
                     this.context.addSelectionHelperToObject(this.model);
                     this.context.nature.interactiveObjects.push(this.model.name);
                     this.context.setInteractiveObjects();
-    
-                    this.context.addZoomHelper(this.model.name, 
-                                                this.model, 
-                                                new THREE.Vector3(-0.1, 0.0, 0.1), 
-                                                new THREE.Vector3(0.1, 0.1, 0.1),
-                                                Math.PI * 2,
-                                                0xffffff,
-                                                true,
-                                                0.35);
                 }
             }
         }).catch(error => {
@@ -125,67 +116,70 @@ initObj {
     }
 
     redererFrameEventHandler(time) {
-        this.initObj.inventory.iteractionRaycaster.setFromCamera(this.initObj.inventory.mouseCoordsRaycaster, this.initObj.inventory.defaultCamera);
-        var interactionObjectIntersects = this.initObj.inventory.iteractionRaycaster.intersectObjects(this.accessableInteractiveELements);
+        self.initObj.inventory.iteractionRaycaster.setFromCamera(self.initObj.inventory.mouseCoordsRaycaster, self.initObj.inventory.defaultCamera);
+        var interactionObjectIntersects = self.initObj.inventory.iteractionRaycaster.intersectObjects(self.accessableInteractiveELements);
         if (interactionObjectIntersects.length > 0) {
-            this.hoveredObject = interactionObjectIntersects[0].object;
-            if (this.hoveredObject.mousePressHandler) {
-                this.initObj.inventory.webGLContainer.style.cursor = 'pointer';
-                if (this.initObj.inventory.mouseDown) {
-                    this.hoveredObject.mousePressHandler.call();
+            self.hoveredObject = interactionObjectIntersects[0].object;
+            if (self.hoveredObject.mousePressHandler) {
+                self.initObj.inventory.webGLContainer.style.cursor = 'pointer';
+                if (self.initObj.inventory.mouseDown) {
+                    self.hoveredObject.mousePressHandler.call(self);
                 }
             }
         } else {
-            this.initObj.inventory.webGLContainer.style.cursor = 'auto';
+            self.initObj.inventory.webGLContainer.style.cursor = 'auto';
         }
 
         if (self.boschScrewdriverButtonPressed) {
-            this.boschScrewdriverButtonPressSoundTime += (time - this.prevTime) / 1000;
-            if (this.boschScrewdriverButtonPressSoundTime > 4.2) {
-                self.boschScrewdriverButtonPressSound.pause();
+            self.boschScrewdriverButtonPressSoundTime += (time - self.prevTime) / 1000;
+            if (self.boschScrewdriverButtonPressSoundTime > 4.2) {
+                self.boschScrewdriverButtonPressSound.stop();
                 self.boschScrewdriverButtonPressSound.offset = 0.3;
                 self.boschScrewdriverButtonPressSound.play();
-                this.boschScrewdriverButtonPressSoundTime = 0;
+                self.boschScrewdriverButtonPressSoundTime = 0;
             }
             self.model.getObjectByName("boschScrewdriverBitHolder").rotateZ(self.boschScrewdriverBitHolderSpeed);
         }
 
         TWEEN.update(time);
 
-        this.prevTime = time;
+        self.prevTime = time;
     }
 
     mouseUpHandler(event) {
-        self.boschScrewdriverButtonRelease();
+        self.boschScrewdriverButtonRelease.call(self);
     }
 
     boschScrewdriverButtonPress() {
-        if (!self.boschScrewdriverButtonPressed) {
+        if (!this.boschScrewdriverButtonPressed) {
+            this.boschScrewdriverButtonPressed = true;
             console.log("boschScrewdriverButtonPressed");
-            self.boschScrewdriverButtonPressed = true;
-            self.model.getObjectByName("boschScrewdriverButton").rotation.y = THREE.Math.degToRad(7);
-            self.boschScrewdriverButtonPressSoundTime = 0;
-            self.boschScrewdriverButtonPressSound.offset = 0;
-            if (!self.boschScrewdriverButtonPressSound.isPlaying) self.boschScrewdriverButtonPressSound.play();
-            if (self.boschScrewdriverBitHolderStopTween) self.boschScrewdriverBitHolderStopTween.stop();
-            self.boschScrewdriverBitHolderSpeed = 0.6;
+            this.model.getObjectByName("boschScrewdriverButton").rotation.y = THREE.Math.degToRad(7);
+            this.boschScrewdriverButtonPressSoundTime = 0;
+            this.boschScrewdriverButtonPressSound.offset = 0;
+            this.boschScrewdriverButtonPressSound.play();
+            if (this.boschScrewdriverBitHolderStopTween) this.boschScrewdriverBitHolderStopTween.stop();
+            this.boschScrewdriverBitHolderSpeed = 0.6;
         }
     }
 
     boschScrewdriverButtonRelease() {
-        if (self.boschScrewdriverButtonPressed) {
+        if (this.boschScrewdriverButtonPressed) {
             console.log("boschScrewdriverButtonReleased");
-            self.boschScrewdriverButtonPressSound.pause();
-            self.boschScrewdriverButtonPressSound.offset = 4.05;
-            self.boschScrewdriverButtonPressSound.play();
-            self.model.getObjectByName("boschScrewdriverButton").rotation.y = THREE.Math.degToRad(0);
-            self.boschScrewdriverButtonPressed = false;
+            this.boschScrewdriverButtonPressed = false;
+            this.boschScrewdriverButtonPressSound.stop();
+            this.boschScrewdriverButtonPressSound.offset = 4.05;
+            this.boschScrewdriverButtonPressSound.play();
+            this.model.getObjectByName("boschScrewdriverButton").rotation.y = THREE.Math.degToRad(0);
 
-            self.boschScrewdriverBitHolderStopTween = new TWEEN.Tween(self)
+            this.boschScrewdriverBitHolderStopTween = new TWEEN.Tween(this)
             .to({ boschScrewdriverBitHolderSpeed: 0.0 }, 2000)
             .easing(TWEEN.Easing.Cubic.Out)
             .onUpdate(() => { 
-                self.model.getObjectByName("boschScrewdriverBitHolder").rotateZ(self.boschScrewdriverBitHolderSpeed);
+                this.model.getObjectByName("boschScrewdriverBitHolder").rotateZ(this.boschScrewdriverBitHolderSpeed);
+            })
+            .onComplete(() => {
+                this.boschScrewdriverButtonPressSound.stop();
             })
             .start();
 

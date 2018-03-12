@@ -15,14 +15,14 @@
     "showTHREEStats": true,
     "advancedSelectionHelper": true,
     "interactivesSuppressorsObjects": [
-        "bryantB225B-heatPumpFrontVentPanel", 
-        "bryantB225B-heatPumpLeftVentPanel",
-        "bryantB225B-heatPumpFrame",
-        "bryantB225B-heatPumpFanGrid",
-        "bryantB225B-heatPumpFrameCap",
-        "bryantB225B-heatPumpFrameServicePanel",
-        "bryantB225B-heatPumpFrameElectricalPanel",
-        "bryantB225B-heatPumpFrameServicePanel"
+        "bryantB225B_heatPumpFrontVentPanel", 
+        "bryantB225B_heatPumpLeftVentPanel",
+        "bryantB225B_heatPumpFrame",
+        "bryantB225B_heatPumpFanGrid",
+        "bryantB225B_heatPumpFrameCap",
+        "bryantB225B_heatPumpFrameServicePanel",
+        "bryantB225B_heatPumpFrameElectricalPanel",
+        "bryantB225B_heatPumpFrameServicePanel"
     ],
     "interactiveObjects": [],
     "responsiveObjects": [

@@ -31,6 +31,10 @@ export default class Inventory {
             this.toolboxBtn.addEventListener("mousedown", this.activate.bind(this), false);
             this.toolboxBtn.addEventListener("touchstart", this.activate.bind(this), false);
 
+            window.addEventListener('resize', function(event){
+                this.resiezeWebGLContainer();
+            }.bind(this));
+
             this.container = document.createElement('div');
             this.container.id = 'inventoryContainer';
             document.getElementById("overlayContainer").appendChild(this.container);

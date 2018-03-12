@@ -5,6 +5,7 @@ import VLabAssistant        from '../vlabs.items/vlab.assistant';
 import SpriteFireEffect     from '../vlabs.items/sprite-fire-effect';
 import ParticleFireEffect   from '../vlabs.items/particle-fire-effect';
 
+import ZoomHelper           from '../vlabs.core/zoom-helper';
 import DetailedView         from '../vlabs.core/detailed-view';
 
 class VlabBase extends VLab {
@@ -30,6 +31,15 @@ class VlabBase extends VLab {
     initialize() {
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
+
+            this.SuzanneZoomHelper = new ZoomHelper({
+                context: this,
+                targetObjectName: "Suzanne",
+                minDistance: 0.35,
+                positionDeltas: new THREE.Vector3(0.0, 0.0, 0.0), 
+                scale: new THREE.Vector3(0.1, 0.1, 0.1),
+                color: 0xfff495
+            });
 
             // VLab Items
             this.VLabsAssistant1 = new VLabAssistant({

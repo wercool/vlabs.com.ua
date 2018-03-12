@@ -4,16 +4,13 @@ import BoshScrewdriver      from '../../vlabs.items/boshScrewdriver';
 import ClampMeterUEIDL479   from '../../vlabs.items/clampMeterUEIDL479';
 import FatMaxScrewdriver    from '../../vlabs.items/fatMaxScrewdriver';
 import Inventory            from '../../vlabs.core/inventory';
+import ZoomHelper           from '../../vlabs.core/zoom-helper';
 
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
-
-var self = undefined;
 
 class VlabHVACBase extends VLab {
     constructor(initObj = {}) {
         super(initObj);
-
-        self = this;
 
         addEventListener("redererFrameEvent",  this.onRedererFrameEvent.bind(this), false);
         addEventListener("sceneCompleteEvent", this.onSceneCompleteEvent.bind(this), false);
@@ -69,89 +66,76 @@ class VlabHVACBase extends VLab {
 
     onActivatedEvent() {
 
-        this.addZoomHelper(
-            "frameCapBolt10", 
-            undefined, 
-            new THREE.Vector3(0.0, -0.04, 0.0), 
-            new THREE.Vector3(0.1, 0.1, 0.1),
-            Math.PI,
-            0xfff495,
-            true,
-            0.35);
-
-        this.addZoomHelper(
-            "bryantB225B-heatPumpCompressorElectricConnector", 
-            undefined, 
-            new THREE.Vector3(-0.05, 0.0, 0.05), 
-            new THREE.Vector3(0.1, 0.1, 0.1),
-            Math.PI,
-            0xfff495,
-            true,
-            0.35);
-
-        this.addZoomHelper(
-            "bryantB225B-reversingValve", 
-            undefined, 
-            new THREE.Vector3(-0.05, 0.0, 0.05), 
-            new THREE.Vector3(0.1, 0.1, 0.1),
-            Math.PI,
-            0xfff495,
-            true,
-            0.25);
-
-        this.addZoomHelper(
-            "suctionServiceValve", 
-            undefined, 
-            new THREE.Vector3(-0.05, 0.0, 0.05), 
-            new THREE.Vector3(0.1, 0.1, 0.1),
-            Math.PI,
-            0xfff495,
-            true,
-            0.35);
-
-        this.addZoomHelper(
-            "ACDisconnectClamp", 
-            undefined, 
-            new THREE.Vector3(0.0, 0.0, 0.1), 
-            new THREE.Vector3(0.1, 0.1, 0.1),
-            Math.PI,
-            0xfff495,
-            true,
-            0.25);
-
-        this.addZoomHelper(
-            "contactror_proxy", 
-            undefined, 
-            new THREE.Vector3(0.0, 0.0, 0.1), 
-            new THREE.Vector3(0.1, 0.1, 0.1),
-            Math.PI,
-            0xfff495,
-            true,
-            0.25);
-
-        this.addZoomHelper(
-            "controlBoard_proxy", 
-            undefined, 
-            new THREE.Vector3(0.0, 0.0, 0.1), 
-            new THREE.Vector3(0.1, 0.1, 0.1),
-            Math.PI,
-            0xfff495,
-            true,
-            0.25);
-
-        this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        this.heatPumpFrameCap_manipulationControl.setSize(0.5);
-        this.vLabScene.add(this.heatPumpFrameCap_manipulationControl);
-        this.heatPumpFrameCap_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B-heatPumpFrameCap"));
-
-        this.heatPumpFrameServicePanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        this.heatPumpFrameServicePanel_manipulationControl.setSize(0.5);
-        this.vLabScene.add(this.heatPumpFrameServicePanel_manipulationControl);
-        this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B-heatPumpFrameServicePanel"));
+        //VLab Core Items
 
         this.inventory = new Inventory({
             context: this
         });
+
+        this.frameCapBolt10ZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "frameCapBolt10",
+            minDistance: 0.35,
+            positionDeltas: new THREE.Vector3(-0.01, 0.01, -0.02), 
+            scale: new THREE.Vector3(0.1, 0.1, 0.1),
+            color: 0xfff495
+        });
+
+        this.bryantB225B_heatPumpCompressorElectricConnectorZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "bryantB225B_heatPumpCompressorElectricConnector",
+            minDistance: 0.35,
+            positionDeltas: new THREE.Vector3(-0.05, 0.0, 0.05), 
+            scale: new THREE.Vector3(0.1, 0.1, 0.1),
+            color: 0xfff495
+        });
+
+        this.bryantB225BReversingValveZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "bryantB225B_reversingValve",
+            minDistance: 0.25,
+            positionDeltas: new THREE.Vector3(-0.05, 0.0, 0.05), 
+            scale: new THREE.Vector3(0.1, 0.1, 0.1),
+            color: 0xfff495
+        });
+
+        this.suctionServiceValveZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "suctionServiceValve",
+            minDistance: 0.35,
+            positionDeltas: new THREE.Vector3(-0.05, 0.0, 0.05), 
+            scale: new THREE.Vector3(0.1, 0.1, 0.1),
+            color: 0xfff495
+        });
+
+        this.suctionServiceValveZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "ACDisconnectClamp",
+            minDistance: 0.25,
+            positionDeltas: new THREE.Vector3(0.0, 0.0, 0.1), 
+            scale: new THREE.Vector3(0.1, 0.1, 0.1),
+            color: 0xfff495
+        });
+
+        this.contactror_proxyZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "contactror_proxy",
+            minDistance: 0.25,
+            positionDeltas: new THREE.Vector3(0.0, 0.0, 0.1), 
+            scale: new THREE.Vector3(0.075, 0.075, 0.075),
+            color: 0xfff495
+        });
+
+        this.controlBoard_proxyZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "controlBoard_proxy",
+            minDistance: 0.25,
+            positionDeltas: new THREE.Vector3(0.0, 0.0, 0.05), 
+            scale: new THREE.Vector3(0.075, 0.075, 0.075),
+            color: 0xfff495
+        });
+
+        //VLab Items
 
         this.BoshScrewdriver = new BoshScrewdriver({
             context: this,
@@ -179,6 +163,17 @@ class VlabHVACBase extends VLab {
             interactive: false,
             inventory: this.inventory
         });
+
+        // Misc helpers
+        this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        this.heatPumpFrameCap_manipulationControl.setSize(0.5);
+        this.vLabScene.add(this.heatPumpFrameCap_manipulationControl);
+        this.heatPumpFrameCap_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameCap"));
+
+        this.heatPumpFrameServicePanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        this.heatPumpFrameServicePanel_manipulationControl.setSize(0.5);
+        this.vLabScene.add(this.heatPumpFrameServicePanel_manipulationControl);
+        this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameServicePanel"));
     }
 
     onRedererFrameEvent(event) {

@@ -71,11 +71,11 @@ html, body {
     bottom: 10px;
     position: absolute;
     cursor: pointer;
-    width: 128px;
-    height: 128px;
+    width: 64px;
+    height: 64px;
     left: 50%;
     right: 25%;
-    margin-left:-64px;
+    margin-left:-32px;
     background-image: url("../img/back.png");
     display: none;
 }

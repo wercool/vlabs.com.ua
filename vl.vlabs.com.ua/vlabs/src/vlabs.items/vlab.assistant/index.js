@@ -38,11 +38,11 @@ initObj {
             this.context.nature.interactiveObjects.push(this.model.name);
             this.context.setInteractiveObjects();
 
-            this.context.addZoomHelper("VlabsAssistantDisplay", 
-                                       this.model, 
-                                       new THREE.Vector3(-0.025, 0.0 ,0.1), 
-                                       new THREE.Vector3(0.2, 0.2, 0.2),
-                                       Math.PI);
+            // this.context.addZoomHelper("VlabsAssistantDisplay", 
+            //                            this.model, 
+            //                            new THREE.Vector3(-0.025, 0.0 ,0.1), 
+            //                            new THREE.Vector3(0.2, 0.2, 0.2),
+            //                            Math.PI);
         }).catch(error => {
             console.error(error);
         });

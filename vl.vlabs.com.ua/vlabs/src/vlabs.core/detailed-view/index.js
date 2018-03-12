@@ -4,8 +4,6 @@ import * as DOMUtils            from '../../vlabs.core/utils/dom.utils.js';
 
 var OrbitControls           = require('../../vlabs.core/three-orbit-controls/index')(THREE);
 
-var self = undefined;
-
 export default class DetailedView {
     /*
     initObj {
@@ -19,7 +17,7 @@ export default class DetailedView {
            this.mouseCoordsRaycaster = new THREE.Vector2();
            this.iteractionRaycaster = new THREE.Raycaster();
 
-           self = this;
+           this.context = this.context;
 
            var textureLoader = new THREE.TextureLoader();
            return Promise.all([
@@ -66,37 +64,46 @@ export default class DetailedView {
             if (this.initObj.parent) {
                 this.targetObject = this.initObj.parent.getObjectByName(this.initObj.targetObjectName);
             } else {
-                this.targetObject = this.initObj.context.vLabScene.getObjectByName(this.initObj.targetObjectName);
+                this.targetObject = this.context.vLabScene.getObjectByName(this.initObj.targetObjectName);
             }
 
             this.targetObject.add(this.handlerSprite);
 
-            this.initObj.context.webGLContainerEventsSubcribers.mouseup[this.initObj.targetObjectName + "vLabSceneMouseUp"] = this.vLabSceneMouseUp;
-            this.initObj.context.webGLContainerEventsSubcribers.touchend[this.initObj.targetObjectName + "vLabSceneTouchEnd"] = this.vLabSceneTouchEnd;
+            //VLab events subscribers
+            this.context.webGLContainerEventsSubcribers.mouseup["DetailedView" + this.initObj.targetObjectName + "vLabSceneMouseUp"] = 
+            {
+                callback: this.onVLabSceneMouseUp,
+                instance: this
+            };
+            this.context.webGLContainerEventsSubcribers.touchend["DetailedView" + this.initObj.targetObjectName + "vLabSceneTouchEnd"] = 
+            {
+                callback: this.onVLabSceneTouchEnd,
+                instance: this
+            };
 
             console.log("DetailedView initialized for " + this.initObj.targetObjectName);
         }
 
-        vLabSceneMouseUp(event) {
-            // console.log(self.initObj.targetObjectName + "vLabSceneMouseUp", event);
-            self.interactionEvent();
+        onVLabSceneMouseUp(event) {
+            // console.log("DetailedView" + this.initObj.targetObjectName + "vLabSceneMouseUp", event.type);
+            this.interactionEvent();
         }
 
-        vLabSceneTouchEnd(event) {
-            // console.log(self.initObj.targetObjectName + "vLabSceneTouchEnd", event);
-            self.interactionEvent();
+        onVLabSceneTouchEnd(event) {
+            // console.log("DetailedView" + this.initObj.targetObjectName + "vLabSceneTouchEnd", event.type);
+            this.interactionEvent();
         }
 
         interactionEvent() {
-            if (self.initObj.context.defaultCameraControls.type !== 'orbit' || self.initObj.context.paused || self.initObj.context.defaultCameraControls.zoomMode) {
+            if (this.initObj.context.defaultCameraControls.type !== 'orbit' || this.initObj.context.paused) {
                 return;
             }
-            self.initObj.context.helpersRaycaster.setFromCamera(self.initObj.context.mouseCoordsRaycaster, self.initObj.context.defaultCamera);
+            this.initObj.context.helpersRaycaster.setFromCamera(this.initObj.context.mouseCoordsRaycaster, this.initObj.context.defaultCamera);
 
-            var intersectObjects = self.initObj.context.interactivesSuppressorsObjects;
-            intersectObjects.push(self.handlerSprite);
+            var intersectObjects = this.context.interactivesSuppressorsObjects.slice();
+            intersectObjects.push(this.handlerSprite);
 
-            var intersects = self.initObj.context.helpersRaycaster.intersectObjects(intersectObjects);
+            var intersects = this.initObj.context.helpersRaycaster.intersectObjects(intersectObjects);
 
             if (intersects.length > 0) {
                 console.log(intersects[0].object.name);

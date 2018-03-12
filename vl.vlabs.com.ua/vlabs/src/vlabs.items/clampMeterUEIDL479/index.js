@@ -83,15 +83,6 @@ initObj {
                     this.context.addSelectionHelperToObject(this.model);
                     this.context.nature.interactiveObjects.push(this.model.name);
                     this.context.setInteractiveObjects();
-    
-                    this.context.addZoomHelper(this.model.name, 
-                                                this.model, 
-                                                new THREE.Vector3(-0.1, 0.0, 0.1), 
-                                                new THREE.Vector3(0.1, 0.1, 0.1),
-                                                Math.PI * 2,
-                                                0xffffff,
-                                                true,
-                                                0.35);
                 }
             }
         }).catch(error => {

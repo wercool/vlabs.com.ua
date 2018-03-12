@@ -55,16 +55,11 @@ export default class VLab {
             mousedown: {},
             mouseup: {},
             touchstart: {},
-            touchend: {}
+            touchend: {},
+            resetview: {}
         };
 
         this.helpers = {
-            "zoomHelper": {
-                "url": "../vlabs.assets/img/magnifier.png",
-                "texture": undefined,
-                "assigned": [],
-                "selected": undefined
-            },
             "placeHelper": {
                 "url": "../vlabs.assets/img/place.png",
                 "texture": undefined,
@@ -421,44 +416,6 @@ export default class VLab {
         }
     }
 
-    setInteractiveObjects(except) {
-        this.interactiveObjects = [];
-        for (var interactiveObjectName of this.nature.interactiveObjects) {
-            if ((Array.isArray(except) && !except.includes(interactiveObjectName)) || (!Array.isArray(except) && except !== interactiveObjectName)) {
-                this.interactiveObjects.push(this.vLabScene.getObjectByName(interactiveObjectName));
-            }
-        }
-        this.nature.interactiveObjects = [];
-        for (var interactiveObject of this.interactiveObjects) {
-            this.nature.interactiveObjects.push(interactiveObject.name);
-        }
-        //interactive suppressors
-        this.interactivesSuppressorsObjects = [];
-        if (this.nature.interactivesSuppressorsObjects) {
-            for (var interactivesSuppressorObjectName of this.nature.interactivesSuppressorsObjects) {
-                var interactivesSuppressorsObject = this.vLabScene.getObjectByName(interactivesSuppressorObjectName);
-                if (interactivesSuppressorsObject) {
-                    this.interactivesSuppressorsObjects.push(interactivesSuppressorsObject);
-                } else {
-                    console.error(interactivesSuppressorObjectName + "interactive suppressor Object is undefined");
-                }
-            }
-        }
-    }
-
-    setReponsiveObjects(except) {
-        this.responosiveObjects = [];
-        for (var responsiveObjectName of this.nature.responsiveObjects) {
-            if ((Array.isArray(except) && !except.includes(responsiveObjectName)) || (!Array.isArray(except) && except !== responsiveObjectName)) {
-                this.responosiveObjects.push(this.vLabScene.getObjectByName(responsiveObjectName));
-            }
-        }
-        this.nature.responsiveObjects = [];
-        for (var responsiveObject of this.responosiveObjects) {
-            this.nature.responsiveObjects.push(responsiveObject.name);
-        }
-    }
-
     onMouseMove(event) {
         this.mouseCoords.set(event.x, event.y);
         this.mouseCoordsRaycaster.set((event.x / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.y / this.webGLContainer.clientHeight) * 2);
@@ -497,7 +454,8 @@ export default class VLab {
         }
 
         for (var mouseUpEventSubscriberName in this.webGLContainerEventsSubcribers.mouseup) {
-            this.webGLContainerEventsSubcribers.mouseup[mouseUpEventSubscriberName].call(this, event);
+            var subscriber = this.webGLContainerEventsSubcribers.mouseup[mouseUpEventSubscriberName];
+            subscriber.callback.call(subscriber.instance, event);
         }
     }
 
@@ -509,12 +467,13 @@ export default class VLab {
 
     onTouchEnd(event) {
         event.preventDefault();
+        this.executeActions(true);
         this.toggleSelectedObject(true);
         this.helpersTrigger();
-        this.executeActions(true);
 
         for (var touchEndEventSubscriberName in this.webGLContainerEventsSubcribers.touchend) {
-            this.webGLContainerEventsSubcribers.touchend[touchEndEventSubscriberName].call(this, event);
+            var subscriber = this.webGLContainerEventsSubcribers.touchend[touchEndEventSubscriberName];
+            subscriber.callback.call(subscriber.instance, event);
         }
     }
 
@@ -540,6 +499,44 @@ export default class VLab {
                 document.webkitExitFullscreen();
             }
             document.getElementById("fullscreen").style.backgroundImage = "url('../vlabs.assets/img/fullscreen.png')";
+        }
+    }
+
+    setInteractiveObjects(except) {
+        this.interactiveObjects = [];
+        for (var interactiveObjectName of this.nature.interactiveObjects) {
+            if ((Array.isArray(except) && !except.includes(interactiveObjectName)) || (!Array.isArray(except) && except !== interactiveObjectName)) {
+                this.interactiveObjects.push(this.vLabScene.getObjectByName(interactiveObjectName));
+            }
+        }
+        this.nature.interactiveObjects = [];
+        for (var interactiveObject of this.interactiveObjects) {
+            this.nature.interactiveObjects.push(interactiveObject.name);
+        }
+        //interactive suppressors
+        this.interactivesSuppressorsObjects = [];
+        if (this.nature.interactivesSuppressorsObjects) {
+            for (var interactivesSuppressorObjectName of this.nature.interactivesSuppressorsObjects) {
+                var interactivesSuppressorsObject = this.vLabScene.getObjectByName(interactivesSuppressorObjectName);
+                if (interactivesSuppressorsObject) {
+                    this.interactivesSuppressorsObjects.push(interactivesSuppressorsObject);
+                } else {
+                    console.error(interactivesSuppressorObjectName + "interactive suppressor Object is undefined");
+                }
+            }
+        }
+    }
+
+    setReponsiveObjects(except) {
+        this.responosiveObjects = [];
+        for (var responsiveObjectName of this.nature.responsiveObjects) {
+            if ((Array.isArray(except) && !except.includes(responsiveObjectName)) || (!Array.isArray(except) && except !== responsiveObjectName)) {
+                this.responosiveObjects.push(this.vLabScene.getObjectByName(responsiveObjectName));
+            }
+        }
+        this.nature.responsiveObjects = [];
+        for (var responsiveObject of this.responosiveObjects) {
+            this.nature.responsiveObjects.push(responsiveObject.name);
         }
     }
 
@@ -624,9 +621,6 @@ export default class VLab {
     }
 
     updateCameraControlsCheckIntersections() {
-        if (this.defaultCameraControls.zoomMode) {
-            return;
-        }
 
         var interactionObjectIntersects = [];
 
@@ -668,6 +662,8 @@ export default class VLab {
 
                     this.defaultCameraControls.active = false;
                     return;
+                } else {
+                    this.hoveredObject = undefined;
                 }
 
             } else {
@@ -762,9 +758,6 @@ export default class VLab {
     }
 
     toggleSelectedObject(touch = false) {
-        if (this.defaultCameraControls.zoomMode) {
-            return;
-        }
         if (this.hoveredObject) {
             if (!touch || (touch && this.hoveredObject == this.preSelectedObject)) {
                 this.selectedObject = this.hoveredObject;
@@ -1094,66 +1087,25 @@ export default class VLab {
                                     targetPos: this.defaultCameraInitialPosition.clone(),
                                     target:  targetPos });
 
-        document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
-        document.getElementById("back").removeEventListener("touchend", this.resetView);
-        document.getElementById("back").style.display = 'none';
-        if (this.helpers.zoomHelper.selected) this.helpers.zoomHelper.selected.visible = true;
+        for (var resetViewSubscriberName in this.webGLContainerEventsSubcribers.resetview) {
+            var subscriber = this.webGLContainerEventsSubcribers.resetview[resetViewSubscriberName];
+            subscriber.callback.call(subscriber.instance, event);
+        }
     }
 
     prepareHelperAssets() {
         var textureLoader = new THREE.TextureLoader();
         return Promise.all([
-            textureLoader.load(this.helpers.zoomHelper.url),
             textureLoader.load(this.helpers.placeHelper.url),
         ])
         .then((result) => {
-            this.helpers.zoomHelper.texture = result[0];
-            this.helpers.placeHelper.texture = result[1];
+            this.helpers.placeHelper.texture = result[0];
 
             this.prepareHelpers();
         })
         .catch(error => {
             console.error(error);
         });
-    }
-
-    addZoomHelper(objectName, parent, positionDeltas, scale, rotation = 0, colorHex = 0xffffff, inDepthTest = false, minDistance = 0.25) {
-        if (!this.helpers.zoomHelper.texture) {
-            var self = this;
-            setTimeout(() => {
-                console.log("Wainting for Zoom Helper texture...");
-                self.addZoomHelper(objectName, parent, positionDeltas, scale, rotation, colorHex, inDepthTest, minDistance);
-            }, 250);
-            return;
-        }
-
-        console.log("Zoom Helper texture loaded");
-
-        var zoomHelperMaterial = new THREE.SpriteMaterial({
-            map: this.helpers.zoomHelper.texture,
-            color: colorHex,
-            blending: THREE.AdditiveBlending,
-            transparent: true,
-            opacity: 0.5,
-            rotation: (rotation) ? rotation : 0.0,
-            depthTest: inDepthTest,
-            depthWrite: inDepthTest
-        });
-
-        var zoomHelperSprite = new THREE.Sprite(zoomHelperMaterial);
-        zoomHelperSprite.scale.copy(scale);
-        zoomHelperSprite.position.x += positionDeltas.x;
-        zoomHelperSprite.position.y += positionDeltas.y;
-        zoomHelperSprite.position.z += positionDeltas.z;
-
-        zoomHelperSprite.minDistance = minDistance;
-
-        if (parent) {
-            parent.getObjectByName(objectName).add(zoomHelperSprite);
-        } else {
-            this.vLabScene.getObjectByName(objectName).add(zoomHelperSprite);
-        }
-        this.helpers.zoomHelper.assigned.push(zoomHelperSprite);
     }
 
     prepareHelpers() {
@@ -1175,95 +1127,7 @@ export default class VLab {
     }
 
     helpersTrigger() {
-        if (this.defaultCameraControls.type !== 'orbit' || this.paused || this.defaultCameraControls.zoomMode) {
-            return;
-        }
-        this.helpersRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
 
-        var zoomHelpersIntersectsExceptinteractivesObjectsSuppressors = this.helpers.zoomHelper.assigned.concat(this.interactivesSuppressorsObjects);
-
-        //var zoomHelpersIntersects = this.helpersRaycaster.intersectObjects(this.helpers.zoomHelper.assigned);
-
-        var zoomHelpersIntersects = this.helpersRaycaster.intersectObjects(zoomHelpersIntersectsExceptinteractivesObjectsSuppressors);
-
-        if (zoomHelpersIntersects.length > 0) {
-            if (this.interactivesSuppressorsObjects.indexOf(zoomHelpersIntersects[0].object) > -1) return;
-
-            this.helpers.zoomHelper.selected = zoomHelpersIntersects[0].object;
-            this.helpers.zoomHelper.selected.visible = false;
-            this.defaultCameraControls.backState = {
-                minDistance: this.defaultCameraControls.minDistance,
-                maxDistance: this.defaultCameraControls.maxDistance,
-                position: this.defaultCameraControls.object.position.clone(),
-                target: this.defaultCameraControls.target.clone()
-            };
-            var zoomTarget = this.getWorldPosition(zoomHelpersIntersects[0].object.parent);
-            this.defaultCameraControls.enableZoom = false;
-            this.defaultCameraControls.enablePan = false;
-            this.defaultCameraControls.minDistance = zoomHelpersIntersects[0].object.minDistance;
-            this.defaultCameraControls.zoomMode = true;
-            new TWEEN.Tween(this.defaultCameraControls.target)
-            .to({ x: zoomTarget.x, y: zoomTarget.y, z: zoomTarget.z }, 500)
-            .easing(TWEEN.Easing.Cubic.InOut)
-            .onUpdate(() => {
-                this.defaultCameraControls.update();
-                this.tooltipHide();
-            })
-            .onComplete(() => { 
-                new TWEEN.Tween(this.defaultCameraControls)
-                .to({ maxDistance: 0.25 }, 750)
-                .easing(TWEEN.Easing.Cubic.InOut)
-                .onUpdate(() => { 
-                    this.defaultCameraControls.update();
-                })
-                .onComplete(() => { 
-                    document.getElementById("back").style.display = 'block';
-                    document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
-                    document.getElementById("back").removeEventListener("touchend", this.resetView);
-                    document.getElementById("back").addEventListener("mouseup", this.resetZoomView.bind(this), false);
-                    document.getElementById("back").addEventListener("touchend", this.resetZoomView.bind(this), false);
-                 })
-                .start();
-             })
-            .start();
-        }
-    }
-
-    resetZoomView() {
-        if (this.defaultCameraControls.backState) {
-            var prevTarget = this.defaultCameraControls.backState.target;
-
-            this.defaultCameraControls.maxDistance = this.defaultCameraControls.backState.maxDistance;
-
-            new TWEEN.Tween(this.defaultCameraControls)
-            .to({ minDistance: this.defaultCameraControls.backState.minDistance }, 250)
-            .easing(TWEEN.Easing.Cubic.InOut)
-            .onUpdate(() => { 
-                this.defaultCameraControls.update();
-            })
-            .onComplete(() => {
-                var prevPosition = this.defaultCameraControls.backState.position.clone();
-                new TWEEN.Tween(this.defaultCameraControls.object.position)
-                .to({ x: prevPosition.x, y: prevPosition.y, z: prevPosition.z }, 500)
-                .easing(TWEEN.Easing.Cubic.InOut)
-                .onUpdate(() => { 
-                    this.defaultCameraControls.update();
-                })
-                .onComplete(() => {
-                    this.defaultCameraControls.enableZoom = true;
-                    this.defaultCameraControls.enablePan = true;
-                    this.defaultCameraControls.zoomMode = false;
-                    this.defaultCameraControls.backState = undefined;
-                    document.getElementById("back").removeEventListener("mouseup", this.resetZoomView);
-                    document.getElementById("back").removeEventListener("touchend", this.resetView);
-
-                    this.helpers.zoomHelper.selected.visible = true;
-                 })
-                .start();
-            })
-            .start();
-        }
-        document.getElementById("back").style.display = 'none';
     }
 
     takeObjectToInventory() {
@@ -1400,7 +1264,6 @@ export default class VLab {
                 this.takenObjectsToResponsiveObjectsArrow.setDirection(hoveredResponsiveObjectDirection);
                 this.takenObjectsToResponsiveObjectsArrow.setLength(hoveredResponsiveObjectDirectionVectorLength, 0.001, 0.0001);
                 this.helpers.placeHelper.sprite.position.copy(this.hoveredResponsiveObject.intersectionPoint);
-                this.helpers.placeHelper.sprite.position.y += 0.065; 
                 this.helpers.placeHelper.sprite.visible = true;
             } else {
                 this.helpers.placeHelper.sprite.visible = false;
