@@ -145,6 +145,8 @@ export default class ZoomHelper {
                 document.getElementById("back").removeEventListener("touchend", this.reset);
                 document.getElementById("back").addEventListener("mouseup", this.reset.bind(this), false);
                 document.getElementById("back").addEventListener("touchend", this.reset.bind(this), false);
+
+                this.context.zoomHelperMode = true;
                 })
             .start();
             })
@@ -172,6 +174,7 @@ export default class ZoomHelper {
             })
             .onComplete(() => {
                     this.onVLabSceneResetView();
+                    this.context.zoomHelperMode = false;
                 })
             .start();
         })

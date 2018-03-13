@@ -5,6 +5,7 @@ import ClampMeterUEIDL479   from '../../vlabs.items/clampMeterUEIDL479';
 import FatMaxScrewdriver    from '../../vlabs.items/fatMaxScrewdriver';
 import Inventory            from '../../vlabs.core/inventory';
 import ZoomHelper           from '../../vlabs.core/zoom-helper';
+import DetailedView         from '../../vlabs.core/detailed-view';
 
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
 
@@ -70,6 +71,13 @@ class VlabHVACBase extends VLab {
 
         this.inventory = new Inventory({
             context: this
+        });
+
+        this.bryantB225B_reversingValveDetailedView = new DetailedView({
+            context: this,
+            targetObjectName: "bryantB225B_reversingValve",
+            scale: new THREE.Vector3(0.1, 0.1, 0.1,),
+            positionDeltas: new THREE.Vector3(0.05, 0.0, 0.0)
         });
 
         this.frameCapBolt10ZoomHelper = new ZoomHelper({

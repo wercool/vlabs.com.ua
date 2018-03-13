@@ -113,6 +113,8 @@ export default class Inventory {
 
         activate() {
             this.context.paused = true;
+            document.getElementById("fullscreen").style.display = 'none';
+            document.getElementById("resetview").style.display = 'none';
             document.getElementById("modalMessage").style.display = 'none';
             document.getElementById("progressBar").style.display = 'none';
             this.context.statsTHREE.domElement.style.display = 'none';
@@ -130,9 +132,6 @@ export default class Inventory {
             } else {
                 this.takeButton.style.display = 'none';
             }
-
-            document.getElementById("fullscreen").style.display = 'none';
-            document.getElementById("resetview").style.display = 'none';
 
             this.paused = false;
             this.resiezeWebGLContainer();

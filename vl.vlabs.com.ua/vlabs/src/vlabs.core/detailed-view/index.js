@@ -34,6 +34,17 @@ export default class DetailedView {
 
         initialize() {
 
+            this.container = document.createElement('div');
+            this.container.id = this.initObj.targetObjectName + 'DetailedViewContainer';
+            this.container.className = 'detailedViewContainer';
+            this.container.style.display = 'none';
+            document.getElementById("overlayContainer").appendChild(this.container);
+
+            this.closeBtn = document.createElement('div');
+            this.closeBtn.id = 'detailedViewCloseButton';
+            this.container.appendChild(this.closeBtn);
+            this.closeBtn.addEventListener("mousedown", this.close.bind(this), false);
+
             var handlerSpriteMaterial = new THREE.SpriteMaterial({
                 map: this.handlerSpriteTexture,
                 color: 0x00ff00,
@@ -52,14 +63,12 @@ export default class DetailedView {
             this.handlerSprite.position.y += this.initObj.positionDeltas ? this.initObj.positionDeltas.y : 0.0;
             this.handlerSprite.position.z += this.initObj.positionDeltas ? this.initObj.positionDeltas.z : 0.0;
 
-            var animationScale = this.initObj.scale.x * 0.75;
+            var animationScale = this.handlerSprite.scale.x * 0.75;
             this.handlerSpritePulsation = new TWEEN.Tween(this.handlerSprite.scale)
             .to({x: animationScale, y: animationScale, z: animationScale}, 2000)
             .repeat(Infinity)
             .yoyo(true)
             .easing(TWEEN.Easing.Quadratic.InOut).start();
-
-            
 
             if (this.initObj.parent) {
                 this.targetObject = this.initObj.parent.getObjectByName(this.initObj.targetObjectName);
@@ -106,7 +115,47 @@ export default class DetailedView {
             var intersects = this.initObj.context.helpersRaycaster.intersectObjects(intersectObjects);
 
             if (intersects.length > 0) {
-                console.log(intersects[0].object.name);
+                if (intersects[0].object.name == this.handlerSprite.name) {
+                    console.log(intersects[0].object.name);
+                    this.activate();
+                }
             }
+        }
+
+        activate() {
+            this.context.paused = true;
+            document.getElementById("fullscreen").style.display = 'none';
+            document.getElementById("resetview").style.display = 'none';
+            document.getElementById("modalMessage").style.display = 'none';
+            document.getElementById("progressBar").style.display = 'none';
+            this.context.statsTHREE.domElement.style.display = 'none';
+            document.getElementById("toolbox").style.display = 'none';
+
+            if (this.context.zoomHelperMode) {
+                document.getElementById("back").style.display = 'none';
+            }
+
+            document.getElementById("overlayContainer").style.display = 'block';
+            this.container.style.display = 'block';
+        }
+
+        close() {
+            this.container.style.display = 'none';
+            document.getElementById("overlayContainer").style.display = 'none';
+    
+            this.context.paused = false;
+            this.context.statsTHREE.domElement.style.display = 'block';
+            document.getElementById("toolbox").style.display = 'block';
+    
+            document.getElementById("fullscreen").style.display = 'block';
+            document.getElementById("resetview").style.display = 'block';
+    
+            if (this.context.zoomHelperMode) {
+                document.getElementById("back").style.display = 'block';
+            }
+
+            this.context.mouseCoordsRaycaster.set(-1.0, -1.0);
+
+            console.log(this.initObj.targetObjectName + " Detailed View closed");
         }
 }

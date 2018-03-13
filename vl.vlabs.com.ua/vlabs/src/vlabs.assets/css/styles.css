@@ -45,6 +45,10 @@ html, body {
     color: rgb(228, 125, 28);
 }
 
+#cMenu {
+    z-index: 2e9;
+}
+
 #fullscreen {
     right: 10px;
     bottom: 10px;
@@ -198,6 +202,33 @@ html, body {
     background-image: url("../img/toolbox-menu-icon.png");
 }
 
-#cMenu {
+/* Detailed View */
+.detailedViewContainer {
+    width: calc(90vw - 15pt);
+    height: calc(85vh - 24px + 5pt);
+    background-color: #0a283dc0;
     z-index: 2e9;
+    margin-top: 5vh;
+    margin-left: 5vw;
+    border-radius: 20pt;
+    -moz-box-shadow: 0 0 10px #ccc;
+    -webkit-box-shadow: 0 0 10px #ccc;
+    box-shadow: 0 0 10px #ccc;
+    padding: 10pt;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+}
+
+#detailedViewCloseButton {
+    position: fixed;
+    height: 48px;
+    width: 48px;
+    background-image: url('../img/closeInventory.png');
+    background-repeat: no-repeat;
+    left: calc(50% - 24px);
+    bottom: 5pt;
+    cursor: pointer;
+    z-index: 2e12;
 }
