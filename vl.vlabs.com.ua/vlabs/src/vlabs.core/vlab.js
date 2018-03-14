@@ -98,7 +98,8 @@ export default class VLab {
     showErrorMessage(error) {
         document.getElementById("overlayContainer").style.display = 'block';
         document.getElementById("modalMessage").style.display = 'block';
-        document.getElementById("modalMessage").innerHTML = error;
+        document.getElementById("modalMessage").innerHTML = error.message;
+        console.log(error);
     }
 
     preInitialize() {

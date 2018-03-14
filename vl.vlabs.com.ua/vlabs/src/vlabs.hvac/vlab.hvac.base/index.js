@@ -1,13 +1,15 @@
 import * as THREE           from 'three';
 import VLab                 from '../../vlabs.core/vlab';
-import BoshScrewdriver      from '../../vlabs.items/boshScrewdriver';
-import ClampMeterUEIDL479   from '../../vlabs.items/clampMeterUEIDL479';
-import FatMaxScrewdriver    from '../../vlabs.items/fatMaxScrewdriver';
 import Inventory            from '../../vlabs.core/inventory';
 import ZoomHelper           from '../../vlabs.core/zoom-helper';
 import DetailedView         from '../../vlabs.core/detailed-view';
-
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
+
+//VLab Items
+import BoshScrewdriver          from '../../vlabs.items/boshScrewdriver';
+import ClampMeterUEIDL479       from '../../vlabs.items/clampMeterUEIDL479';
+import FatMaxScrewdriver        from '../../vlabs.items/fatMaxScrewdriver';
+import ReversingValveEF17BZ251  from '../../vlabs.items/hvac/reversingValveEF17BZ251'
 
 class VlabHVACBase extends VLab {
     constructor(initObj = {}) {
@@ -77,7 +79,8 @@ class VlabHVACBase extends VLab {
             context: this,
             targetObjectName: "bryantB225B_reversingValve",
             scale: new THREE.Vector3(0.1, 0.1, 0.1,),
-            positionDeltas: new THREE.Vector3(0.05, 0.0, 0.0)
+            positionDeltas: new THREE.Vector3(0.05, 0.0, 0.0),
+            vlabItem: new ReversingValveEF17BZ251({})
         });
 
         this.frameCapBolt10ZoomHelper = new ZoomHelper({

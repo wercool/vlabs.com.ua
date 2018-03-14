@@ -19,12 +19,19 @@ export default class DetailedView {
 
            this.context = this.context;
 
+           this.paused = true;
+
            var textureLoader = new THREE.TextureLoader();
            return Promise.all([
                textureLoader.load('/vlabs.assets/img/detailed-view.png'),
+               textureLoader.load('/vlabs.assets/envmaps/flourecent-lights.jpg'),
            ])
            .then((result) => {
                this.handlerSpriteTexture = result[0];
+
+               this.envMap = result[1];
+               this.envMap.mapping = THREE.UVMapping;
+
                this.initialize();
            })
            .catch(error => {
@@ -90,8 +97,62 @@ export default class DetailedView {
                 instance: this
             };
 
+            //WebGL
+
+            this.webGLContainer = document.createElement('div');
+            this.webGLContainer.id = this.initObj.targetObjectName + 'detailedViewWebGLContainer';
+            this.webGLContainer.className = 'detailedViewWebGLContainer';
+            this.container.appendChild(this.webGLContainer);
+
+            this.webGLRenderer = new THREE.WebGLRenderer({
+                antialias: false,
+                powerPreference: 'high-performance',
+                precision: 'lowp'
+            });
+            this.webGLRenderer.setClearColor(0x214761);
+
+            this.webGLContainer.appendChild(this.webGLRenderer.domElement);
+            this.webGLRenderer.domElement.addEventListener('contextmenu', function(event) {
+                if (event.button == 2) {
+                    event.preventDefault();
+                }
+            });
+
+            window.addEventListener('resize', function(event){
+                this.resiezeWebGLContainer();
+            }.bind(this));
+
+            this.scene = new THREE.Scene();
+            this.defaultCamera = new THREE.PerspectiveCamera(70, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 1, 1000);
+
+            this.envMesh = new THREE.Mesh(new THREE.SphereBufferGeometry( 500, 32, 16 ), new THREE.MeshBasicMaterial( { map: this.envMap } ));
+            this.envMesh.geometry.scale(-1, 1, 1);
+            this.scene.add(this.envMesh);
+
+            this.cubeCamera1 = new THREE.CubeCamera(1, 1000, 256);
+            this.cubeCamera1.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
+            this.scene.add(this.cubeCamera1);
+
+            this.cubeCamera2 = new THREE.CubeCamera(1, 1000, 256);
+            this.cubeCamera2.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
+            this.scene.add(this.cubeCamera2);
+
+            this.envMaterial = new THREE.MeshBasicMaterial( {
+                envMap: this.cubeCamera2.renderTarget.texture
+            } );
+
             console.log("DetailedView initialized for " + this.initObj.targetObjectName);
         }
+
+        resiezeWebGLContainer() {
+            this.webGLRenderer.setSize(this.webGLContainer.clientWidth, this.webGLContainer.clientHeight);
+    
+            if (this.defaultCamera) {
+                this.defaultCamera.aspect = (this.webGLContainer.clientWidth / this.webGLContainer.clientHeight);
+                this.defaultCamera.updateProjectionMatrix();
+            }
+        }
+    
 
         onVLabSceneMouseUp(event) {
             // console.log("DetailedView" + this.initObj.targetObjectName + "vLabSceneMouseUp", event.type);
@@ -137,9 +198,16 @@ export default class DetailedView {
 
             document.getElementById("overlayContainer").style.display = 'block';
             this.container.style.display = 'block';
+
+            this.paused = false;
+            this.resiezeWebGLContainer();
+            this.render();
         }
 
         close() {
+
+            this.paused = true;
+
             this.container.style.display = 'none';
             document.getElementById("overlayContainer").style.display = 'none';
     
@@ -157,5 +225,18 @@ export default class DetailedView {
             this.context.mouseCoordsRaycaster.set(-1.0, -1.0);
 
             console.log(this.initObj.targetObjectName + " Detailed View closed");
+        }
+
+        render(time) {
+            if (!this.paused) {
+                this.webGLRenderer.clear();
+
+                this.defaultCamera.lookAt(this.scene.position);
+
+                this.webGLRenderer.render(this.scene, this.defaultCamera);
+                requestAnimationFrame(this.render.bind(this));
+            } else {
+                setTimeout(this.render.bind(this), 500);
+            }
         }
 }
