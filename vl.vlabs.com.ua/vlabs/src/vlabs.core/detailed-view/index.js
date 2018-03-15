@@ -1,5 +1,5 @@
 import * as THREE               from 'three';
-import * as TWEEN           from 'tween.js';
+import * as TWEEN               from 'tween.js';
 import * as DOMUtils            from '../../vlabs.core/utils/dom.utils.js';
 
 var OrbitControls           = require('../../vlabs.core/three-orbit-controls/index')(THREE);
@@ -30,7 +30,7 @@ export default class DetailedView {
                this.handlerSpriteTexture = result[0];
 
                this.envMap = result[1];
-               this.envMap.mapping = THREE.UVMapping;
+               this.envMap.mapping = THREE.EquirectangularReflectionMapping;
 
                this.initialize();
            })
@@ -98,7 +98,6 @@ export default class DetailedView {
             };
 
             //WebGL
-
             this.webGLContainer = document.createElement('div');
             this.webGLContainer.id = this.initObj.targetObjectName + 'detailedViewWebGLContainer';
             this.webGLContainer.className = 'detailedViewWebGLContainer';
@@ -107,9 +106,9 @@ export default class DetailedView {
             this.webGLRenderer = new THREE.WebGLRenderer({
                 antialias: false,
                 powerPreference: 'high-performance',
-                precision: 'lowp'
+                precision: 'lowp',
+                autoClear: false,
             });
-            this.webGLRenderer.setClearColor(0x214761);
 
             this.webGLContainer.appendChild(this.webGLRenderer.domElement);
             this.webGLRenderer.domElement.addEventListener('contextmenu', function(event) {
@@ -122,24 +121,51 @@ export default class DetailedView {
                 this.resiezeWebGLContainer();
             }.bind(this));
 
+            // Scenes
             this.scene = new THREE.Scene();
-            this.defaultCamera = new THREE.PerspectiveCamera(70, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 1, 1000);
 
-            this.envMesh = new THREE.Mesh(new THREE.SphereBufferGeometry( 500, 32, 16 ), new THREE.MeshBasicMaterial( { map: this.envMap } ));
-            this.envMesh.geometry.scale(-1, 1, 1);
-            this.scene.add(this.envMesh);
+            // Lights
+            var ambient = new THREE.AmbientLight(0xffffff);
+            this.scene.add(ambient);
 
-            this.cubeCamera1 = new THREE.CubeCamera(1, 1000, 256);
-            this.cubeCamera1.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
-            this.scene.add(this.cubeCamera1);
+            //Cameras
+            this.defaultCamera = new THREE.PerspectiveCamera(90, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.1, 10.0);
+            this.defaultCamera.position.set(0, 0.0, 1.0);
 
-            this.cubeCamera2 = new THREE.CubeCamera(1, 1000, 256);
-            this.cubeCamera2.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
-            this.scene.add(this.cubeCamera2);
+            //Controls
+            this.controls = new OrbitControls(this.defaultCamera);
+            this.controls.minDistance = 0.35;
+            this.controls.maxDistance = 1.0;
+            this.controls.minPolarAngle = 0;
+            this.controls.maxPolarAngle = Math.PI * 2;
 
-            this.envMaterial = new THREE.MeshBasicMaterial( {
-                envMap: this.cubeCamera2.renderTarget.texture
+            // Materials
+
+
+            // EnvSphere
+            var envSphereGeometry = new THREE.SphereBufferGeometry(5.0, 60, 40 );
+            // invert the geometry on the x-axis so that all of the faces point inward
+            envSphereGeometry.scale(-1, 1, 1);
+
+            var envSpehreMaterial = new THREE.MeshBasicMaterial( {
+                map: this.envMap
             } );
+
+            this.envSpehreMesh = new THREE.Mesh(envSphereGeometry, envSpehreMaterial);
+            this.scene.add(this.envSpehreMesh );
+
+            //TEMPORARY!!!!!!!!!!!!!!!!!begin
+            var sphereMaterial = new THREE.MeshLambertMaterial();
+            sphereMaterial.needsUpdate = true;
+            sphereMaterial.envMap = this.envMap;
+            sphereMaterial.map = new THREE.TextureLoader().load('/vlabs.assets/maps/brass.png')
+            sphereMaterial.combine = THREE.MixOperation;
+            sphereMaterial.reflectivity = 0.5;
+
+            var geometry = new THREE.SphereBufferGeometry( 0.2, 48, 24 );
+            var testSphereMesh = new THREE.Mesh(geometry, sphereMaterial);
+            this.scene.add(testSphereMesh);
+            //TEMPORARY!!!!!!!!!!!!!!!!!end
 
             console.log("DetailedView initialized for " + this.initObj.targetObjectName);
         }
@@ -229,12 +255,14 @@ export default class DetailedView {
 
         render(time) {
             if (!this.paused) {
-                this.webGLRenderer.clear();
+                requestAnimationFrame(this.render.bind(this));
+
+                this.controls.update();
 
                 this.defaultCamera.lookAt(this.scene.position);
 
                 this.webGLRenderer.render(this.scene, this.defaultCamera);
-                requestAnimationFrame(this.render.bind(this));
+
             } else {
                 setTimeout(this.render.bind(this), 500);
             }
