@@ -1,8 +1,8 @@
 import * as THREE           from 'three';
 import VLab                 from '../../vlabs.core/vlab';
 import Inventory            from '../../vlabs.core/inventory';
-import ZoomHelper           from '../../vlabs.core/zoom-helper';
 import DetailedView         from '../../vlabs.core/detailed-view';
+import ZoomHelper           from '../../vlabs.core/zoom-helper';
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
 
 //VLab Items
@@ -80,7 +80,12 @@ class VlabHVACBase extends VLab {
             targetObjectName: "bryantB225B_reversingValve",
             scale: new THREE.Vector3(0.1, 0.1, 0.1,),
             positionDeltas: new THREE.Vector3(0.05, 0.0, 0.0),
-            vlabItem: new ReversingValveEF17BZ251({})
+            controls: {
+                minDistance: 0.2,
+                maxDistance: 0.35,
+                minPolarAngle: 0,
+                maxPolarAngle: Math.PI * 2
+            }
         });
 
         this.frameCapBolt10ZoomHelper = new ZoomHelper({
@@ -128,18 +133,18 @@ class VlabHVACBase extends VLab {
             color: 0xfff495
         });
 
-        this.contactror_proxyZoomHelper = new ZoomHelper({
+        this.contactror_ZoomHelper = new ZoomHelper({
             context: this,
-            targetObjectName: "contactror_proxy",
+            targetObjectName: "contactror",
             minDistance: 0.25,
             positionDeltas: new THREE.Vector3(0.0, 0.0, 0.1), 
             scale: new THREE.Vector3(0.075, 0.075, 0.075),
             color: 0xfff495
         });
 
-        this.controlBoard_proxyZoomHelper = new ZoomHelper({
+        this.controlBoard_ZoomHelper = new ZoomHelper({
             context: this,
-            targetObjectName: "controlBoard_proxy",
+            targetObjectName: "controlBoard",
             minDistance: 0.25,
             positionDeltas: new THREE.Vector3(0.0, 0.0, 0.05), 
             scale: new THREE.Vector3(0.075, 0.075, 0.075),
@@ -173,6 +178,13 @@ class VlabHVACBase extends VLab {
             manipulation: false,
             interactive: false,
             inventory: this.inventory
+        });
+
+        this.ReversingValveEF17BZ251 = new ReversingValveEF17BZ251({
+            context: this,
+            pos: new THREE.Vector3(0.0, 0.0, 0.0),
+            name: "ReversingValveEF17BZ251",
+            detailedView: this.bryantB225B_reversingValveDetailedView
         });
 
         // Misc helpers

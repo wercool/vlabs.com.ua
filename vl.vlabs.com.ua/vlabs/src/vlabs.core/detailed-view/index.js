@@ -17,12 +17,11 @@ export default class DetailedView {
            this.mouseCoordsRaycaster = new THREE.Vector2();
            this.iteractionRaycaster = new THREE.Raycaster();
 
-           this.context = this.context;
-
            this.paused = true;
 
            var textureLoader = new THREE.TextureLoader();
-           return Promise.all([
+           
+           Promise.all([
                textureLoader.load('/vlabs.assets/img/detailed-view.png'),
                textureLoader.load('/vlabs.assets/envmaps/flourecent-lights.jpg'),
            ])
@@ -130,20 +129,20 @@ export default class DetailedView {
 
             //Cameras
             this.defaultCamera = new THREE.PerspectiveCamera(90, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.1, 10.0);
-            this.defaultCamera.position.set(0, 0.0, 1.0);
+            this.defaultCamera.position.set(0, 0.0, 0.5);
 
             //Controls
             this.controls = new OrbitControls(this.defaultCamera);
-            this.controls.minDistance = 0.35;
-            this.controls.maxDistance = 1.0;
-            this.controls.minPolarAngle = 0;
-            this.controls.maxPolarAngle = Math.PI * 2;
+            this.controls.minDistance = this.initObj.controls.minDistance ? this.initObj.controls.minDistance : 0.25;
+            this.controls.maxDistance = this.initObj.controls.maxDistance ? this.initObj.controls.maxDistance : 1.0;
+            this.controls.minPolarAngle = this.initObj.controls.minPolarAngle ? this.initObj.controls.minPolarAngle : 0.0;
+            this.controls.maxPolarAngle = this.initObj.controls.maxPolarAngle ? this.initObj.controls.maxPolarAngle : Math.PI * 2;
 
             // Materials
 
 
             // EnvSphere
-            var envSphereGeometry = new THREE.SphereBufferGeometry(5.0, 60, 40 );
+            var envSphereGeometry = new THREE.SphereBufferGeometry(2.0, 60, 40);
             // invert the geometry on the x-axis so that all of the faces point inward
             envSphereGeometry.scale(-1, 1, 1);
 
@@ -152,20 +151,7 @@ export default class DetailedView {
             } );
 
             this.envSpehreMesh = new THREE.Mesh(envSphereGeometry, envSpehreMaterial);
-            this.scene.add(this.envSpehreMesh );
-
-            //TEMPORARY!!!!!!!!!!!!!!!!!begin
-            var sphereMaterial = new THREE.MeshLambertMaterial();
-            sphereMaterial.needsUpdate = true;
-            sphereMaterial.envMap = this.envMap;
-            sphereMaterial.map = new THREE.TextureLoader().load('/vlabs.assets/maps/brass.png')
-            sphereMaterial.combine = THREE.MixOperation;
-            sphereMaterial.reflectivity = 0.5;
-
-            var geometry = new THREE.SphereBufferGeometry( 0.2, 48, 24 );
-            var testSphereMesh = new THREE.Mesh(geometry, sphereMaterial);
-            this.scene.add(testSphereMesh);
-            //TEMPORARY!!!!!!!!!!!!!!!!!end
+            this.scene.add(this.envSpehreMesh);
 
             console.log("DetailedView initialized for " + this.initObj.targetObjectName);
         }
@@ -259,12 +245,20 @@ export default class DetailedView {
 
                 this.controls.update();
 
-                this.defaultCamera.lookAt(this.scene.position);
+                if (this.vlabItem) {
+                    this.defaultCamera.lookAt(this.vlabItem.model.position);
+                } else {
+                    this.defaultCamera.lookAt(this.scene.position);
+                }
 
                 this.webGLRenderer.render(this.scene, this.defaultCamera);
 
             } else {
                 setTimeout(this.render.bind(this), 500);
             }
+        }
+
+        addVLabItem(vLabItem) {
+            this.scene.add(vLabItem.model);
         }
 }
