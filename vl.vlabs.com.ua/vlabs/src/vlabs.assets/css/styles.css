@@ -210,7 +210,7 @@ html, body {
     z-index: 2e9;
     margin-top: 5vh;
     margin-left: 5vw;
-    border-radius: 20pt;
+    border-radius: 10pt;
     -moz-box-shadow: 0 0 10px #ccc;
     -webkit-box-shadow: 0 0 10px #ccc;
     box-shadow: 0 0 10px #ccc;

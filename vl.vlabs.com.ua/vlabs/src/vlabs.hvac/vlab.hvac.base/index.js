@@ -78,11 +78,11 @@ class VlabHVACBase extends VLab {
         this.bryantB225B_reversingValveDetailedView = new DetailedView({
             context: this,
             targetObjectName: "bryantB225B_reversingValve",
-            scale: new THREE.Vector3(0.1, 0.1, 0.1,),
+            scale: new THREE.Vector3(0.1, 0.1, 0.1),
             positionDeltas: new THREE.Vector3(0.05, 0.0, 0.0),
             controls: {
                 minDistance: 0.2,
-                maxDistance: 0.35,
+                maxDistance: 0.25,
                 minPolarAngle: 0,
                 maxPolarAngle: Math.PI * 2
             }
@@ -183,7 +183,7 @@ class VlabHVACBase extends VLab {
         this.ReversingValveEF17BZ251 = new ReversingValveEF17BZ251({
             context: this,
             pos: new THREE.Vector3(0.0, 0.0, 0.0),
-            name: "ReversingValveEF17BZ251",
+            name: null,
             detailedView: this.bryantB225B_reversingValveDetailedView
         });
 

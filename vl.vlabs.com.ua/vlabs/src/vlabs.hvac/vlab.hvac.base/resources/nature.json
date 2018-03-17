@@ -13,6 +13,8 @@
         }
     },
     "showTHREEStats": true,
+    "bumpMaps": false,
+    "alphaMaps": true,
     "advancedSelectionHelper": true,
     "interactivesSuppressorsObjects": [
         "bryantB225B_heatPumpFrontVentPanel", 

@@ -38,4 +38,43 @@ export default class ReversingValveEF17BZ251 {
             console.error(error);
         });
     }
+
+    setupEnvMaterials(materialsObj) {
+        var textureLoader = new THREE.TextureLoader();
+
+        var reversingValveEF17BZ251Tube = this.model.parent.getObjectByName("reversingValveEF17BZ251Tube");
+        reversingValveEF17BZ251Tube.material.envMap = materialsObj.envMap;
+        reversingValveEF17BZ251Tube.material.combine = THREE.MixOperation;
+        reversingValveEF17BZ251Tube.material.reflectivity = 0.1;
+        reversingValveEF17BZ251Tube.material.needsUpdate = true;
+
+        if (this.context.nature.bumpMaps) {
+            Promise.all([
+                textureLoader.load('/vlabs.items/hvac/reversingValveEF17BZ251/maps/brass-bump.jpg')
+            ])
+            .then((result) => {
+                reversingValveEF17BZ251Tube.material.bumpMap = result[0];
+                reversingValveEF17BZ251Tube.material.bumpScale = 0.000075;
+                reversingValveEF17BZ251Tube.material.needsUpdate = true;
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        }
+        if (this.context.nature.alphaMaps) {
+            Promise.all([
+                textureLoader.load('/vlabs.items/hvac/reversingValveEF17BZ251/maps/reversingValveEF17BZ251TubeMaterialAlphaMap.jpg')
+            ])
+            .then((result) => {
+                reversingValveEF17BZ251Tube.material.alphaMap = result[0];
+                reversingValveEF17BZ251Tube.material.transparent = true;
+                reversingValveEF17BZ251Tube.material.needsUpdate = true;
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        }
+
+        console.log(reversingValveEF17BZ251Tube.material);
+    }
 }
