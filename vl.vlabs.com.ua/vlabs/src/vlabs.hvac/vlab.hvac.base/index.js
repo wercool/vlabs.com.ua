@@ -81,7 +81,7 @@ class VlabHVACBase extends VLab {
             scale: new THREE.Vector3(0.1, 0.1, 0.1),
             positionDeltas: new THREE.Vector3(0.05, 0.0, 0.0),
             controls: {
-                minDistance: 0.2,
+                minDistance: 0.1,
                 maxDistance: 0.25,
                 minPolarAngle: 0,
                 maxPolarAngle: Math.PI * 2

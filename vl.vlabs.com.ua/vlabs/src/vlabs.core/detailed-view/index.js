@@ -132,9 +132,9 @@ export default class DetailedView {
         this.scene = new THREE.Scene();
 
         // Lights
-        var ambient = new THREE.AmbientLight(0xffffff, 0.3);
+        var ambient = new THREE.AmbientLight(0xffffff, 0.65);
         this.scene.add(ambient);
-        var spotLight1 = new THREE.PointLight(0xffffff, 1.5);
+        var spotLight1 = new THREE.PointLight(0xffffff, 0.75);
         spotLight1.position.set(0.0, 0.5, 2.0);
         this.scene.add(spotLight1);
 
@@ -271,6 +271,9 @@ export default class DetailedView {
             vLabItem.setupEnvMaterials.call(vLabItem, {
                 envMap: this.envMap
             });
+        }
+        if (vLabItem.prepareInitialState) {
+            vLabItem.prepareInitialState.call(vLabItem);
         }
     }
 
