@@ -219,10 +219,13 @@ export default class ReversingValveEF17BZ251 {
             color: 0xff3d01,
             linewidth: 4.0
         });
+        var highPressureMaterial = new THREE.MeshBasicMaterial({color: 0xff0000});
+
         var lowPressureLineMaterial = new THREE.LineBasicMaterial({
             color: 0x046eff,
             linewidth: 4.0
         });
+        var lowPressureMaterial = new THREE.MeshBasicMaterial({color: 0x046eff});
 
         //High Pressure Main line
         var curve = new THREE.CatmullRomCurve3([
@@ -268,6 +271,22 @@ export default class ReversingValveEF17BZ251 {
         this.highPressureSmallLine1 = new THREE.Line(highPressureSmallLineGeometry, highPressureLineMaterial);
         this.model.add(this.highPressureSmallLine1);
 
+        //High Pressure Intube line
+        var curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0.103, 0.0121, -0.011),
+            new THREE.Vector3(0.103, -0.002, -0.005),
+            new THREE.Vector3(0.09, -0.002, -0.005),
+        ]);
+        var points = curve.getPoints(20);
+        var highPressureInTubeLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        this.highPressureInTubeLineLine = new THREE.Line(highPressureInTubeLineGeometry, highPressureLineMaterial);
+        this.model.add(this.highPressureInTubeLineLine);
+
+        var highPressureInTubeLineEndConeGeometry = new THREE.ConeGeometry(0.004, 0.01, 16, 8);
+        highPressureInTubeLineEndConeGeometry.rotateZ(Math.PI / 2);
+        var highPressureInTubeLineEndCone = new THREE.Mesh(highPressureInTubeLineEndConeGeometry, highPressureMaterial);
+        highPressureInTubeLineEndCone.position.copy(new THREE.Vector3(0.09, -0.002, -0.005));
+        this.highPressureInTubeLineLine.add(highPressureInTubeLineEndCone);
 
         //Low Pressure Main line
         var curve = new THREE.CatmullRomCurve3([
@@ -298,6 +317,23 @@ export default class ReversingValveEF17BZ251 {
         this.model.add(this.lowPressureMainLine3);
         this.model.add(this.lowPressureMainLine4);
         this.model.add(this.lowPressureMainLine5);
+
+        //Low Pressure Intube line
+        var curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-0.085, 0.0, 0.0),
+            new THREE.Vector3(-0.102, 0.0, 0.0),
+            new THREE.Vector3(-0.103, 0.0123, -0.0085),
+        ]);
+        var points = curve.getPoints(20);
+        var lowPressureInTubeLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        this.lowPressureInTubeLineLine = new THREE.Line(lowPressureInTubeLineGeometry, lowPressureLineMaterial);
+        this.model.add(this.lowPressureInTubeLineLine);
+
+        var lowPressureInTubeLineEndConeGeometry = new THREE.ConeGeometry(0.003, 0.006, 16, 8);
+        lowPressureInTubeLineEndConeGeometry.rotateZ(Math.PI / 2);
+        var lowPressureInTubeLineEndCone = new THREE.Mesh(lowPressureInTubeLineEndConeGeometry, lowPressureMaterial);
+        lowPressureInTubeLineEndCone.position.copy(new THREE.Vector3(-0.1, 0.0, 0.0));
+        this.lowPressureInTubeLineLine.add(lowPressureInTubeLineEndCone);
     }
 
     onReleaseGesture() {
