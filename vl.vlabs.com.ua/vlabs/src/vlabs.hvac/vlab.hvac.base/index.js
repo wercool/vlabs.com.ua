@@ -184,6 +184,7 @@ class VlabHVACBase extends VLab {
             context: this,
             pos: new THREE.Vector3(0.0, 0.0, 0.0),
             name: null,
+            itemName: "ReversingValveEF17BZ251",
             detailedView: this.bryantB225B_reversingValveDetailedView
         });
 

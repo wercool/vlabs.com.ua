@@ -266,6 +266,10 @@ export default class DetailedView {
     }
 
     addVLabItem(vLabItem) {
+        if (vLabItem.itemName) {
+            this.items[vLabItem.itemName] = vLabItem;
+        }
+
         this.scene.add(vLabItem.model);
         if (vLabItem.setupEnvMaterials) {
             vLabItem.setupEnvMaterials.call(vLabItem, {
@@ -308,7 +312,10 @@ export default class DetailedView {
 
     releaseGesture() {
         this.mouseDown = false;
-        var itemsKeys = Object.keys(this.items);
-        console.warn("TODO DetailedView releaseGesture()");
+        for (var itemName in this.items) {
+            if (this.items[itemName].onReleaseGesture) {
+                this.items[itemName].onReleaseGesture.call(this.items[itemName], {});
+            }
+        }
     }
 }

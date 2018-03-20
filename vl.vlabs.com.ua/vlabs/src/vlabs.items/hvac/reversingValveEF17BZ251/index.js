@@ -12,6 +12,10 @@ export default class ReversingValveEF17BZ251 {
        this.context = initObj.context;
        this.pos = initObj.pos;
 
+       this.itemName = this.initObj.itemName;
+
+       this.accessableInteractiveELements = [];
+
        this.initialize();
     }
 
@@ -24,9 +28,12 @@ export default class ReversingValveEF17BZ251 {
 
             if (this.initObj.detailedView) {
                 this.initObj.detailedView.addVLabItem(this);
+                this.parent = this.initObj.detailedView;
             } else {
                 this.context.vLabScene.add(this.model);
+                this.parent = this.context;
             }
+
 
             if (this.pos) {
                 this.model.position.copy(this.pos);
@@ -45,7 +52,7 @@ export default class ReversingValveEF17BZ251 {
         var reversingValveEF17BZ251Tube = this.model.parent.getObjectByName("reversingValveEF17BZ251Tube");
         reversingValveEF17BZ251Tube.material.envMap = materialsObj.envMap;
         reversingValveEF17BZ251Tube.material.combine = THREE.MixOperation;
-        reversingValveEF17BZ251Tube.material.reflectivity = 0.075;
+        reversingValveEF17BZ251Tube.material.reflectivity = 0.055;
         reversingValveEF17BZ251Tube.material.needsUpdate = true;
 
         if (this.context.nature.bumpMaps) {
@@ -61,14 +68,13 @@ export default class ReversingValveEF17BZ251 {
                 console.error(error);
             });
         }
+
         if (this.context.nature.alphaMaps) {
             Promise.all([
                 textureLoader.load('/vlabs.items/hvac/reversingValveEF17BZ251/maps/reversingValveEF17BZ251TubeMaterialAlphaMap.jpg')
             ])
             .then((result) => {
-                reversingValveEF17BZ251Tube.material.alphaMap = result[0];
-                reversingValveEF17BZ251Tube.material.transparent = true;
-                reversingValveEF17BZ251Tube.material.needsUpdate = true;
+                this.reversingValveEF17BZ251TubeAlphaMap = result[0];
             })
             .catch(error => {
                 console.error(error);
@@ -86,9 +92,7 @@ export default class ReversingValveEF17BZ251 {
                 textureLoader.load('/vlabs.items/hvac/reversingValveEF17BZ251/maps/reversingValveEF17BZ251SmallValveFixtureMaterialAlpha.jpg')
             ])
             .then((result) => {
-                reversingValveEF17BZ251SmallValveFixture.material.alphaMap = result[0];
-                reversingValveEF17BZ251SmallValveFixture.material.transparent = true;
-                reversingValveEF17BZ251SmallValveFixture.material.needsUpdate = true;
+                this.reversingValveEF17BZ251SmallValveFixtureAlphaMap = result[0];
             })
             .catch(error => {
                 console.error(error);
@@ -96,37 +100,19 @@ export default class ReversingValveEF17BZ251 {
         }
 
         var reversingValveEF17BZ251SmallValveCylinder = this.model.parent.getObjectByName("reversingValveEF17BZ251SmallValveCylinder");
-        // if (this.context.nature.alphaMaps) {
-        //     Promise.all([
-        //         textureLoader.load('/vlabs.items/hvac/reversingValveEF17BZ251/maps/reversingValveEF17BZ251SmallValveCylinderMaterialAlpha.jpg')
-        //     ])
-        //     .then((result) => {
-        //         reversingValveEF17BZ251SmallValveCylinder.material.alphaMap = result[0];
-        //         reversingValveEF17BZ251SmallValveCylinder.material.transparent = true;
-        //         reversingValveEF17BZ251SmallValveCylinder.material.needsUpdate = true;
-        //     })
-        //     .catch(error => {
-        //         console.error(error);
-        //     });
-        // }
 
         var reversingValveEF17BZ251CoilFixture = this.model.parent.getObjectByName("reversingValveEF17BZ251CoilFixture");
         reversingValveEF17BZ251CoilFixture.material.envMap = materialsObj.envMap;
         reversingValveEF17BZ251CoilFixture.material.combine = THREE.MixOperation;
         reversingValveEF17BZ251CoilFixture.material.reflectivity = 0.05;
         reversingValveEF17BZ251CoilFixture.material.needsUpdate = true;
-
-        // var reversingValveEF17BZ251SmallValveFixtureP1 = this.model.parent.getObjectByName("reversingValveEF17BZ251SmallValveFixtureP1");
-        // reversingValveEF17BZ251SmallValveFixtureP1.visible = false;
-
-        var reversingValveEF17BZ251SmallValveCylinderP1 = this.model.parent.getObjectByName("reversingValveEF17BZ251SmallValveCylinderP1");
-        reversingValveEF17BZ251SmallValveCylinderP1.visible = false;
-
-        // console.log(reversingValveEF17BZ251Tube.material);
     }
 
     prepareInitialState() {
         var textureLoader = new THREE.TextureLoader();
+
+        var reversingValveEF17BZ251PlungeCapLookThrough = this.model.parent.getObjectByName("reversingValveEF17BZ251PlungeCapLookThrough");
+        reversingValveEF17BZ251PlungeCapLookThrough.visible = false;
 
         Promise.all([
             textureLoader.load('/vlabs.assets/img/look-through.png'),
@@ -135,47 +121,192 @@ export default class ReversingValveEF17BZ251 {
             var lookThroughSpriteTexture = result[0];
             var lookThroughSpriteMaterial = new THREE.SpriteMaterial({
                 map: lookThroughSpriteTexture,
-                color: 0x0000ff,
+                color: 0xffffff,
                 blending: THREE.AdditiveBlending,
                 transparent: true,
-                opacity: 0.5,
+                opacity: 0.45,
                 rotation: 0.0,
                 depthTest: true,
                 depthWrite: true
             });
 
-            var lookThroughSpriteMaterialRot = new THREE.SpriteMaterial({
-                map: lookThroughSpriteTexture,
-                color: 0x0000ff,
-                blending: THREE.AdditiveBlending,
-                transparent: true,
-                opacity: 0.5,
-                rotation: 0.0,
-                depthTest: true,
-                depthWrite: true,
-                rotation: Math.PI
-            });
+            this.reversingValveEF17BZ251PlungeCapLookSprite = new THREE.Sprite(lookThroughSpriteMaterial);
+            this.reversingValveEF17BZ251PlungeCapLookSprite.name = "reversingValveEF17BZ251PlungeCapLookSprite";
+            this.reversingValveEF17BZ251PlungeCapLookSprite.scale.set(0.015, 0.015, 0.015);
+            this.reversingValveEF17BZ251PlungeCapLookSprite.position.x -= 0.015;
+            this.reversingValveEF17BZ251PlungeCapLookSprite.position.y += -0.025;
+            this.reversingValveEF17BZ251PlungeCapLookSprite.position.z += 0.0;
+            this.reversingValveEF17BZ251PlungeCapLookSprite.mousePressHandler = function() {
+                var reversingValveEF17BZ251PlungeCap = this.model.parent.getObjectByName("reversingValveEF17BZ251PlungeCap");
+                var reversingValveEF17BZ251PlungeCapLookThrough = this.model.parent.getObjectByName("reversingValveEF17BZ251PlungeCapLookThrough");
+                if (reversingValveEF17BZ251PlungeCapLookThrough.visible) {
+                    reversingValveEF17BZ251PlungeCap.visible = true;
+                    reversingValveEF17BZ251PlungeCapLookThrough.visible = false;
+                } else {
+                    reversingValveEF17BZ251PlungeCap.visible = false;
+                    reversingValveEF17BZ251PlungeCapLookThrough.visible = true;
+                }
+            };
+            this.model.add(this.reversingValveEF17BZ251PlungeCapLookSprite);
+            this.reversingValveEF17BZ251PlungeCapLookSprite.visible = false;
+            this.accessableInteractiveELements.push(this.reversingValveEF17BZ251PlungeCapLookSprite);
 
             this.reversingValveEF17BZ251TubeBackWallLookSprite = new THREE.Sprite(lookThroughSpriteMaterial);
             this.reversingValveEF17BZ251TubeBackWallLookSprite.name = "reversingValveEF17BZ251TubeBackWallLookThroughHandler";
-            this.reversingValveEF17BZ251TubeBackWallLookSprite.scale.set(0.05, 0.025, 0.05);
+            this.reversingValveEF17BZ251TubeBackWallLookSprite.scale.set(0.02, 0.02, 0.02);
             this.reversingValveEF17BZ251TubeBackWallLookSprite.position.x += 0.0;
-            this.reversingValveEF17BZ251TubeBackWallLookSprite.position.y += -0.03;
+            this.reversingValveEF17BZ251TubeBackWallLookSprite.position.y += -0.045;
             this.reversingValveEF17BZ251TubeBackWallLookSprite.position.z += 0.0;
-
+            this.reversingValveEF17BZ251TubeBackWallLookSprite.mousePressHandler = function() {
+                var reversingValveEF17BZ251Tube = this.model.parent.getObjectByName("reversingValveEF17BZ251Tube");
+                if (reversingValveEF17BZ251Tube.material.transparent) {
+                    reversingValveEF17BZ251Tube.material.alphaMap = undefined;
+                    reversingValveEF17BZ251Tube.material.transparent = false;
+                    this.reversingValveEF17BZ251PlungeCapLookSprite.visible = false;
+                    this.reversingValveEF17BZ251TubeBackWallLookSprite.material.opacity = 0.45;
+                } else {
+                    reversingValveEF17BZ251Tube.material.alphaMap = this.reversingValveEF17BZ251TubeAlphaMap;
+                    reversingValveEF17BZ251Tube.material.transparent = true;
+                    this.reversingValveEF17BZ251PlungeCapLookSprite.visible = true;
+                    this.reversingValveEF17BZ251TubeBackWallLookSprite.material.opacity = 0.1;
+                }
+                reversingValveEF17BZ251Tube.material.needsUpdate = true;
+            };
             this.model.add(this.reversingValveEF17BZ251TubeBackWallLookSprite);
+            this.accessableInteractiveELements.push(this.reversingValveEF17BZ251TubeBackWallLookSprite);
 
-            this.reversingValveEF17BZ251SmallValveLookSprite = new THREE.Sprite(lookThroughSpriteMaterialRot);
+            this.reversingValveEF17BZ251SmallValveLookSprite = new THREE.Sprite(lookThroughSpriteMaterial);
             this.reversingValveEF17BZ251SmallValveLookSprite.name = "reversingValveEF17BZ251SmallValveLookSprite";
-            this.reversingValveEF17BZ251SmallValveLookSprite.scale.set(0.05, 0.025, 0.05);
+            this.reversingValveEF17BZ251SmallValveLookSprite.scale.set(0.02, 0.02, 0.02);
             this.reversingValveEF17BZ251SmallValveLookSprite.position.x += 0.0;
-            this.reversingValveEF17BZ251SmallValveLookSprite.position.y += 0.05;
+            this.reversingValveEF17BZ251SmallValveLookSprite.position.y += 0.065;
             this.reversingValveEF17BZ251SmallValveLookSprite.position.z += 0.0;
+            this.reversingValveEF17BZ251SmallValveLookSprite.mousePressHandler = function() {
+                var reversingValveEF17BZ251SmallValveFixture = this.model.parent.getObjectByName("reversingValveEF17BZ251SmallValveFixture");
+                var reversingValveEF17BZ251SmallValveCylinderP1 = this.model.parent.getObjectByName("reversingValveEF17BZ251SmallValveCylinderP1");
+                var reversingValveEF17BZ251CoilCoreP1 = this.model.parent.getObjectByName("reversingValveEF17BZ251CoilCoreP1");
+
+                if (reversingValveEF17BZ251SmallValveCylinderP1.visible) {
+                    reversingValveEF17BZ251SmallValveFixture.material.alphaMap = this.reversingValveEF17BZ251SmallValveFixtureAlphaMap;
+                    reversingValveEF17BZ251SmallValveFixture.material.transparent = true;
+    
+                    reversingValveEF17BZ251SmallValveCylinderP1.visible = false;
+            
+                    reversingValveEF17BZ251CoilCoreP1.visible = false;
+
+                    this.reversingValveEF17BZ251SmallValveLookSprite.material.opacity = 0.1;
+                } else {
+                    reversingValveEF17BZ251SmallValveFixture.material.alphaMap = undefined;
+                    reversingValveEF17BZ251SmallValveFixture.material.transparent = false;
+    
+                    reversingValveEF17BZ251SmallValveCylinderP1.visible = true;
+            
+                    reversingValveEF17BZ251CoilCoreP1.visible = true;
+
+                    this.reversingValveEF17BZ251SmallValveLookSprite.material.opacity = 0.45;
+                }
+                reversingValveEF17BZ251SmallValveFixture.material.needsUpdate = true;
+            };
 
             this.model.add(this.reversingValveEF17BZ251SmallValveLookSprite);
+            this.accessableInteractiveELements.push(this.reversingValveEF17BZ251SmallValveLookSprite);
         })
         .catch(error => {
             console.error(error);
         });
+
+        var highPressureLineMaterial = new THREE.LineBasicMaterial({
+            color: 0xff3d01,
+            linewidth: 4.0
+        });
+        var lowPressureLineMaterial = new THREE.LineBasicMaterial({
+            color: 0x046eff,
+            linewidth: 4.0
+        });
+
+        //High Pressure Main line
+        var curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0.0, 0.0, 0.15),
+            new THREE.Vector3(0.005, 0.0, 0.025),
+            new THREE.Vector3(0.032, 0.0, 0.0),
+            new THREE.Vector3(0.035, 0.0, -0.15),
+        ]);
+        var points = curve.getPoints(50);
+        var highPressureLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        this.highPressureMainLine1 = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine2 = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine2.position.y += 0.002;
+        this.highPressureMainLine2.position.x -= 0.002;
+        this.highPressureMainLine3 = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine3.position.y += 0.004;
+        this.highPressureMainLine3.position.x -= 0.004;
+        this.highPressureMainLine4 = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine4.position.y -= 0.002;
+        this.highPressureMainLine4.position.x -= 0.002;
+        this.highPressureMainLine5 = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine5.position.y -= 0.004;
+        this.highPressureMainLine5.position.x -= 0.004;
+
+        this.model.add(this.highPressureMainLine1);
+        this.model.add(this.highPressureMainLine2);
+        this.model.add(this.highPressureMainLine3);
+        this.model.add(this.highPressureMainLine4);
+        this.model.add(this.highPressureMainLine5);
+
+        //High Pressure Small line
+        var curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0.0, 0.0, 0.15),
+            new THREE.Vector3(0.0, 0.0087, 0.05),
+            new THREE.Vector3(0.0, 0.0193, 0.0493),
+            new THREE.Vector3(0.0, 0.0308, 0.0413),
+            new THREE.Vector3(0.001, 0.0356, 0.005),
+            new THREE.Vector3(0.006, 0.037, 0.0045),
+            new THREE.Vector3(0.007, 0.037, -0.008),
+        ]);
+        var points = curve.getPoints(50);
+        var highPressureSmallLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        this.highPressureSmallLine1 = new THREE.Line(highPressureSmallLineGeometry, highPressureLineMaterial);
+        this.model.add(this.highPressureSmallLine1);
+
+
+        //Low Pressure Main line
+        var curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-0.035, 0.0, -0.15),
+            new THREE.Vector3(-0.035, 0.0, 0.0),
+            new THREE.Vector3(-0.0175, 0.0, 0.01),
+            new THREE.Vector3(0.0, 0.0, 0.0),
+            new THREE.Vector3(0.0, 0.0, -0.15),
+        ]);
+        var points = curve.getPoints(50);
+        var lowPressureLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        this.lowPressureMainLine1 = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine2 = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine2.position.y += 0.002;
+        this.lowPressureMainLine2.position.z += 0.002;
+        this.lowPressureMainLine3 = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine3.position.y += 0.004;
+        this.lowPressureMainLine3.position.z += 0.004;
+        this.lowPressureMainLine4 = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine4.position.y -= 0.002;
+        this.lowPressureMainLine4.position.z += 0.002;
+        this.lowPressureMainLine5 = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine5.position.y -= 0.004;
+        this.lowPressureMainLine5.position.z += 0.004;
+
+        this.model.add(this.lowPressureMainLine1);
+        this.model.add(this.lowPressureMainLine2);
+        this.model.add(this.lowPressureMainLine3);
+        this.model.add(this.lowPressureMainLine4);
+        this.model.add(this.lowPressureMainLine5);
+    }
+
+    onReleaseGesture() {
+        this.parent.iteractionRaycaster.setFromCamera(this.parent.mouseCoordsRaycaster, this.parent.defaultCamera);
+        var interactionObjectIntersects = this.parent.iteractionRaycaster.intersectObjects(this.accessableInteractiveELements);
+        if (interactionObjectIntersects.length > 0) {
+            if (interactionObjectIntersects[0].object.mousePressHandler) {
+                interactionObjectIntersects[0].object.mousePressHandler.call(this);
+            }
+        }
     }
 }
