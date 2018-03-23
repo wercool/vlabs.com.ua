@@ -82,11 +82,10 @@ export default class VLab {
         this.interactivesSuppressorsObjects = [];
 
         this.hoveredObject = undefined;
+        this.hoveredResponsiveObject = undefined;
         this.preSelectedObject = undefined;
         this.selectedObject = undefined;
         this.selectionHelper = undefined;
-
-        this.hoveredResponsiveObject = undefined;
 
         this.takenObjects = {};
     }

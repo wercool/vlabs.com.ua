@@ -3,7 +3,7 @@ import VLab                 from '../../vlabs.core/vlab';
 import Inventory            from '../../vlabs.core/inventory';
 import DetailedView         from '../../vlabs.core/detailed-view';
 import ZoomHelper           from '../../vlabs.core/zoom-helper';
-var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
+import TransformControls    from '../../vlabs.core/three-transformcontrols/index';
 
 //VLab Items
 import BoshScrewdriver          from '../../vlabs.items/boshScrewdriver';
