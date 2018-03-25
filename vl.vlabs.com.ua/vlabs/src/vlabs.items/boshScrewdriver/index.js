@@ -5,8 +5,6 @@ import Inventory            from '../../vlabs.core/inventory';
 
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
 
-var self = undefined;
-
 export default class BoshScrewdriver {
 /*
 initObj {
@@ -25,14 +23,13 @@ initObj {
 
        this.accessableInteractiveELements = [];
 
-       self = this;
-
        this.initialize();
 
        this.prevTime = 0;
     }
 
     initialize() {
+        var self = this;
         this.context.loadVLabItem("/vlabs.items/boshScrewdriver/bosch-screwdriver.json", "BoshScrewdriver").then((scene) => {
             this.model = scene.children[0];
             if (this.initObj.name) {
@@ -110,12 +107,61 @@ initObj {
                     this.context.setInteractiveObjects();
                 }
             }
+
         }).catch(error => {
             console.error(error);
         });
     }
 
-    redererFrameEventHandler(time) {
+    addVLabEventListeners() {
+        //VLab events subscribers
+        this.context.webGLContainerEventsSubcribers.mousedown[this.name + "vLabSceneMouseDown"] = 
+        {
+            callback: this.onVLabSceneMouseDown,
+            instance: this
+        };
+        this.context.webGLContainerEventsSubcribers.touchstart[this.name + "vLabSceneTouchStart"] = 
+        {
+            callback: this.onVLabSceneTouchStart,
+            instance: this
+        };
+        this.context.webGLContainerEventsSubcribers.mouseup[this.name + "vLabSceneMouseUp"] = 
+        {
+            callback: this.onVLabSceneMouseUp,
+            instance: this
+        };
+        this.context.webGLContainerEventsSubcribers.touchend[this.name + "vLabSceneTouchEnd"] = 
+        {
+            callback: this.onVLabSceneTouchEnd,
+            instance: this
+        };
+        this.context.webGLContainerEventsSubcribers.mousemove[this.name + "vLabSceneMouseMove"] = 
+        {
+            callback: this.onVLabSceneMouseMove,
+            instance: this
+        };
+        this.context.webGLContainerEventsSubcribers.renderframe[this.name + "vLabSceneRenderFrame"] = 
+        {
+            callback: this.onVLabRedererFrameEvent,
+            instance: this
+        };
+    }
+
+    deleteVLabEventListeners() {
+        //VLab events subscribers
+        delete this.context.webGLContainerEventsSubcribers.mousedown[this.name + "vLabSceneMouseDown"]; 
+        delete this.context.webGLContainerEventsSubcribers.touchstart[this.name + "vLabSceneTouchStart"];
+        delete this.context.webGLContainerEventsSubcribers.mouseup[this.name + "vLabSceneMouseUp"];
+        delete this.context.webGLContainerEventsSubcribers.touchend[this.name + "vLabSceneTouchEnd"]
+        delete this.context.webGLContainerEventsSubcribers.mousemove[this.name + "vLabSceneMouseMove"];
+        delete this.context.webGLContainerEventsSubcribers.renderframe[this.name + "vLabSceneRenderFrame"];
+        this.context.cursorPointerControlFromVLabItem = false;
+    }
+
+    redererInventoryFrameEventHandler(time) {
+
+        var self = this;
+
         self.initObj.inventory.iteractionRaycaster.setFromCamera(self.initObj.inventory.mouseCoordsRaycaster, self.initObj.inventory.defaultCamera);
         var interactionObjectIntersects = self.initObj.inventory.iteractionRaycaster.intersectObjects(self.accessableInteractiveELements);
         if (interactionObjectIntersects.length > 0) {
@@ -129,25 +175,11 @@ initObj {
         } else {
             self.initObj.inventory.webGLContainer.style.cursor = 'auto';
         }
-
-        if (self.boschScrewdriverButtonPressed) {
-            self.boschScrewdriverButtonPressSoundTime += (time - self.prevTime) / 1000;
-            if (self.boschScrewdriverButtonPressSoundTime > 4.2) {
-                self.boschScrewdriverButtonPressSound.stop();
-                self.boschScrewdriverButtonPressSound.offset = 0.3;
-                self.boschScrewdriverButtonPressSound.play();
-                self.boschScrewdriverButtonPressSoundTime = 0;
-            }
-            self.model.getObjectByName("boschScrewdriverBitHolder").rotateZ(self.boschScrewdriverBitHolderSpeed);
-        }
-
-        TWEEN.update(time);
-
-        self.prevTime = time;
+        this.animate(time);
     }
 
     mouseUpHandler(event) {
-        self.boschScrewdriverButtonRelease.call(self);
+        this.boschScrewdriverButtonRelease();
     }
 
     boschScrewdriverButtonPress() {
@@ -184,5 +216,68 @@ initObj {
             .start();
 
         }
+    }
+
+    onVLabSceneTouchStart(event) {
+        this.onVLabSceneMouseDown(event);
+    }
+
+    onVLabSceneMouseDown(event) {
+        var interactiveObjectsWithInteractiveSuppressors = this.context.interactiveObjects.concat(this.context.interactivesSuppressorsObjects).concat(this.accessableInteractiveELements);
+
+        this.context.iteractionRaycaster.setFromCamera(this.context.mouseCoordsRaycaster, this.context.defaultCamera);
+        var interactionObjectIntersects = this.context.iteractionRaycaster.intersectObjects(interactiveObjectsWithInteractiveSuppressors);
+
+        if (interactionObjectIntersects.length > 0) {
+            switch (interactionObjectIntersects[0].object.name) {
+                case 'boschScrewdriverButton':
+                    this.boschScrewdriverButtonPress();
+                break;
+            }
+        }
+    }
+
+    onVLabSceneTouchEnd(evnet) {
+        this.onVLabSceneMouseUp(event);
+    }
+
+    onVLabSceneMouseUp(event) {
+        this.boschScrewdriverButtonRelease();
+    }
+
+    onVLabSceneMouseMove() {
+        var interactiveObjectsWithInteractiveSuppressors = this.context.interactiveObjects.concat(this.context.interactivesSuppressorsObjects).concat(this.accessableInteractiveELements);
+
+        this.context.webGLContainer.style.cursor = 'auto';
+
+        this.context.iteractionRaycaster.setFromCamera(this.context.mouseCoordsRaycaster, this.context.defaultCamera);
+        var interactionObjectIntersects = this.context.iteractionRaycaster.intersectObjects(interactiveObjectsWithInteractiveSuppressors);
+        if (interactionObjectIntersects.length > 0) {
+            if (this.interactiveElements.indexOf(interactionObjectIntersects[0].object) > -1) {
+                this.context.cursorPointerControlFromVLabItem = true;
+                this.context.webGLContainer.style.cursor = 'pointer';
+            }
+        }
+    }
+
+    onVLabRedererFrameEvent(event) {
+        this.animate();
+    }
+
+    animate(time) {
+        if (this.boschScrewdriverButtonPressed) {
+            this.boschScrewdriverButtonPressSoundTime += (time - this.prevTime) / 1000;
+            if (this.boschScrewdriverButtonPressSoundTime > 4.2) {
+                this.boschScrewdriverButtonPressSound.stop();
+                this.boschScrewdriverButtonPressSound.offset = 0.3;
+                this.boschScrewdriverButtonPressSound.play();
+                this.boschScrewdriverButtonPressSoundTime = 0;
+            }
+            this.model.getObjectByName("boschScrewdriverBitHolder").rotateZ(this.boschScrewdriverBitHolderSpeed);
+        }
+
+        TWEEN.update(time);
+
+        this.prevTime = time;
     }
 }

@@ -18,8 +18,8 @@ var CMenu                   = require('./circular-menu/circular-menu.js');
 var popupS                  = require('./popups/popupS.min.js');
 /*
 initObj {
-    "natureURL": "nature.json",
-    "webGLContainer": "webGLContainer"
+    name: "VLab Name",
+    natureURL: "nature.json",
 }
 */
 export default class VLab {
@@ -29,17 +29,20 @@ export default class VLab {
             throw new TypeError("Cannot construct VLab instances directly");
         }
 
-        /* Events */
-        this.sceneCompleteEvent = new Event('sceneCompleteEvent');
-        this.redererFrameEvent  = new Event('redererFrameEvent');
-        this.activatedEvent     = new Event('activatedEvent');
-
         this.initObj = initObj;
+        this.name = this.initObj.name;
         this.initialized = false;
         this.paused = true;
         this.nature = {};
         this.webGLContainer = undefined;
         this.webGLRenderer = undefined;
+
+        this.buildHTML();
+
+        /* Events */
+        this.sceneCompleteEvent = new Event(this.name + 'SceneCompleteEvent');
+        this.activatedEvent     = new Event(this.name + 'ActivatedEvent');
+        this.redererFrameEvent  = new Event(this.name + 'RedererFrameEvent');
 
         this.vLabScene = undefined;
         this.defaultCamera = undefined;
@@ -51,6 +54,7 @@ export default class VLab {
         this.progressBarPrependText = "";
 
         this.webGLContainerEventsSubcribers = {
+            renderframe: {},
             mousemove: {},
             mousedown: {},
             mouseup: {},
@@ -91,13 +95,71 @@ export default class VLab {
     }
 
     getVesrion() {
-        return "0.0.2";
+        return "0.1.0";
+    }
+
+    buildHTML() {
+        this.container = document.createElement('div');
+        this.container.id = this.initObj.name + 'VLabContainer';
+        if(document.body != null) {
+            document.body.appendChild(this.container);
+        }
+
+        this.overlayContainer = document.createElement('div');
+        this.overlayContainer.id = this.initObj.name + 'OverlayContainer';
+        this.overlayContainer.className = 'overlayContainer';
+
+        this.progressBarElement = document.createElement('div');
+        this.progressBarElement.id = this.initObj.name + 'ProgressBar';
+        this.progressBarElement.className = 'progressBar';
+
+        this.modalMessage = document.createElement('div');
+        this.modalMessage.id = this.initObj.name + 'ModalMessage';
+        this.modalMessage.className = 'modalMessage';
+
+        this.overlayContainer.appendChild(this.progressBarElement);
+        this.overlayContainer.appendChild(this.modalMessage);
+
+        this.container.appendChild(this.overlayContainer);
+
+        this.webGLContainer = document.createElement('div');
+        this.webGLContainer.id = this.initObj.name + 'WebGLContainer';
+        this.webGLContainer.className = 'webGLContainer';
+
+        this.container.appendChild(this.webGLContainer);
+
+        this.backFromViewButton = document.createElement('div');
+        this.backFromViewButton.id = this.initObj.name + 'BackFromView';
+        this.backFromViewButton.className = 'backFromView';
+
+        this.resetViewButton = document.createElement('div');
+        this.resetViewButton.id = this.initObj.name + 'ResetView';
+        this.resetViewButton.className = 'resetview';
+
+        this.fullscreenButton = document.createElement('div');
+        this.fullscreenButton.id = this.initObj.name + 'Fullscreen';
+        this.fullscreenButton.className = 'fullscreen';
+
+        this.webGLContainer.appendChild(this.backFromViewButton);
+        this.webGLContainer.appendChild(this.resetViewButton);
+        this.webGLContainer.appendChild(this.fullscreenButton);
+
+        this.tooltipPlacer = document.createElement('div');
+        this.tooltipPlacer.id = this.initObj.name + 'Tooltip';
+        this.tooltipPlacer.className = 'tooltip';
+
+        this.cMenuElement = document.createElement('div');
+        this.cMenuElement.id = this.initObj.name + 'CMenuElement';
+        this.cMenuElement.className = 'cMenu';
+
+        this.container.appendChild(this.tooltipPlacer);
+        this.container.appendChild(this.cMenuElement);
     }
 
     showErrorMessage(error) {
-        document.getElementById("overlayContainer").style.display = 'block';
-        document.getElementById("modalMessage").style.display = 'block';
-        document.getElementById("modalMessage").innerHTML = error.message;
+        this.overlayContainer.style.display = 'block';
+        this.modalMessage.style.display = 'block';
+        this.modalMessage.innerHTML = error.message;
         console.log(error);
     }
 
@@ -134,7 +196,6 @@ export default class VLab {
     }
 
     setWebGLRenderer() {
-        this.webGLContainer = document.getElementById(this.initObj.webGLContainer);
         this.webGLContainer.style.display = 'none';
 
         window.onresize = this.resiezeWebGLContainer.bind(this);
@@ -182,7 +243,7 @@ export default class VLab {
     }
 
     setProgressBar() {
-        this.progressBar = new ProgressBar.Line("#progressBar", {
+        this.progressBar = new ProgressBar.Line(this.progressBarElement, {
             strokeWidth: 4,
             easing: 'easeInOut',
             duration: 50,
@@ -273,7 +334,7 @@ export default class VLab {
 
         this.webGLContainer.addEventListener("mousemove", this.onMouseMove.bind(this), false);
         this.webGLContainer.addEventListener("mousedown", this.onMouseDown.bind(this), false);
-        window.addEventListener("mouseup", this.onMouseUpWindow.bind(this), false);
+        this.webGLContainer.addEventListener("mouseup", this.onMouseUpWindow.bind(this), false);
         this.webGLContainer.addEventListener("touchstart", this.onTouchStart.bind(this), false);
         this.webGLContainer.addEventListener("touchend", this.onTouchEnd.bind(this), false);
 
@@ -286,14 +347,11 @@ export default class VLab {
         document.addEventListener("webkitfullscreenchange", this.onFullscreenChanged.bind(this), false);
         document.addEventListener("msfullscreenchange", this.onFullscreenChanged.bind(this), false);
 
-        document.getElementById("fullscreen").addEventListener("mouseup", this.toggleFullscreen.bind(this), false);
-        document.getElementById("resetview").addEventListener("mouseup", this.resetView.bind(this), false);
-        document.getElementById("fullscreen").addEventListener("touchend", this.toggleFullscreen.bind(this), false);
-        document.getElementById("resetview").addEventListener("touchend", this.resetView.bind(this), false);
+        this.fullscreenButton.addEventListener("mouseup", this.toggleFullscreen.bind(this), false);
+        this.resetViewButton.addEventListener("mouseup", this.resetView.bind(this), false);
+        this.fullscreenButton.addEventListener("touchend", this.toggleFullscreen.bind(this), false);
+        this.resetViewButton.addEventListener("touchend", this.resetView.bind(this), false);
         // this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
-
-        document.getElementById("fullscreen").style.display = 'block';
-        document.getElementById("resetview").style.display = 'block';
 
         this.setInteractiveObjects();
         this.setReponsiveObjects();
@@ -305,8 +363,11 @@ export default class VLab {
         this.setupCircularMenu();
         this.prepareHelperAssets();
 
-        document.getElementById("overlayContainer").style.display = 'none';
-        document.getElementById("progressBar").style.display = 'none';
+        this.fullscreenButton.style.display = 'block';
+        this.resetViewButton.style.display = 'block';
+
+        this.overlayContainer.style.display = 'none';
+        this.progressBarElement.style.display = 'none';
 
         this.webGLContainer.style.display = 'block';
         this.resiezeWebGLContainer();
@@ -356,8 +417,8 @@ export default class VLab {
     loadVLabItem(itemURL, vlabItemName) {
         return new Promise((resolve, reject) => {
             let thisVLab = this;
-            document.getElementById("overlayContainer").style.display = 'block';
-            document.getElementById("progressBar").style.display = 'block';
+            this.overlayContainer.style.display = 'block';
+            this.overlayContainer.style.display = 'block';
             thisVLab.progressBarPrependText = (vlabItemName)? "VLab Item [" + vlabItemName + "] is loaded by " : "VLab item is loaded by ";
             if (itemURL) {
                 let loader = new THREE.ObjectLoader();
@@ -366,15 +427,15 @@ export default class VLab {
                     // onLoad callback
                     function (vLabItem) {
                         resolve(vLabItem);
-                        document.getElementById("overlayContainer").style.display = 'none';
-                        document.getElementById("progressBar").style.display = 'none';
+                        thisVLab.overlayContainer.style.display = 'none';
+                        thisVLab.progressBarElement.style.display = 'none';
                     },
                     // onProgress callback
                     function (bytes) {
                         let loadedRel = (bytes.loaded / bytes.total).toFixed(2);
                         console.info("VLab Item" + ((vlabItemName) ? (" [" + vlabItemName) + "] " : " ") + (loadedRel * 100).toFixed(2) + "% loaded");
 
-                        if (thisVLab.progressBar) {
+                        if (thisVLab.progressBarElement) {
                             thisVLab.progressBar.animate(loadedRel);
                         }
                     },
@@ -410,6 +471,13 @@ export default class VLab {
 
             dispatchEvent(this.redererFrameEvent);
 
+            this.webGLContainerEventsSubcribers
+
+            for (var renderFrameEventSubscriberName in this.webGLContainerEventsSubcribers.renderframe) {
+                var subscriber = this.webGLContainerEventsSubcribers.renderframe[renderFrameEventSubscriberName];
+                subscriber.callback.call(subscriber.instance, event);
+            }
+
             requestAnimationFrame(this.render.bind(this));
         } else {
             setTimeout(this.render.bind(this), 250);
@@ -420,6 +488,11 @@ export default class VLab {
         this.mouseCoords.set(event.x, event.y);
         this.mouseCoordsRaycaster.set((event.x / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.y / this.webGLContainer.clientHeight) * 2);
         this.defaultCameraControls.active = true;
+
+        for (var mouseMoveEventSubscriberName in this.webGLContainerEventsSubcribers.mousemove) {
+            var subscriber = this.webGLContainerEventsSubcribers.mousemove[mouseMoveEventSubscriberName];
+            subscriber.callback.call(subscriber.instance, event);
+        }
     }
 
     onMouseDown(event) {
@@ -427,6 +500,11 @@ export default class VLab {
         this.mouseCoordsRaycaster.set((event.x / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.y / this.webGLContainer.clientHeight) * 2);
         this.toggleSelectedObject();
         this.executeActions();
+
+        for (var mouseDownEventSubscriberName in this.webGLContainerEventsSubcribers.mousedown) {
+            var subscriber = this.webGLContainerEventsSubcribers.mousedown[mouseDownEventSubscriberName];
+            subscriber.callback.call(subscriber.instance, event);
+        }
     }
 
     onMouseUpWindow(event) {
@@ -463,6 +541,11 @@ export default class VLab {
         event.preventDefault();
         this.mouseCoords.set(event.touches[0].clientX, event.touches[0].clientY);
         this.mouseCoordsRaycaster.set((event.touches[0].clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.touches[0].clientY / this.webGLContainer.clientHeight) * 2);
+
+        for (var touchStartEventSubscriberName in this.webGLContainerEventsSubcribers.touchstart) {
+            var subscriber = this.webGLContainerEventsSubcribers.touchstart[touchStartEventSubscriberName];
+            subscriber.callback.call(subscriber.instance, event);
+        }
     }
 
     onTouchEnd(event) {
@@ -498,7 +581,7 @@ export default class VLab {
             } else if(document.webkitExitFullscreen) {
                 document.webkitExitFullscreen();
             }
-            document.getElementById("fullscreen").style.backgroundImage = "url('../vlabs.assets/img/fullscreen.png')";
+            this.fullscreenButton.style.backgroundImage = "url('../vlabs.assets/img/fullscreen.png')";
         }
     }
 
@@ -677,7 +760,11 @@ export default class VLab {
                 if (this.hoveredObject) {
                     this.hoveredObject = undefined;
                 }
-                this.webGLContainer.style.cursor = 'auto';
+                if (!this.cursorPointerControlFromVLabItem) {
+                    this.webGLContainer.style.cursor = 'auto';
+                } else {
+                    this.cursorPointerControlFromVLabItem = false;
+                }
             }
 
             if (this.selectedObject) {
@@ -840,8 +927,10 @@ export default class VLab {
         for (var interactiveObject of this.interactiveObjects) {
             if (this.selectedObject != interactiveObject) {
                 var selectionSphere = this.vLabScene.getObjectByName(interactiveObject.name + "_SELECTION");
-                selectionSphere.visible = false;
-                selectionSphere.material.color = new THREE.Color(1, 1, 0);
+                if (selectionSphere) {
+                    selectionSphere.visible = false;
+                    selectionSphere.material.color = new THREE.Color(1, 1, 0);
+                }
             }
         }
         this.tooltipHide();
@@ -980,7 +1069,7 @@ export default class VLab {
     }
 
     setupCircularMenu() {
-        this.cMenu = CMenu("#cMenu");
+        this.cMenu = CMenu(this.cMenuElement);
         this.cMenu.setContext(this);
     }
 
@@ -989,7 +1078,7 @@ export default class VLab {
             return;
         }
         if (this.nature.objectMenus[this.selectedObject.name]) {
-            document.getElementById("cMenu").innerHTML = "";
+            this.cMenuElement.innerHTML = "";
             if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
                 this.cMenu.config({
                     menus: this.nature.objectMenus[this.selectedObject.name][this.nature.lang]
@@ -1017,14 +1106,13 @@ export default class VLab {
     tooltipShow(obj) {
         if (this.nature.tooltips === undefined) return;
 
-        var tooltip = document.getElementById("tooltip");
         if (obj.userData.tooltipShown === undefined) obj.userData.tooltipShown = 0;
         if (this.nature.tooltips[obj.name] && (obj.userData.tooltipShown <= this.nature.tooltips[obj.name].timesToShow || !this.nature.tooltips[obj.name].timesToShow)) {
             var screenPos = this.toScreenPosition(obj);
-            tooltip.innerText = this.nature.tooltips[obj.name][this.nature.lang];
-            tooltip.style.left = screenPos.x + 'px';
-            tooltip.style.top = screenPos.y + 25 + 'px';
-            tooltip.style.display = 'block';
+            this.tooltipPlacer.innerText = this.nature.tooltips[obj.name][this.nature.lang];
+            this.tooltipPlacer.style.left = screenPos.x + 'px';
+            this.tooltipPlacer.style.top = screenPos.y + 25 + 'px';
+            this.tooltipPlacer.style.display = 'block';
             if (obj !== this.hoveredObject)
                 obj.userData.tooltipShown++;
         } else {
@@ -1033,10 +1121,10 @@ export default class VLab {
     }
 
     tooltipHide() {
-        tooltip.innerText = "";
-        tooltip.style.left = '0px';
-        tooltip.style.top = '0px';
-        tooltip.style.display = 'none';
+        this.tooltipPlacer.innerText = "";
+        this.tooltipPlacer.style.left = '0px';
+        this.tooltipPlacer.style.top = '0px';
+        this.tooltipPlacer.style.display = 'none';
     }
 
     setTHREEStats() {
@@ -1061,7 +1149,7 @@ export default class VLab {
                 element.msRequestFullscreen();
             }
             this.cMenu.hide();
-            document.getElementById("fullscreen").style.backgroundImage = "url('../vlabs.assets/img/fullscreen-exit.png')";
+            this.fullscreenButton.style.backgroundImage = "url('../vlabs.assets/img/fullscreen-exit.png')";
         } else {
             if(document.exitFullscreen) {
                 document.exitFullscreen();
@@ -1070,7 +1158,7 @@ export default class VLab {
             } else if(document.webkitExitFullscreen) {
                 document.webkitExitFullscreen();
             }
-            document.getElementById("fullscreen").style.backgroundImage = "url('../vlabs.assets/img/fullscreen.png')";
+            this.fullscreenButton.style.backgroundImage = "url('../vlabs.assets/img/fullscreen.png')";
         }
     }
 
@@ -1134,7 +1222,9 @@ export default class VLab {
         if (this.inventory) {
 
             var self = this;
-            this.selectedObject.takenRotation.stop();
+            if (this.selectedObject.takenRotation) {
+                this.selectedObject.takenRotation.stop();
+            }
             this.selectedObject.traverse(function(node) {
                 if (node.type === "Mesh") {
                     if (node.name !== self.selectedObject.name + "_SELECTION") {

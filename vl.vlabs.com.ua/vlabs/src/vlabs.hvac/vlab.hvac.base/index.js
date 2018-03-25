@@ -15,9 +15,9 @@ class VlabHVACBase extends VLab {
     constructor(initObj = {}) {
         super(initObj);
 
-        addEventListener("redererFrameEvent",  this.onRedererFrameEvent.bind(this), false);
-        addEventListener("sceneCompleteEvent", this.onSceneCompleteEvent.bind(this), false);
-        addEventListener("activatedEvent", this.onActivatedEvent.bind(this), false);
+        addEventListener(this.name + "SceneCompleteEvent", this.onSceneCompleteEvent.bind(this), false);
+        addEventListener(this.name + "ActivatedEvent", this.onActivatedEvent.bind(this), false);
+        addEventListener(this.name + "RedererFrameEvent",  this.onRedererFrameEvent.bind(this), false);
 
         document.addEventListener("keydown", this.onKeyDown.bind(this), false);
 
@@ -42,7 +42,7 @@ class VlabHVACBase extends VLab {
             light1.position.set(0.0, 6.0, 3.0);
             this.vLabScene.add(light1);
 
-            console.log("initialized");
+            console.log(this.name + " initialized");
         }).catch(error => {
             console.error(error);
             this.showErrorMessage(error);
@@ -157,7 +157,7 @@ class VlabHVACBase extends VLab {
             context: this,
             pos: new THREE.Vector3(0.5, 0.2, 0.0),
             name: "BoshScrewdriver",
-            manipulation: true,
+            // manipulation: true,
             interactive: true,
             inventory: this.inventory
         });
@@ -221,6 +221,6 @@ class VlabHVACBase extends VLab {
 }
 
 let vlabHVACBase = new VlabHVACBase({
-    "natureURL": "./resources/nature.json",
-    "webGLContainer": "webGLContainer"
+    name: "BriantB225BHeatPump",
+    natureURL: "./resources/nature.json"
 });

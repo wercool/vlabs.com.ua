@@ -46,10 +46,12 @@ export default class DetailedView {
         this.container.id = this.initObj.targetObjectName + 'DetailedViewContainer';
         this.container.className = 'detailedViewContainer';
         this.container.style.display = 'none';
-        document.getElementById("overlayContainer").appendChild(this.container);
+        
+        this.context.overlayContainer.appendChild(this.container);
 
         this.closeBtn = document.createElement('div');
-        this.closeBtn.id = 'detailedViewCloseButton';
+        this.closeBtn.id = this.initObj.targetObjectName + 'detailedViewCloseButton';
+        this.closeBtn.className = 'detailedViewCloseButton';
         this.container.appendChild(this.closeBtn);
         this.closeBtn.addEventListener("mousedown", this.close.bind(this), false);
         this.closeBtn.addEventListener("touchend", this.close.bind(this), false);
@@ -209,18 +211,23 @@ export default class DetailedView {
 
     activate() {
         this.context.paused = true;
-        document.getElementById("fullscreen").style.display = 'none';
-        document.getElementById("resetview").style.display = 'none';
-        document.getElementById("modalMessage").style.display = 'none';
-        document.getElementById("progressBar").style.display = 'none';
-        this.context.statsTHREE.domElement.style.display = 'none';
-        document.getElementById("toolbox").style.display = 'none';
 
-        if (this.context.zoomHelperMode) {
-            document.getElementById("back").style.display = 'none';
+        this.context.statsTHREE.domElement.style.display = 'none';
+        if (this.context.toolboxBtn) {
+            this.context.toolboxBtn.style.display = 'none';
         }
 
-        document.getElementById("overlayContainer").style.display = 'block';
+        this.context.fullscreenButton.style.display = 'none';
+        this.context.resetViewButton.style.display = 'none';
+
+        this.context.modalMessage.style.display = 'none';
+        this.context.progressBarElement.style.display = 'none';
+
+        if (this.context.zoomHelperMode) {
+            this.context.backFromViewButton.style.display = 'none';
+        }
+
+        this.context.overlayContainer.style.display = 'block';
         this.container.style.display = 'block';
 
         this.paused = false;
@@ -233,17 +240,19 @@ export default class DetailedView {
         this.paused = true;
 
         this.container.style.display = 'none';
-        document.getElementById("overlayContainer").style.display = 'none';
+        this.context.overlayContainer.style.display = 'none';
 
         this.context.paused = false;
         this.context.statsTHREE.domElement.style.display = 'block';
-        document.getElementById("toolbox").style.display = 'block';
+        if (this.context.toolboxBtn) {
+            this.context.toolboxBtn.style.display = 'block';
+        }
 
-        document.getElementById("fullscreen").style.display = 'block';
-        document.getElementById("resetview").style.display = 'block';
+        this.context.fullscreenButton.style.display = 'block';
+        this.context.resetViewButton.style.display = 'block';
 
         if (this.context.zoomHelperMode) {
-            document.getElementById("back").style.display = 'block';
+            this.context.backFromViewButton.style.display = 'block';
         }
 
         this.context.mouseCoordsRaycaster.set(-1.0, -1.0);

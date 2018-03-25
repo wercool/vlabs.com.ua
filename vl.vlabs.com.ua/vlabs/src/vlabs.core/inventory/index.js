@@ -9,134 +9,146 @@ export default class Inventory {
         "context": VLab
     }
     */
-        constructor(initObj) {
-           this.initObj = initObj;
-           this.context = initObj.context;
+    constructor(initObj) {
+        this.initObj = initObj;
+        this.context = initObj.context;
 
-           this.paused = true;
+        this.paused = true;
 
-           this.items = {};
-           this.currentItemIdx = 0;
+        this.items = {};
+        this.currentItemIdx = 0;
 
-           this.mouseCoordsRaycaster = new THREE.Vector2();
-           this.iteractionRaycaster = new THREE.Raycaster();
+        this.mouseCoordsRaycaster = new THREE.Vector2();
+        this.iteractionRaycaster = new THREE.Raycaster();
 
-           this.initialize();
-        }
+        this.initialize();
+    }
 
-        initialize() {
-            this.toolboxBtn = document.createElement('div');
-            this.toolboxBtn.id = 'toolbox';
-            document.getElementById("webGLContainer").appendChild(this.toolboxBtn);
-            this.toolboxBtn.addEventListener("mousedown", this.activate.bind(this), false);
-            this.toolboxBtn.addEventListener("touchstart", this.activate.bind(this), false);
+    initialize() {
+        this.context.toolboxBtn = document.createElement('div');
+        this.context.toolboxBtn.id = this.context.name + 'Toolbox';
+        this.context.toolboxBtn.className = 'toolbox';
 
-            window.addEventListener('resize', function(event){
-                this.resiezeWebGLContainer();
-            }.bind(this));
+        this.context.webGLContainer.appendChild(this.context.toolboxBtn);
 
-            this.container = document.createElement('div');
-            this.container.id = 'inventoryContainer';
-            document.getElementById("overlayContainer").appendChild(this.container);
+        this.context.toolboxBtn.addEventListener("mousedown", this.activate.bind(this), false);
+        this.context.toolboxBtn.addEventListener("touchstart", this.activate.bind(this), false);
 
-            this.webGLContainer = document.createElement('div');
-            this.webGLContainer.id = 'inventoryWebGLContainer';
-            this.container.appendChild(this.webGLContainer);
-
-            this.webGLRenderer = new THREE.WebGLRenderer({
-                antialias: false,
-                powerPreference: 'high-performance',
-                precision: 'lowp'
-            });
-            this.webGLRenderer.setClearColor(0x214761);
-
-            this.webGLContainer.addEventListener("mousemove", this.onMouseMove.bind(this), false);
-            this.webGLContainer.addEventListener("mousedown", this.onMouseDown.bind(this), false);
-            this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
-            this.webGLContainer.addEventListener("touchstart", this.onTouchStart.bind(this), false);
-            this.webGLContainer.addEventListener("touchend", this.onTouchEnd.bind(this), false);
-
-            this.webGLContainer.appendChild(this.webGLRenderer.domElement);
-            this.webGLRenderer.domElement.addEventListener('contextmenu', function(event) {
-                if (event.button == 2) {
-                    event.preventDefault();
-                }
-            });
-
-            this.scene = new THREE.Scene();
-            this.defaultCamera = new THREE.PerspectiveCamera(70, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.01, 5.0);
-
-            this.defaultCameraControls = new OrbitControls(this.defaultCamera, this.webGLContainer, new THREE.Vector3(0, 0.2, 0.25));
-            this.defaultCameraControls.enablePan = true;
-            this.defaultCameraControls.minDistance = 0.1;
-            this.defaultCameraControls.maxDistance = 0.35;
-            this.defaultCameraControls.maxPolarAngle = Math.PI;
-            this.defaultCameraControls.minPolarAngle = 0.0;
-            this.defaultCameraControls.autoRotate = true;
-
-            var light0 = new THREE.AmbientLight(0xffffff, 0.35);
-            this.scene.add(light0);
-
-            var light1 = new THREE.PointLight(0xffffff, 1.5);
-            light1.position.set(0.0, 1.0, 3.0);
-            this.scene.add(light1);
-
-            this.infoBox = document.createElement('div');
-            this.infoBox.id = 'inventoryInfoBox';
-            this.container.appendChild(this.infoBox);
-
-            this.closeBtn = document.createElement('div');
-            this.closeBtn.id = 'inventoryCloseButton';
-            this.container.appendChild(this.closeBtn);
-            this.closeBtn.addEventListener("mousedown", this.close.bind(this), false);
-
-            this.nextItemButton = document.createElement('div');
-            this.nextItemButton.id = 'nextItemButton';
-            this.container.appendChild(this.nextItemButton);
-            this.nextItemButton.addEventListener("mousedown", this.setNextItem.bind(this), false);
-
-            this.prevItemButton = document.createElement('div');
-            this.prevItemButton.id = 'prevItemButton';
-            this.container.appendChild(this.prevItemButton);
-            this.prevItemButton.addEventListener("mousedown", this.setPrevItem.bind(this), false);
-
-            this.takeButton = document.createElement('div');
-            this.takeButton.id = 'takeButton';
-            var takeIcon = document.createElement('li');
-            takeIcon.className = "fa fa-hand-rock";
-            this.takeButton.appendChild(takeIcon);
-            this.container.appendChild(this.takeButton);
-            this.takeButton.addEventListener("mousedown", this.takeItem.bind(this), false);
-
-            console.log("Inventory initialization");
-        }
-
-        activate() {
-            this.context.paused = true;
-            document.getElementById("fullscreen").style.display = 'none';
-            document.getElementById("resetview").style.display = 'none';
-            document.getElementById("modalMessage").style.display = 'none';
-            document.getElementById("progressBar").style.display = 'none';
-            this.context.statsTHREE.domElement.style.display = 'none';
-            document.getElementById("toolbox").style.display = 'none';
-
-            this.defaultCameraControls.initialState = true;
-            this.defaultCameraControls.object.position.copy(new THREE.Vector3(0, 0.2, 0.35));
-
-            this.container.style.display = 'block';
-            document.getElementById("overlayContainer").style.display = 'block';
-            
-            var itemsKeys = Object.keys(this.items);
-            if (itemsKeys.length > 0) {
-                this.takeButton.style.display = 'block';
-            } else {
-                this.takeButton.style.display = 'none';
-            }
-
-            this.paused = false;
+        window.addEventListener('resize', function(event){
             this.resiezeWebGLContainer();
-            this.render();
+        }.bind(this));
+
+        this.container = document.createElement('div');
+        this.container.id = this.context.name + 'InventoryContainer';
+        this.container.className = 'inventoryContainer';
+        this.context.overlayContainer.appendChild(this.container);
+
+        this.webGLContainer = document.createElement('div');
+        this.webGLContainer.id = this.context.name + 'InventoryWebGLContainer';
+        this.webGLContainer.className = 'inventoryWebGLContainer';
+
+        this.container.appendChild(this.webGLContainer);
+
+        this.webGLRenderer = new THREE.WebGLRenderer({
+            antialias: false,
+            powerPreference: 'high-performance',
+            precision: 'lowp'
+        });
+        this.webGLRenderer.setClearColor(0x214761);
+
+        this.webGLContainer.addEventListener("mousemove", this.onMouseMove.bind(this), false);
+        this.webGLContainer.addEventListener("mousedown", this.onMouseDown.bind(this), false);
+        this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
+        this.webGLContainer.addEventListener("touchstart", this.onTouchStart.bind(this), false);
+        this.webGLContainer.addEventListener("touchend", this.onTouchEnd.bind(this), false);
+
+        this.webGLContainer.appendChild(this.webGLRenderer.domElement);
+        this.webGLRenderer.domElement.addEventListener('contextmenu', function(event) {
+            if (event.button == 2) {
+                event.preventDefault();
+            }
+        });
+
+        this.scene = new THREE.Scene();
+        this.defaultCamera = new THREE.PerspectiveCamera(70, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.01, 5.0);
+
+        this.defaultCameraControls = new OrbitControls(this.defaultCamera, this.webGLContainer, new THREE.Vector3(0, 0.2, 0.25));
+        this.defaultCameraControls.enablePan = true;
+        this.defaultCameraControls.minDistance = 0.1;
+        this.defaultCameraControls.maxDistance = 0.35;
+        this.defaultCameraControls.maxPolarAngle = Math.PI;
+        this.defaultCameraControls.minPolarAngle = 0.0;
+        this.defaultCameraControls.autoRotate = true;
+
+        var light0 = new THREE.AmbientLight(0xffffff, 0.35);
+        this.scene.add(light0);
+
+        var light1 = new THREE.PointLight(0xffffff, 1.5);
+        light1.position.set(0.0, 1.0, 3.0);
+        this.scene.add(light1);
+
+        this.infoBox = document.createElement('div');
+        this.infoBox.id = this.context.name + 'InventoryInfoBox';
+        this.infoBox.className = 'inventoryInfoBox';
+        this.container.appendChild(this.infoBox);
+
+        this.closeBtn = document.createElement('div');
+        this.closeBtn.id = this.context.name + 'InventoryCloseButton';
+        this.closeBtn.className = 'inventoryCloseButton';
+        this.container.appendChild(this.closeBtn);
+        this.closeBtn.addEventListener("mousedown", this.close.bind(this), false);
+
+        this.nextItemButton = document.createElement('div');
+        this.nextItemButton.id = this.context.name + 'InventoryNextItemButton';
+        this.nextItemButton.className = 'inventoryNextItemButton';
+        this.container.appendChild(this.nextItemButton);
+        this.nextItemButton.addEventListener("mousedown", this.setNextItem.bind(this), false);
+
+        this.prevItemButton = document.createElement('div');
+        this.prevItemButton.id = this.context.name + 'InventoryPrevItemButton';
+        this.prevItemButton.className = 'inventoryPrevItemButton';
+        this.container.appendChild(this.prevItemButton);
+        this.prevItemButton.addEventListener("mousedown", this.setPrevItem.bind(this), false);
+
+        this.takeButton = document.createElement('div');
+        this.takeButton.id = this.context.name + 'InventoryTakeButton';
+        this.takeButton.className = 'inventoryTakeButton';
+        var takeIcon = document.createElement('li');
+        takeIcon.className = "fa fa-hand-rock";
+        this.takeButton.appendChild(takeIcon);
+        this.container.appendChild(this.takeButton);
+        this.takeButton.addEventListener("mousedown", this.takeItem.bind(this), false);
+
+        console.log(this.context.name + " Inventory initialization");
+    }
+
+    activate() {
+        this.context.paused = true;
+
+        this.context.fullscreenButton.style.display = 'none';
+        this.context.resetViewButton.style.display = 'none';
+        this.context.modalMessage.style.display = 'none';
+        this.context.progressBarElement.style.display = 'none';
+        this.context.statsTHREE.domElement.style.display = 'none';
+        this.context.toolboxBtn.style.display = 'none';
+
+        this.defaultCameraControls.initialState = true;
+        this.defaultCameraControls.object.position.copy(new THREE.Vector3(0, 0.2, 0.35));
+
+        this.container.style.display = 'block';
+        this.context.overlayContainer.style.display = 'block';
+        
+        var itemsKeys = Object.keys(this.items);
+        if (itemsKeys.length > 0) {
+            this.takeButton.style.display = 'block';
+        } else {
+            this.takeButton.style.display = 'none';
         }
+
+        this.paused = false;
+        this.resiezeWebGLContainer();
+        this.render();
+    }
 
 
     resiezeWebGLContainer() {
@@ -156,8 +168,8 @@ export default class Inventory {
 
             var itemsKeys = Object.keys(this.items);
             if (this.items[itemsKeys[this.currentItemIdx]].vLabItem) {
-                if (this.items[itemsKeys[this.currentItemIdx]].vLabItem.redererFrameEventHandler) {
-                    this.items[itemsKeys[this.currentItemIdx]].vLabItem.redererFrameEventHandler(time);
+                if (this.items[itemsKeys[this.currentItemIdx]].vLabItem.redererInventoryFrameEventHandler) {
+                    this.items[itemsKeys[this.currentItemIdx]].vLabItem.redererInventoryFrameEventHandler(time);
                 }
             }
 
@@ -171,22 +183,27 @@ export default class Inventory {
     close() {
         this.paused = false;
         this.container.style.display = 'none';
-        document.getElementById("overlayContainer").style.display = 'none';
+        this.context.overlayContainer.style.display = 'none';
 
         this.context.paused = false;
         this.context.statsTHREE.domElement.style.display = 'block';
-        document.getElementById("toolbox").style.display = 'block';
+        this.context.toolboxBtn.style.display = 'block';
 
-        document.getElementById("fullscreen").style.display = 'block';
-        document.getElementById("resetview").style.display = 'block';
+        this.context.fullscreenButton.style.display = 'block';
+        this.context.resetViewButton.style.display = 'block';
 
-        console.log("Inventory closed");
+        console.log(this.context.name + " Inventory closed");
     }
 
     addItem(itemObj) {
         this.scene.add(itemObj.item);
         this.items[itemObj.item.name] = itemObj;
         this.setCurrentItem(itemObj);
+        if (itemObj.vLabItem) {
+            if (itemObj.vLabItem.deleteVLabEventListeners) {
+                itemObj.vLabItem.deleteVLabEventListeners();
+            }
+        }
     }
 
     setCurrentItem(itemObj) {
@@ -245,6 +262,9 @@ export default class Inventory {
         var takenItem = this.items[itemsKeys[this.currentItemIdx]].item;
         takenItem.userData["initObj"] = this.items[itemsKeys[this.currentItemIdx]].initObj;
         takenItem.userData["VLabItem"] = this.items[itemsKeys[this.currentItemIdx]].vLabItem;
+        if (takenItem.userData["VLabItem"].addVLabEventListeners) {
+            takenItem.userData["VLabItem"].addVLabEventListeners();
+        }
         this.context.vLabScene.add(takenItem);
 
         if (this.items[itemsKeys[this.currentItemIdx]].initObj.interactive) {

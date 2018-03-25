@@ -6,9 +6,9 @@ class VlabApartment extends VLab {
     constructor(initObj = {}) {
         super(initObj);
 
-        addEventListener("redererFrameEvent",  this.onRedererFrameEvent.bind(this), false);
-        addEventListener("sceneCompleteEvent", this.onSceneCompleteEvent.bind(this), false);
-        addEventListener("activatedEvent", this.onActivatedEvent.bind(this), false);
+        addEventListener(this.name + "SceneCompleteEvent", this.onSceneCompleteEvent.bind(this), false);
+        addEventListener(this.name + "ActivatedEvent", this.onActivatedEvent.bind(this), false);
+        addEventListener(this.name + "RedererFrameEvent",  this.onRedererFrameEvent.bind(this), false);
 
         document.addEventListener("keydown", this.onKeyDown.bind(this), false);
 

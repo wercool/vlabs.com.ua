@@ -140,11 +140,11 @@ export default class ZoomHelper {
                 this.context.defaultCameraControls.update();
             })
             .onComplete(() => {
-                document.getElementById("back").style.display = 'block';
-                document.getElementById("back").removeEventListener("mouseup", this.reset);
-                document.getElementById("back").removeEventListener("touchend", this.reset);
-                document.getElementById("back").addEventListener("mouseup", this.reset.bind(this), false);
-                document.getElementById("back").addEventListener("touchend", this.reset.bind(this), false);
+                this.context.backFromViewButton.style.display = 'block';
+                this.context.backFromViewButton.removeEventListener("mouseup", this.reset);
+                this.context.backFromViewButton.removeEventListener("touchend", this.reset);
+                this.context.backFromViewButton.addEventListener("mouseup", this.reset.bind(this), false);
+                this.context.backFromViewButton.addEventListener("touchend", this.reset.bind(this), false);
 
                 this.context.zoomHelperMode = true;
                 })
@@ -185,9 +185,9 @@ export default class ZoomHelper {
         this.context.defaultCameraControls.enableZoom = true;
         this.context.defaultCameraControls.enablePan = true;
         this.context.defaultCameraControls.backState = undefined;
-        document.getElementById("back").removeEventListener("mouseup", this.reset);
-        document.getElementById("back").removeEventListener("touchend", this.reset);
-        document.getElementById("back").style.display = 'none';
+        this.context.backFromViewButton.removeEventListener("mouseup", this.reset);
+        this.context.backFromViewButton.removeEventListener("touchend", this.reset);
+        this.context.backFromViewButton.style.display = 'none';
 
         this.handlerSprite.visible = true;
     }

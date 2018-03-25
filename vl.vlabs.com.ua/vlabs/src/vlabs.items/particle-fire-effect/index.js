@@ -1,12 +1,10 @@
 import * as THREE           from 'three';
 import particleFire         from 'three-particle-fire';
 
-var self = undefined;
-
 export default class ParticleFireEffect {
     constructor(initObj) {
-        self = this;
         this.initObj = initObj;
+        this.context = this.initObj.context;
         this.clock = new THREE.Clock();
         this.initializeEffect();
     }
@@ -24,22 +22,28 @@ export default class ParticleFireEffect {
     }
 
     start() {
-        addEventListener("redererFrameEvent",  this.onRedererFrameEvent);
-        addEventListener("resize", this.resize);
+        //VLab events subscribers
+        this.context.webGLContainerEventsSubcribers.renderframe["ParticleFireEffect" + this.initObj.name + "vLabSceneRenderFrame"] = 
+        {
+            callback: this.onRedererFrameEvent,
+            instance: this
+        };
+
+        addEventListener("resize", this.resize.bind(this));
         this.particleFireMesh0.visible = true;
     }
 
     stop() {
-        removeEventListener("redererFrameEvent", this.onRedererFrameEvent);
+        delete this.context.webGLContainerEventsSubcribers.renderframe["ParticleFireEffect" + this.initObj.name + "vLabSceneRenderFrame"];
         removeEventListener("resize", this.resize);
         this.particleFireMesh0.visible = false;
     }
 
     resize() {
-        self.particleFireMesh0.material.setPerspective(self.initObj.context.defaultCamera.fov, self.initObj.context.webGLContainer.clientHeight);
+        this.particleFireMesh0.material.setPerspective(this.initObj.context.defaultCamera.fov, this.initObj.context.webGLContainer.clientHeight);
     }
 
     onRedererFrameEvent(event) {
-        self.particleFireMesh0.material.update(self.clock.getDelta());
+        this.particleFireMesh0.material.update(this.clock.getDelta());
     }
 }

@@ -1,12 +1,10 @@
 import * as THREE           from 'three';
 import * as TWEEN           from 'tween.js';
 
-var self = undefined;
-
 export default class SpriteFireEffect {
     constructor(initObj) {
-        self = this;
         this.initObj = initObj;
+        this.context = this.initObj.context;
         this.clock = new THREE.Clock();
         this.prepareSprite();
     }
@@ -119,7 +117,12 @@ export default class SpriteFireEffect {
             this.currentTileAlt = 0;
             this.initObj.context.ambientLight.color = new THREE.Color(0x775a00);
         }
-        addEventListener("redererFrameEvent",  this.onRedererFrameEvent);
+        //VLab events subscribers
+        this.context.webGLContainerEventsSubcribers.renderframe["SpriteFireEffect" + this.initObj.name + "vLabSceneRenderFrame"] = 
+        {
+            callback: this.onRedererFrameEvent,
+            instance: this
+        };
     }
 
     stop() {
@@ -127,10 +130,11 @@ export default class SpriteFireEffect {
         if (this.initObj.type === 'burning') {
             this.spriteAlt.visible = false;
         }
-        removeEventListener("redererFrameEvent",  this.onRedererFrameEvent);
+        delete this.context.webGLContainerEventsSubcribers.renderframe["SpriteFireEffect" + this.initObj.name + "vLabSceneRenderFrame"];
     }
 
     onRedererFrameEvent(event) {
+        var self = this;
         if (self.sprite.visible) {
             var delta = self.clock.getDelta() * 1000;
             self.currentDisplayTime += delta;

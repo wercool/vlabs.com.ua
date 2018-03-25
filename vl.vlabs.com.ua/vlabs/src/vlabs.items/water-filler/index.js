@@ -1,12 +1,10 @@
 import * as THREE           from 'three';
 import * as TWEEN           from 'tween.js';
 
-var self = undefined;
-
 export default class WaterFiller {
     constructor(initObj) {
-        self = this;
         this.initObj = initObj;
+        this.context = this.initObj.context;
         this.initialize();
     }
 
@@ -153,10 +151,20 @@ export default class WaterFiller {
         this.mesh.visible = true;
         this.prepareVerticesTuples();
         this.conformFillableSpace();
-        addEventListener("redererFrameEvent",  self.onRedererFrameEvent);
+
+        //VLab events subscribers
+        this.context.webGLContainerEventsSubcribers.renderframe["WaterFiller" + this.initObj.name + "vLabSceneRenderFrame"] = 
+        {
+            callback: this.onRedererFrameEvent,
+            instance: this
+        };
     }
 
     stop() {
-        removeEventListener("redererFrameEvent", this.onRedererFrameEvent);
+        delete this.context.webGLContainerEventsSubcribers.renderframe["WaterFiller" + this.initObj.name + "vLabSceneRenderFrame"];
+    }
+
+    onRedererFrameEvent(event) {
+
     }
 }

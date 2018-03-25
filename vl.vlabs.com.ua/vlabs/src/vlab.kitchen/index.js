@@ -8,9 +8,9 @@ class VlabKitchen extends VLab {
     constructor(initObj = {}) {
         super(initObj);
 
-        addEventListener("redererFrameEvent",  this.onRedererFrameEvent.bind(this), false);
-        addEventListener("sceneCompleteEvent", this.onSceneCompleteEvent.bind(this), false);
-        addEventListener("activatedEvent", this.onActivatedEvent.bind(this), false);
+        addEventListener(this.name + "SceneCompleteEvent", this.onSceneCompleteEvent.bind(this), false);
+        addEventListener(this.name + "ActivatedEvent", this.onActivatedEvent.bind(this), false);
+        addEventListener(this.name + "RedererFrameEvent",  this.onRedererFrameEvent.bind(this), false);
 
         document.addEventListener("keydown", this.onKeyDown.bind(this), false);
 
@@ -66,7 +66,7 @@ class VlabKitchen extends VLab {
         //                    undefined,
         //                    0xfeffc2);
 
-        this.WaterStream = new WaterStream({
+        this.WaterStream1 = new WaterStream({
             context: this,
             name: 'waterStream1',
             pos: new THREE.Vector3(1.37251, 1.135, 0.45518),
@@ -80,8 +80,9 @@ class VlabKitchen extends VLab {
             turbulence: 2.0
         });
 
-        this.WaterFiller = new WaterFiller({
+        this.WaterFiller1 = new WaterFiller({
             context: this,
+            name: 'WaterFiller1',
             pos: new THREE.Vector3(1.37251, 0.71, 0.45518),
             fillableObj: this.vLabScene.getObjectByName('mainKitchenSurface'),
             w: 0.02,
@@ -90,8 +91,8 @@ class VlabKitchen extends VLab {
         });
 
         setTimeout(() => {
-            this.WaterStream.start();
-            this.WaterFiller.start();
+            this.WaterStream1.start();
+            this.WaterFiller1.start();
         }, 1000);
     }
 
@@ -102,6 +103,6 @@ class VlabKitchen extends VLab {
 }
 
 let vlabKitchen = new VlabKitchen({
-    "natureURL": "./resources/nature.json",
-    "webGLContainer": "webGLContainer"
+    name: "Kitchen VLab",
+    natureURL: "./resources/nature.json",
 });

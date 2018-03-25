@@ -12,9 +12,9 @@ class VlabBase extends VLab {
     constructor(initObj = {}) {
         super(initObj);
 
-        addEventListener("redererFrameEvent",  this.onRedererFrameEvent.bind(this), false);
-        addEventListener("sceneCompleteEvent", this.onSceneCompleteEvent.bind(this), false);
-        addEventListener("activatedEvent", this.onActivatedEvent.bind(this), false);
+        addEventListener(this.name + "SceneCompleteEvent", this.onSceneCompleteEvent.bind(this), false);
+        addEventListener(this.name + "ActivatedEvent", this.onActivatedEvent.bind(this), false);
+        addEventListener(this.name + "RedererFrameEvent",  this.onRedererFrameEvent.bind(this), false);
 
         document.addEventListener("keydown", this.onKeyDown.bind(this), false);
 
@@ -105,13 +105,23 @@ class VlabBase extends VLab {
 
             this.spriteFireEffect1 = new SpriteFireEffect({
                 context: this,
+                name:'spriteFireEffect1',
                 type: 'burning', 
                 pos: this.vLabScene.getObjectByName("CubeResponosive").position,
                 scale: new THREE.Vector3(0.75, 0.5, 0,75)
             });
 
+            this.spriteFireEffect2 = new SpriteFireEffect({
+                context: this,
+                name:'spriteFireEffect2',
+                type: 'burning', 
+                pos: this.vLabScene.getObjectByName("CubeResponosive").position,
+                scale: new THREE.Vector3(0.75, 2.5, 0,75)
+            });
+
             this.particleFireEffect1 = new ParticleFireEffect({
                 context: this,
+                name: 'particleFireEffect1',
                 color: 0xff2200,
                 fireRadius: 0.05,
                 fireHeight: 0.35,
@@ -123,7 +133,8 @@ class VlabBase extends VLab {
                 context: this,
                 targetObjectName: "testCone",
                 scale: new THREE.Vector3(0.2, 0.2, 0.2),
-                positionDeltas: new THREE.Vector3(0.0, 0.0, 0.025)
+                positionDeltas: new THREE.Vector3(0.0, 0.0, 0.025),
+                controls: {}
             });
 
             console.log("VLab Base initialized");
@@ -157,7 +168,6 @@ class VlabBase extends VLab {
     }
 
     onRedererFrameEvent(event) {
-
     }
 
     test(value) {
@@ -173,6 +183,7 @@ class VlabBase extends VLab {
         this.vLabScene.getObjectByName("CubeInteractive").position.set(0.0, 1.5, 0.0);
         this.setInteractiveObjects("CubeInteractive");
         this.spriteFireEffect1.start();
+        this.spriteFireEffect2.start();
         this.particleFireEffect1.stop();
     }
 
@@ -181,11 +192,12 @@ class VlabBase extends VLab {
         this.vLabScene.getObjectByName("Sphere").position.copy(this.vLabScene.getObjectByName("CubeResponosive").position.clone());
         this.setInteractiveObjects("Sphere");
         this.particleFireEffect1.start();
+        this.spriteFireEffect1.stop();
     }
 
 }
 
 let vLabBase = new VlabBase({
-    "natureURL": "./resources/nature.json",
-    "webGLContainer": "webGLContainer"
+    name: "BaseVLab",
+    natureURL: "./resources/nature.json",
 });

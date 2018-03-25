@@ -1,12 +1,10 @@
 import * as THREE           from 'three';
 import * as TWEEN           from 'tween.js';
 
-var self = undefined;
-
 export default class WaterStream {
     constructor(initObj) {
-        self = this;
         this.initObj = initObj;
+        this.context = this.initObj.context;
         this.clock = new THREE.Clock();
 
         var map = '/vlabs.items/water-stream/maps/map.png';
@@ -14,6 +12,7 @@ export default class WaterStream {
         var dispMap = '/vlabs.items/water-stream/maps/dispMap.jpg';
         var alphaMap = '/vlabs.items/water-stream/maps/alphaMap.jpg';
 
+        var self = this;
         var loader = new THREE.TextureLoader();
         loader.load(
             map,
@@ -58,6 +57,7 @@ export default class WaterStream {
     }
 
     initialize() {
+        var self = this;
         if (this.initObj.streamPathPoints) {
             this.streamPathPoints = this.initObj.streamPathPoints;
         } else {
@@ -139,16 +139,24 @@ export default class WaterStream {
         .to({ y: 1.0 }, 150)
         .easing(TWEEN.Easing.Cubic.In)
         .onComplete(() => { 
-            addEventListener("redererFrameEvent",  self.onRedererFrameEvent);
+
+            //VLab events subscribers
+            this.context.webGLContainerEventsSubcribers.renderframe["WaterStream" + this.initObj.name + "vLabSceneRenderFrame"] = 
+            {
+                callback: this.onRedererFrameEvent,
+                instance: this
+            };
+
          })
         .start();
     }
 
     stop() {
-        removeEventListener("redererFrameEvent", this.onRedererFrameEvent);
+        delete this.context.webGLContainerEventsSubcribers.renderframe["WaterStream" + this.initObj.name + "vLabSceneRenderFrame"];
     }
 
     onRedererFrameEvent(event) {
+        var self = this;
         if (!self.initObj.laminar) {
             if (self.resetDistortionCnt < 10) {
                 var pointCnt = 0;
