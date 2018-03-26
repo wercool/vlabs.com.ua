@@ -113,6 +113,8 @@ export default class ZoomHelper {
     activate() {
         this.handlerSprite.visible = false;
 
+        this.context.zoomMode = true;
+
         this.context.defaultCameraControls.backState = {
             minDistance: this.context.defaultCameraControls.minDistance,
             maxDistance: this.context.defaultCameraControls.maxDistance,
@@ -149,6 +151,8 @@ export default class ZoomHelper {
                 this.context.zoomHelperMode = true;
                 })
             .start();
+            this.context.zoomViewArea.style.visibility = 'visible';
+            this.context.zoomViewArea.style.opacity = 1.0;
             })
         .start();
     }
@@ -175,8 +179,11 @@ export default class ZoomHelper {
             .onComplete(() => {
                     this.onVLabSceneResetView();
                     this.context.zoomHelperMode = false;
+                    this.context.zoomViewArea.style.visibility = 'hidden';
+                    this.context.zoomMode = false;
                 })
             .start();
+            this.context.zoomViewArea.style.opacity = 0.0;
         })
         .start();
     }

@@ -37,6 +37,8 @@ export default class VLab {
         this.webGLContainer = undefined;
         this.webGLRenderer = undefined;
 
+        document.body.removeChild(document.getElementById('loader'));
+
         this.buildHTML();
 
         /* Events */
@@ -101,6 +103,7 @@ export default class VLab {
     buildHTML() {
         this.container = document.createElement('div');
         this.container.id = this.initObj.name + 'VLabContainer';
+        this.container.className = 'vLabConatiner';
         if(document.body != null) {
             document.body.appendChild(this.container);
         }
@@ -140,6 +143,11 @@ export default class VLab {
         this.fullscreenButton.id = this.initObj.name + 'Fullscreen';
         this.fullscreenButton.className = 'fullscreen';
 
+        this.zoomViewArea = document.createElement('div');
+        this.zoomViewArea.id = this.initObj.name + 'ZoomViewArea';
+        this.zoomViewArea.className = 'zoomViewArea';
+
+        this.webGLContainer.appendChild(this.zoomViewArea);
         this.webGLContainer.appendChild(this.backFromViewButton);
         this.webGLContainer.appendChild(this.resetViewButton);
         this.webGLContainer.appendChild(this.fullscreenButton);
@@ -266,7 +274,12 @@ export default class VLab {
             from: {color: '#FFEA82'},
             to: {color: '#ED6A5A'},
             step: (state, bar) => {
-                bar.setText(this.progressBarPrependText + Math.round(bar.value() * 100) + ' %');
+                if (bar.value() < 1)
+                {
+                    bar.setText(this.progressBarPrependText + Math.round(bar.value() * 100) + ' %');
+                } else {
+                    bar.setText(this.progressBarPrependText);
+                }
             }
         });
     }
@@ -295,10 +308,16 @@ export default class VLab {
         this.allowedSpaceMapObject = this.vLabScene.getObjectByName(this.nature.cameraControls.allowedSpaceMapObjectName);
         if (this.allowedSpaceMapObject) {
             var alowedSpaceMap = this.allowedSpaceMapObject.material.map;
-            this.allowedSpaceMapObject.material = new THREE.MeshBasicMaterial({ map: alowedSpaceMap });
+            this.allowedSpaceMapObject.material = new THREE.MeshBasicMaterial({ 
+                map: alowedSpaceMap,
+                transparent: true,
+                opacity: 0.0
+            });
+            this.allowedSpaceMapObject.material.needsUpdate = true;
 
             var alowedSpaceMapImage = this.allowedSpaceMapObject.material.map.image;
             this.allowedSpaceCanvas = document.createElement('canvas');
+            this.allowedSpaceCanvas.id = this.name + 'AllowedSpaceMapCanvas';
             this.allowedSpaceCanvas.width = alowedSpaceMapImage.width;
             this.allowedSpaceCanvas.height = alowedSpaceMapImage.height;
             this.allowedSpaceCanvas.getContext('2d').drawImage(alowedSpaceMapImage, 0, 0, alowedSpaceMapImage.width, alowedSpaceMapImage.height);
@@ -399,6 +418,9 @@ export default class VLab {
                     function (bytes) {
                         let loadedRel = (bytes.loaded / bytes.total).toFixed(2);
                         console.info(thisVLab.nature.title + " scene " + (loadedRel * 100).toFixed(2) + "% loaded");
+                        if (loadedRel == 1) {
+                            thisVLab.progressBarPrependText = "Loading textures... ";
+                        }
 
                         if (thisVLab.progressBar) {
                             thisVLab.progressBar.animate(loadedRel);
@@ -470,8 +492,6 @@ export default class VLab {
             this.takenToResponsiveArrowUpdate();
 
             dispatchEvent(this.redererFrameEvent);
-
-            this.webGLContainerEventsSubcribers
 
             for (var renderFrameEventSubscriberName in this.webGLContainerEventsSubcribers.renderframe) {
                 var subscriber = this.webGLContainerEventsSubcribers.renderframe[renderFrameEventSubscriberName];
@@ -741,7 +761,9 @@ export default class VLab {
                     this.hoveredObject = interactionObjectIntersects[0].object;
                     this.webGLContainer.style.cursor = 'pointer';
                     this.selectionHelper = this.vLabScene.getObjectByName(interactionObjectIntersects[0].object.name + "_SELECTION");
-                    this.selectionHelper.visible = true;
+                    if (this.selectionHelper) {
+                        this.selectionHelper.visible = true;
+                    }
 
                     this.defaultCameraControls.active = false;
                     return;
@@ -802,7 +824,7 @@ export default class VLab {
             }
 
             //Is in allowed space check
-            if (this.allowedSpaceMapObject && this.defaultCameraControls.enabled) {
+            if (this.allowedSpaceMapObject && this.defaultCameraControls.enabled && !this.zoomMode) {
                 if (this.defaultCameraControls.type === 'orbit') {
                     this.allowedSpaceRaycaster.set(this.defaultCamera.position, new THREE.Vector3(0, -1, 0));
                 }
@@ -813,7 +835,7 @@ export default class VLab {
                 var allowed = false;
                 if (allowedSpaceIntersections[0]) {
                     var uv = allowedSpaceIntersections[0].uv;
-                    var pixelData = this.allowedSpaceCanvas.getContext('2d').getImageData(255 * uv.x, 255 * uv.y, 1, 1).data;
+                    var pixelData = this.allowedSpaceCanvas.getContext('2d').getImageData(511 * uv.x, 512 - 511 * uv.y, 1, 1).data;
                     if (pixelData[1] == 255) allowed = true;
                     if (this.defaultCameraControls.type === 'orbit') {
                         if (this.defaultCamera.position.y > this.yPanUp || this.defaultCamera.position.y < this.yPanDown) {
@@ -1179,6 +1201,9 @@ export default class VLab {
             var subscriber = this.webGLContainerEventsSubcribers.resetview[resetViewSubscriberName];
             subscriber.callback.call(subscriber.instance, event);
         }
+
+        this.zoomViewArea.style.visibility = 'hidden';
+        this.zoomViewArea.style.opacity = 0.0;
     }
 
     prepareHelperAssets() {

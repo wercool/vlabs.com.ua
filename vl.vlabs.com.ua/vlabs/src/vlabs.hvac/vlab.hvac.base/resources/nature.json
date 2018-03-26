@@ -5,12 +5,15 @@
     "lang": "en",
     "defaultSceneCameraName": "defaultCamera",
     "cameraControls": {
+        "allowedSpaceMapObjectName": "allowedSpacePlane",
         "type": "orbit",
         "target": {
             "x": 0.0,
             "y": 0.5,
             "z": 0.0
-        }
+        },
+        "yPanDeltaUp": 0.5,
+        "yPanDeltaDown": 0.5
     },
     "showTHREEStats": true,
     "bumpMaps": false,

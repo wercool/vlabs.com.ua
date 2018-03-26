@@ -7,7 +7,7 @@
     "displacementMaps": true,
     "defaultSceneCameraName": "defaultCamera",
     "cameraControls": {
-        "allowedSpaceMapObjectName": "_allowedSpacePlane",
+        "allowedSpaceMapObjectName": "allowedSpacePlane",
         "type": "orbit",
         "target": {
             "x": 1.0,

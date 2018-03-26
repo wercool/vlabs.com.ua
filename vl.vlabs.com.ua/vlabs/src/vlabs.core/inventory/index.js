@@ -132,6 +132,10 @@ export default class Inventory {
         this.context.statsTHREE.domElement.style.display = 'none';
         this.context.toolboxBtn.style.display = 'none';
 
+        if (this.context.zoomHelperMode) {
+            this.context.backFromViewButton.style.display = 'none';
+        }
+
         this.defaultCameraControls.initialState = true;
         this.defaultCameraControls.object.position.copy(new THREE.Vector3(0, 0.2, 0.35));
 
@@ -191,6 +195,12 @@ export default class Inventory {
 
         this.context.fullscreenButton.style.display = 'block';
         this.context.resetViewButton.style.display = 'block';
+
+        if (this.context.zoomHelperMode) {
+            setTimeout(() => {
+                this.context.backFromViewButton.style.display = 'block';
+            }, 250)
+        }
 
         console.log(this.context.name + " Inventory closed");
     }
@@ -262,8 +272,10 @@ export default class Inventory {
         var takenItem = this.items[itemsKeys[this.currentItemIdx]].item;
         takenItem.userData["initObj"] = this.items[itemsKeys[this.currentItemIdx]].initObj;
         takenItem.userData["VLabItem"] = this.items[itemsKeys[this.currentItemIdx]].vLabItem;
-        if (takenItem.userData["VLabItem"].addVLabEventListeners) {
-            takenItem.userData["VLabItem"].addVLabEventListeners();
+        if (takenItem.userData["VLabItem"]) {
+            if (takenItem.userData["VLabItem"].addVLabEventListeners) {
+                takenItem.userData["VLabItem"].addVLabEventListeners();
+            }
         }
         this.context.vLabScene.add(takenItem);
 

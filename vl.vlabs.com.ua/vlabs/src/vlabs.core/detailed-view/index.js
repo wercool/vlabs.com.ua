@@ -252,7 +252,9 @@ export default class DetailedView {
         this.context.resetViewButton.style.display = 'block';
 
         if (this.context.zoomHelperMode) {
-            this.context.backFromViewButton.style.display = 'block';
+            setTimeout(() => {
+                this.context.backFromViewButton.style.display = 'block';
+            }, 250)
         }
 
         this.context.mouseCoordsRaycaster.set(-1.0, -1.0);
