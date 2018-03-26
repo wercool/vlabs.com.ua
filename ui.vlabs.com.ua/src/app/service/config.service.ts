@@ -46,6 +46,7 @@ export class ConfigService {
   private _group_url                            = this._api_url + '/group';
   private _group_add_url                        = this._group_url + '/add';
   private _groups_url                           = this._group_url + '/all';
+  private _group_update_url                     = this._group_url + '/update';
 
   //EClasses
   private _eclass_url                           = this._api_url + '/eclass';
@@ -125,8 +126,10 @@ export class ConfigService {
   get faculties_url(): string { return this._faculties_url; };
 
   //Groups
+  get group_url(): string { return this._group_url; };
   get group_add_url(): string { return this._group_add_url; };
   get groups_url(): string { return this._groups_url; };
+  get group_update_url(): string { return this._group_update_url; };
 
   //EClasses
   get eclass_url(): string { return this._eclass_url; };

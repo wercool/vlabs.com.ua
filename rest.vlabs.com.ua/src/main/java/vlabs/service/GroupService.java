@@ -7,6 +7,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import vlabs.model.EClass;
+import vlabs.model.EClassStructure;
 import vlabs.model.Group;
 import vlabs.repository.GroupRepository;
 
@@ -35,5 +37,14 @@ public class GroupService
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public Group addNew(Group group) throws AccessDeniedException {
         return groupRepository.save(group);
+    }
+    
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public Group updateGroup(Group group) throws AccessDeniedException {
+
+    	Group existingGroup = groupRepository.getOne(group.getId());
+    	existingGroup.setName(group.getName());
+
+        return groupRepository.save(existingGroup);
     }
 }

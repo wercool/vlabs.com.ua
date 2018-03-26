@@ -1,0 +1,67 @@
+<mat-accordion>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
+                Group General Properties
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-progress-spinner *ngIf="!completed" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+        <form *ngIf="completed" [formGroup]="generalGroupFormGroup" (ngSubmit)="onGeneralGroupFormGroupSubmit()" #generalGroupForm="ngForm">
+          <mat-form-field class="styles-full-width">
+            <input [(ngModel)]="group.name" matInput formControlName="name" type="text" placeholder="Group name" required>
+          </mat-form-field>
+
+          <div class="styles-mat-card-actions" style="margin-top:10pt;">
+              <div style="display: block; float: left;" [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></div>
+              <mat-progress-spinner style="display: inline-block; vertical-align:middle;" *ngIf="submitted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+              <button style="display: inline-block;" type="submit" mat-button [disabled]="!generalGroupForm.form.valid">UPDATE</button>
+          </div>
+        </form>
+    </mat-expansion-panel>
+
+    <mat-progress-spinner *ngIf="!completed" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+
+    <mat-expansion-panel [expanded]="true" *ngIf="completed">
+        <mat-expansion-panel-header>
+            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
+                <i>{{group.name}}</i>&nbsp; Members
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <button mat-button (click)="openAddMemberDialog()" class="addMemberButton">
+            <mat-icon class="material-icons md-24">person_add</mat-icon>
+            Add Member
+        </button>
+
+        <mat-table #groupMembersDSTable [dataSource]="groupMembersDS">
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="username">
+                <mat-header-cell *matHeaderCellDef>USERNAME</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.username}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="email">
+                <mat-header-cell *matHeaderCellDef>EMAIL</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.email}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="phoneNumber">
+                <mat-header-cell *matHeaderCellDef>PHONE</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.phoneNumber}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="firstName">
+                <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.firstName}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="lastName">
+                <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.lastName}}</mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="groupMembersDisplayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: groupMembersDisplayedColumns;"></mat-row>
+        </mat-table>
+    </mat-expansion-panel>
+
+</mat-accordion>

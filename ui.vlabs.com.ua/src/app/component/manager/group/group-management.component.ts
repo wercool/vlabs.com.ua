@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Group } from '../../../model/index';
 import { MatTableDataSource, MatExpansionPanel } from '@angular/material';
+import { Group } from '../../../model/index';
 import { GroupService } from '../../../service/index';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-group-management',
@@ -19,6 +20,7 @@ export class GroupManagementComponent implements OnInit {
   groupsDS: MatTableDataSource<Group>;
 
   constructor(
+    private router: Router,
     private groupService: GroupService
   ) { }
 
@@ -43,6 +45,10 @@ export class GroupManagementComponent implements OnInit {
   private refreshDS(){
     this.groupsNum = this.groupsAll.length;
     this.groupsDS = new MatTableDataSource<Group>(this.groupsAll);
+  }
+
+  groupRowClicked(selectedGroup: Group){
+    this.router.navigate(['group-edit', selectedGroup.id]);
   }
 
   onNewGroupAddedEvent(group: Group){

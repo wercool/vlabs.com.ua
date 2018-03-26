@@ -14,6 +14,7 @@ import {
   DepartmentManagementComponent,
   FacultyManagementComponent,
   GroupManagementComponent,
+  EditGroupComponent,
   UserManagementComponent,
   PartnerManagementComponent,
   ModuleManagementComponent,
@@ -82,6 +83,11 @@ export const routes: Routes = [
   {
     path: 'group-management',
     component: GroupManagementComponent,
+    canActivate: [ManagerGuard]
+  },
+  {
+    path: 'group-edit/:id',
+    component: EditGroupComponent,
     canActivate: [ManagerGuard]
   },
   {

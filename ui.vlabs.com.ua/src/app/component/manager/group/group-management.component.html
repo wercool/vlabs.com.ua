@@ -20,7 +20,10 @@
                 <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="groupsDisplayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: groupsDisplayedColumns;"></mat-row>
+            <mat-row 
+            class="styles-mat-table-row"
+            (click)="groupRowClicked(row)" 
+            *matRowDef="let row; columns: groupsDisplayedColumns;"></mat-row>
         </mat-table>
 
     </mat-expansion-panel>

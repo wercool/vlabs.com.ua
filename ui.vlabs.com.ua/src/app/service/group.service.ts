@@ -17,10 +17,16 @@ export class GroupService {
     private config: ConfigService
     ) { }
 
+  getById(id: number) {
+    return this.apiService.get(this.config.group_url + '/' + id);
+  }
   addNew(group: Group) {
     return this.apiService.post(this.config.group_add_url, group);
   }
   getAll() {
     return this.apiService.get(this.config.groups_url);
+  }
+  update(group: Group) {
+    return this.apiService.post(this.config.group_update_url, group);
   }
 }

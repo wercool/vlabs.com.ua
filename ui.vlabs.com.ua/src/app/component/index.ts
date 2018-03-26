@@ -16,6 +16,8 @@ export * from './manager/faculty/faculty-management.component';
 export * from './manager/faculty/new-faculty/new-faculty.component';
 export * from './manager/group/group-management.component';
 export * from './manager/group/new-group/new-group.component';
+export * from './manager/group/edit-group/edit-group.component';
+export * from './manager/group/edit-group/add-group-member-dialog/add-group-member-dialog.component';
 export * from './manager/vlabs/vlabs-management.component';
 export * from './manager/vlabs/new-vlab/new-vlab.component';
 export * from './side-nav/admin-sidenav/admin-sidenav.component';
