@@ -6,6 +6,7 @@ export * from './home/user-home/user-home.component';
 export * from './login/login.component';
 export * from './register/register.component';
 export * from './dialogs/edit-property-dialog/edit-property-dialog.component';
+export * from './dialogs/confirmation-dialog/confirmation-dialog.component';
 export * from './edit-profile/edit-profile.component';
 export * from './reset-password/reset-password.component'
 export * from './side-nav/user-sidenav/user-sidenav.component';
@@ -20,6 +21,7 @@ export * from './manager/group/edit-group/edit-group.component';
 export * from './manager/group/edit-group/add-group-member-dialog/add-group-member-dialog.component';
 export * from './manager/vlabs/vlabs-management.component';
 export * from './manager/vlabs/new-vlab/new-vlab.component';
+export * from './dialogs/add-vlab-item-dialog/add-vlab-item-dialog.component';
 export * from './side-nav/admin-sidenav/admin-sidenav.component';
 export * from './admin/user-management/user-management.component';
 export * from './admin/user-management/auth-user-dialog/auth-user-dialog.component';

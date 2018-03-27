@@ -29,15 +29,25 @@
             </mat-panel-title>
         </mat-expansion-panel-header>
 
-        <button mat-button (click)="openAddMemberDialog()" class="addMemberButton">
+        <mat-progress-spinner *ngIf="submitted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+
+        <button mat-button *ngIf="!submitted" (click)="openAddMemberDialog()" class="addMemberButton">
             <mat-icon class="material-icons md-24">person_add</mat-icon>
             Add Member
+        </button>
+
+        <button *ngIf="removeMember && !submitted" mat-button (click)="removeSelectedMembers()" class="removeMemberButton">
+            <mat-icon class="material-icons md-24">remove_circle_outline</mat-icon>
+            Remove Members
         </button>
 
         <mat-table #groupMembersDSTable [dataSource]="groupMembersDS">
             <ng-container matColumnDef="id">
                 <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
-                <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+                <mat-cell *matCellDef="let element">
+                    <mat-checkbox [(ngModel)]="element.checked" (change)="checkSelected()"></mat-checkbox>
+                    <div style="font-size: 8pt;">{{element.id}}</div>
+                </mat-cell>
             </ng-container>
             <ng-container matColumnDef="username">
                 <mat-header-cell *matHeaderCellDef>USERNAME</mat-header-cell>

@@ -193,4 +193,14 @@ public class User implements UserDetails
         return true;
     }
 
+
+    @JsonIgnore
+    public boolean isRegularUser() {
+        for (Authority authority : getAuthoritiesList()) {
+            if (authority.getName().equals("ROLE_ADMIN")
+             || authority.getName().equals("ROLE_MANAGER"))
+                return false;
+        }
+        return true;
+    }
 }

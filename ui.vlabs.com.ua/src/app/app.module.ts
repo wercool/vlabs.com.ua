@@ -47,6 +47,7 @@ import {
   UserSidenavComponent,
   ManagerSidenavComponent,
   VlabsManagementComponent,
+  AddVLabItemDialogComponent,
   NewVlabComponent,
   CourseManagementComponent,
   NewCourseComponent,
@@ -56,6 +57,7 @@ import {
   NewEclassComponent,
   EditEclassComponent,
   AddCelementDialogComponent,
+  ConfirmationDialog,
   FacultyManagementComponent,
   NewFacultyComponent,
   GroupManagementComponent,
@@ -96,7 +98,6 @@ import {
   SubscriptionService,
   FooService,
 } from './service';
-import { AddVLabItemDialogComponent } from './component/dialogs/add-vlab-item-dialog/add-vlab-item-dialog.component';
 
 const DEFAULT_QUILL_CONFIG: QuillConfigInterface = {
   theme: 'snow',
@@ -160,7 +161,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     EditEclassComponent,
     AddCelementDialogComponent,
     EditPropertyDialogComponent,
-    EditPropertyDialogComponent,
+    ConfirmationDialog,
     CElementItemComponent,
     CelementLabelComponent,
     CelementQuizComponent,
@@ -174,6 +175,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     EditUserDialogComponent,
     AddCelementDialogComponent,
     EditPropertyDialogComponent,
+    ConfirmationDialog,
     AddVLabItemDialogComponent,
     AddGroupMemberDialogComponent
   ],

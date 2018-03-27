@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>
+    <div style="float: right;"><mat-icon class="material-icons md-36 warning">warning</mat-icon></div>
+    <div style="float: left;">Confirmation</div>
+</h2>
+<br/>
+<div style="clear: both;">{{confirmMessage}}</div>
+<br/>
+<mat-divider></mat-divider>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close default>Cancel</button>
+  <button mat-button [mat-dialog-close]="true">Confirm</button>
+</mat-dialog-actions>

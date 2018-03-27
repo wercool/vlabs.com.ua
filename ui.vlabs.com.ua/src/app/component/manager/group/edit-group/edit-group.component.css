@@ -36,3 +36,7 @@
 .addMemberButton {
   background-color: rgba(99, 205, 50, 0.562);
 }
+
+.removeMemberButton {
+  background-color: rgba(205, 190, 50, 0.562);
+}

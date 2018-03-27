@@ -47,6 +47,10 @@ export class ConfigService {
   private _group_add_url                        = this._group_url + '/add';
   private _groups_url                           = this._group_url + '/all';
   private _group_update_url                     = this._group_url + '/update';
+  private _group_members_url                    = this._group_url + '/{groupId}/members';
+  private _group_non_members_url                = this._group_url + '/{groupId}/non-members';
+  private _group_add_members_url                = this._group_url + '/{groupId}/addmembers';
+  private _group_remove_members_url             = this._group_url + '/{groupId}/removemembers';
 
   //EClasses
   private _eclass_url                           = this._api_url + '/eclass';
@@ -130,6 +134,10 @@ export class ConfigService {
   get group_add_url(): string { return this._group_add_url; };
   get groups_url(): string { return this._groups_url; };
   get group_update_url(): string { return this._group_update_url; };
+  get group_non_members_url(): string { return this._group_non_members_url; }
+  get group_members_url(): string { return this._group_members_url; }
+  get group_add_members_url(): string { return this._group_add_members_url; }
+  get group_remove_members_url(): string { return this._group_remove_members_url; }
 
   //EClasses
   get eclass_url(): string { return this._eclass_url; };

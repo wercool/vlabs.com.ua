@@ -5,10 +5,11 @@ import { MatSnackBar, MatDialog, MatTableDataSource,
     MatDialogRef, MAT_DIALOG_DATA, 
     MatSort, MatPaginator, MatPaginatorIntl } from '@angular/material';
 import { DisplayMessage } from '../../../../shared/models/display-message';
-import { Group, User } from '../../../../model/index';
+import { Group, User, UserItem } from '../../../../model/index';
 import { GroupService } from '../../../../service/index';
 
 import { AddGroupMemberDialogComponent } from './add-group-member-dialog/add-group-member-dialog.component';
+import { ConfirmationDialog } from '../../../dialogs/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-grpup-eclass',
@@ -21,11 +22,14 @@ export class EditGroupComponent implements OnInit {
     private sub: any;
     private group: Group;
 
+    groupMembersItems: UserItem[] = [];
+
     generalGroupFormGroup: FormGroup;
 
     submitted = false;
     completed = false;
-  
+    removeMember = false;
+
       /**
      * Notification message from received
      * form request or router
@@ -34,7 +38,7 @@ export class EditGroupComponent implements OnInit {
   
 
     groupMembersDisplayedColumns = ['id', 'username', 'email', 'phoneNumber', 'firstName', 'lastName'];
-    groupMembersDS: MatTableDataSource<User>;
+    groupMembersDS: MatTableDataSource<UserItem>;
  
     constructor(
       private route: ActivatedRoute,
@@ -42,7 +46,8 @@ export class EditGroupComponent implements OnInit {
       private snackBar: MatSnackBar,
       private formBuilder: FormBuilder,
       private groupService: GroupService,
-      private addGroupMemberDialog: MatDialog
+      private addGroupMemberDialog: MatDialog,
+      private confirmationDialog: MatDialog
     ) { }
   
     ngOnInit() {
@@ -52,25 +57,33 @@ export class EditGroupComponent implements OnInit {
         });
 
         this.sub = this.route.params.subscribe(params => {
-            this.setGroup(params['id']);
+          this.groupService.getById(params['id'])
+          .delay(250)
+          .subscribe(group => {
+            this.setGroup(group);
+            this.completed = true;
+            // console.log(this.group);
+          },
+          error => {
+            this.snackBar.open(error.json().message, 'SERVER ERROR', {
+              panelClass: ['errorSnackBar'],
+              duration: 1000,
+              verticalPosition: 'top'
+            });
+          });
         });
     }
 
-    setGroup(id: number) {
-        this.groupService.getById(id)
-        .delay(250)
-        .subscribe(group => {
-          this.group = group;
-          this.completed = true;
-          console.log(this.group);
-        },
-        error => {
-          this.snackBar.open(error.json().message, 'SERVER ERROR', {
-            panelClass: ['errorSnackBar'],
-            duration: 1000,
-            verticalPosition: 'top'
-          });
-        });
+    setGroup(group: Group) {
+      this.group = group;
+      this.groupMembersItems = [];
+      for (let groupMember of this.group.members) {
+        let groupMemberItem: UserItem = <UserItem> groupMember;
+        groupMemberItem.checked = false;
+        this.groupMembersItems.push(groupMemberItem);
+      }
+      this.groupMembersDS = new MatTableDataSource<UserItem>(this.groupMembersItems);
+      this.checkSelected();
     }
 
     onGeneralGroupFormGroupSubmit() {
@@ -100,9 +113,54 @@ export class EditGroupComponent implements OnInit {
             width: '80%',
             data: this.group
           });
-          dialogRef.afterClosed().subscribe(result => {
-            // console.log(result);
+          dialogRef.afterClosed().subscribe(group => {
+            if (group) {
+              this.setGroup(group);
+            }
           });
     }
+
+    checkSelected() {
+      this.removeMember = false;
+      for (let groupMemberItem of this.groupMembersItems) {
+        if (groupMemberItem.checked) {
+          this.removeMember = true;
+        }
+      }
+    }
+
+    removeSelectedMembers() {
+      let dialogRef = this.confirmationDialog.open(ConfirmationDialog, {
+        width: '80%',
+        data: "Confirm please Group Members deletion"
+      });
+      dialogRef.afterClosed().subscribe(confirmed => {
+        if (confirmed) {
+          let removeGroupMembers:User[] = [];
+          for (let groupMemberItem of this.groupMembersItems) {
+            if (groupMemberItem.checked) {
+              let removeGroupMember:User = new User().map(groupMemberItem);
+              removeGroupMembers.push(removeGroupMember);
+            }
+          }
+          // console.log(this.groupMembersItems);
+      
+          this.submitted = true;
+          this.groupService.removeGroupMembers(this.group.id, removeGroupMembers)
+          .delay(250)
+          .subscribe(group => {
+            this.setGroup(group);
+            this.submitted = false;
+          },
+          error => {
+            this.snackBar.open(error.json().message, 'SERVER ERROR', {
+              panelClass: ['errorSnackBar'],
+              duration: 1000,
+              verticalPosition: 'top'
+            });
+          });
+        }
+      });
+  }
 
 }

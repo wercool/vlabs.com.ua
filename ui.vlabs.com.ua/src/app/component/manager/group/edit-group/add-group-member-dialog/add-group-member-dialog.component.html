@@ -1,9 +1,41 @@
 <h2 mat-dialog-title>Add Group Member</h2>
 <mat-dialog-content>
-
+    <mat-progress-spinner *ngIf="!completed" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+    <mat-table #potentialGroupMembersDSTable [dataSource]="potentialGroupMembersDS">
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <mat-checkbox [(ngModel)]="element.checked" (change)="checkSelected()"></mat-checkbox>
+                <div style="font-size: 8pt;">{{element.id}}</div>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="username">
+            <mat-header-cell *matHeaderCellDef>USERNAME</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.username}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="email">
+            <mat-header-cell *matHeaderCellDef>EMAIL</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.email}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="phoneNumber">
+            <mat-header-cell *matHeaderCellDef>PHONE</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.phoneNumber}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="firstName">
+            <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.firstName}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="lastName">
+            <mat-header-cell *matHeaderCellDef>FIRST NAME</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.lastName}}</mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="potentialGroupMembersDisplayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: potentialGroupMembersDisplayedColumns;"></mat-row>
+    </mat-table>
 </mat-dialog-content>
 <hr/>
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close>Close</button>
-    <button mat-button [mat-dialog-close]="true" (click)="addGroupMembers()">Add to {{group.name}}</button>
+    <button mat-button mat-dialog-close *ngIf="!submitted">Close</button>
+    <mat-progress-spinner *ngIf="submitted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+    <button mat-button *ngIf="!submitted && enabled" (click)="addGroupMembers()">Add to {{group.name}}</button>
 </mat-dialog-actions>

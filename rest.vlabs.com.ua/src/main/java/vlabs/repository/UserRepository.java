@@ -13,6 +13,9 @@ public interface UserRepository extends JpaRepository<User, Long>
 {
     User findByUsername(String username);
 
-    @Query("SELECT u FROM User u WHERE u.authorities IS EMPTY")
+    @Query("SELECT u FROM User AS u WHERE u.authorities IS EMPTY")
     List<User> findAllWithoutAuthorities();
+
+    @Query("SELECT u FROM User AS u WHERE u.authorities IS NOT EMPTY")
+    List<User> findAllWithAuthorities();
 }
