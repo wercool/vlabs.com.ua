@@ -142,7 +142,11 @@ export default class DetailedView {
 
         //Cameras
         this.defaultCamera = new THREE.PerspectiveCamera(60, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.01, 10.0);
-        this.defaultCamera.position.set(0, 0.0, 0.25);
+        if (this.initObj.defaultCameraInitialPosition) {
+            this.defaultCamera.position.copy(this.initObj.defaultCameraInitialPosition);
+        } else {
+            this.defaultCamera.position.set(0, 0.0, 0.25);
+        }
 
         //Controls
         this.controls = new OrbitControls(this.defaultCamera);
