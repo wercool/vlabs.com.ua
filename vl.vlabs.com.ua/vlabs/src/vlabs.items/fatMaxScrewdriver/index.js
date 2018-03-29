@@ -21,7 +21,7 @@ initObj {
     }
 
     initialize() {
-        this.context.loadVLabItem("/vlabs.items/fatMaxScrewdriver/fatMaxScrewdriver.json", "FatMaxScrewdriver").then((scene) => {
+        this.context.loadVLabItem("../vlabs.items/fatMaxScrewdriver/fatMaxScrewdriver.json", "FatMaxScrewdriver").then((scene) => {
             this.model = scene.children[0];
             if (this.initObj.name) {
                 this.model.name = this.initObj.name;

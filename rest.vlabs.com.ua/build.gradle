@@ -218,6 +218,12 @@ task syncVLFolder(type:Exec) {
   args "-c","rsync -rav ../vl.vlabs.com.ua/vl/ src/main/resources/static/vl/"
 }
 
+task syncVLabsFolder(type:Exec) {
+  group = 'deploy'
+  executable "bash"
+  args "-c","rsync -rav ../vl.vlabs.com.ua/vlabs/build/ src/main/resources/static/vlabs/"
+}
+
 buildUIDev.dependsOn(cleanUIFolder)
 buildUIProd.dependsOn(cleanUIFolder)
 war.dependsOn(deployUIProd)

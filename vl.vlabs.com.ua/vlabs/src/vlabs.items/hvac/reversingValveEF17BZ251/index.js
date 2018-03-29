@@ -20,7 +20,7 @@ export default class ReversingValveEF17BZ251 {
     }
 
     initialize() {
-        this.context.loadVLabItem("/vlabs.items/hvac/reversingValveEF17BZ251/reversingValveEF17BZ251.json", "reversingValveEF17BZ251").then((scene) => {
+        this.context.loadVLabItem("../vlabs.items/hvac/reversingValveEF17BZ251/reversingValveEF17BZ251.json", "reversingValveEF17BZ251").then((scene) => {
             this.model = scene.children[0];
             if (this.initObj.name) {
                 this.model.name = this.initObj.name;
@@ -57,7 +57,7 @@ export default class ReversingValveEF17BZ251 {
 
         if (this.context.nature.bumpMaps) {
             Promise.all([
-                textureLoader.load('/vlabs.items/hvac/reversingValveEF17BZ251/maps/brass-bump.jpg')
+                textureLoader.load('../vlabs.items/hvac/reversingValveEF17BZ251/maps/brass-bump.jpg')
             ])
             .then((result) => {
                 reversingValveEF17BZ251Tube.material.bumpMap = result[0];
@@ -71,7 +71,7 @@ export default class ReversingValveEF17BZ251 {
 
         if (this.context.nature.alphaMaps) {
             Promise.all([
-                textureLoader.load('/vlabs.items/hvac/reversingValveEF17BZ251/maps/reversingValveEF17BZ251TubeMaterialAlphaMap.jpg')
+                textureLoader.load('../vlabs.items/hvac/reversingValveEF17BZ251/maps/reversingValveEF17BZ251TubeMaterialAlphaMap.jpg')
             ])
             .then((result) => {
                 this.reversingValveEF17BZ251TubeAlphaMap = result[0];
@@ -89,7 +89,7 @@ export default class ReversingValveEF17BZ251 {
 
         if (this.context.nature.alphaMaps) {
             Promise.all([
-                textureLoader.load('/vlabs.items/hvac/reversingValveEF17BZ251/maps/reversingValveEF17BZ251SmallValveFixtureMaterialAlpha.jpg')
+                textureLoader.load('../vlabs.items/hvac/reversingValveEF17BZ251/maps/reversingValveEF17BZ251SmallValveFixtureMaterialAlpha.jpg')
             ])
             .then((result) => {
                 this.reversingValveEF17BZ251SmallValveFixtureAlphaMap = result[0];
@@ -115,7 +115,7 @@ export default class ReversingValveEF17BZ251 {
         reversingValveEF17BZ251PlungeCapLookThrough.visible = false;
 
         Promise.all([
-            textureLoader.load('/vlabs.assets/img/look-through.png'),
+            textureLoader.load('../vlabs.assets/img/look-through.png'),
         ])
         .then((result) => {
             var lookThroughSpriteTexture = result[0];

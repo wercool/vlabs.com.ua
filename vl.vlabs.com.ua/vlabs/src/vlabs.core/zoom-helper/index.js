@@ -23,7 +23,7 @@ export default class ZoomHelper {
 
         var textureLoader = new THREE.TextureLoader();
         return Promise.all([
-            textureLoader.load('/vlabs.assets/img/magnifier.png'),
+            textureLoader.load('../vlabs.assets/img/magnifier.png'),
         ])
         .then((result) => {
             this.handlerSpriteTexture = result[0];

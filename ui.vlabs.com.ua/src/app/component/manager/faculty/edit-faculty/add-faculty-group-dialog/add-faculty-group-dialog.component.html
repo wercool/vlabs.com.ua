@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Add Group to the Faculty</h2>
+<mat-dialog-content>
+    <mat-progress-spinner *ngIf="!completed" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+    <mat-table #potentialFacultyGroupsDSTable [dataSource]="potentialFacultyGroupsDS">
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <mat-checkbox [(ngModel)]="element.checked" (change)="checkSelected()"></mat-checkbox>
+                <div style="font-size: 8pt;">{{element.id}}</div>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef>Group Name</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="membersNum">
+            <mat-header-cell *matHeaderCellDef>Group Members Number</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.membersNum}}</mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="potentialFacultyGroupsDisplayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: potentialFacultyGroupsDisplayedColumns;"></mat-row>
+    </mat-table>
+</mat-dialog-content>
+<hr/>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close *ngIf="!submitted">Close</button>
+    <mat-progress-spinner *ngIf="submitted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+    <button mat-button *ngIf="!submitted && enabled" (click)="addFacultyGroup()">Add to {{faculty.title}}</button>
+</mat-dialog-actions>

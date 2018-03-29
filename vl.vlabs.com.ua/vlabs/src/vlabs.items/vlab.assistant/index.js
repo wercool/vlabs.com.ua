@@ -18,7 +18,7 @@ initObj {
     }
 
     initialize() {
-        this.context.loadVLabItem("/vlabs.items/vlab.assistant/vlab.assistant.json", "VLab Assistant").then((scene) => {
+        this.context.loadVLabItem("../vlabs.items/vlab.assistant/vlab.assistant.json", "VLab Assistant").then((scene) => {
             this.model = scene.children[0];
             if (this.initObj.name) {
                 this.model.name = this.initObj.name;

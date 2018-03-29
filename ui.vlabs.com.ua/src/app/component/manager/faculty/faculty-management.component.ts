@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Faculty } from '../../../model/index';
 import { MatTableDataSource, MatExpansionPanel } from '@angular/material';
 import { FacultyService } from '../../../service/index';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-faculty-management',
@@ -19,7 +20,8 @@ export class FacultyManagementComponent implements OnInit {
   facultiesDS: MatTableDataSource<Faculty>;
 
   constructor(
-    private facultyService: FacultyService
+    private facultyService: FacultyService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -51,4 +53,7 @@ export class FacultyManagementComponent implements OnInit {
     this.facultiesListPanel.open();
   }
 
+  facultyRowClicked(selectedFaculty: Faculty){
+    this.router.navigate(['faculty-edit', selectedFaculty.id]);
+  }
 }

@@ -15,8 +15,8 @@ export default class SpriteFireEffect {
         var spriteAltURL = undefined;
         switch (this.initObj.type) {
             case 'burning':
-                spriteURL = '/vlabs.items/sprite-fire-effect/sprites/burning.png';
-                spriteAltURL = '/vlabs.items/sprite-fire-effect/sprites/burning-alt.png';
+                spriteURL = '../vlabs.items/sprite-fire-effect/sprites/burning.png';
+                spriteAltURL = '../vlabs.items/sprite-fire-effect/sprites/burning-alt.png';
                 this.tilesHorizontal = 4;
                 this.tilesVertical = 4;
                 this.numberOfTiles = 16;

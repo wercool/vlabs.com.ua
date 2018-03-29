@@ -20,6 +20,7 @@ import {
   ModuleManagementComponent,
   EclassManagementComponent,
   EditEclassComponent,
+  EditFacultyComponent,
 } from '../component';
 
 import {
@@ -78,6 +79,11 @@ export const routes: Routes = [
   {
     path: 'faculty-management',
     component: FacultyManagementComponent,
+    canActivate: [ManagerGuard]
+  },
+  {
+    path: 'faculty-edit/:id',
+    component: EditFacultyComponent,
     canActivate: [ManagerGuard]
   },
   {

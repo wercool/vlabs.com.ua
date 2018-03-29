@@ -8,13 +8,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import com.mysql.cj.api.log.Log;
-
 import vlabs.model.Group;
 import vlabs.model.User;
 import vlabs.repository.GroupRepository;
 import vlabs.repository.UserRepository;
-
 
 @Service
 public class GroupService

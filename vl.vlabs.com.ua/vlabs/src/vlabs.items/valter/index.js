@@ -19,7 +19,7 @@ initObj {
     }
 
     initialize() {
-        this.context.loadVLabItem("/vlabs.items/valter/valter-sim.json", "Valter").then((scene) => {
+        this.context.loadVLabItem("../vlabs.items/valter/valter-sim.json", "Valter").then((scene) => {
             this.model = scene.children[0];
             if (this.initObj.name) {
                 this.model.name = this.initObj.name;

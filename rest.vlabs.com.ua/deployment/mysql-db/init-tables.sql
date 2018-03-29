@@ -68,24 +68,6 @@ CREATE TABLE `modules` (
 
 
 
--- Departments
-CREATE TABLE `departments` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-
--- Faculties
-CREATE TABLE `faculties` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-
 -- Groups
 CREATE TABLE `groups` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -101,6 +83,34 @@ CREATE TABLE `group_user` (
   CONSTRAINT `gu_group_id_fk` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
   CONSTRAINT `gu_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+-- Faculties
+CREATE TABLE `faculties` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `faculty_group` (
+  `faculty_id` bigint(20) NOT NULL,
+  `group_id` bigint(20) NOT NULL,
+  KEY `faculty_id_fk` (`faculty_id`),
+  KEY `group_id_fk` (`group_id`),
+  CONSTRAINT `fg_faculty_id_fk` FOREIGN KEY (`faculty_id`) REFERENCES `faculties` (`id`),
+  CONSTRAINT `fg_group_id_fk` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+-- Departments
+CREATE TABLE `departments` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 -- EClasses

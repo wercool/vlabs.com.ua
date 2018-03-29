@@ -20,7 +20,7 @@ export class AddGroupMemberDialogComponent implements OnInit {
   nonMembersItems: UserItem[] = [];
 
   potentialGroupMembersDisplayedColumns = ['id', 'username', 'email', 'phoneNumber', 'firstName', 'lastName'];
-  potentialGroupMembersDS: MatTableDataSource<UserItem>;
+  potentialGroupMembersDS: MatTableDataSource<UserItem> = new MatTableDataSource<UserItem>([]);
 
   constructor(
     public dialogRef: MatDialogRef<AddGroupMemberDialogComponent>,

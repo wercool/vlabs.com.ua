@@ -58,12 +58,17 @@ import {
   EditEclassComponent,
   AddCelementDialogComponent,
   ConfirmationDialog,
+
   FacultyManagementComponent,
   NewFacultyComponent,
+  EditFacultyComponent,
+  AddFacultyGroupDialogComponent,
+
   GroupManagementComponent,
   NewGroupComponent,
   EditGroupComponent,
-  AddGroupMemberDialogComponent,  
+  AddGroupMemberDialogComponent,
+
   ModuleManagementComponent,
   NewModuleComponent,
   EditPropertyDialogComponent,
@@ -145,18 +150,23 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     CourseManagementComponent,
     DepartmentManagementComponent,
     EclassManagementComponent,
+
     FacultyManagementComponent,
+    NewFacultyComponent,
+    EditFacultyComponent,
+    AddFacultyGroupDialogComponent,
+
     GroupManagementComponent,
     NewGroupComponent,
     EditGroupComponent,
     AddGroupMemberDialogComponent,
+
     ModuleManagementComponent,
     PartnerManagementComponent,
     NewCourseComponent,
     NewModuleComponent,
     NewPartnerComponent,
     NewDepartmentComponent,
-    NewFacultyComponent,
     NewEclassComponent,
     EditEclassComponent,
     AddCelementDialogComponent,
@@ -177,7 +187,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     EditPropertyDialogComponent,
     ConfirmationDialog,
     AddVLabItemDialogComponent,
-    AddGroupMemberDialogComponent
+    AddGroupMemberDialogComponent,
+    AddFacultyGroupDialogComponent
   ],
   imports:
   [

@@ -12,7 +12,7 @@ import { AddGroupMemberDialogComponent } from './add-group-member-dialog/add-gro
 import { ConfirmationDialog } from '../../../dialogs/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
-  selector: 'app-grpup-eclass',
+  selector: 'app-edit-group',
   templateUrl: './edit-group.component.html',
   styleUrls: ['./edit-group.component.css'],
   encapsulation: ViewEncapsulation.None

@@ -13,15 +13,21 @@ export * from './side-nav/user-sidenav/user-sidenav.component';
 export * from './side-nav/manager-sidenav/manager-sidenav.component';
 export * from './manager/department/department-management.component';
 export * from './manager/department/new-department/new-department.component';
+
 export * from './manager/faculty/faculty-management.component';
 export * from './manager/faculty/new-faculty/new-faculty.component';
+export * from './manager/faculty/edit-faculty/edit-faculty.component';
+export * from './manager/faculty/edit-faculty/add-faculty-group-dialog/add-faculty-group-dialog.component';
+
 export * from './manager/group/group-management.component';
 export * from './manager/group/new-group/new-group.component';
 export * from './manager/group/edit-group/edit-group.component';
 export * from './manager/group/edit-group/add-group-member-dialog/add-group-member-dialog.component';
+
 export * from './manager/vlabs/vlabs-management.component';
 export * from './manager/vlabs/new-vlab/new-vlab.component';
 export * from './dialogs/add-vlab-item-dialog/add-vlab-item-dialog.component';
+
 export * from './side-nav/admin-sidenav/admin-sidenav.component';
 export * from './admin/user-management/user-management.component';
 export * from './admin/user-management/auth-user-dialog/auth-user-dialog.component';

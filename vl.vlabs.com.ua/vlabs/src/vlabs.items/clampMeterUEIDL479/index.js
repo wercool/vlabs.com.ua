@@ -21,7 +21,7 @@ initObj {
     }
 
     initialize() {
-        this.context.loadVLabItem("/vlabs.items/clampMeterUEIDL479/clampMeterUEIDL479.json", "clampMeterUEIDL479").then((scene) => {
+        this.context.loadVLabItem("../vlabs.items/clampMeterUEIDL479/clampMeterUEIDL479.json", "clampMeterUEIDL479").then((scene) => {
             this.model = scene.children[0];
             if (this.initObj.name) {
                 this.model.name = this.initObj.name;

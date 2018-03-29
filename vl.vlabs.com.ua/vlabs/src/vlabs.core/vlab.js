@@ -37,7 +37,9 @@ export default class VLab {
         this.webGLContainer = undefined;
         this.webGLRenderer = undefined;
 
-        document.body.removeChild(document.getElementById('loader'));
+        if (document.getElementById('loader')) {
+            document.body.removeChild(document.getElementById('loader'));
+        }
 
         this.buildHTML();
 
@@ -97,7 +99,7 @@ export default class VLab {
     }
 
     getVesrion() {
-        return "0.1.0";
+        return "0.1.1";
     }
 
     buildHTML() {

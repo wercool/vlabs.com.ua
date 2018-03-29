@@ -1,0 +1,38 @@
+.mat-table {
+    overflow: auto;
+    max-height: 500px;
+}
+
+.mat-column-id {
+  flex: 0 0 5%;
+}
+
+@media screen and (min-width: 0px) and (max-width: 300px) {
+  .mat-column-email,
+  .mat-column-phoneNumber,
+  .mat-column-firstName,
+  .mat-column-lastName
+  { display: block; }
+}
+
+@media screen and (min-width: 301px) and (max-width: 600px) {
+  .mat-column-email,
+  .mat-column-phoneNumber,
+  .mat-column-firstName,
+  .mat-column-lastName
+  { display: none; }
+}
+
+@media screen and (min-width: 601px) and (max-width: 1024px) {
+  .mat-column-firstName,
+  .mat-column-lastName
+  { display: none; }
+}
+
+.mat-header-cell.mat-sort-header-sorted {
+  color: black;
+}
+
+.addGroupButton {
+  background-color: rgba(99, 205, 50, 0.562);
+}

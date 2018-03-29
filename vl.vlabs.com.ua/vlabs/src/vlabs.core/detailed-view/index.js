@@ -24,8 +24,8 @@ export default class DetailedView {
         var textureLoader = new THREE.TextureLoader();
 
         Promise.all([
-            textureLoader.load('/vlabs.assets/img/detailed-view.png'),
-            textureLoader.load('/vlabs.assets/envmaps/hdriEnvMap1.jpg')
+            textureLoader.load('../vlabs.assets/img/detailed-view.png'),
+            textureLoader.load('../vlabs.assets/envmaps/hdriEnvMap1.jpg')
         ])
         .then((result) => {
             this.handlerSpriteTexture = result[0];

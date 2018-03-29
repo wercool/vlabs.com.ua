@@ -1,0 +1,68 @@
+<mat-accordion>
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
+                Faculty General Properties
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-progress-spinner *ngIf="!completed" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+        <form *ngIf="completed" [formGroup]="generalFacultyFormGroup" (ngSubmit)="onGeneralFacultyFormGroupSubmit()" #generalFacultyForm="ngForm">
+          <mat-form-field class="styles-full-width">
+            <input [(ngModel)]="faculty.title" matInput formControlName="title" type="text" placeholder="Faculty name" required>
+          </mat-form-field>
+
+          <div class="styles-mat-card-actions" style="margin-top:10pt;">
+              <div style="display: block; float: left;" [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></div>
+              <mat-progress-spinner style="display: inline-block; vertical-align:middle;" *ngIf="submitted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+              <button style="display: inline-block;" type="submit" mat-button [disabled]="!generalFacultyForm.form.valid">UPDATE</button>
+          </div>
+        </form>
+    </mat-expansion-panel>
+
+    <mat-progress-spinner *ngIf="!completed" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+
+    <mat-expansion-panel [expanded]="true" *ngIf="completed">
+        <mat-expansion-panel-header>
+            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
+                <i>{{faculty.title}}</i>&nbsp; Groups
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-progress-spinner *ngIf="submitted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+
+        <button mat-button *ngIf="!submitted" (click)="openAddGroupDialog()" class="addGroupButton">
+            <mat-icon class="material-icons md-24">group_add</mat-icon>
+            Add Group
+        </button>
+
+        <button *ngIf="removeGroup && !submitted" mat-button (click)="removeSelectedGroup()" class="removeGroupButton">
+            <mat-icon class="material-icons md-24">remove_circle_outline</mat-icon>
+            Remove Groups
+        </button>
+
+        <mat-table #facultyGroupsDSTable [dataSource]="facultyGroupsDS">
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <mat-checkbox [(ngModel)]="element.checked" (change)="checkSelected()">{{element.id}}</mat-checkbox>
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>Group Name</mat-header-cell>
+                <mat-cell *matCellDef="let element"
+                    (click)="facultyGroupClicked(element)">{{element.name}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="membersNum">
+                <mat-header-cell *matHeaderCellDef>Group Members Number</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.membersNum}}</mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="facultyGroupsDisplayedColumns"></mat-header-row>
+            <mat-row 
+                class="styles-mat-table-row"
+                *matRowDef="let row; columns: facultyGroupsDisplayedColumns;"></mat-row>
+
+        </mat-table>
+    </mat-expansion-panel>
+
+</mat-accordion>

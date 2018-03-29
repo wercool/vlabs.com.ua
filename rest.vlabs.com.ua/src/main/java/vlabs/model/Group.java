@@ -29,7 +29,7 @@ public class Group
     @Column(name = "name")
     private String name;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, fetch = FetchType.LAZY)
     @JoinTable(name = "group_user",
                joinColumns = @JoinColumn(name = "group_id", referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))

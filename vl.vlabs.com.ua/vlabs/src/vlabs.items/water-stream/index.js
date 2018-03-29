@@ -7,10 +7,10 @@ export default class WaterStream {
         this.context = this.initObj.context;
         this.clock = new THREE.Clock();
 
-        var map = '/vlabs.items/water-stream/maps/map.png';
-        var envMap = '/vlabs.items/water-stream/maps/envMap.jpg';
-        var dispMap = '/vlabs.items/water-stream/maps/dispMap.jpg';
-        var alphaMap = '/vlabs.items/water-stream/maps/alphaMap.jpg';
+        var map = '../vlabs.items/water-stream/maps/map.png';
+        var envMap = '../vlabs.items/water-stream/maps/envMap.jpg';
+        var dispMap = '../vlabs.items/water-stream/maps/dispMap.jpg';
+        var alphaMap = '../vlabs.items/water-stream/maps/alphaMap.jpg';
 
         var self = this;
         var loader = new THREE.TextureLoader();

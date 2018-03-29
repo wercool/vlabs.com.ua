@@ -30,7 +30,7 @@ initObj {
 
     initialize() {
         var self = this;
-        this.context.loadVLabItem("/vlabs.items/boshScrewdriver/bosch-screwdriver.json", "BoshScrewdriver").then((scene) => {
+        this.context.loadVLabItem("../vlabs.items/boshScrewdriver/bosch-screwdriver.json", "BoshScrewdriver").then((scene) => {
             this.model = scene.children[0];
             if (this.initObj.name) {
                 this.model.name = this.initObj.name;
@@ -50,7 +50,7 @@ initObj {
             this.boschScrewdriverButtonPressSound = new THREE.Audio(this.context.defaultAudioListener);
             // load a sound and set it as the Audio object's buffer
             var audioLoader = new THREE.AudioLoader();
-            audioLoader.load('/vlabs.items/boshScrewdriver/sounds/sound1.mp3', function(buffer) {
+            audioLoader.load('../vlabs.items/boshScrewdriver/sounds/sound1.mp3', function(buffer) {
                 self.boschScrewdriverButtonPressSound.setBuffer(buffer);
             });
             this.boschScrewdriverButtonPressSoundTime = 0;
