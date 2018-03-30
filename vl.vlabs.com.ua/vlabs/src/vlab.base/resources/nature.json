@@ -1,4 +1,5 @@
 {
+    "VLabsREST": "http://localhost:8090/api",
     "title": "Base VLab",
     "resolutionFactor": "1.0",
     "sceneJSONFile": "./resources/scene/vlab.base.json",

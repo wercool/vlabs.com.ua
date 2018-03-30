@@ -85,7 +85,7 @@ public class GroupService
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public List<User> nonGroupMembersByGroupId(Long groupId) throws AccessDeniedException {
+    public List<User> getNonGroupMembersByGroupId(Long groupId) throws AccessDeniedException {
         List<User> groupMembers = groupRepository.findGroupMemebers(groupId);
         List<Long> groupMemberIds = new ArrayList<Long>();
         for (User m : groupMembers) {

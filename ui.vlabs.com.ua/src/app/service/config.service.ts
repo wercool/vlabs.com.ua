@@ -30,6 +30,11 @@ export class ConfigService {
   private _course_url                               = this._api_url + '/course';
   private _course_add_url                           = this._course_url + '/add';
   private _courses_url                              = this._course_url + '/all';
+  private _course_update_url                        = this._course_url + '/update';
+  private _course_eclasses_url                      = this._course_url + '/{courseId}/course-eclasses';
+  private _course_non_course_eclasses_url           = this._course_url + '/{courseId}/non-course-eclasses';
+  private _course_add_eclasses_url                  = this._course_url + '/{courseId}/addeclasses';
+  private _course_remove_eclasses_url               = this._course_url + '/{courseId}/removeeclasses';
 
   private _module_url                               = this._api_url + '/module';
   private _module_add_url                           = this._module_url + '/add';
@@ -119,8 +124,14 @@ export class ConfigService {
   get vlabs_url(): string { return this._vlabs_url; }
 
   //Courses
+  get course_url(): string { return this._course_url; };
   get course_add_url(): string { return this._course_add_url; };
   get courses_url(): string { return this._courses_url; };
+  get course_update_url(): string { return this._course_update_url; };
+  get course_eclasses_url(): string { return this._course_eclasses_url; };
+  get course_non_course_eclasses_url(): string { return this._course_non_course_eclasses_url; };
+  get course_add_eclasses_url(): string { return this._course_add_eclasses_url; };
+  get course_remove_eclasses_url(): string { return this._course_remove_eclasses_url; };
 
   //Modules
   get module_add_url(): string { return this._module_add_url; };

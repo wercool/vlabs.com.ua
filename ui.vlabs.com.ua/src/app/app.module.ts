@@ -36,9 +36,12 @@ import {
 import { AppComponent } from './app.component';
 import {
   HeaderComponent,
+
   HomeComponent,
   AdminHomeComponent,
   UserHomeComponent,
+  ManagerHomeComponent,
+
   NotFoundComponent,
   LoginComponent,
   RegisterComponent,
@@ -49,8 +52,12 @@ import {
   VlabsManagementComponent,
   AddVLabItemDialogComponent,
   NewVlabComponent,
+  
   CourseManagementComponent,
   NewCourseComponent,
+  EditCourseComponent,
+  AddCourseEClassDialogComponent,
+
   DepartmentManagementComponent,
   NewDepartmentComponent,
   EclassManagementComponent,
@@ -130,9 +137,12 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     /* Component */
     AppComponent,
     HeaderComponent,
+
     HomeComponent,
     AdminHomeComponent,
     UserHomeComponent,
+    ManagerHomeComponent,
+
     NotFoundComponent,
     LoginComponent,
     RegisterComponent,
@@ -147,7 +157,12 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     ResetPasswordComponent,
     VlabsManagementComponent,
     NewVlabComponent,
+
     CourseManagementComponent,
+    NewCourseComponent,
+    EditCourseComponent,
+    AddCourseEClassDialogComponent,
+
     DepartmentManagementComponent,
     EclassManagementComponent,
 
@@ -163,7 +178,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 
     ModuleManagementComponent,
     PartnerManagementComponent,
-    NewCourseComponent,
     NewModuleComponent,
     NewPartnerComponent,
     NewDepartmentComponent,
@@ -188,7 +202,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     ConfirmationDialog,
     AddVLabItemDialogComponent,
     AddGroupMemberDialogComponent,
-    AddFacultyGroupDialogComponent
+    AddFacultyGroupDialogComponent,
+    AddCourseEClassDialogComponent
   ],
   imports:
   [

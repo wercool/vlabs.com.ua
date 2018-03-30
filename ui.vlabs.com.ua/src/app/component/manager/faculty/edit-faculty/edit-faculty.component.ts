@@ -32,7 +32,7 @@ export class EditFacultyComponent implements OnInit {
     notification: DisplayMessage;
 
     facultyGroupsDisplayedColumns = ['id', 'name', 'membersNum'];
-    facultyGroupsDS: MatTableDataSource<GroupItem>;
+    facultyGroupsDS: MatTableDataSource<GroupItem> = new MatTableDataSource<GroupItem>([]);
 
     submitted = false;
     completed = false;

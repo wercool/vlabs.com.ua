@@ -21,7 +21,7 @@
             <ng-container matColumnDef="path">
                 <mat-header-cell *matHeaderCellDef>PATH</mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <a href="{{host}}{{element.path}}" target="_blank">{{host}}{{element.path}}</a>
+                    <a href="{{element.path}}" target="_blank">{{element.path}}</a>
                 </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="vlabsDisplayedColumns"></mat-header-row>

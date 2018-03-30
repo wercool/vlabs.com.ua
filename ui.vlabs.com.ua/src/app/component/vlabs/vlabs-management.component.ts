@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { VlabService } from '../../../service/index';
-import { Vlab } from '../../../model/index';
+import { VlabService } from '../../service/index';
+import { Vlab } from '../../model/index';
 import { MatTableDataSource, MatExpansionPanel } from '@angular/material';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-vlabs-management',

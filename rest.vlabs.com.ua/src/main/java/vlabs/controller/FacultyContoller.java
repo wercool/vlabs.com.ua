@@ -35,7 +35,7 @@ public class FacultyContoller
     public List<Faculty> getAllFaculties() {
         return facultyService.findAll();
     }
-    
+
     @RequestMapping(method = RequestMethod.POST, value= "/faculty/update")
     public Faculty updateFaculty(@RequestBody Faculty faculty) {
         return facultyService.updateFaculty(faculty);
@@ -48,7 +48,7 @@ public class FacultyContoller
 
     @RequestMapping(method = RequestMethod.GET, value = "/faculty/{facultyId}/non-faculty-groups")
     public List<Group> nonGroupMembersByGroupId(@PathVariable Long facultyId) {
-        return facultyService.nonFacultyGroupsByFacultyId(facultyId);
+        return facultyService.getNonFacultyGroupsByFacultyId(facultyId);
     }
 
     @RequestMapping(method = RequestMethod.POST, value= "/faculty/{facultyId}/addgroups")

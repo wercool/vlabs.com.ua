@@ -38,7 +38,7 @@ export class EditGroupComponent implements OnInit {
   
 
     groupMembersDisplayedColumns = ['id', 'username', 'email', 'phoneNumber', 'firstName', 'lastName'];
-    groupMembersDS: MatTableDataSource<UserItem>;
+    groupMembersDS: MatTableDataSource<UserItem> = new MatTableDataSource<UserItem>([]);
  
     constructor(
       private route: ActivatedRoute,

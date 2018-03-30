@@ -10,7 +10,7 @@
         </mat-panel-description>
     </mat-expansion-panel-header>
 
-    <mat-table #cousrsesDSTable [dataSource]="coursesDS">
+    <mat-table #cousrsesDSTable [dataSource]="coursesItemsDS">
         <ng-container matColumnDef="id">
             <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
             <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
@@ -19,8 +19,15 @@
             <mat-header-cell *matHeaderCellDef>NAME</mat-header-cell>
             <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
         </ng-container>
+        <ng-container matColumnDef="eClassesNum">
+            <mat-header-cell *matHeaderCellDef>EClasses</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.eClassesNum}}</mat-cell>
+        </ng-container>
         <mat-header-row *matHeaderRowDef="coursesDisplayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: coursesDisplayedColumns;"></mat-row>
+        <mat-row 
+        class="styles-mat-table-row"
+        (click)="courseRowClicked(row)" 
+        *matRowDef="let row; columns: coursesDisplayedColumns;"></mat-row>
     </mat-table>
 
     </mat-expansion-panel>

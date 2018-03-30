@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Course } from '../../model/index';
+import { Course, CourseItem } from '../../model/index';
 import { MatTableDataSource, MatExpansionPanel } from '@angular/material';
+import { Router } from '@angular/router';
 import { CourseService } from '../../service/index';
 
 @Component({
@@ -13,12 +14,14 @@ export class CourseManagementComponent implements OnInit {
   @ViewChild('coursesListPanel') coursesListPanel: MatExpansionPanel;
 
   coursesAll: Course[] = [];
+  coursesItems: CourseItem[] = [];
   coursesNum: number = 0;
 
-  coursesDisplayedColumns = ['id', 'name'];
-  coursesDS: MatTableDataSource<Course>;
+  coursesDisplayedColumns = ['id', 'name', 'eClassesNum'];
+  coursesItemsDS: MatTableDataSource<CourseItem> = new MatTableDataSource<CourseItem>([]);
 
   constructor(
+    private router: Router,
     private courseService: CourseService
   ) { }
 
@@ -42,13 +45,26 @@ export class CourseManagementComponent implements OnInit {
 
   private refreshDS(){
     this.coursesNum = this.coursesAll.length;
-    this.coursesDS = new MatTableDataSource<Course>(this.coursesAll);
+
+    this.coursesItems = [];
+    for (let course of this.coursesAll) {
+      let courseItem: CourseItem = <CourseItem> course;
+      courseItem.checked = false;
+      courseItem.eClassesNum = (courseItem.eClasses) ? courseItem.eClasses.length : 0;
+      this.coursesItems.push(courseItem);
+    }
+
+    this.coursesItemsDS = new MatTableDataSource<CourseItem>(this.coursesItems);
   }
 
   onNewCourseAddedEvent(course: Course){
     this.coursesAll.push(course);
     this.refreshDS();
     this.coursesListPanel.open();
+  }
+
+  courseRowClicked(selectedCourse) {
+    this.router.navigate(['course-edit', selectedCourse.id]);
   }
 
 }

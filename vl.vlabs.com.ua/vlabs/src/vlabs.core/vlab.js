@@ -8,6 +8,7 @@ import THREEStats                   from 'stats.js';
 import * as HTTPUtils               from "./utils/http.utils"
 import * as TWEEN                   from 'tween.js';
 import iziToast                     from 'izitoast';
+import request                      from 'request';
 
 var ProgressBar             = require('progressbar.js');
 var webglDetect             = require('webgl-detect');
@@ -29,6 +30,8 @@ export default class VLab {
             throw new TypeError("Cannot construct VLab instances directly");
         }
 
+        this.authenticated = false;
+
         this.initObj = initObj;
         this.name = this.initObj.name;
         this.initialized = false;
@@ -36,12 +39,6 @@ export default class VLab {
         this.nature = {};
         this.webGLContainer = undefined;
         this.webGLRenderer = undefined;
-
-        if (document.getElementById('loader')) {
-            document.body.removeChild(document.getElementById('loader'));
-        }
-
-        this.buildHTML();
 
         /* Events */
         this.sceneCompleteEvent = new Event(this.name + 'SceneCompleteEvent');
@@ -99,7 +96,7 @@ export default class VLab {
     }
 
     getVesrion() {
-        return "0.1.1";
+        return "0.1.2";
     }
 
     buildHTML() {
@@ -189,12 +186,20 @@ export default class VLab {
     }
 
     initialize() {
+        this.buildHTML();
+
         return Promise.all([
             this.getNatureFromURL((this.initObj.natureURL) ? this.initObj.natureURL : "./resources/nature.json")
         ])
         .then((result) => {
             let [ nature ] = result;
             this.nature = nature;
+
+            if (document.getElementById('loader')) {
+                document.body.removeChild(document.getElementById('loader'));
+            }
+
+            this.authenticate();
 
             this.setProgressBar();
 
@@ -203,6 +208,26 @@ export default class VLab {
         .catch(error => {
             console.error(error);
         });
+    }
+
+    authenticate() {
+        if (this.nature.VLabsREST) {
+            console.log('TRANSPARENT AUTHENTICATION ATTEMPT');
+
+            var self = this;
+            request(this.nature.VLabsREST + '/refresh', function (error, response, body) {
+                if (error) {
+                    console.log(error);
+                    self.showErrorMessage({
+                        message: '<h1 style="color: red";>CORS are disabled in VLabs!</h1>'
+                    });
+                    window.stop();
+                } else {
+                    console.log('statusCode:', response && response.statusCode);
+                    console.log('body:', body);
+                }
+            });
+        }
     }
 
     setWebGLRenderer() {

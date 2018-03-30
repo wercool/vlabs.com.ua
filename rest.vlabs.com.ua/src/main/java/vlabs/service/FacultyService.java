@@ -57,7 +57,7 @@ public class FacultyService
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public List<Group> nonFacultyGroupsByFacultyId(Long facultyId) throws AccessDeniedException {
+    public List<Group> getNonFacultyGroupsByFacultyId(Long facultyId) throws AccessDeniedException {
         List<Group> facultyGroups = facultyRepository.findFacultyGroups(facultyId);
         List<Long> facultyGroupsIds = new ArrayList<Long>();
         for (Group g : facultyGroups) {
@@ -92,16 +92,16 @@ public class FacultyService
 
         if (action.equals("remove")) {
             List<Long> facultyGroupsToRemoveIds = new ArrayList<Long>();
-            List<Group> udatedfacultyGroups = new ArrayList<Group>();
+            List<Group> udatedFacultyGroups = new ArrayList<Group>();
             for (Group gm : modifiedFacultyGroups) {
                 facultyGroupsToRemoveIds.add(gm.getId());
             }
             for (Group g : facultyGroups) {
                 if (facultyGroupsToRemoveIds.indexOf(g.getId()) == -1) {
-                    udatedfacultyGroups.add(g);
+                    udatedFacultyGroups.add(g);
                 }
             }
-            existingFaculty.setGroups(udatedfacultyGroups);
+            existingFaculty.setGroups(udatedFacultyGroups);
         }
 
         return facultyRepository.save(existingFaculty);

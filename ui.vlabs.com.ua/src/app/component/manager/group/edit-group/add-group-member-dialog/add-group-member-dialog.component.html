@@ -5,8 +5,7 @@
         <ng-container matColumnDef="id">
             <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <mat-checkbox [(ngModel)]="element.checked" (change)="checkSelected()"></mat-checkbox>
-                <div style="font-size: 8pt;">{{element.id}}</div>
+                <mat-checkbox [(ngModel)]="element.checked" (change)="checkSelected()">{{element.id}}</mat-checkbox>
             </mat-cell>
         </ng-container>
         <ng-container matColumnDef="username">

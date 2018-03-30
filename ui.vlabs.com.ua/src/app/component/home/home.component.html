@@ -1,5 +1,12 @@
+<app-user-home *ngIf="authorizedFor('USER') 
+                  && !authorizedFor('MANAGER') 
+                  && !authorizedFor('ADMIN')"></app-user-home>
+
+<app-manager-home *ngIf="authorizedFor('MANAGER')
+                     && !authorizedFor('ADMIN')"></app-manager-home>
+
 <app-admin-home *ngIf="authorizedFor('ADMIN')"></app-admin-home>
-<app-user-home *ngIf="authorizedFor('USER') && !authorizedFor('ADMIN')"></app-user-home>
+
 <!-- 
 <div class="carousel-wrapper" *ngIf="!isLoggedIn()">
     <span id="target-item-1"></span>

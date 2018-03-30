@@ -44,25 +44,7 @@ CREATE TABLE `user_media` (
 CREATE TABLE `vlabs` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
-  `path` varchar(2048) DEFAULT '/vl/index.html',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-
--- Courses
-CREATE TABLE `courses` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-
--- Modules
-CREATE TABLE `modules` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) DEFAULT NULL,
+  `path` varchar(2048) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -113,6 +95,28 @@ CREATE TABLE `departments` (
 
 
 
+-- Content Element = CElement
+CREATE TABLE `celements` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `structure_id` bigint(20) NOT NULL,
+  `type` varchar(24) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `sid` int NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `cel_fk_structure_id` FOREIGN KEY (`structure_id`) REFERENCES `eclass_structure` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `celement_items` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `celement_id` bigint(20) NOT NULL,
+  `nature` longtext,
+  `sid` int NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `celi_fk_celement_id` FOREIGN KEY (`celement_id`) REFERENCES `celements` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 -- EClasses
 CREATE TABLE `eclass_format` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -140,24 +144,30 @@ CREATE TABLE `eclasses` (
   CONSTRAINT `ec_fk_format_id` FOREIGN KEY (`format_id`) REFERENCES `eclass_format` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Content Element = CElement
-CREATE TABLE `celements` (
+
+
+-- Courses
+CREATE TABLE `courses` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `structure_id` bigint(20) NOT NULL,
-  `type` varchar(24) DEFAULT NULL,
-  `title` varchar(255) DEFAULT NULL,
-  `sid` int NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `cel_fk_structure_id` FOREIGN KEY (`structure_id`) REFERENCES `eclass_structure` (`id`)
+  `name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `celement_items` (
+CREATE TABLE `course_eclass` (
+  `course_id` bigint(20) NOT NULL,
+  `eclass_id` bigint(20) NOT NULL,
+  KEY `course_id_fk` (`course_id`),
+  KEY `eclass_id_fk` (`eclass_id`),
+  CONSTRAINT `ce_course_id_fk` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`),
+  CONSTRAINT `ce_eclass_id_fk` FOREIGN KEY (`eclass_id`) REFERENCES `eclasses` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- Modules
+CREATE TABLE `modules` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `celement_id` bigint(20) NOT NULL,
-  `nature` longtext,
-  `sid` int NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `celi_fk_celement_id` FOREIGN KEY (`celement_id`) REFERENCES `celements` (`id`)
+  `title` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

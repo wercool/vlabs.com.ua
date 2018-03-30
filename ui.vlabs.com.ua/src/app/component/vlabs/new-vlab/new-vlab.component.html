@@ -5,7 +5,7 @@
       <input matInput formControlName="title" type="text" placeholder="VLab Title" required>
   </mat-form-field>
   <mat-form-field class="styles-full-width">
-    <input matInput formControlName="path" type="text" placeholder="http://vlabs.host/{VLab path}" required>
+    <input matInput formControlName="path" type="text" value="{{host}}/vlabs/index.html" required>
   </mat-form-field>
   <div class="styles-mat-card-actions">
       <button type="submit" mat-button [disabled]="!newVlabForm.form.valid">SAVE</button>

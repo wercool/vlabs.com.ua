@@ -48,7 +48,7 @@ public class GroupContoller
 
     @RequestMapping(method = RequestMethod.GET, value = "/group/{groupId}/non-members")
     public List<User> nonGroupMembersByGroupId(@PathVariable Long groupId) {
-        return groupService.nonGroupMembersByGroupId(groupId);
+        return groupService.getNonGroupMembersByGroupId(groupId);
     }
 
     @RequestMapping(method = RequestMethod.POST, value= "/group/{groupId}/addmembers")

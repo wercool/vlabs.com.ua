@@ -2,9 +2,10 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 
-import { VlabService } from '../../../../service/index';
-import { DisplayMessage } from '../../../../shared/models/display-message';
-import { Vlab } from '../../../../model/index';
+import { environment } from '../../../../environments/environment';
+import { VlabService } from '../../../service/index';
+import { DisplayMessage } from '../../../shared/models/display-message';
+import { Vlab } from '../../../model/index';
 
 @Component({
   selector: 'app-new-vlab',
@@ -12,6 +13,8 @@ import { Vlab } from '../../../../model/index';
   styleUrls: ['./new-vlab.component.css']
 })
 export class NewVlabComponent implements OnInit {
+
+  host = environment.host;
 
   form: FormGroup;
 

@@ -9,18 +9,26 @@ import {
   NotFoundComponent,
   EditProfileComponent,
   ResetPasswordComponent,
+
+  UserManagementComponent,
+
   VlabsManagementComponent,
+
   CourseManagementComponent,
-  DepartmentManagementComponent,
+  EditCourseComponent,
+
   FacultyManagementComponent,
+  EditFacultyComponent,
+
+  DepartmentManagementComponent,
+
   GroupManagementComponent,
   EditGroupComponent,
-  UserManagementComponent,
+
   PartnerManagementComponent,
   ModuleManagementComponent,
   EclassManagementComponent,
   EditEclassComponent,
-  EditFacultyComponent,
 } from '../component';
 
 import {
@@ -64,6 +72,11 @@ export const routes: Routes = [
   {
     path: 'course-management',
     component: CourseManagementComponent,
+    canActivate: [ManagerGuard]
+  },
+  {
+    path: 'course-edit/:id',
+    component: EditCourseComponent,
     canActivate: [ManagerGuard]
   },
   {

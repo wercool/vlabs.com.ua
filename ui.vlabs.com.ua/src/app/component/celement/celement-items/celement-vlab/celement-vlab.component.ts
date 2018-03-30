@@ -5,7 +5,7 @@ import { MatSnackBar, MatDialog } from '@angular/material';
 
 import { VLabItem } from "../../../../shared/models/celement/vlab-item";
 
-import { AddVLabItemDialogComponent } from '../../../dialogs/add-vlab-item-dialog/add-vlab-item-dialog.component';
+import { AddVLabItemDialogComponent } from '../../../vlabs/add-vlab-item-dialog/add-vlab-item-dialog.component';
 
 @Component({
   selector: 'celement-item-vlab',
