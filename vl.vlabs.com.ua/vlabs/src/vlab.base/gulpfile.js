@@ -10,11 +10,15 @@ var sourcemaps          = require("gulp-sourcemaps");
 var purgeSourcemaps     = require("gulp-purge-sourcemaps");
 var gutil               = require("gulp-util");
 var cors                = require('cors');
+var obfuscator          = require('gulp-javascript-obfuscator');
+var base64_encode       = require('gulp-base64-encode');
+var replace             = require('gulp-replace');
+var fs                  = require('fs');
 
 var vLabName = __dirname.substr(__dirname.lastIndexOf("/") + 1);
 
 gulp.task("build-prod", ["sync"], function () {
-    console.log("vLabName = " + vLabName);
+    console.log("VLab directory name: " + vLabName);
     return browserify({
         entries: [
             "./index.js"
@@ -26,6 +30,7 @@ gulp.task("build-prod", ["sync"], function () {
     .pipe(source("bundle.js"))
     .pipe(buffer())
     .pipe(uglify())
+    .pipe(obfuscator())
     .on("error", function (err) { gutil.log(gutil.colors.red("[Error]"), err.toString()); })
     .pipe(gulp.dest("../../build/" + vLabName));
 });
@@ -49,12 +54,13 @@ gulp.task("build", ["sync"], function () {
     .pipe(gulp.dest("../../build/" + vLabName));
 });
 
-gulp.task("sync", ["sync-vlab-items", "sync-vlabs-assets"], function() {
+gulp.task("sync", ["vlab-nature-encode", "sync-vlab-items", "sync-vlabs-assets"], function() {
     return gulp.src("")
         .pipe(dirSync("./", "../../build/" + vLabName, { 
             ignore: [
                 "gulpfile.js",
-                "index.js"
+                "index.js",
+                "./resources/nature.json"
             ],
             printSummary: true
         }));
@@ -98,6 +104,29 @@ gulp.task("server", function(){
             return [cors()];
         }
     });
+});
+
+gulp.task("vlab-nature-encode", function () {
+    if (process.argv.indexOf("--noauth") > -1) {
+        gulp.src("./resources/nature.json")
+            .pipe(replace('"VLabsREST": "http://localhost:8090/api"', '"VLabsREST": null'))
+            .pipe(base64_encode())
+            .pipe(gulp.dest("../../build/" + vLabName + "/resources"));
+    } else {
+        gulp.src("./resources/nature.json")
+            .pipe(base64_encode())
+            .pipe(gulp.dest("../../build/" + vLabName + "/resources"));
+    }
+});
+
+gulp.task("sync-vlabs", function () {
+    var packageJSON = JSON.parse(fs.readFileSync('../../package.json'));
+    console.log(packageJSON.VLabsREST);
+    return gulp.src("")
+        .pipe(dirSync("../../build/" + vLabName, "../../../../rest.vlabs.com.ua/bin/static/vlabs/" + vLabName, { 
+            ignore: ["index.js"],
+            printSummary: true
+        }));
 });
 
 gulp.task("default", ["build", "server", "watch"]);

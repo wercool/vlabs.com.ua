@@ -1,7 +1,8 @@
 {
   "name": "vlabs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "VLabs",
+  "VLabsREST": "http://localhost:8090/api",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -30,6 +31,9 @@
     "babel-polyfill": "^6.26.0",
     "circular-menu": "^1.0.6",
     "es6-promise": "^4.2.2",
+    "gulp-base64-encode": "^1.0.1",
+    "gulp-javascript-obfuscator": "^1.1.4",
+    "gulp-replace": "^0.6.1",
     "isomorphic-fetch": "^2.2.1",
     "izitoast": "^1.2.0",
     "popups": "^1.1.3",

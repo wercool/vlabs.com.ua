@@ -193,6 +193,7 @@ export default class VLab {
         ])
         .then((result) => {
             let [ nature ] = result;
+
             this.nature = nature;
 
             if (document.getElementById('loader')) {
@@ -218,10 +219,6 @@ export default class VLab {
             request(this.nature.VLabsREST + '/refresh', function (error, response, body) {
                 if (error) {
                     console.log(error);
-                    self.showErrorMessage({
-                        message: '<h1 style="color: red";>CORS are disabled in VLabs!</h1>'
-                    });
-                    window.stop();
                 } else {
                     console.log('statusCode:', response && response.statusCode);
                     console.log('body:', body);
@@ -499,7 +496,7 @@ export default class VLab {
     }
 
     getNatureFromURL(url) {
-        return HTTPUtils.getJSONFromURL(url);
+        return HTTPUtils.getJSONFromURL(url, true);
     }
 
     render(time) {

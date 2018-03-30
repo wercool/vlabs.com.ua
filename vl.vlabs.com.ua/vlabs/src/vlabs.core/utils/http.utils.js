@@ -1,12 +1,22 @@
-export function getJSONFromURL(url) {
+export function getJSONFromURL(url, encoded) {
     return fetch(url).then(response => {
         if (response.ok) {
             const contentType = response.headers.get('Content-Type') || '';
 
             if (contentType.includes('application/json')) {
-                return response.json().catch(error => {
-                    return Promise.reject('Invalid JSON: ' + error.message);
-                });
+                if (encoded) {
+                    return new Promise((resolve) => {
+                        resolve(
+                            response.text().then(encodedResponse => {
+                                return JSON.parse(atob(encodedResponse));
+                            })
+                        );
+                    });
+                } else {
+                    return response.json().catch(error => {
+                        return Promise.reject('Invalid JSON: ' + error.message);
+                    });
+                }
             }
 
             return Promise.reject('Invalid content type: ' + contentType);
