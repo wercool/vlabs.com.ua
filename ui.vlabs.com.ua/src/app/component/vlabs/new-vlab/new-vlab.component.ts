@@ -18,6 +18,8 @@ export class NewVlabComponent implements OnInit {
 
   form: FormGroup;
 
+  newVLab:Vlab = new Vlab();
+
   /**
    * Boolean used in telling the UI
    * that the form has been submitted
@@ -35,11 +37,12 @@ export class NewVlabComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private vlabService: VlabService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.form = this.formBuilder.group({
       title: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
+      alias: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(64)])],
       path: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(1024)])],
     });
   }
@@ -61,5 +64,9 @@ export class NewVlabComponent implements OnInit {
       this.submitted = false;
       this.notification = { msgType: 'styles-error', msgBody: error.json().message };
     });
+  }
+
+  aliasInputChanged(alias: String) {
+    this.newVLab.path = this.host + '/vlabs/' + this.newVLab.alias + '/index.html';
   }
 }

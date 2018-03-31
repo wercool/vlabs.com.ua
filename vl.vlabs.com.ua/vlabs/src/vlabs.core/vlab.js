@@ -33,6 +33,10 @@ export default class VLab {
         this.authenticated = false;
 
         this.initObj = initObj;
+
+        this.initObj.naturePassphrase = '<!--VLAB NATURE PASSPHRASE-->';
+        this.initObj.authRequired = '<!--VLAB AUTH REQUIRED-->';
+
         this.name = this.initObj.name;
         this.initialized = false;
         this.paused = true;
@@ -189,7 +193,7 @@ export default class VLab {
         this.buildHTML();
 
         return Promise.all([
-            this.getNatureFromURL((this.initObj.natureURL) ? this.initObj.natureURL : "./resources/nature.json")
+            this.getNatureFromURL((this.initObj.natureURL) ? this.initObj.natureURL : "./resources/nature.json", this.initObj.naturePassphrase)
         ])
         .then((result) => {
             let [ nature ] = result;
@@ -200,7 +204,9 @@ export default class VLab {
                 document.body.removeChild(document.getElementById('loader'));
             }
 
-            this.authenticate();
+            if (this.initObj.authRequired === 'true') {
+                this.authenticate();
+            }
 
             this.setProgressBar();
 
@@ -213,18 +219,42 @@ export default class VLab {
 
     authenticate() {
         if (this.nature.VLabsREST) {
-            console.log('TRANSPARENT AUTHENTICATION ATTEMPT');
+            console.log('REST API AUTHENTICATION ATTEMPT');
 
             var self = this;
             request(this.nature.VLabsREST + '/refresh', function (error, response, body) {
                 if (error) {
-                    console.log(error);
+                    console.error(error);
+                    self.showErrorMessage({message: '<h3 style="color: red;">Failed to connecto to VLab REST API</h3>'})
+                    self.progressBarElement.style.display = 'none';
+                    window.stop();
                 } else {
                     console.log('statusCode:', response && response.statusCode);
-                    console.log('body:', body);
+                    // console.log('body:', body);
+                    this.authResult = JSON.parse(body);
+                    console.log("AUTH", this.authResult);
+                    if (!this.authResult.access_token) {
+                        self.showErrorMessage({message: '<h3 style="color: yellow;">VLab REST API authentication failed</h3>'})
+                        self.progressBarElement.style.display = 'none';
+                        window.stop();
+                    } else {
+                        self.RESTVLabInfo();
+                    }
                 }
             });
         }
+    }
+
+    RESTVLabInfo() {
+        var self = this;
+        request(this.nature.VLabsREST + '/vlab/info/' + btoa(this.nature.alias), function (error, response, body) {
+            if (error) {
+                console.error(error);
+            } else {
+                self.VLabInfo = JSON.parse(body);
+                console.log(self.VLabInfo);
+            }
+        });
     }
 
     setWebGLRenderer() {
@@ -495,8 +525,8 @@ export default class VLab {
         });
     }
 
-    getNatureFromURL(url) {
-        return HTTPUtils.getJSONFromURL(url, true);
+    getNatureFromURL(url, passphrase) {
+        return HTTPUtils.getJSONFromURL(url, passphrase.length > 0 ? passphrase : undefined);
     }
 
     render(time) {

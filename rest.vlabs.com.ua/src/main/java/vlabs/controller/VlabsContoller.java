@@ -1,14 +1,21 @@
 package vlabs.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import vlabs.common.EmptyJsonResponse;
 import vlabs.model.Vlab;
 import vlabs.service.VlabService;
 
@@ -27,5 +34,16 @@ public class VlabsContoller
     @RequestMapping(method = RequestMethod.GET, value= "/vlab/all")
     public List<Vlab> getAllVlabs() {
         return vlabService.findAll();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value= "/vlab/info/{alias_Base64Encoded}")
+    public Vlab getVlabInfoByAlias(@PathVariable String alias_Base64Encoded) {
+        String alias = "";
+        try {
+            alias = new String(Base64.getDecoder().decode(alias_Base64Encoded), "UTF8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return vlabService.findByAlias(alias);
     }
 }

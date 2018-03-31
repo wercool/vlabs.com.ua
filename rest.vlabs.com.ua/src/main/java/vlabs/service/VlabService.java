@@ -35,4 +35,10 @@ public class VlabService
     public Vlab addNew(Vlab vlab) throws AccessDeniedException {
         return vlabRepository.save(vlab);
     }
+
+    @PreAuthorize("hasRole('USER')")
+    public Vlab findByAlias(String alias) throws AccessDeniedException {
+        Vlab vlab = vlabRepository.findByAlias(alias);
+        return vlab;
+    }
 }

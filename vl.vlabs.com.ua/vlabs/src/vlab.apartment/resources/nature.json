@@ -1,5 +1,6 @@
 {
     "title": "VLab Apartment",
+    "alias": "vlab.apartment",
     "resolutionFactor": "1.0",
     "sceneJSONFile": "./resources/scene/apartment.json",
     "lang": "en",

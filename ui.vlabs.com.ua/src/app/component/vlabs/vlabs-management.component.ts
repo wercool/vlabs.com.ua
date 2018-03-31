@@ -18,7 +18,7 @@ export class VlabsManagementComponent implements OnInit {
   vlabsAll: Vlab[] = [];
   vlabsNum: number = 0;
 
-  vlabsDisplayedColumns = ['id', 'title', 'path'];
+  vlabsDisplayedColumns = ['id', 'title', 'alias', 'path'];
   vlabsDS: MatTableDataSource<Vlab>;
 
   constructor(

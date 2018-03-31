@@ -2,10 +2,13 @@
 <mat-progress-spinner *ngIf="submitted" mode="indeterminate"></mat-progress-spinner>
 <form *ngIf="!submitted" [formGroup]="form" (ngSubmit)="onSubmit()" #newVlabForm="ngForm">
   <mat-form-field class="styles-full-width">
-      <input matInput formControlName="title" type="text" placeholder="VLab Title" required>
+      <input matInput [(ngModel)]="newVLab.title" formControlName="title" type="text" placeholder="VLab Title" required>
   </mat-form-field>
   <mat-form-field class="styles-full-width">
-    <input matInput formControlName="path" type="text" value="{{host}}/vlabs/index.html" required>
+    <input matInput [(ngModel)]="newVLab.alias" formControlName="alias" type="text" placeholder="VLab Alias" required (input)="aliasInputChanged($event.target.value)">
+  </mat-form-field>
+  <mat-form-field class="styles-full-width">
+    <input matInput [(ngModel)]="newVLab.path" formControlName="path" type="text" placeholder="VLab URL" required>
   </mat-form-field>
   <div class="styles-mat-card-actions">
       <button type="submit" mat-button [disabled]="!newVlabForm.form.valid">SAVE</button>

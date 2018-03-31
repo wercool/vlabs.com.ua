@@ -18,6 +18,10 @@
                 <mat-header-cell *matHeaderCellDef>TITLE</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{element.title}}</mat-cell>
             </ng-container>
+            <ng-container matColumnDef="alias">
+                <mat-header-cell *matHeaderCellDef>ALIAS</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.alias}}</mat-cell>
+            </ng-container>
             <ng-container matColumnDef="path">
                 <mat-header-cell *matHeaderCellDef>PATH</mat-header-cell>
                 <mat-cell *matCellDef="let element">

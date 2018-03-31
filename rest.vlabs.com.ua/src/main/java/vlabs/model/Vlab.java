@@ -16,8 +16,11 @@ public class Vlab
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title")
+    @Column(name = "title", length = 255)
     private String title;
+
+    @Column(name = "alias", length = 255)
+    private String alias;
 
     @Column(name = "path", length = 2048)
     private String path;
@@ -36,6 +39,14 @@ public class Vlab
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     public String getPath() {
