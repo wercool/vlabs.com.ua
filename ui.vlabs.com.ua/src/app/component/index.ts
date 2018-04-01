@@ -29,6 +29,7 @@ export * from './manager/group/edit-group/add-group-member-dialog/add-group-memb
 
 export * from './vlabs/vlabs-management.component';
 export * from './vlabs/new-vlab/new-vlab.component';
+export * from './vlabs/edit-vlab/edit-vlab.component';
 export * from './vlabs/add-vlab-item-dialog/add-vlab-item-dialog.component';
 
 export * from './side-nav/admin-sidenav/admin-sidenav.component';

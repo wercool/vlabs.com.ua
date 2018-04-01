@@ -29,7 +29,10 @@
                 </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="vlabsDisplayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: vlabsDisplayedColumns;"></mat-row>
+            <mat-row 
+            class="styles-mat-table-row"
+            (click)="vlabRowClicked(row)" 
+            *matRowDef="let row; columns: vlabsDisplayedColumns;"></mat-row>
         </mat-table>
 
     </mat-expansion-panel>

@@ -119,7 +119,6 @@
     },
     "interactions": {
         "CubeInteractive|Cube": {
-            
         },
         "CubeInteractive|CubeResponosive": {
             "applyFn": "CubeInteractiveToCubeResponsive",

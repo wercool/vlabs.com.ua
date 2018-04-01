@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import vlabs.common.EmptyJsonResponse;
 import vlabs.model.Vlab;
 import vlabs.service.VlabService;
 
@@ -26,6 +25,13 @@ public class VlabsContoller
     @Autowired
     private VlabService vlabService;
 
+    @RequestMapping(method = RequestMethod.GET, value = "/vlab/{vlabId}")
+    public Vlab loadById(@PathVariable Long vlabId) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User user = (User)authentication.getPrincipal();
+        return vlabService.findById(vlabId);
+    }
+
     @RequestMapping(method = RequestMethod.POST, value= "/vlab/add")
     public Vlab addNewVlab(@RequestBody Vlab vlab) {
         return vlabService.addNew(vlab);
@@ -34,6 +40,11 @@ public class VlabsContoller
     @RequestMapping(method = RequestMethod.GET, value= "/vlab/all")
     public List<Vlab> getAllVlabs() {
         return vlabService.findAll();
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value= "/vlab/update")
+    public Vlab updateVlab(@RequestBody Vlab vlab) {
+        return vlabService.updateVlab(vlab);
     }
 
     @RequestMapping(method = RequestMethod.GET, value= "/vlab/info/{alias_Base64Encoded}")

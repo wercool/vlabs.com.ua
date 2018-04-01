@@ -3,6 +3,7 @@ import { VlabService } from '../../service/index';
 import { Vlab } from '../../model/index';
 import { MatTableDataSource, MatExpansionPanel } from '@angular/material';
 import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vlabs-management',
@@ -22,6 +23,7 @@ export class VlabsManagementComponent implements OnInit {
   vlabsDS: MatTableDataSource<Vlab>;
 
   constructor(
+    private router: Router,
     private vlabService: VlabService
   ) { }
 
@@ -52,5 +54,9 @@ export class VlabsManagementComponent implements OnInit {
     this.vlabsAll.push(vlab);
     this.refreshDS();
     this.vlabsListPanel.open();
+  }
+
+  vlabRowClicked(selectedVLab: Vlab) {
+    this.router.navigate(['vlab-edit', selectedVLab.id]);
   }
 }

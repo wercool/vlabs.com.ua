@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import vlabs.security.AccessDeniedHandlerImpl;
 import vlabs.security.AuthenticationFailureHandler;
 import vlabs.security.AuthenticationSuccessHandler;
 import vlabs.security.LogoutSuccess;
@@ -36,7 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     public TopMostServletFilter topMostServletFilter() throws Exception {
         return new TopMostServletFilter();
     }
-    
+
     @Bean
     public TokenAuthenticationFilter jwtAuthenticationTokenFilter() throws Exception {
         return new TokenAuthenticationFilter();
@@ -46,6 +47,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public AccessDeniedHandlerImpl accessDeniedHandlerImpl() throws Exception {
+        return new AccessDeniedHandlerImpl();
     }
 
     @Bean
@@ -89,6 +95,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()
+            .exceptionHandling().accessDeniedHandler(accessDeniedHandlerImpl()).and()
             .addFilterAfter(topMostServletFilter(), BasicAuthenticationFilter.class)
             .addFilterAfter(jwtAuthenticationTokenFilter(), TopMostServletFilter.class)
             .authorizeRequests()
@@ -102,6 +109,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
             .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"))
             .logoutSuccessHandler(logoutSuccess)
             .deleteCookies(TOKEN_COOKIE);
+
+        http.headers().frameOptions().disable();
 
         String[] activeProfiles = environment.getActiveProfiles();
         if (activeProfiles[0].equals("dev")) {

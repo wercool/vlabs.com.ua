@@ -29,6 +29,7 @@ import {
   ModuleManagementComponent,
   EclassManagementComponent,
   EditEclassComponent,
+  EditVLabComponent,
 } from '../component';
 
 import {
@@ -67,6 +68,11 @@ export const routes: Routes = [
   {
     path: 'vlabs-management',
     component: VlabsManagementComponent,
+    canActivate: [ManagerGuard]
+  },
+  {
+    path: 'vlab-edit/:id',
+    component: EditVLabComponent,
     canActivate: [ManagerGuard]
   },
   {

@@ -16,9 +16,14 @@ export class VlabService {
     private apiService: ApiService,
     private config: ConfigService
     ) { }
-
+  getById(id: number) {
+    return this.apiService.get(this.config.vlab_url + '/' + id);
+  }
   addNew(vlab: Vlab) {
     return this.apiService.post(this.config.vlab_add_url, vlab);
+  }
+  update(vlab: Vlab) {
+    return this.apiService.post(this.config.vlabs_update_url, vlab);
   }
   getAll() {
     return this.apiService.get(this.config.vlabs_url);

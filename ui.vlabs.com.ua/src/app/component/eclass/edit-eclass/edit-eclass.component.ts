@@ -166,7 +166,7 @@ export class EditEclassComponent implements OnInit {
     });
   }
 
-  eCLassStructureHeaderClicked($event) {
+  eCLassStructureHeaderClicked(event) {
     if (!this.eClassStrcutureNeedsUpdate && this.eClassStrcuture) return;
     if (this.eClassStrcutureNeedsUpdate) this.structureCompleted = false;
     this.eClassService.getStrcuture(this.eClass)

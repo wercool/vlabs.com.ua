@@ -165,6 +165,9 @@ class VlabBase extends VLab {
     onActivatedEvent() {
         // this.manipulationControl.attach(this.vLabScene.getObjectByName("Sphere"));
         // this.manipulationControl.attach(this.vLabScene.getObjectByName("Sphere001"));
+        this.testFunciton = (() => {
+            console.log('testFunction');
+        });
     }
 
     onRedererFrameEvent(event) {
@@ -172,10 +175,12 @@ class VlabBase extends VLab {
 
     test(value) {
         console.log("TEST", value);
+        this.testFunciton();
     }
 
+    //called after CubeInteractive has been taken
     CubeInteractiveTaken() {
-
+        this.test();
     }
 
     CubeInteractiveToCubeResponsive(args) {
