@@ -83,6 +83,7 @@ export class ConfigService {
   private _vlab_url                                 = this._api_url + '/vlab';
   private _vlab_add_url                             = this._vlab_url + '/add';
   private _vlabs_url                                = this._vlab_url + '/all';
+  private _vlabs_update_url                         = this._vlab_url + '/update';
 
   private _partner_url                              = this._api_url + '/partner';
   private _partner_add_url                          = this._partner_url + '/add';
@@ -120,8 +121,10 @@ export class ConfigService {
   get change_password_url(): string { return this._change_password_url; }
 
   //Vlabs
+  get vlab_url(): string { return this._vlab_url; };
   get vlab_add_url(): string { return this._vlab_add_url; }
   get vlabs_url(): string { return this._vlabs_url; }
+  get vlabs_update_url(): string { return this._vlabs_update_url; };
 
   //Courses
   get course_url(): string { return this._course_url; };

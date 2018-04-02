@@ -48,6 +48,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     public static final String SRV_MATCHER                          = "/srv/**";
 
     public static final String VL_MATCHER                           = "/vl/**";
+    public static final String VLABS_MATCHER                        = "/vlabs/**";
 
     private List<String> pathsToSkip = Arrays.asList(
             ROOT_MATCHER,
@@ -61,7 +62,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             LOGOUT_MATCHER,
             SUBSCRIPTION_CARDS_MATCHER,
             SRV_MATCHER,
-            VL_MATCHER
+            VL_MATCHER,
+            VLABS_MATCHER
     );
 
     @Override

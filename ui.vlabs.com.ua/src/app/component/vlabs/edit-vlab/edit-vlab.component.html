@@ -1,0 +1,42 @@
+<mat-accordion>
+    <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
+                VLab General Properties
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-progress-spinner *ngIf="!completed" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+        <form *ngIf="completed" [formGroup]="generalVlabFormGroup" (ngSubmit)="onGeneralVlabFormGroupSubmit()" #generalVlabForm="ngForm">
+          <mat-form-field class="styles-full-width">
+            <input [(ngModel)]="vlab.title" matInput formControlName="title" type="text" placeholder="VLab Title" required>
+          </mat-form-field>
+          <mat-form-field class="styles-full-width">
+            <input [(ngModel)]="vlab.alias" matInput formControlName="alias" type="text" placeholder="VLab Alias" required (input)="aliasInputChanged($event.target.value)">
+          </mat-form-field>
+          <mat-form-field class="styles-full-width">
+            <input [(ngModel)]="vlab.path" matInput formControlName="path" type="text" placeholder="VLab URL" required>
+          </mat-form-field>
+
+          <div class="styles-mat-card-actions" style="margin-top:10pt;">
+              <div style="display: block; float: left;" [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></div>
+              <mat-progress-spinner style="display: inline-block; vertical-align:middle;" *ngIf="submitted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+              <button style="display: inline-block;" type="submit" mat-button [disabled]="!generalVlabForm.form.valid">UPDATE</button>
+          </div>
+        </form>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel *ngIf="completed" (opened)="vlabRepresentationPaneOpened($event)">
+        <mat-expansion-panel-header>
+            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
+                VLab Representation
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <iframe *ngIf="vlabImplementationActivated"
+                [src]="vLabEmbedSafeURL"
+                style="flex-grow: 1; border: none; margin: 0; padding: 0; min-height: 70vh; width: 100%;" scrolling="no" frameborder="0px" allowfullscreen>
+        </iframe>
+    </mat-expansion-panel>
+
+
+</mat-accordion>

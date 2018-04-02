@@ -1,6 +1,8 @@
 {
-    "VLabsREST": "http://localhost:8090/api",
+    "VLabsREST": "<!--VLAB REST API URL-->",
     "title": "Base VLab",
+    "alias": "vlab.base",
+    "version": "0.2.1",
     "resolutionFactor": "1.0",
     "sceneJSONFile": "./resources/scene/vlab.base.json",
     "lang": "ru",
@@ -117,7 +119,6 @@
     },
     "interactions": {
         "CubeInteractive|Cube": {
-            
         },
         "CubeInteractive|CubeResponosive": {
             "applyFn": "CubeInteractiveToCubeResponsive",

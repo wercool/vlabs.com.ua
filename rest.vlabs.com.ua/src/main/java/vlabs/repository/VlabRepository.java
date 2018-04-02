@@ -9,4 +9,5 @@ import vlabs.model.Vlab;
 public interface VlabRepository extends JpaRepository<Vlab, Long>
 {
     Vlab findByTitle(String title);
+    Vlab findByAlias(String title);
 }

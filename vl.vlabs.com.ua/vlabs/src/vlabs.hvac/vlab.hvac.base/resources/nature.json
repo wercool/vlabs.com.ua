@@ -1,5 +1,6 @@
 {
     "title": "HVAC Base VLab",
+    "alias": "vlab.hvac.base",
     "resolutionFactor": "1.0",
     "sceneJSONFile": "./resources/scene/vlab.hvac.base.json",
     "lang": "en",

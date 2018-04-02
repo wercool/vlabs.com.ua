@@ -73,20 +73,21 @@ export class AppComponent implements OnInit, OnDestroy{
                         duration: 2000
                     }).afterDismissed().subscribe(() => {
                         if (environment.production) {
-                            window.location.href = '/login';
+                            this.router.navigate(['/login']);
                         } else {
                             console.log('On production will be redirected to /login');
                         }
                     });
                 break;
                 case HTTPStatusCodes.FORBIDDEN:
-                    this.closeSidenav();
-                    this.authService.logout();
-                    this.snackBar.open(error.statusText, error.status, {
+                    this.snackBar.open('ACCESS FORBIDDEN', error.statusText + ': ' + error.status, {
                         duration: 2000
                     }).afterDismissed().subscribe(() => {
                         if (environment.production) {
-                            window.location.href = '/login';
+                            this.authService.logout().subscribe(res => {
+                                this.router.navigate(['/login']);
+                                this.sidenav.close();
+                            });
                         } else {
                             console.log('On production will be redirected to /login');
                         }
@@ -108,6 +109,7 @@ export class AppComponent implements OnInit, OnDestroy{
                             duration: 10000
                         });
                     }
+                    this.router.navigate(['/']);
                 break;
             }
         });

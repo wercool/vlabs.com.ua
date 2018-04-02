@@ -1,14 +1,18 @@
-export function getJSONFromURL(url, encoded) {
+var CryptoJS = require("crypto-js");
+
+export function getJSONFromURL(url, passphrase) {
     return fetch(url).then(response => {
         if (response.ok) {
             const contentType = response.headers.get('Content-Type') || '';
 
             if (contentType.includes('application/json')) {
-                if (encoded) {
+                if (passphrase) {
                     return new Promise((resolve) => {
                         resolve(
-                            response.text().then(encodedResponse => {
-                                return JSON.parse(atob(encodedResponse));
+                            response.text().then(encryptedResponseBody => {
+                                var bytes = CryptoJS.AES.decrypt(encryptedResponseBody.toString(), passphrase);
+                                var decryptedResponseBody = bytes.toString(CryptoJS.enc.Utf8);
+                                return JSON.parse(decryptedResponseBody);
                             })
                         );
                     });

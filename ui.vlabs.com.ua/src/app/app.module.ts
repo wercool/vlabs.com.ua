@@ -49,10 +49,12 @@ import {
   ResetPasswordComponent,
   UserSidenavComponent,
   ManagerSidenavComponent,
+
   VlabsManagementComponent,
-  AddVLabItemDialogComponent,
   NewVlabComponent,
-  
+  EditVLabComponent,
+  AddVLabItemDialogComponent,
+
   CourseManagementComponent,
   NewCourseComponent,
   EditCourseComponent,
@@ -155,8 +157,11 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     EditUserDialogComponent,
     ManagerSidenavComponent,
     ResetPasswordComponent,
+
     VlabsManagementComponent,
     NewVlabComponent,
+    EditVLabComponent,
+    AddVLabItemDialogComponent,
 
     CourseManagementComponent,
     NewCourseComponent,
@@ -191,7 +196,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     CelementQuizComponent,
     CelementYoutubeComponent,
     CelementVLabComponent,
-    AddVLabItemDialogComponent,
   ],
   /* Dialogs */
   entryComponents: [
