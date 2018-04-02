@@ -1,0 +1,47 @@
+<mat-accordion>
+    <mat-expansion-panel [expanded]="true" #collaboratorsListPanel>
+    <mat-expansion-panel-header>
+        <mat-panel-title class="styles-mat-panel-title-pad">
+            Collaborator List
+        </mat-panel-title>
+        <mat-panel-description>
+            <mat-icon class="md-24">contacts</mat-icon>
+            ({{collaboratorsNum}})
+        </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-table #collaboratorsDSTable [dataSource]="collaboratorsDS">
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="alias">
+                <mat-header-cell *matHeaderCellDef>ALIAS</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.alias}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="username">
+                <mat-header-cell *matHeaderCellDef>USER</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <mat-icon *ngIf="element.user_id" class="md-36" style="color: green;">person</mat-icon>
+                    <mat-icon *ngIf="!element.user_id" 
+                    matTooltip="Copy Invitation Link"
+                    class="md-36" style="color: brown; cursor: pointer;"
+                    (click)="getInvitationLink(element)">content_copy</mat-icon>
+                </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="collaboratorsDisplayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: collaboratorsDisplayedColumns;"></mat-row>
+        </mat-table>
+
+    </mat-expansion-panel>
+    
+    <mat-expansion-panel>
+        <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
+            <mat-panel-title class="styles-mat-panel-title-pad">
+                Add New Collaborator
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <br/>
+        <app-new-collaborator (newCollaboratorAddedEvent)="onNewCollaboratorAddedEvent($event)"></app-new-collaborator>
+    </mat-expansion-panel>
+</mat-accordion>

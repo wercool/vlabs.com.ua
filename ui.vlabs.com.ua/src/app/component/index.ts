@@ -38,6 +38,8 @@ export * from './admin/user-management/auth-user-dialog/auth-user-dialog.compone
 export * from './admin/user-management/edit-user-dialog/edit-user-dialog.component';
 export * from './admin/partner-management/partner-management.component';
 export * from './admin/partner-management/new-partner/new-partner.component';
+export * from './admin/collaborator-management/collaborator-management.component';
+export * from './admin/collaborator-management/new-collaborator/new-collaborator.component';
 
 export * from './course/course-management.component';
 export * from './course/new-course/new-course.component';

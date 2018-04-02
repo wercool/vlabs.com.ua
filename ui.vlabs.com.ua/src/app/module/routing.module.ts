@@ -13,6 +13,7 @@ import {
   UserManagementComponent,
 
   VlabsManagementComponent,
+  EditVLabComponent,
 
   CourseManagementComponent,
   EditCourseComponent,
@@ -26,10 +27,13 @@ import {
   EditGroupComponent,
 
   PartnerManagementComponent,
+
+  CollaboratorManagementComponent,
+
   ModuleManagementComponent,
+
   EclassManagementComponent,
   EditEclassComponent,
-  EditVLabComponent,
 } from '../component';
 
 import {
@@ -133,6 +137,11 @@ export const routes: Routes = [
   {
     path: 'partner-management',
     component: PartnerManagementComponent,
+    canActivate: [AdminGuard]
+  },
+  {
+    path: 'collaborator-management',
+    component: CollaboratorManagementComponent,
     canActivate: [AdminGuard]
   },
 

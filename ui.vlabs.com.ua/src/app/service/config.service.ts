@@ -89,6 +89,10 @@ export class ConfigService {
   private _partner_add_url                          = this._partner_url + '/add';
   private _partners_url                             = this._partner_url + '/all';
 
+  private _collaborator_url                         = this._api_url + '/collaborator';
+  private _collaborator_add_url                     = this._collaborator_url + '/add';
+  private _collaborators_url                        = this._collaborator_url + '/all';
+
   //Subscription
   private _subscription_url                         = this._api_url + '/subscription';
   private _subscription_cards_url                   = this._subscription_url + '/cards/';
@@ -186,6 +190,9 @@ export class ConfigService {
   get partner_add_url(): string { return this._partner_add_url; };
   get partners_url(): string { return this._partners_url; };
 
+  //Collaborators
+  get collaborator_add_url(): string { return this._collaborator_add_url; };
+  get collaborators_url(): string { return this._collaborators_url; };
 
   //Subscription
   get subscription_cards_url(): string { return this._subscription_cards_url; };

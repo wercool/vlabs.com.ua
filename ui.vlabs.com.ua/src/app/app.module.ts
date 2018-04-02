@@ -85,8 +85,13 @@ import {
   UserManagementComponent,
   AuthUserDialogComponent,
   EditUserDialogComponent,
+
   PartnerManagementComponent,
   NewPartnerComponent,
+
+  CollaboratorManagementComponent,
+  NewCollaboratorComponent,
+
   CElementItemComponent,
   CelementLabelComponent,
   CelementQuizComponent,
@@ -110,6 +115,7 @@ import {
   ModuleService,
   PartnerService,
   SubscriptionService,
+  CollaboratorService,
   FooService,
 } from './service';
 
@@ -182,9 +188,14 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     AddGroupMemberDialogComponent,
 
     ModuleManagementComponent,
+
     PartnerManagementComponent,
-    NewModuleComponent,
     NewPartnerComponent,
+
+    CollaboratorManagementComponent,
+    NewCollaboratorComponent,
+
+    NewModuleComponent,
     NewDepartmentComponent,
     NewEclassComponent,
     EditEclassComponent,
@@ -249,6 +260,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     GroupService,
     ModuleService,
     PartnerService,
+    CollaboratorService,
     SubscriptionService,
     FooService,
     {
