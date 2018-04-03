@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import vlabs.model.Course;
-import vlabs.model.EClass;
+import vlabs.model.eclass.EClass;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long>

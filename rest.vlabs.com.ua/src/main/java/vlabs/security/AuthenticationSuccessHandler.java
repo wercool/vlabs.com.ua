@@ -2,8 +2,8 @@ package vlabs.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import vlabs.model.User;
-import vlabs.model.UserTokenState;
+import vlabs.model.user.User;
+import vlabs.model.user.UserTokenState;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

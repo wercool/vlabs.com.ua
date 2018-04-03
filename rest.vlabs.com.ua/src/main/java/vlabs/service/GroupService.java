@@ -9,9 +9,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import vlabs.model.Group;
-import vlabs.model.User;
+import vlabs.model.user.User;
 import vlabs.repository.GroupRepository;
-import vlabs.repository.UserRepository;
+import vlabs.repository.user.UserRepository;
 
 @Service
 public class GroupService

@@ -22,15 +22,26 @@
             <ng-container matColumnDef="username">
                 <mat-header-cell *matHeaderCellDef>USER</mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <mat-icon *ngIf="element.user_id" class="md-36" style="color: green;">person</mat-icon>
-                    <mat-icon *ngIf="!element.user_id" 
-                    matTooltip="Copy Invitation Link"
-                    class="md-36" style="color: brown; cursor: pointer;"
-                    (click)="getInvitationLink(element)">content_copy</mat-icon>
+                    <div *ngIf="element.user">
+                        <mat-icon *ngIf="element.user.enabled" 
+                        class="md-36" style="color: green; cursor: pointer;"
+                        (click)="openUserEditDialog(element); $event.stopPropagation();">person</mat-icon>
+                        <mat-icon *ngIf="!element.user.enabled" 
+                        class="md-36" style="color: red; cursor: pointer;" 
+                        matTooltip="Non-activated collaborator"
+                        (click)="openUserEditDialog(element); $event.stopPropagation();">person</mat-icon>
+                    </div>
+                    <mat-icon *ngIf="!element.user" 
+                                matTooltip="Copy Invitation Link"
+                                class="md-36" style="color: brown; cursor: pointer;"
+                                (click)="getInvitationLink(element); $event.stopPropagation();">content_copy</mat-icon>
                 </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="collaboratorsDisplayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: collaboratorsDisplayedColumns;"></mat-row>
+            <mat-row 
+                    class="styles-mat-table-row"
+                    (click)="collaboratorRowClicked(row);" 
+                    *matRowDef="let row; columns: collaboratorsDisplayedColumns;"></mat-row>
         </mat-table>
 
     </mat-expansion-panel>

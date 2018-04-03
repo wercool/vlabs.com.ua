@@ -5,8 +5,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import vlabs.model.EClassStructure;
-import vlabs.repository.EClassStructureRepository;
+import vlabs.model.eclass.EClassStructure;
+import vlabs.repository.eclass.EClassStructureRepository;
 
 @Service
 public class EClassStructureService

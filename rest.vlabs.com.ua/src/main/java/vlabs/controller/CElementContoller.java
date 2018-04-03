@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import vlabs.model.CElement;
-import vlabs.model.CElementItem;
+import vlabs.model.celement.CElement;
+import vlabs.model.celement.CElementItem;
 import vlabs.service.CElementService;
 
 @RestController

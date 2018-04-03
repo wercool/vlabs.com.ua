@@ -14,8 +14,22 @@
     <mat-icon class="md-18">business</mat-icon>
     <span>Partners Management</span>
   </button>
-  <button mat-button (click)="navigate('/collaborator-management')" class="sidenav-button">
-    <mat-icon class="md-18">contacts</mat-icon>
-    <span>Collaborators Management</span>
-  </button>
+  <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+            <mat-icon class="md-18">work</mat-icon>
+            <span class="styles-row-spacer"></span>
+            Collaborators Management
+            <span class="styles-row-spacer"></span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <button mat-button (click)="navigate('/collaborator-management')" class="sidenav-button">
+        <mat-icon class="md-18">contacts</mat-icon>
+        <span>Collaborators</span>
+      </button>
+      <button mat-button (click)="navigate('/collaborator-project-management')" class="sidenav-button">
+        <mat-icon class="md-18">folder</mat-icon>
+        <span>Projects</span>
+      </button>
+  </mat-expansion-panel>
 </mat-expansion-panel>

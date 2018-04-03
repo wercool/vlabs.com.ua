@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import vlabs.model.Collaborator;
+import vlabs.model.collaborator.Collaborator;
+import vlabs.model.collaborator.CollaboratorProject;
 import vlabs.service.CollaboratorService;
 
 @RestController
@@ -29,4 +30,13 @@ public class CollaboratorContoller
         return collaboratorService.findAll();
     }
 
+    @RequestMapping(method = RequestMethod.GET, value= "/collaborator/project/all")
+    public List<CollaboratorProject> getAllCollaboratorProjects() {
+        return collaboratorService.findAllCollaboratorProjects();
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value= "/collaborator/project/add")
+    public CollaboratorProject addNewCollaboratorProject(@RequestBody CollaboratorProject collaboratorProject) {
+        return collaboratorService.addNewCollaboratorProject(collaboratorProject);
+    }
 }

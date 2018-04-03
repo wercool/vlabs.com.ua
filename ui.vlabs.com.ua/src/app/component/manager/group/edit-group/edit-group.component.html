@@ -1,8 +1,8 @@
 <mat-accordion>
     <mat-expansion-panel>
         <mat-expansion-panel-header>
-            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
-                Group General Properties
+            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable" *ngIf="completed">
+                Group&nbsp;<b><i>{{group.name}}</i></b>&nbsp;Properties
             </mat-panel-title>
         </mat-expansion-panel-header>
 
@@ -25,7 +25,7 @@
     <mat-expansion-panel [expanded]="true" *ngIf="completed">
         <mat-expansion-panel-header>
             <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
-                <i>{{group.name}}</i>&nbsp; Members
+                <b><i>{{group.name}}</i></b>&nbsp; Members
             </mat-panel-title>
         </mat-expansion-panel-header>
 

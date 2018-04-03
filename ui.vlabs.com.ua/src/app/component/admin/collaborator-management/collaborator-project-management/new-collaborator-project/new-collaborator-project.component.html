@@ -1,0 +1,13 @@
+<p [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></p>
+<mat-progress-spinner *ngIf="submitted" mode="indeterminate"></mat-progress-spinner>
+<form *ngIf="!submitted" [formGroup]="form" (ngSubmit)="onSubmit()" #newCollaboratorProjectForm="ngForm">
+  <mat-form-field class="styles-full-width">
+      <input matInput formControlName="name" type="text" placeholder="Collaborator Project Name" required>
+  </mat-form-field>
+  <mat-form-field class="styles-full-width">
+      <input matInput formControlName="alias" type="text" placeholder="Collaborator Project Alias" required>
+  </mat-form-field>
+  <div class="styles-mat-card-actions">
+      <button type="submit" mat-button [disabled]="!newCollaboratorProjectForm.form.valid">SAVE</button>
+  </div>
+</form>

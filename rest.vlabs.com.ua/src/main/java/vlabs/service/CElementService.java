@@ -7,10 +7,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import vlabs.model.CElement;
-import vlabs.model.CElementItem;
-import vlabs.repository.CElementItemRepository;
-import vlabs.repository.CElementRepository;
+import vlabs.model.celement.CElement;
+import vlabs.model.celement.CElementItem;
+import vlabs.repository.celement.CElementItemRepository;
+import vlabs.repository.celement.CElementRepository;
 
 @Service
 public class CElementService

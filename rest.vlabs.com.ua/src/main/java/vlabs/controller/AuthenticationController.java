@@ -23,9 +23,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import vlabs.common.EmptyJsonResponse;
-import vlabs.model.User;
-import vlabs.model.UserTokenState;
+import vlabs.model.collaborator.Collaborator;
+import vlabs.model.user.User;
+import vlabs.model.user.UserTokenState;
 import vlabs.security.TokenHelper;
+import vlabs.service.CollaboratorService;
 import vlabs.service.CustomUserDetailsService;
 import vlabs.service.UserService;
 
@@ -38,7 +40,7 @@ public class AuthenticationController
 
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     TokenHelper tokenHelper;
 
@@ -47,6 +49,9 @@ public class AuthenticationController
 
     @Value("${jwt.cookie}")
     private String TOKEN_COOKIE;
+
+    @Autowired
+    private CollaboratorService collaboratorService;
 
     @RequestMapping(value = "/refresh", method = RequestMethod.GET)
     public ResponseEntity<?> refreshAuthenticationToken(HttpServletRequest request, HttpServletResponse response) {
@@ -95,6 +100,35 @@ public class AuthenticationController
         }
     }
 
+    @RequestMapping(value = "/register/collaborator/{collaboratorId}", method = RequestMethod.POST, consumes="application/json")
+    public ResponseEntity<?> collaboratorRegister(@PathVariable Long collaboratorId, @RequestBody User newlyRegisteredUser) {
+        Map<String, String> result = new HashMap<>();
+
+        try
+        {
+            userDetailsService.loadUserByUsername(newlyRegisteredUser.getUsername());
+
+            result.put("message", "User record with the username <h4><i>" + newlyRegisteredUser.getUsername() + "</i></h4> already exists in VLabs");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(result);
+        }
+        catch (UsernameNotFoundException ex)
+        {
+            // exactly what we need - no user found under given username
+
+
+            newlyRegisteredUser.setEnabled(false);
+            User user = userService.createNewUser(newlyRegisteredUser);
+
+            Collaborator collaborator = collaboratorService.findById(collaboratorId);
+            collaborator.setUser_id(user.getId());
+
+            collaboratorService.updateCollaborator(collaborator);
+
+            result.put("message", "Registration request has been successfully accepted");
+            return ResponseEntity.accepted().body(result);
+
+        }
+    }
     /*
      *  We are not using userService.findByUsername here(we could),
      *  so it is good that we are making sure that the user has role "ROLE_USER"

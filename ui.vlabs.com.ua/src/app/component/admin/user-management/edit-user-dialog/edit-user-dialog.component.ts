@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, Input } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatChipInputEvent } from '@angular/material';
 import {ENTER, COMMA} from '@angular/cdk/keycodes';
 

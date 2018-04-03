@@ -16,6 +16,8 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import vlabs.model.user.User;
+
 @Entity
 @Table(name="groups")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

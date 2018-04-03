@@ -1,4 +1,4 @@
-package vlabs.model;
+package vlabs.model.collaborator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,12 +7,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import vlabs.model.user.User;
+
 @Entity
 @Table(name="collaborators")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Collaborator
 {
     @Id
@@ -25,7 +29,7 @@ public class Collaborator
     private Long user_id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable=false, updatable=false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable=true, insertable=false, updatable=false)
     private User user;
 
     @Column(name = "alias")

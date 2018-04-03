@@ -27,11 +27,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import utils.BufferedImageUtils;
 import vlabs.model.Authority;
-import vlabs.model.User;
-import vlabs.model.UserMedia;
+import vlabs.model.user.User;
+import vlabs.model.user.UserMedia;
 import vlabs.repository.AuthorityRepository;
-import vlabs.repository.UserMediaRepository;
-import vlabs.repository.UserRepository;
+import vlabs.repository.user.UserMediaRepository;
+import vlabs.repository.user.UserRepository;
 
 @Service
 public class UserService
@@ -194,9 +194,9 @@ public class UserService
         userRepository.save(existingUser);
     }
 
-    public void createNewUser(User user) {
+    public User createNewUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
 }

@@ -1,4 +1,4 @@
-package vlabs.model;
+package vlabs.model.eclass;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

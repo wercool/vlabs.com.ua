@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import vlabs.common.EmptyJsonResponse;
-import vlabs.model.EClass;
-import vlabs.model.EClassFormat;
-import vlabs.model.EClassStructure;
+import vlabs.model.eclass.EClass;
+import vlabs.model.eclass.EClassFormat;
+import vlabs.model.eclass.EClassStructure;
 import vlabs.service.EClassFormatService;
 import vlabs.service.EClassService;
 import vlabs.service.EClassStructureService;

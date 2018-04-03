@@ -1,4 +1,4 @@
-package vlabs.model;
+package vlabs.model.user;
 
 public class UserTokenState 
 {

@@ -17,6 +17,7 @@ import { AppRoutingModule } from './module/routing.module';
 import { MaterialModule } from './module/material.module';
 
 import { DndModule } from 'ng2-dnd';
+import { ClipboardModule } from 'ng2-clipboard';
 
 import { 
   TruncatePipe,
@@ -29,6 +30,7 @@ import {
   GuestGuard,
   AuthenticatedGuard,
   ManagerGuard,
+  CollaboratorGuard,
   AdminGuard
 } from './guard';
 
@@ -41,6 +43,7 @@ import {
   AdminHomeComponent,
   UserHomeComponent,
   ManagerHomeComponent,
+  CollaboratorHomeComponent,
 
   NotFoundComponent,
   LoginComponent,
@@ -48,6 +51,7 @@ import {
   EditProfileComponent,
   ResetPasswordComponent,
   UserSidenavComponent,
+  CollaboratorSidenavComponent,
   ManagerSidenavComponent,
 
   VlabsManagementComponent,
@@ -91,6 +95,9 @@ import {
 
   CollaboratorManagementComponent,
   NewCollaboratorComponent,
+  EditCollaboratorComponent,
+  CollaboratorProjectManagementComponent,
+  NewCollaboratorProjectComponent,
 
   CElementItemComponent,
   CelementLabelComponent,
@@ -150,6 +157,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     AdminHomeComponent,
     UserHomeComponent,
     ManagerHomeComponent,
+    CollaboratorHomeComponent,
 
     NotFoundComponent,
     LoginComponent,
@@ -162,6 +170,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     EditProfileComponent,
     EditUserDialogComponent,
     ManagerSidenavComponent,
+    CollaboratorSidenavComponent,
     ResetPasswordComponent,
 
     VlabsManagementComponent,
@@ -194,6 +203,9 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 
     CollaboratorManagementComponent,
     NewCollaboratorComponent,
+    EditCollaboratorComponent,
+    CollaboratorProjectManagementComponent,
+    NewCollaboratorProjectComponent,
 
     NewModuleComponent,
     NewDepartmentComponent,
@@ -239,12 +251,14 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    DndModule.forRoot()
+    DndModule.forRoot(),
+    ClipboardModule
   ],
   providers: 
   [
     GuestGuard,
     AuthenticatedGuard,
+    CollaboratorGuard,
     ManagerGuard,
     AdminGuard,
     ConfigService,

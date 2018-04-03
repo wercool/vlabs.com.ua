@@ -25,6 +25,8 @@ import { QrScannerComponent } from 'angular2-qrscanner';
 })
 export class RegisterComponent implements OnInit, OnDestroy {
 
+  private sub: any;
+
   form: FormGroup;
 
   /**
@@ -39,6 +41,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
    * form request or router
    */
   notification: DisplayMessage;
+
+  /* Collaborator registration */
+  collaboratorId: number = undefined;
 
   registrationMethod = 'Generic';
 
@@ -68,6 +73,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
     ) { }
 
   ngOnInit() {
+    this.sub = this.route.params.subscribe(params => {
+      if(params['collaboratorId']) {
+        this.collaboratorId = params['collaboratorId'];
+      }
+    });
     this.form = this.formBuilder.group({
       username: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
       password: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
@@ -160,7 +170,16 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.notification = undefined;
     this.submitted = true;
 
-    this.authService.register(this.form.value)
+    let registrationObject = {
+      type: 'generic'
+    };
+
+    if (this.collaboratorId) { 
+      registrationObject['type'] = 'collaborator',
+      registrationObject['collaboratorId'] = this.collaboratorId
+    }
+
+    this.authService.register(this.form.value, registrationObject)
     // show the animation
     .delay(1000)
     .subscribe(data => {

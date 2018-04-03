@@ -15,3 +15,4 @@ export * from './eclass_format';
 export * from './department';
 export * from './partner';
 export * from './collaborator';
+export * from './collaborator_project';

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import vlabs.model.Group;
-import vlabs.model.User;
+import vlabs.model.user.User;
 import vlabs.service.GroupService;
 
 @RestController

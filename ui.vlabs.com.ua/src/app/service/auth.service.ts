@@ -20,11 +20,20 @@ export class AuthService {
     private config: ConfigService
     ) { }
 
-  register(user) {
+  register(user: any, registrationObject: any) {
     const body = user;
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    return this.apiService.post(this.config.register_url, body, headers);
+    let registrationURL = this.config.register_url;
+    switch (registrationObject['type']) {
+      case 'generic':
+        registrationURL = this.config.register_url;
+      break;
+      case 'collaborator':
+        registrationURL = this.config.register_collaborator_url.replace("{collaboratorId}", registrationObject['collaboratorId'].toString());
+      break;
+    }
+    return this.apiService.post(registrationURL, body, headers);
   }
 
   login(user) {

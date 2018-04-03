@@ -33,7 +33,7 @@
     </mat-table>
 </mat-dialog-content>
 <hr/>
-<mat-dialog-actions>
+<mat-dialog-actions align="end">
     <button mat-button mat-dialog-close *ngIf="!submitted">Close</button>
     <mat-progress-spinner *ngIf="submitted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
     <button mat-button *ngIf="!submitted && enabled" (click)="addGroupMembers()">Add to {{group.name}}</button>

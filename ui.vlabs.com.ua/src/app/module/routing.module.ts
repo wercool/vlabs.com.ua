@@ -34,6 +34,8 @@ import {
 
   EclassManagementComponent,
   EditEclassComponent,
+  EditCollaboratorComponent,
+  CollaboratorProjectManagementComponent,
 } from '../component';
 
 import {
@@ -56,6 +58,11 @@ export const routes: Routes = [
   },
   {
     path: 'register',
+    component: RegisterComponent,
+    canActivate: [GuestGuard]
+  },
+  {
+    path: 'register/collaborator/:collaboratorId',
     component: RegisterComponent,
     canActivate: [GuestGuard]
   },
@@ -142,6 +149,16 @@ export const routes: Routes = [
   {
     path: 'collaborator-management',
     component: CollaboratorManagementComponent,
+    canActivate: [AdminGuard]
+  },
+  {
+    path: 'collaborator-project-management',
+    component: CollaboratorProjectManagementComponent,
+    canActivate: [AdminGuard]
+  },
+  {
+    path: 'collaborator-edit/:id',
+    component: EditCollaboratorComponent,
     canActivate: [AdminGuard]
   },
 

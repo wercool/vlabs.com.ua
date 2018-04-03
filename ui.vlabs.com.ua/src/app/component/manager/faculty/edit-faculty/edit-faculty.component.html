@@ -1,8 +1,8 @@
 <mat-accordion>
     <mat-expansion-panel>
         <mat-expansion-panel-header>
-            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
-                Faculty General Properties
+            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable" *ngIf="completed">
+                Faculty&nbsp;<b><i>{{faculty.title}}</i></b>&nbsp;General Properties
             </mat-panel-title>
         </mat-expansion-panel-header>
 
@@ -25,7 +25,7 @@
     <mat-expansion-panel [expanded]="true" *ngIf="completed">
         <mat-expansion-panel-header>
             <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
-                <i>{{faculty.title}}</i>&nbsp; Groups
+                <b><i>{{faculty.title}}</i></b>&nbsp; Groups
             </mat-panel-title>
         </mat-expansion-panel-header>
 

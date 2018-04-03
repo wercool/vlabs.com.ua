@@ -1,4 +1,4 @@
-package vlabs.model;
+package vlabs.model.eclass;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+
+import vlabs.model.celement.CElement;
 
 @Entity
 @Table(name="eclass_structure")

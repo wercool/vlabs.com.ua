@@ -1,11 +1,11 @@
-package vlabs.repository;
+package vlabs.repository.eclass;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import vlabs.model.EClass;
+import vlabs.model.eclass.EClass;
 
 @Repository
 public interface EClassRepository extends JpaRepository<EClass, Long>

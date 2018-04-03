@@ -70,6 +70,7 @@ export class EditProfileComponent implements OnInit {
       setTimeout(()=>{ this.notification = undefined; }, 1000);
       this.submitted = false;
       this.userService.currentUser = user;
+      this.userProfile = this.userService.currentUser;
     },
     error => {
       this.submitted = false;

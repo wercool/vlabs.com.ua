@@ -9,9 +9,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import vlabs.model.Course;
-import vlabs.model.EClass;
+import vlabs.model.eclass.EClass;
 import vlabs.repository.CourseRepository;
-import vlabs.repository.EClassRepository;
+import vlabs.repository.eclass.EClassRepository;
 
 @Service
 public class CourseService

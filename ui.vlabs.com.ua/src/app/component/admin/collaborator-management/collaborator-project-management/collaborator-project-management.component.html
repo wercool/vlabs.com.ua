@@ -1,0 +1,41 @@
+<mat-accordion>
+    <mat-expansion-panel [expanded]="true" #collaboratorProjectsListPanel>
+    <mat-expansion-panel-header>
+        <mat-panel-title class="styles-mat-panel-title-pad">
+            Collaborator Projects
+        </mat-panel-title>
+        <mat-panel-description>
+            <mat-icon class="md-24">folder</mat-icon>
+            ({{collaboratorProjectsNum}})
+        </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-table #collaboratorProjectsDSTable [dataSource]="collaboratorProjectsDS">
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>NAME</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="alias">
+                <mat-header-cell *matHeaderCellDef>ALIAS</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.alias}}</mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="collaboratorProjectsDisplayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: collaboratorProjectsDisplayedColumns;"></mat-row>
+        </mat-table>
+
+    </mat-expansion-panel>
+    
+    <mat-expansion-panel>
+        <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
+            <mat-panel-title class="styles-mat-panel-title-pad">
+                Add New Collaborator Project
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <br/>
+        <app-new-collaborator-project (newCollaboratorProjectAddedEvent)="onCollaboratorProjectsAddedEvent($event)"></app-new-collaborator-project>
+    </mat-expansion-panel>
+</mat-accordion>

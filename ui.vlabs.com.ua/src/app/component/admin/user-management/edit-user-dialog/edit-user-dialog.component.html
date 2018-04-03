@@ -63,7 +63,7 @@
   </mat-tab-group>
 </mat-dialog-content>
 <hr/>
-<mat-dialog-actions>
-    <button mat-button mat-dialog-close>Close</button>
+<mat-dialog-actions align="end">
+    <button mat-button [mat-dialog-close]="true">Close</button>
     <mat-progress-spinner *ngIf="submitted" [diameter]="40" mode="indeterminate"></mat-progress-spinner>
 </mat-dialog-actions>

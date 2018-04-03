@@ -1,9 +1,13 @@
 import { Component, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { DisplayMessage } from '../../../shared/models/display-message';
+import { MatTableDataSource, MatExpansionPanel, MatSnackBar, MatDialog } from '@angular/material';
+import { ClipboardService } from 'ng2-clipboard/ng2-clipboard';
+import { environment } from '../../../../environments/environment';
 import { Collaborator } from '../../../model/index';
-import { MatTableDataSource, MatExpansionPanel } from '@angular/material';
 import { CollaboratorService } from '../../../service/index';
+import { EditUserDialogComponent } from '../user-management/edit-user-dialog/edit-user-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-collaborator-management',
@@ -11,6 +15,8 @@ import { CollaboratorService } from '../../../service/index';
   styleUrls: ['./collaborator-management.component.css']
 })
 export class CollaboratorManagementComponent implements OnInit {
+
+  host = environment.host;
 
   @ViewChild('collaboratorsListPanel') collaboratorsListPanel: MatExpansionPanel;
 
@@ -21,7 +27,11 @@ export class CollaboratorManagementComponent implements OnInit {
   collaboratorsDS: MatTableDataSource<Collaborator> = new MatTableDataSource<Collaborator>();
 
   constructor(
-    private collaboratorService: CollaboratorService
+    private router: Router,
+    private snackBar: MatSnackBar,
+    private clipboard: ClipboardService,
+    private collaboratorService: CollaboratorService,
+    private editUserDialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -31,6 +41,7 @@ export class CollaboratorManagementComponent implements OnInit {
   private getAllCollaborators():void {
     this.collaboratorService.getAll()
     .subscribe(result => {
+      // console.log(result);
       this.upateDS(result);
     },
     error => {
@@ -54,6 +65,28 @@ export class CollaboratorManagementComponent implements OnInit {
   }
 
   getInvitationLink(collaborator: Collaborator) {
-    window.prompt('Copy to clipboard: Ctrl+C, Enter', 'test');
+    let invitationLink = this.host + '/register/collaborator/' + collaborator.id;
+    this.clipboard.copy(invitationLink);
+    this.snackBar.open(invitationLink, 'COPIED', {
+      panelClass: ['successSnackBar'],
+      duration: 1000,
+      verticalPosition: 'top'
+    });
+  }
+
+  openUserEditDialog(collaborator: Collaborator) {
+    // console.log(collaborator);
+    let dialogRef = this.editUserDialog.open(EditUserDialogComponent, {
+      width: '80%',
+      data: collaborator.user
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+    });
+  }
+
+  collaboratorRowClicked(collaborator: Collaborator) {
+    // console.log(collaborator);
+    this.router.navigate(['collaborator-edit', collaborator.id]);
   }
 }

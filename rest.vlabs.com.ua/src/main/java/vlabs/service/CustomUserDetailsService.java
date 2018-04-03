@@ -14,8 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import vlabs.model.User;
-import vlabs.repository.UserRepository;
+import vlabs.model.user.User;
+import vlabs.repository.user.UserRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService

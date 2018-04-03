@@ -16,6 +16,8 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import vlabs.model.eclass.EClass;
+
 @Entity
 @Table(name="courses")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

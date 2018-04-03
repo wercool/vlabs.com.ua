@@ -1,6 +1,9 @@
 <app-user-home *ngIf="authorizedFor('USER') 
+                  && !authorizedFor('COLLABORATOR') 
                   && !authorizedFor('MANAGER') 
                   && !authorizedFor('ADMIN')"></app-user-home>
+
+<app-collaborator-home *ngIf="authorizedFor('COLLABORATOR')"></app-collaborator-home>
 
 <app-manager-home *ngIf="authorizedFor('MANAGER')
                      && !authorizedFor('ADMIN')"></app-manager-home>

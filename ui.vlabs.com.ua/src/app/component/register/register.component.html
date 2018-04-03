@@ -6,7 +6,8 @@
         <h2>Welcome to VLabs</h2>
     </mat-card-subtitle>
     <mat-card-title>
-        <h4>Registration</h4>
+        <h4 *ngIf="!collaboratorId">Registration</h4>
+        <h4 *ngIf="collaboratorId">Collaborator Registration</h4>
         <mat-progress-spinner *ngIf="submitted" class="mat-progress-spinner-login" mode="indeterminate"></mat-progress-spinner>
     </mat-card-title>
 

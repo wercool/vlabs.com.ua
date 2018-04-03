@@ -6,7 +6,7 @@ import { ConfigService } from './config.service';
 import { HTTPStatusCodes } from '../shared/lib/http-status-codes'
 
 import { 
-  Collaborator
+  Collaborator, CollaboratorProject
 } from '../model/index';
 
 @Injectable()
@@ -22,5 +22,11 @@ export class CollaboratorService {
   }
   getAll() {
     return this.apiService.get(this.config.collaborators_url);
+  }
+  getAllCollaboratorProjects() {
+    return this.apiService.get(this.config.collaborators_projects_url);
+  }
+  addNewCollaboratorProject(collaboratorProject: CollaboratorProject) {
+    return this.apiService.post(this.config.collaborators_project_add_url, collaboratorProject);
   }
 }

@@ -9,12 +9,14 @@ export class ConfigService {
   private _api_url = '/api'
 
   private _refresh_token_url                        = this._api_url + '/refresh';
-  private _register_url                             = this._api_url + '/register';
   private _login_url                                = this._api_url + '/login';
   private _logout_url                               = this._api_url + '/logout';
   private _change_password_url                      = this._api_url + '/change-password';
   private _whoami_url                               = this._api_url + '/whoami';
   private _authorize_user_url                       = this._api_url + '/authorize/';
+
+  private _register_url                             = this._api_url + '/register';
+  private _register_collaborator_url                = this._register_url + '/collaborator/{collaboratorId}';
 
   private _user_url                                 = this._api_url + '/user';
   private _user_update_url                          = this._user_url + '/update';
@@ -89,9 +91,15 @@ export class ConfigService {
   private _partner_add_url                          = this._partner_url + '/add';
   private _partners_url                             = this._partner_url + '/all';
 
+  //Collaborators
   private _collaborator_url                         = this._api_url + '/collaborator';
   private _collaborator_add_url                     = this._collaborator_url + '/add';
   private _collaborators_url                        = this._collaborator_url + '/all';
+
+  //Collaborators Projects
+  private _collaborators_project_url                = this._collaborator_url + '/project';
+  private _collaborators_projects_url               = this._collaborators_project_url + '/all';
+  private _collaborators_project_add_url            = this._collaborators_project_url + '/add';
 
   //Subscription
   private _subscription_url                         = this._api_url + '/subscription';
@@ -107,6 +115,12 @@ export class ConfigService {
       return this._whoami_url;
   }
 
+  get login_url(): string { return this._login_url; }
+  get logout_url(): string { return this._logout_url; }
+
+  get register_url(): string { return this._register_url; }
+  get register_collaborator_url(): string { return this._register_collaborator_url; }
+
   //Users
   get user_url(): string { return this._user_url; }
   get users_paged_url(): string { return this._users_paged_url; }
@@ -118,9 +132,6 @@ export class ConfigService {
   get user_reset_password(): string { return this._user_reset_password; }
   get user_update_authorities(): string { return this._user_update_authorities; }
   get users_wo_authorities_url(): string { return this._users_wo_authorities_url; }
-  get login_url(): string { return this._login_url; }
-  get register_url(): string { return this._register_url; }
-  get logout_url(): string { return this._logout_url; }
   get authorize_user_url(): string { return this._authorize_user_url; }
   get change_password_url(): string { return this._change_password_url; }
 
@@ -193,6 +204,8 @@ export class ConfigService {
   //Collaborators
   get collaborator_add_url(): string { return this._collaborator_add_url; };
   get collaborators_url(): string { return this._collaborators_url; };
+  get collaborators_projects_url(): string { return this._collaborators_projects_url; };
+  get collaborators_project_add_url(): string { return this._collaborators_project_add_url; };
 
   //Subscription
   get subscription_cards_url(): string { return this._subscription_cards_url; };

@@ -7,8 +7,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import vlabs.model.EClassFormat;
-import vlabs.repository.EClassFormatRepository;
+import vlabs.model.eclass.EClassFormat;
+import vlabs.repository.eclass.EClassFormatRepository;
 
 @Service
 public class EClassFormatService

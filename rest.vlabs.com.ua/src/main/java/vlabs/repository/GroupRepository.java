@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import vlabs.model.Group;
-import vlabs.model.User;
+import vlabs.model.user.User;
 
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Long>

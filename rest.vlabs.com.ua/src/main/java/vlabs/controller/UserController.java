@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import vlabs.common.EmptyJsonResponse;
 import vlabs.common.ImageJsonResponse;
-import vlabs.model.User;
+import vlabs.model.user.User;
 import vlabs.service.UserService;
 
 @RestController

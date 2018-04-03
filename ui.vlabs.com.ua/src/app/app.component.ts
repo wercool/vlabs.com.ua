@@ -98,6 +98,16 @@ export class AppComponent implements OnInit, OnDestroy{
                         duration: 5000
                     });
                 break;
+                case HTTPStatusCodes.CONFLICT:
+                    this.snackBar.open(error.statusText, error.status, {
+                        duration: 1000
+                    });
+                break;
+                case HTTPStatusCodes.UNAUTHORIZED:
+                    this.snackBar.open(error.statusText, error.status, {
+                        duration: 2000
+                    });
+                break;
                 default:
                     if (environment.production) {
                         this.snackBar.open(error.statusText, error.status, {
@@ -105,9 +115,15 @@ export class AppComponent implements OnInit, OnDestroy{
                         });
                     } else {
                         let errorDetails = JSON.parse(error.headers.get('errorDetails'));
-                        this.snackBar.open(errorDetails.detailMessage, error.status, {
-                            duration: 10000
-                        });
+                        if (errorDetails) {
+                            this.snackBar.open(errorDetails.detailMessage, error.status, {
+                                duration: 10000
+                            });
+                        } else {
+                            this.snackBar.open(error.statusText, error.status, {
+                                duration: 1000
+                            });
+                        }
                     }
                     this.router.navigate(['/']);
                 break;
