@@ -6,11 +6,13 @@ import { ConfigService } from './config.service';
 import { HTTPStatusCodes } from '../shared/lib/http-status-codes'
 
 import { 
-  Collaborator, CollaboratorProject
+  Collaborator, CollaboratorProject, CollaboratorProjectWorkItem
 } from '../model/index';
 
 @Injectable()
 export class CollaboratorService {
+
+  public currentCollaborator:Collaborator = null;
 
   constructor(
     private apiService: ApiService,
@@ -46,5 +48,17 @@ export class CollaboratorService {
   }
   removeProjects(collaboratorId: number, removeCollaboratorProjects: CollaboratorProject[]) {
     return this.apiService.post(this.config.collaborator_remove_projects_url.replace("{collaboratorId}", collaboratorId.toString()), removeCollaboratorProjects);
+  }
+  getProject(collaboratorProjectId: number) {
+    return this.apiService.get(this.config.collaborator_project_url.replace("{collaboratorProjectId}", collaboratorProjectId.toString()));
+  }
+  getProjectWorkItems(collaboratorId: number, collaboratorProjectId: number) {
+    return this.apiService.get(this.config.collaborator_project_work_items_url
+                               .replace("{collaboratorId}", collaboratorId.toString())
+                               .replace("{collaboratorProjectId}", collaboratorProjectId.toString())
+                              );
+  }
+  addNewProjectWorkItem(projectWorkItem: CollaboratorProjectWorkItem) {
+    return this.apiService.post(this.config.collaborator_project_work_item_add_url, projectWorkItem);
   }
 }

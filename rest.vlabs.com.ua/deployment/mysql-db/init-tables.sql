@@ -229,4 +229,19 @@ CREATE TABLE `collaborator_project` (
   CONSTRAINT `cp_project_id_fk` FOREIGN KEY (`project_id`) REFERENCES `collaborator_projects` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `collaborator_project_work_items`;
+CREATE TABLE `collaborator_project_work_items` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `collaborator_id` bigint(20) NOT NULL,
+  `project_id` bigint(20) NOT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `alias` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `last_update_date` datetime DEFAULT NOW(),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `cpwi_collaborator_id_fk` FOREIGN KEY (`collaborator_id`) REFERENCES `collaborators` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `cpwi_project_id_fk` FOREIGN KEY (`project_id`) REFERENCES `collaborator_projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 SET FOREIGN_KEY_CHECKS=1;

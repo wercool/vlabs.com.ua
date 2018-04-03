@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vlabs.controller.exception.EntityAlreadyExistsException;
 import vlabs.model.collaborator.Collaborator;
 import vlabs.model.collaborator.CollaboratorProject;
+import vlabs.model.collaborator.CollaboratorProjectWorkItem;
 import vlabs.service.CollaboratorService;
 
 @RestController
@@ -106,5 +107,20 @@ public class CollaboratorContoller
     @RequestMapping(method = RequestMethod.POST, value= "/collaborator/project/{collaboratorId}/removeprojects")
     public Collaborator removeGroupMembers(@PathVariable Long collaboratorId, @RequestBody List<CollaboratorProject> removeCollaboratorProjects) {
         return collaboratorService.updateCollaboratorProjects(collaboratorId, removeCollaboratorProjects, "remove");
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value= "/collaborator/project/{collaboratorProjectId}")
+    public CollaboratorProject getCollaboratorProjectById(@PathVariable Long collaboratorProjectId) {
+        return collaboratorService.findCollaboratorProjectById(collaboratorProjectId);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value= "/collaborator/project/workitems/{collaboratorId}/{collaboratorProjectId}")
+    public List<CollaboratorProjectWorkItem> getCollaboratorProjectWorkItemsByCollaboratorIdAndProjectId(@PathVariable Long collaboratorId, @PathVariable Long collaboratorProjectId) {
+        return collaboratorService.findCollaboratorProjectWorkItemsByCollaboratorIdAndProjectId(collaboratorId, collaboratorProjectId);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value= "/collaborator/project/workitem/add")
+    public CollaboratorProject addCollaboratorProjectWorkItem(@RequestBody CollaboratorProjectWorkItem collaboratorProjectWorkItem) {
+        return collaboratorService.addCollaboratorProjectWorkItem(collaboratorProjectWorkItem);
     }
 }

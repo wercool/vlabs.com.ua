@@ -68,8 +68,12 @@ export class ApiService {
   }
 
   private extractData(res: Response) {
-    const body = res.json();
-    return body || { };
+    try {
+      const body = res.json();
+      return body || { };
+    } catch (ex) {
+      return { };
+    }
   }
 
   private handleError (error: Response | any) {

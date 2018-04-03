@@ -16,3 +16,4 @@ export * from './department';
 export * from './partner';
 export * from './collaborator';
 export * from './collaborator_project';
+export * from './collaborator_project_work_item';

@@ -1,8 +1,10 @@
 package vlabs.service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import vlabs.model.collaborator.Collaborator;
 import vlabs.model.collaborator.CollaboratorProject;
+import vlabs.model.collaborator.CollaboratorProjectWorkItem;
 import vlabs.repository.collaborator.CollaboratorProjectRepository;
+import vlabs.repository.collaborator.CollaboratorProjectWorkItemRepository;
 import vlabs.repository.collaborator.CollaboratorRepository;
 
 
@@ -22,6 +26,9 @@ public class CollaboratorService
 
     @Autowired
     private CollaboratorProjectRepository collaboratorProjectRepository;
+
+    @Autowired
+    private CollaboratorProjectWorkItemRepository collaboratorProjectWorkItemRepository;
 
     public Collaborator findById(Long id) throws AccessDeniedException {
         Collaborator collaborator = collaboratorRepository.getOne(id);
@@ -115,4 +122,23 @@ public class CollaboratorService
 
         return collaboratorRepository.save(existingCollaborator);
     }
+
+    public CollaboratorProject findCollaboratorProjectById(Long collaboratorProjectId) throws AccessDeniedException {
+        CollaboratorProject collaboratorProject = collaboratorProjectRepository.getOne(collaboratorProjectId);
+        return collaboratorProject;
+    }
+
+    public List<CollaboratorProjectWorkItem> findCollaboratorProjectWorkItemsByCollaboratorIdAndProjectId(Long collaboratorId, Long collaboratorProjectId) throws AccessDeniedException {
+        List<CollaboratorProjectWorkItem> collaboratorProjectWorkItems = collaboratorProjectWorkItemRepository.getWorkItemsByCollaboratorIdAndProjectId(collaboratorId, collaboratorProjectId);
+        return collaboratorProjectWorkItems;
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR')")
+    public CollaboratorProject addCollaboratorProjectWorkItem(CollaboratorProjectWorkItem collaboratorProjectWorkItem) throws AccessDeniedException {
+        Timestamp now = new Timestamp(DateTime.now().getMillis());
+        collaboratorProjectWorkItem.setLastUpdateDate(now);
+        collaboratorProjectWorkItemRepository.save(collaboratorProjectWorkItem);
+        return collaboratorProjectRepository.getOne(collaboratorProjectWorkItem.getProject_id());
+    }
+
 }

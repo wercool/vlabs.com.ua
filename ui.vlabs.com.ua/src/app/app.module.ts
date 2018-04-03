@@ -101,6 +101,7 @@ import {
   AddCollaboratorProjectDialogComponent,
 
   CollaboratorProjectActivityManagementComponent,
+  AddCollaboratorProjectWorkItemDialogComponent,
 
   CElementItemComponent,
   CelementLabelComponent,
@@ -212,6 +213,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     AddCollaboratorProjectDialogComponent,
 
     CollaboratorProjectActivityManagementComponent,
+    AddCollaboratorProjectWorkItemDialogComponent,
 
     NewModuleComponent,
     NewDepartmentComponent,
@@ -238,6 +240,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     AddFacultyGroupDialogComponent,
     AddCourseEClassDialogComponent,
     AddCollaboratorProjectDialogComponent,
+    AddCollaboratorProjectWorkItemDialogComponent,
   ],
   imports:
   [

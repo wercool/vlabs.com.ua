@@ -105,6 +105,9 @@ export class ConfigService {
   private _collaborator_non_collaborator_projects_url   = this._collaborators_project_url + '/{collaboratorId}/non-collaborator-projects';
   private _collaborator_add_projects_url                = this._collaborators_project_url + '/{collaboratorId}/addprojects';
   private _collaborator_remove_projects_url             = this._collaborators_project_url + '/{collaboratorId}/removeprojects';
+  private _collaborator_project_url                     = this._collaborators_project_url + '/{collaboratorProjectId}';
+  private _collaborator_project_work_items_url          = this._collaborators_project_url + '/workitems/{collaboratorId}/{collaboratorProjectId}';
+  private _collaborator_project_work_item_add_url       = this._collaborators_project_url + '/workitem/add';
 
   //Subscription
   private _subscription_url                         = this._api_url + '/subscription';
@@ -217,6 +220,9 @@ export class ConfigService {
   get collaborator_non_collaborator_projects_url(): string { return this._collaborator_non_collaborator_projects_url; };
   get collaborator_add_projects_url(): string { return this._collaborator_add_projects_url; };
   get collaborator_remove_projects_url(): string { return this._collaborator_remove_projects_url; };
+  get collaborator_project_url(): string { return this._collaborator_project_url; };
+  get collaborator_project_work_items_url(): string { return this._collaborator_project_work_items_url; };
+  get collaborator_project_work_item_add_url(): string { return this._collaborator_project_work_item_add_url; };
 
   //Subscription
   get subscription_cards_url(): string { return this._subscription_cards_url; };

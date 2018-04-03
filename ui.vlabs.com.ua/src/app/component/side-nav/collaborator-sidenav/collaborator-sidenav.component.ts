@@ -42,6 +42,7 @@ export class CollaboratorSidenavComponent implements OnInit {
 
   setCollaborator(collaborator: Collaborator) {
     this.collaborator = collaborator;
+    this.collaboratorService.currentCollaborator = collaborator;
   }
 
   navigate(url:string){

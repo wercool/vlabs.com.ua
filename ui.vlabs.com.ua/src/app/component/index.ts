@@ -48,6 +48,7 @@ export * from './admin/collaborator-management/collaborator-project-management/n
 export * from './admin/collaborator-management/edit-collaborator/add-collaborator-project-dialog/add-collaborator-project-dialog.component';
 
 export * from './collaborator/project-activity-management/project-activity-management.component';
+export * from './collaborator/project-activity-management/add-project-work-item-dialog/add-project-work-item-dialog.component';
 
 export * from './course/course-management.component';
 export * from './course/new-course/new-course.component';
