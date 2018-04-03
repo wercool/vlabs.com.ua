@@ -211,14 +211,22 @@ CREATE TABLE `collaborators` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `collaborator_project`;
-CREATE TABLE `collaborator_project` (
+DROP TABLE IF EXISTS `collaborator_projects`;
+CREATE TABLE `collaborator_projects` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `alias` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+DROP TABLE IF EXISTS `collaborator_project`;
+CREATE TABLE `collaborator_project` (
+  `collaborator_id` bigint(20) NOT NULL,
+  `project_id` bigint(20) NOT NULL,
+  KEY `collaborator_id_fk` (`collaborator_id`),
+  KEY `project_id_fk` (`project_id`),
+  CONSTRAINT `cp_collaborator_id_fk` FOREIGN KEY (`collaborator_id`) REFERENCES `collaborators` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `cp_project_id_fk` FOREIGN KEY (`project_id`) REFERENCES `collaborator_projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 SET FOREIGN_KEY_CHECKS=1;

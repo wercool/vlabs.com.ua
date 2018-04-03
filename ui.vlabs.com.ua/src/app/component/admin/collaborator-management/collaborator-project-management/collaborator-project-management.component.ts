@@ -20,6 +20,8 @@ export class CollaboratorProjectManagementComponent implements OnInit {
   collaboratorProjectsDisplayedColumns = ['id', 'name', 'alias'];
   collaboratorProjectsDS: MatTableDataSource<CollaboratorProject> = new MatTableDataSource<CollaboratorProject>();
 
+  completed: boolean = false;
+
   constructor(
     private collaboratorService: CollaboratorService
   ) { }
@@ -29,6 +31,7 @@ export class CollaboratorProjectManagementComponent implements OnInit {
   }
 
   private getAllCollaboratorProjects():void {
+    this.completed = false;
     this.collaboratorService.getAllCollaboratorProjects()
     .subscribe(result => {
       this.upateDS(result);
@@ -45,6 +48,7 @@ export class CollaboratorProjectManagementComponent implements OnInit {
   private refreshDS(){
     this.collaboratorProjectsNum = this.collaboratorProjectsAll.length;
     this.collaboratorProjectsDS = new MatTableDataSource<CollaboratorProject>(this.collaboratorProjectsAll);
+    this.completed = true;
   }
 
   onCollaboratorProjectsAddedEvent(collaboratorProject: CollaboratorProject){

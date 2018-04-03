@@ -1,8 +1,17 @@
+-----------------
 1) Create initial database structure
 mysql -uroot -p < init-db.sql
 
 2) Insert initial data records
 mysql -uvlabs -p < init-data.sql
 
-2) VLabs server by default is running on 8090 port (`server.port` in application.properties)
-
+-----------------
+VLabs server by default is running on 8090 port (`server.port` in application.properties)
+-----------------
+1) Download Apache Tomcat ^8.5.29
+https://tomcat.apache.org/download-80.cgi
+2) mv apache-tomcat-*.tar.gz to /opt/
+3) cd /opt/
+4) sudo tar -xvf apache-tomcat-8.5.29.tar.gz
+5) sudo chmod -R 755 /opt/apache-tomcat-*
+6) https://turbofuture.com/computers/How-to-install-Apache-tomcat-in-Spring-Tool-Suite-Eclipse

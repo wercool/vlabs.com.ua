@@ -36,13 +36,15 @@ import {
   EditEclassComponent,
   EditCollaboratorComponent,
   CollaboratorProjectManagementComponent,
+  CollaboratorProjectActivityManagementComponent,
 } from '../component';
 
 import {
   GuestGuard,
   AuthenticatedGuard,
   AdminGuard,
-  ManagerGuard
+  ManagerGuard,
+  CollaboratorGuard
 } from '../guard';
 
 export const routes: Routes = [
@@ -160,6 +162,11 @@ export const routes: Routes = [
     path: 'collaborator-edit/:id',
     component: EditCollaboratorComponent,
     canActivate: [AdminGuard]
+  },
+  {
+    path: 'collaborator/project-activity-management/:id',
+    component: CollaboratorProjectActivityManagementComponent,
+    canActivate: [CollaboratorGuard]
   },
 
   /* Service */

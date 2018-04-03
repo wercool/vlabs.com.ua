@@ -103,3 +103,10 @@ html{
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none; /* Standard */
 }
+
+.addButton {
+    background-color: rgba(99, 205, 50, 0.562);
+}
+.removeButton {
+    background-color: rgba(205, 190, 50, 0.562);
+}

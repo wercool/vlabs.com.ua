@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Add Collaborator Project</h2>
+<mat-dialog-content>
+    <mat-progress-spinner *ngIf="!completed" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+    <mat-table #potentialCollaboratorProjectsDSTable [dataSource]="potentialCollaboratorProjectsDS">
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <mat-checkbox [(ngModel)]="element.checked" (change)="checkSelected()">{{element.id}}</mat-checkbox>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef>PROJECT NAME</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="alias">
+            <mat-header-cell *matHeaderCellDef>PROJECT ALIAS</mat-header-cell>
+            <mat-cell *matCellDef="let element">{{element.alias}}</mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="potentialCollaboratorProjectsDisplayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: potentialCollaboratorProjectsDisplayedColumns;"></mat-row>
+    </mat-table>
+</mat-dialog-content>
+<hr/>
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close *ngIf="!submitted">Close</button>
+    <mat-progress-spinner *ngIf="submitted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+    <button mat-button *ngIf="!submitted && enabled" (click)="addCollaboratorProjects()">Add on {{collaborator.alias}}</button>
+</mat-dialog-actions>

@@ -64,7 +64,7 @@ export class EditCourseComponent implements OnInit {
               console.log(this.course);
             },
             error => {
-              this.snackBar.open(error.json().message, 'SERVER ERROR', {
+              this.snackBar.open(error.message, 'SERVER ERROR', {
                 panelClass: ['errorSnackBar'],
                 duration: 1000,
                 verticalPosition: 'top'
@@ -99,7 +99,7 @@ export class EditCourseComponent implements OnInit {
         },
         error => {
           this.submitted = false;
-          this.snackBar.open(error.json().message, 'SERVER ERROR', {
+          this.snackBar.open(error.message, 'SERVER ERROR', {
             panelClass: ['errorSnackBar'],
             duration: 1000,
             verticalPosition: 'top'
@@ -152,7 +152,7 @@ export class EditCourseComponent implements OnInit {
                 this.submitted = false;
               },
               error => {
-                this.snackBar.open(error.json().message, 'SERVER ERROR', {
+                this.snackBar.open(error.message, 'SERVER ERROR', {
                   panelClass: ['errorSnackBar'],
                   duration: 1000,
                   verticalPosition: 'top'

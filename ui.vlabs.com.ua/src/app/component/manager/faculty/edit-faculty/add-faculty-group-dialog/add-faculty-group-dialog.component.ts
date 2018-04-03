@@ -46,7 +46,7 @@ export class AddFacultyGroupDialogComponent implements OnInit {
       this.potentialFacultyGroupsDS = new MatTableDataSource<GroupItem>(this.nonFacultyGroupsItems);
     },
     error => {
-      this.snackBar.open(error.json().message, 'SERVER ERROR', {
+      this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
         verticalPosition: 'top'
@@ -80,7 +80,7 @@ export class AddFacultyGroupDialogComponent implements OnInit {
       this.dialogRef.close(faculty);
     },
     error => {
-      this.snackBar.open(error.json().message, 'SERVER ERROR', {
+      this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
         verticalPosition: 'top'

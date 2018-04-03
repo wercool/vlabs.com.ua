@@ -65,7 +65,7 @@ export class EditGroupComponent implements OnInit {
             // console.log(this.group);
           },
           error => {
-            this.snackBar.open(error.json().message, 'SERVER ERROR', {
+            this.snackBar.open(error.message, 'SERVER ERROR', {
               panelClass: ['errorSnackBar'],
               duration: 1000,
               verticalPosition: 'top'
@@ -100,7 +100,7 @@ export class EditGroupComponent implements OnInit {
         },
         error => {
           this.submitted = false;
-          this.snackBar.open(error.json().message, 'SERVER ERROR', {
+          this.snackBar.open(error.message, 'SERVER ERROR', {
             panelClass: ['errorSnackBar'],
             duration: 1000,
             verticalPosition: 'top'
@@ -109,15 +109,15 @@ export class EditGroupComponent implements OnInit {
     }
 
     openAddMemberDialog() {
-        let dialogRef = this.addGroupMemberDialog.open(AddGroupMemberDialogComponent, {
-            width: '80%',
-            data: this.group
-          });
-          dialogRef.afterClosed().subscribe(group => {
-            if (group) {
-              this.setGroup(group);
-            }
-          });
+      let dialogRef = this.addGroupMemberDialog.open(AddGroupMemberDialogComponent, {
+          width: '80%',
+          data: this.group
+        });
+        dialogRef.afterClosed().subscribe(group => {
+          if (group) {
+            this.setGroup(group);
+          }
+        });
     }
 
     checkSelected() {
@@ -153,7 +153,7 @@ export class EditGroupComponent implements OnInit {
             this.submitted = false;
           },
           error => {
-            this.snackBar.open(error.json().message, 'SERVER ERROR', {
+            this.snackBar.open(error.message, 'SERVER ERROR', {
               panelClass: ['errorSnackBar'],
               duration: 1000,
               verticalPosition: 'top'

@@ -10,7 +10,9 @@
         </mat-panel-description>
         </mat-expansion-panel-header>
 
-        <mat-table #collaboratorProjectsDSTable [dataSource]="collaboratorProjectsDS">
+        <mat-progress-spinner *ngIf="!completed" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+
+        <mat-table #collaboratorProjectsDSTable [dataSource]="collaboratorProjectsDS" *ngIf="completed">
             <ng-container matColumnDef="id">
                 <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>

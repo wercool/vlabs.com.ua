@@ -151,7 +151,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
         this.invSubCardsRetrieving = false;
       },
       error => {
-        this.notification = { msgType: 'error', msgBody: error.json().message };
+        this.notification = { msgType: 'error', msgBody: error.message };
       });
 
       this.qrDecoded = true;
@@ -192,7 +192,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     },
     error => {
       this.submitted = false;
-      this.notification = { msgType: 'error', msgBody: error.json().message };
+      this.notification = { msgType: 'error', msgBody: error.message };
     });
   }
 

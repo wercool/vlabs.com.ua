@@ -1,5 +1,8 @@
 package vlabs.model.collaborator;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -7,6 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -34,6 +39,12 @@ public class Collaborator
 
     @Column(name = "alias")
     private String alias;
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, fetch = FetchType.LAZY)
+    @JoinTable(name = "collaborator_project",
+               joinColumns = @JoinColumn(name = "collaborator_id", referencedColumnName = "id"),
+               inverseJoinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"))
+    private List<CollaboratorProject> projects;
 
     public Long getId() {
         return id;
@@ -66,4 +77,14 @@ public class Collaborator
     public void setAlias(String alias) {
         this.alias = alias;
     }
+
+    public List<CollaboratorProject> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<CollaboratorProject> projects) {
+        this.projects = projects;
+    }
+
+ 
 }

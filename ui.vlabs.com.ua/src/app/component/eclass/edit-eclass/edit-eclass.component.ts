@@ -75,7 +75,7 @@ export class EditEclassComponent implements OnInit {
         });
     },
     error => {
-      this.snackBar.open(error.json().message, 'SERVER ERROR', {
+      this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
         verticalPosition: 'top'
@@ -107,7 +107,7 @@ export class EditEclassComponent implements OnInit {
             this.completed = true;
         },
         error => {
-          this.snackBar.open(error.json().message, 'SERVER ERROR', {
+          this.snackBar.open(error.message, 'SERVER ERROR', {
             panelClass: ['errorSnackBar'],
             duration: 1000,
             verticalPosition: 'top'
@@ -116,7 +116,7 @@ export class EditEclassComponent implements OnInit {
 
       },
       error => {
-        this.snackBar.open(error.json().message, 'SERVER ERROR', {
+        this.snackBar.open(error.message, 'SERVER ERROR', {
           panelClass: ['errorSnackBar'],
           duration: 1000,
           verticalPosition: 'top'
@@ -143,7 +143,7 @@ export class EditEclassComponent implements OnInit {
         },
         error => {
           this.submitted = false;
-          this.snackBar.open(error.json().message, 'SERVER ERROR', {
+          this.snackBar.open(error.message, 'SERVER ERROR', {
             panelClass: ['errorSnackBar'],
             duration: 1000,
             verticalPosition: 'top'
@@ -158,7 +158,7 @@ export class EditEclassComponent implements OnInit {
     },
     error => {
       this.submitted = false;
-      this.snackBar.open(error.json().message, 'SERVER ERROR', {
+      this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
         verticalPosition: 'top'
@@ -178,7 +178,7 @@ export class EditEclassComponent implements OnInit {
       this.eClassStrcutureNeedsUpdate = false;
     },
     error => {
-      this.snackBar.open(error.json().message, 'SERVER ERROR', {
+      this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
         verticalPosition: 'top'
@@ -215,7 +215,7 @@ export class EditEclassComponent implements OnInit {
     },
     error => {
       this.cElementSaving = false;
-      this.snackBar.open(error.json().message, 'SERVER ERROR', {
+      this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
         verticalPosition: 'top'
@@ -249,7 +249,7 @@ export class EditEclassComponent implements OnInit {
         },
         error => {
           this.cElementSaving = false;
-          this.snackBar.open(error.json().message, 'SERVER ERROR', {
+          this.snackBar.open(error.message, 'SERVER ERROR', {
             panelClass: ['errorSnackBar'],
             duration: 1000,
             verticalPosition: 'top'

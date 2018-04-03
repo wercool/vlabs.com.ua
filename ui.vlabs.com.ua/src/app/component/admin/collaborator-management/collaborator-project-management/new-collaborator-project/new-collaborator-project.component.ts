@@ -43,6 +43,7 @@ export class NewCollaboratorProjectComponent implements OnInit {
 
   onSubmit(){
     this.submitted = true;
+    this.notification = null;
 
     this.collaboratorService.addNewCollaboratorProject(this.form.value)
     // show the animation
@@ -56,7 +57,12 @@ export class NewCollaboratorProjectComponent implements OnInit {
     },
     error => {
       this.submitted = false;
-      this.notification = { msgType: 'styles-error', msgBody: error.json().message };
+      let errorDetails = JSON.parse(error.headers.get('errorDetails'));
+      if (errorDetails) {
+        this.notification = { msgType: 'styles-error', msgBody: errorDetails.detailMessage };
+      } else {
+        this.notification = { msgType: 'styles-error', msgBody: error.message };
+      }
     });
   }
 

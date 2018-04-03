@@ -64,7 +64,7 @@ export class ResetPasswordComponent implements OnInit {
     },
     error => {
       this.submitted = false;
-      this.notification = { msgType: 'error', msgBody: error.json().message };
+      this.notification = { msgType: 'error', msgBody: error.message };
     });
   }
 }

@@ -72,7 +72,7 @@ export class NewEclassComponent implements OnInit {
         },
         error => {
           this.submitted = false;
-          this.notification = { msgType: 'styles-error', msgBody: error.json().message };
+          this.notification = { msgType: 'styles-error', msgBody: error.message };
         });
       } else {
         this.submitted = false;
@@ -84,7 +84,7 @@ export class NewEclassComponent implements OnInit {
     },
     error => {
       this.submitted = false;
-      this.notification = { msgType: 'styles-error', msgBody: error.json().message };
+      this.notification = { msgType: 'styles-error', msgBody: error.message };
     });
   }
 

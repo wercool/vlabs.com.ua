@@ -45,7 +45,7 @@ export class AddCourseEClassDialogComponent implements OnInit {
       this.potentialCourseEClassesDS = new MatTableDataSource<EClassItem>(this.nonCourseEClassesItems);
     },
     error => {
-      this.snackBar.open(error.json().message, 'SERVER ERROR', {
+      this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
         verticalPosition: 'top'
@@ -79,7 +79,7 @@ export class AddCourseEClassDialogComponent implements OnInit {
       this.dialogRef.close(course);
     },
     error => {
-      this.snackBar.open(error.json().message, 'SERVER ERROR', {
+      this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
         verticalPosition: 'top'

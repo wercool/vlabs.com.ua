@@ -1,5 +1,6 @@
 package vlabs.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,11 @@ public class CollaboratorService
         return collaborator;
     }
 
+    public Collaborator findByUserId(Long userId) throws AccessDeniedException {
+        Collaborator collaborator = collaboratorRepository.getOneByUserId(userId);
+        return collaborator;
+    }
+
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public List<Collaborator> findAll() throws AccessDeniedException {
         List<Collaborator> collaborators = collaboratorRepository.findAll();
@@ -38,8 +44,8 @@ public class CollaboratorService
         return collaboratorRepository.save(collaborator);
     }
 
-    public void updateCollaborator(Collaborator collaborator) throws AccessDeniedException {
-        collaboratorRepository.save(collaborator);
+    public Collaborator updateCollaborator(Collaborator collaborator) throws AccessDeniedException {
+        return collaboratorRepository.save(collaborator);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
@@ -53,4 +59,60 @@ public class CollaboratorService
         return collaboratorProjectRepository.save(collaboratorProject);
     }
 
+    public CollaboratorProject findCollaboratorProjectByAlias(String alias) throws AccessDeniedException {
+        CollaboratorProject collaboratorProject = collaboratorProjectRepository.findByAlias(alias);
+        return collaboratorProject;
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public List<CollaboratorProject> findAllNonCollaboratorProjectsByCollabortorId(Long collaboratorId) throws AccessDeniedException {
+        List<CollaboratorProject> collaboratorProjects = collaboratorProjectRepository.findCollaboratorProjects(collaboratorId);
+        List<Long> collaboratorProjectsIds = new ArrayList<Long>();
+        for (CollaboratorProject p : collaboratorProjects) {
+            collaboratorProjectsIds.add(p.getId());
+        }
+
+        List<CollaboratorProject> allNonCollaboratorProjects = new ArrayList<CollaboratorProject>();
+        if (collaboratorProjectsIds.size() > 0) {
+            allNonCollaboratorProjects = collaboratorProjectRepository.findAllNonCollaboratorProjects(collaboratorProjectsIds);
+        } else {
+            allNonCollaboratorProjects = collaboratorProjectRepository.findAll();
+        }
+        
+
+        List<CollaboratorProject> potentialCollaboratorProjects = new ArrayList<CollaboratorProject>();
+        for (CollaboratorProject p : allNonCollaboratorProjects) {
+            potentialCollaboratorProjects.add(p);
+        }
+
+        return potentialCollaboratorProjects;
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public Collaborator updateCollaboratorProjects(Long collaboratorId, List<CollaboratorProject> modifiedCollaboratorProjects, String action) throws AccessDeniedException {
+        Collaborator existingCollaborator = collaboratorRepository.getOne(collaboratorId);
+        List<CollaboratorProject> collaboratorProjects = existingCollaborator.getProjects();
+
+        if (action.equals("add")) {
+            collaboratorProjects.addAll(modifiedCollaboratorProjects);
+            existingCollaborator.setProjects(collaboratorProjects);
+        }
+
+        if (action.equals("remove")) {
+            //TODO: why groupMembers.removeAll(modifiedGroupMembers) is not working here?!!!!
+            List<Long> collaboratorProjectsToRemoveIds = new ArrayList<Long>();
+            List<CollaboratorProject> udatedCollaboratorProjects = new ArrayList<CollaboratorProject>();
+            for (CollaboratorProject cp : modifiedCollaboratorProjects) {
+                collaboratorProjectsToRemoveIds.add(cp.getId());
+            }
+            for (CollaboratorProject cp : collaboratorProjects) {
+                if (collaboratorProjectsToRemoveIds.indexOf(cp.getId()) == -1) {
+                    udatedCollaboratorProjects.add(cp);
+                }
+            }
+            existingCollaborator.setProjects(udatedCollaboratorProjects);
+        }
+
+        return collaboratorRepository.save(existingCollaborator);
+    }
 }

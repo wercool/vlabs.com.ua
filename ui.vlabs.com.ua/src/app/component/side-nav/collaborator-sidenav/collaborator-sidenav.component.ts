@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Collaborator, User } from '../../../model';
+import { CollaboratorService, UserService } from '../../../service';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-collaborator-sidenav',
@@ -7,9 +10,45 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CollaboratorSidenavComponent implements OnInit {
 
-  constructor() { }
+  private collaborator: Collaborator;
+
+  @Output() navigateEvent: EventEmitter<string> = new EventEmitter();
+
+  completed = false;
+
+  constructor(
+    private userService: UserService,
+    private collaboratorService: CollaboratorService,
+    private snackBar: MatSnackBar,
+  ) { }
 
   ngOnInit() {
+    const user: User = this.userService.currentUser;
+    this.collaboratorService.getByUserId(user.id)
+    .delay(250)
+    .subscribe(collaborator => {
+      this.setCollaborator(collaborator);
+      this.completed = true;
+      // console.log(this.collaborator);
+    },
+    error => {
+      this.snackBar.open(error.message, 'SERVER ERROR', {
+        panelClass: ['errorSnackBar'],
+        duration: 1000,
+        verticalPosition: 'top'
+      });
+    });
   }
 
+  setCollaborator(collaborator: Collaborator) {
+    this.collaborator = collaborator;
+  }
+
+  navigate(url:string){
+    this.navigateEvent.emit(url);
+  }
+
+  navigateProjectActivityManagement(projectId: number) {
+    this.navigate('collaborator/project-activity-management/' + projectId.toString());
+  }
 }

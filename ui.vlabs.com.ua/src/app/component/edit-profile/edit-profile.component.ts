@@ -54,7 +54,7 @@ export class EditProfileComponent implements OnInit {
       this.profilePhoto = pfofilePhoto.imageData;
     },
     error => {
-      this.notification = { msgType: 'error', msgBody: error.json().message };
+      this.notification = { msgType: 'error', msgBody: error.message };
     });
   }
 
@@ -74,7 +74,7 @@ export class EditProfileComponent implements OnInit {
     },
     error => {
       this.submitted = false;
-      this.notification = { msgType: 'error', msgBody: error.json().message };
+      this.notification = { msgType: 'error', msgBody: error.message };
     });
   }
 
@@ -99,7 +99,7 @@ export class EditProfileComponent implements OnInit {
     },
     error => {
       this.submitted = false;
-      this.notification = { msgType: 'error', msgBody: error.json().message };
+      this.notification = { msgType: 'error', msgBody: error.message };
     });
   }
 

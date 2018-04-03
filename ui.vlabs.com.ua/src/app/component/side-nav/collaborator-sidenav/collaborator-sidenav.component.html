@@ -6,8 +6,11 @@
             <mat-icon class="md-18">folder</mat-icon>
         </mat-panel-title>
     </mat-expansion-panel-header>
-    <!-- <button mat-button (click)="navigate('/eclass-management')" class="sidenav-button">
-        <mat-icon class="md-18">layers</mat-icon>
-        <span>EClasses Management</span>
-    </button> -->
+    <mat-progress-spinner *ngIf="!completed" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+    <div *ngIf="completed">
+        <button mat-button *ngFor="let project of collaborator.projects" (click)="navigateProjectActivityManagement(project.id)" class="sidenav-button">
+            <mat-icon class="md-18">folder_open</mat-icon>
+            <span>{{project.name}}</span>
+        </button>
+    </div>
 </mat-expansion-panel>

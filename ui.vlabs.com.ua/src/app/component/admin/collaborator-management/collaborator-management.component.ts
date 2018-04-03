@@ -20,10 +20,12 @@ export class CollaboratorManagementComponent implements OnInit {
 
   @ViewChild('collaboratorsListPanel') collaboratorsListPanel: MatExpansionPanel;
 
+  completed: boolean = false;
+
   collaboratorsAll: Collaborator[] = [];
   collaboratorsNum: number = 0;
 
-  collaboratorsDisplayedColumns = ['id', 'alias', 'username'];
+  collaboratorsDisplayedColumns = ['id', 'alias', 'username', 'projects'];
   collaboratorsDS: MatTableDataSource<Collaborator> = new MatTableDataSource<Collaborator>();
 
   constructor(
@@ -39,6 +41,7 @@ export class CollaboratorManagementComponent implements OnInit {
   }
 
   private getAllCollaborators():void {
+    this.completed = false;
     this.collaboratorService.getAll()
     .subscribe(result => {
       // console.log(result);
@@ -56,9 +59,11 @@ export class CollaboratorManagementComponent implements OnInit {
   private refreshDS(){
     this.collaboratorsNum = this.collaboratorsAll.length;
     this.collaboratorsDS = new MatTableDataSource<Collaborator>(this.collaboratorsAll);
+    this.completed = true;
   }
 
   onNewCollaboratorAddedEvent(collaborator: Collaborator){
+    this.completed = false;
     this.collaboratorsAll.push(collaborator);
     this.refreshDS();
     this.collaboratorsListPanel.open();

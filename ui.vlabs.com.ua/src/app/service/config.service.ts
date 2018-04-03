@@ -93,13 +93,18 @@ export class ConfigService {
 
   //Collaborators
   private _collaborator_url                         = this._api_url + '/collaborator';
+  private _collaborator_by_user_id_url              = this._collaborator_url + '/user/{userId}';
+  private _collaborator_update_url                  = this._collaborator_url + '/update'
   private _collaborator_add_url                     = this._collaborator_url + '/add';
   private _collaborators_url                        = this._collaborator_url + '/all';
 
   //Collaborators Projects
-  private _collaborators_project_url                = this._collaborator_url + '/project';
-  private _collaborators_projects_url               = this._collaborators_project_url + '/all';
-  private _collaborators_project_add_url            = this._collaborators_project_url + '/add';
+  private _collaborators_project_url                    = this._collaborator_url + '/project';
+  private _collaborators_projects_url                   = this._collaborators_project_url + '/all';
+  private _collaborators_project_add_url                = this._collaborators_project_url + '/add';
+  private _collaborator_non_collaborator_projects_url   = this._collaborators_project_url + '/{collaboratorId}/non-collaborator-projects';
+  private _collaborator_add_projects_url                = this._collaborators_project_url + '/{collaboratorId}/addprojects';
+  private _collaborator_remove_projects_url             = this._collaborators_project_url + '/{collaboratorId}/removeprojects';
 
   //Subscription
   private _subscription_url                         = this._api_url + '/subscription';
@@ -202,10 +207,16 @@ export class ConfigService {
   get partners_url(): string { return this._partners_url; };
 
   //Collaborators
+  get collaborator_url(): string { return this._collaborator_url; };
+  get collaborator_by_user_id_url(): string { return this._collaborator_by_user_id_url; };
+  get collaborator_update_url(): string { return this._collaborator_update_url; };
   get collaborator_add_url(): string { return this._collaborator_add_url; };
   get collaborators_url(): string { return this._collaborators_url; };
   get collaborators_projects_url(): string { return this._collaborators_projects_url; };
   get collaborators_project_add_url(): string { return this._collaborators_project_add_url; };
+  get collaborator_non_collaborator_projects_url(): string { return this._collaborator_non_collaborator_projects_url; };
+  get collaborator_add_projects_url(): string { return this._collaborator_add_projects_url; };
+  get collaborator_remove_projects_url(): string { return this._collaborator_remove_projects_url; };
 
   //Subscription
   get subscription_cards_url(): string { return this._subscription_cards_url; };

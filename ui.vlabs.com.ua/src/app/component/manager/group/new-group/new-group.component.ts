@@ -52,7 +52,7 @@ export class NewGroupComponent implements OnInit {
       },
       error => {
         this.submitted = false;
-        this.notification = { msgType: 'styles-error', msgBody: error.json().message };
+        this.notification = { msgType: 'styles-error', msgBody: error.message };
       });
     }
 

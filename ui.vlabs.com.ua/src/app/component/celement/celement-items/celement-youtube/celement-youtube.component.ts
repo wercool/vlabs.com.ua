@@ -52,7 +52,7 @@ export class CelementYoutubeComponent implements OnInit{
       this.cElementItemsCompleted = true;
     },
     error => {
-      this.snackBar.open(error.json().message, 'SERVER ERROR', {
+      this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
         verticalPosition: 'top'
@@ -91,7 +91,7 @@ export class CelementYoutubeComponent implements OnInit{
         },
         error => {
           this.cElementItemsCompleted = false;
-          this.snackBar.open(error.json().message, 'SERVER ERROR', {
+          this.snackBar.open(error.message, 'SERVER ERROR', {
             panelClass: ['errorSnackBar'],
             duration: 1000,
             verticalPosition: 'top'
@@ -126,7 +126,7 @@ export class CelementYoutubeComponent implements OnInit{
         },
         error => {
           this.cElementItemsCompleted = false;
-          this.snackBar.open(error.json().message, 'SERVER ERROR', {
+          this.snackBar.open(error.message, 'SERVER ERROR', {
             panelClass: ['errorSnackBar'],
             duration: 1000,
             verticalPosition: 'top'

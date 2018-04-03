@@ -10,7 +10,9 @@
         </mat-panel-description>
         </mat-expansion-panel-header>
 
-        <mat-table #collaboratorsDSTable [dataSource]="collaboratorsDS">
+        <mat-progress-spinner *ngIf="!completed" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+
+        <mat-table #collaboratorsDSTable [dataSource]="collaboratorsDS" *ngIf="completed">
             <ng-container matColumnDef="id">
                 <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
@@ -36,6 +38,10 @@
                                 class="md-36" style="color: brown; cursor: pointer;"
                                 (click)="getInvitationLink(element); $event.stopPropagation();">content_copy</mat-icon>
                 </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="projects">
+                <mat-header-cell *matHeaderCellDef>PROJECTS</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.projects ? element.projects.length : 0}}</mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="collaboratorsDisplayedColumns"></mat-header-row>
             <mat-row 
