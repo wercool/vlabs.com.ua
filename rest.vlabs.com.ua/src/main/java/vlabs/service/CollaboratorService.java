@@ -1,15 +1,20 @@
 package vlabs.service;
 
+import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import vlabs.controller.CollaboratorContoller;
 import vlabs.model.collaborator.Collaborator;
 import vlabs.model.collaborator.CollaboratorProject;
 import vlabs.model.collaborator.CollaboratorProjectWorkItem;
@@ -21,6 +26,12 @@ import vlabs.repository.collaborator.CollaboratorRepository;
 @Service
 public class CollaboratorService
 {
+
+    private static final Logger log = LoggerFactory.getLogger(CollaboratorService.class);
+
+    @Value("${vlabs.dir.collaborators.projects}")
+    private String VLABS_COLLABORATOR_PROJECTS;
+
     @Autowired
     private CollaboratorRepository collaboratorRepository;
 
@@ -96,13 +107,37 @@ public class CollaboratorService
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public Collaborator updateCollaboratorProjects(Long collaboratorId, List<CollaboratorProject> modifiedCollaboratorProjects, String action) throws AccessDeniedException {
+    public Collaborator updateCollaboratorProjects(Long collaboratorId, List<CollaboratorProject> modifiedCollaboratorProjects, String action) throws SecurityException, AccessDeniedException {
         Collaborator existingCollaborator = collaboratorRepository.getOne(collaboratorId);
         List<CollaboratorProject> collaboratorProjects = existingCollaborator.getProjects();
 
         if (action.equals("add")) {
             collaboratorProjects.addAll(modifiedCollaboratorProjects);
             existingCollaborator.setProjects(collaboratorProjects);
+
+            collaboratorProjects = existingCollaborator.getProjects();
+
+            for (CollaboratorProject collaboratorProject : collaboratorProjects) {
+                File collaboratorAliasedProjectDir = new File(VLABS_COLLABORATOR_PROJECTS + "/" + collaboratorProject.getAlias() + "/" + existingCollaborator.getAlias());
+                if (!collaboratorAliasedProjectDir.exists()) {
+                    System.out.println("creating directory: " + collaboratorAliasedProjectDir.getPath());
+                    boolean result = false;
+
+                    try{
+                        collaboratorAliasedProjectDir.mkdir();
+                        result = true;
+                    } 
+                    catch(SecurityException se) {
+                        log.info("Directory " + collaboratorAliasedProjectDir.getName() + " can not be created because of: ");
+                        throw se;
+                    }
+                    if(result) {
+                        log.info("Directory " + collaboratorAliasedProjectDir.getName() + " created");  
+                    }
+                } else {
+                    System.out.println("directory already exists: " + collaboratorAliasedProjectDir.getPath());
+                }
+            }
         }
 
         if (action.equals("remove")) {

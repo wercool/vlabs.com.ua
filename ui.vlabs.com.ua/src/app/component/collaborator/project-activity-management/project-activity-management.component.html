@@ -4,6 +4,10 @@
         <mat-card-title>Project: <b>{{collaboratorProject.name}}</b></mat-card-title>
         <mat-card-subtitle>Alias: <i>{{collaboratorProject.alias}}</i></mat-card-subtitle>
     </mat-card-header>
+    <div *ngIf="collaboratorProject.description">
+        {{collaboratorProject.description}}
+        <hr/>
+    </div>
     <mat-card-content>
         <button mat-button *ngIf="!submitted && workItemsCompleted" (click)="openAddProjectWorkItemDialog()" class="addButton">
             <mat-icon class="material-icons md-24">queue</mat-icon>
@@ -25,8 +29,19 @@
                 <mat-header-cell *matHeaderCellDef>ALIAS</mat-header-cell>
                 <mat-cell *matCellDef="let element">{{element.alias}}</mat-cell>
             </ng-container>
+            <ng-container matColumnDef="type">
+                <mat-header-cell *matHeaderCellDef>TYPE</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <img *ngIf="element.type == 'resource'" src="/assets/resource-item.png" height="48">
+                    <img *ngIf="element.type == 'blender_model'" src="/assets/blender-item.png" height="48">
+                    <img *ngIf="element.type == 'vlab_item'" src="/assets/vlabitem-item.png" height="48">
+                </mat-cell>
+            </ng-container>
             <mat-header-row *matHeaderRowDef="projectWorkItemsDisplayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: projectWorkItemsDisplayedColumns;"></mat-row>
+            <mat-row 
+            class="styles-mat-table-row"
+            (click)="collaboratorProjectWorkItemRowClicked(row);"
+            *matRowDef="let row; columns: projectWorkItemsDisplayedColumns;"></mat-row>
         </mat-table>
     </mat-card-content>
 </mat-card>

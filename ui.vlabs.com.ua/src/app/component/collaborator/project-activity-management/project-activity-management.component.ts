@@ -19,7 +19,7 @@ export class CollaboratorProjectActivityManagementComponent implements OnInit {
   private collaboratorProject: CollaboratorProject;
   private collaboratorProjectWorkItems: CollaboratorProjectWorkItem[];
 
-  projectWorkItemsDisplayedColumns = ['id', 'title', 'alias'];
+  projectWorkItemsDisplayedColumns = ['id', 'title', 'alias', 'type'];
   projectWorkItemsDS: MatTableDataSource<CollaboratorProjectWorkItem>;
 
   completed: boolean = false;
@@ -81,7 +81,7 @@ export class CollaboratorProjectActivityManagementComponent implements OnInit {
     .delay(250)
     .subscribe(collaboratorProjectWorkItems => {
       this.setProjectWorkItems(collaboratorProjectWorkItems);
-      console.log(this.collaboratorProjectWorkItems);
+      // console.log(this.collaboratorProjectWorkItems);
     },
     error => {
       this.snackBar.open(error.message, 'SERVER ERROR', {
@@ -105,13 +105,20 @@ export class CollaboratorProjectActivityManagementComponent implements OnInit {
   openAddProjectWorkItemDialog() {
     let dialogRef = this.addCollaboratorProjectWorkItemDialogComponent.open(AddCollaboratorProjectWorkItemDialogComponent, {
       width: '80%',
-      data: this.collaboratorProject
+      data: { 
+        collaboratorProject: this.collaboratorProject,
+        collaboratorProjectWorkItems: this.collaboratorProjectWorkItems
+      }
     });
     dialogRef.afterClosed().subscribe(collaboratorProject => {
       if (collaboratorProject) {
         this.setProject(collaboratorProject);
       }
     });
+  }
+
+  collaboratorProjectWorkItemRowClicked(collaboratorProjectWorkItem: CollaboratorProjectWorkItem) {
+    console.log(collaboratorProjectWorkItem);
   }
 
 }

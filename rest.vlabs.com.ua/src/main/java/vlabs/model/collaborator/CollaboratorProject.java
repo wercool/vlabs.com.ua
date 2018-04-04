@@ -26,6 +26,9 @@ public class CollaboratorProject
     @Column(name = "alias")
     private String alias;
 
+    @Column(name = "description", columnDefinition="TEXT")
+    private String description;
+
     public Long getId() {
         return id;
     }
@@ -48,6 +51,14 @@ public class CollaboratorProject
 
     public void setAlias(String alias) {
         this.alias = alias;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

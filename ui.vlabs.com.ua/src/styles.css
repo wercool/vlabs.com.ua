@@ -75,13 +75,23 @@ html{
 .styles-error {
     color: #D50000;
 }
-  
+
 .styles-success {
     color: rgb(126, 182, 57);
 }
 
+.styles-error-message {
+    color: #D50000;
+    font-size: 10pt;
+}
+
 .styles-info {
     color: rgb(247, 200, 71);
+}
+
+.styles-info-message {
+    color: rgb(247, 200, 71);
+    font-size: 10pt;
 }
 
 .sidenav-button {
@@ -102,6 +112,13 @@ html{
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none; /* Standard */
+}
+
+.styles-frame {
+    display: flex;
+    /*Uncomment below to center horizontally*/
+    /*justify-content: center;*/
+    align-items: center;
 }
 
 .addButton {

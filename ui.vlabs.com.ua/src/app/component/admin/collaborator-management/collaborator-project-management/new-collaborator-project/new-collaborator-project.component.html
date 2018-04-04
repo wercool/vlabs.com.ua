@@ -7,6 +7,9 @@
   <mat-form-field class="styles-full-width">
       <input matInput formControlName="alias" type="text" placeholder="Collaborator Project Alias" required>
   </mat-form-field>
+  <mat-form-field class="styles-full-width">
+    <textarea matInput formControlName="description" placeholder="Collaborator Project Description"></textarea>
+  </mat-form-field>
   <div class="styles-mat-card-actions">
       <button type="submit" mat-button [disabled]="!newCollaboratorProjectForm.form.valid">SAVE</button>
   </div>

@@ -38,6 +38,7 @@ export class NewCollaboratorProjectComponent implements OnInit {
     this.form = this.formBuilder.group({
       name: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
       alias: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
+      description: ['']
     });
   }
 

@@ -1,17 +1,34 @@
 <h2 mat-dialog-title>Add Project Work Item</h2>
 <form [formGroup]="addProjectWorkItemFormGroup" (ngSubmit)="onAddProjectWorkItemFormGroupSubmit()" #addProjectWorkItemForm="ngForm">
     <mat-form-field class="styles-full-width">
-        <mat-select [(ngModel)]="collaboratorProjectWorkItem.type" formControlName="type" placeholder="Work Item Type">
-            <mat-option value="resource">Resource</mat-option>
-            <mat-option value="blender_model">Blender Model</mat-option>
-            <mat-option value="vlab_item">VLab Item</mat-option>
+        <mat-select [(ngModel)]="newCollaboratorProjectWorkItem.type" formControlName="type" placeholder="Work Item Type" (change)="workItemTitleChanged()">
+            <mat-option value="resource">
+                <div class="styles-frame">
+                    <img src="/assets/resource-item.png" height="32">
+                    <span style="padding-left: 10pt;">Resource</span>
+                </div>
+            </mat-option>
+            <mat-option value="blender_model">
+                <div class="styles-frame">
+                    <img src="/assets/blender-item.png" height="32">
+                    <span style="padding-left: 10pt;">Blender Model</span>
+                </div>
+            </mat-option>
+            <mat-option value="vlab_item">
+                <div class="styles-frame">
+                    <img src="/assets/vlabitem-item.png" height="32">
+                    <span style="padding-left: 10pt;">VLab Item</span>
+                </div>
+            </mat-option>
         </mat-select>
     </mat-form-field>
     <mat-form-field class="styles-full-width">
-        <input matInput formControlName="title" placeholder="Work Item Title" [(ngModel)]="collaboratorProjectWorkItem.title" (input)="workItemTitleChanged($event.target.value)">
+        <input matInput formControlName="title" placeholder="Work Item Title" [(ngModel)]="newCollaboratorProjectWorkItem.title" (input)="workItemTitleChanged($event.target.value)">
+        <div class="styles-info-message">{{aliasExistsInfoMessage}}</div>
     </mat-form-field>
     <mat-form-field class="styles-full-width">
-        <input matInput formControlName="alias" placeholder="Work Item Alias" [(ngModel)]="collaboratorProjectWorkItem.alias" readonly>
+        <input matInput #alias formControlName="alias" placeholder="Work Item Alias" [(ngModel)]="newCollaboratorProjectWorkItem.alias" readonly>
+        <div class="styles-error-message">{{aliasExistsMessage}}</div>
     </mat-form-field>
     <mat-dialog-actions align="end">
         <button mat-button mat-dialog-close>Close</button>

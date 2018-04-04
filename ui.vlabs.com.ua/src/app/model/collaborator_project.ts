@@ -2,11 +2,13 @@ export class CollaboratorProject {
     id: number;
     name: string;
     alias: string;
+    description: string;
 
     constructor() {
         this.id = undefined;
         this.name = undefined;
         this.alias = undefined;
+        this.description = undefined;
     }
 
     map(anyCollaboratorProjectItem: any): CollaboratorProject {

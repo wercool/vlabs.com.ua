@@ -120,7 +120,31 @@ public class CollaboratorContoller
     }
 
     @RequestMapping(method = RequestMethod.POST, value= "/collaborator/project/workitem/add")
-    public CollaboratorProject addCollaboratorProjectWorkItem(@RequestBody CollaboratorProjectWorkItem collaboratorProjectWorkItem) {
+    public CollaboratorProject addCollaboratorProjectWorkItem(@RequestBody CollaboratorProjectWorkItem collaboratorProjectWorkItem) throws SecurityException, EntityAlreadyExistsException {
+        Collaborator collaborator = collaboratorService.findById(collaboratorProjectWorkItem.getCollaborator_id());
+        CollaboratorProject collaboratorProject = collaboratorService.findCollaboratorProjectById(collaboratorProjectWorkItem.getProject_id());
+
+        File collaboratorProjectWorkItemDir = new File(VLABS_COLLABORATOR_PROJECTS + "/" + collaboratorProject.getAlias() + "/" + collaborator.getAlias() + "/" + collaboratorProjectWorkItem.getAlias());
+
+        if (collaboratorProjectWorkItemDir.exists()) {
+            log.error("Colalborator Project with the alias = " + collaboratorProject.getAlias() + " already exists!");
+            throw new EntityAlreadyExistsException("Colalborator Project Work Item with the alias = " + collaboratorProjectWorkItem.getAlias() + " already exists!", this.getClass().getName() + " " + Thread.currentThread().getStackTrace()[1].getMethodName());
+        } else {
+            System.out.println("creating directory: " + collaboratorProjectWorkItemDir.getPath());
+            boolean result = false;
+
+            try{
+                collaboratorProjectWorkItemDir.mkdir();
+                result = true;
+            } 
+            catch(SecurityException se) {
+                log.info("Directory " + collaboratorProjectWorkItemDir.getName() + " can not be created because of: ");
+                throw se;
+            }
+            if(result) {
+                log.info("Directory " + collaboratorProjectWorkItemDir.getName() + " created");  
+            }
+        }
         return collaboratorService.addCollaboratorProjectWorkItem(collaboratorProjectWorkItem);
     }
 }
