@@ -36,7 +36,7 @@ apply plugin: 'com.moowork.node'
 apply plugin: "com.eriwen.gradle.js"
 
 group = 'ua.com.vlabs'
-version = '0.0.1-SNAPSHOT'
+version = '0.1.1-SNAPSHOT'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -118,7 +118,7 @@ task buildUIDev(type: NpmTask, dependsOn: 'npmInstall') {
 task buildUIProd(type: NpmTask, dependsOn: 'npmInstall') {
   group = 'build'
   description = "Compile UI for production"
-  args = ['run', 'buildProd']
+  args = ['run', 'build-prod']
 }
 
 task deployUIProd(type: Copy, dependsOn: 'buildUIProd') {

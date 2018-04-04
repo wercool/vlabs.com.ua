@@ -1,0 +1,37 @@
+<mat-progress-spinner *ngIf="!completed" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+<mat-card *ngIf="completed">
+    <mat-card-header>
+        <mat-card-title>Project: <b>{{project.name}}</b></mat-card-title>
+        <mat-card-subtitle>Alias: <i>{{project.alias}}</i></mat-card-subtitle>
+    </mat-card-header>
+    <div *ngIf="project.description">
+        {{project.description}}
+        <hr/>
+    </div>
+    <mat-card-content>
+
+        <mat-card>
+            <mat-card-header>
+                <div *ngIf="workItem.type == 'resource'" mat-card-avatar class="work-item-resource-header-image"></div>
+                <div *ngIf="workItem.type == 'blender_model'" mat-card-avatar class="work-item-blender-header-image"></div>
+                <div *ngIf="workItem.type == 'vlab_item'" mat-card-avatar class="work-item-vlabitem-header-image"></div>
+                <mat-card-title>Work Item: <b>{{workItem.title}}</b></mat-card-title>
+                <mat-card-subtitle>Alias: <i>{{workItem.alias}}</i></mat-card-subtitle>
+            </mat-card-header>
+            <div *ngIf="workItem.notes">
+                {{workItem.notes}}
+                <hr/>
+            </div>
+            <mat-card-content>
+                <!-- <button mat-button *ngIf="!submitted && workItemsCompleted" (click)="openAddProjectWorkItemDialog()" class="addButton">
+                    <mat-icon class="material-icons md-24">queue</mat-icon>
+                    Add Project Work Item
+                </button> -->
+
+                <input #fileInput type="file" ng2FileSelect [uploader]="uploader" />
+
+            </mat-card-content>
+        </mat-card>
+
+    </mat-card-content>
+</mat-card>

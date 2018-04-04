@@ -118,7 +118,7 @@ export class CollaboratorProjectActivityManagementComponent implements OnInit {
   }
 
   collaboratorProjectWorkItemRowClicked(collaboratorProjectWorkItem: CollaboratorProjectWorkItem) {
-    console.log(collaboratorProjectWorkItem);
+    this.router.navigate(['collaborator/work-item-activity', collaboratorProjectWorkItem.id]);
   }
 
 }

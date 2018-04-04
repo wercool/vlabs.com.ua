@@ -46,6 +46,7 @@ export class AddCollaboratorProjectWorkItemDialogComponent implements OnInit {
       title: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
       type: ['', Validators.compose([Validators.required])],
       alias: ['', Validators.compose([Validators.required])],
+      notes: [''],
     }, {
       validator: this.checkAliasAlreadyExists.bind(this)
     });
@@ -63,7 +64,7 @@ export class AddCollaboratorProjectWorkItemDialogComponent implements OnInit {
     }
   }
 
-  workItemTitleChanged(title: String) {
+  workItemTitleChanged() {
     if (!this.newCollaboratorProjectWorkItem.title) return;
     this.newCollaboratorProjectWorkItem.alias = this.newCollaboratorProjectWorkItem.type + '_' + this.newCollaboratorProjectWorkItem.title.replace(/[\W_]+/g, '_').toLowerCase();
   }

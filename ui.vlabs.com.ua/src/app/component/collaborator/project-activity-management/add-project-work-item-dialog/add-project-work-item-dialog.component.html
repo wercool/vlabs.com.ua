@@ -23,12 +23,15 @@
         </mat-select>
     </mat-form-field>
     <mat-form-field class="styles-full-width">
-        <input matInput formControlName="title" placeholder="Work Item Title" [(ngModel)]="newCollaboratorProjectWorkItem.title" (input)="workItemTitleChanged($event.target.value)">
+        <input matInput formControlName="title" [(ngModel)]="newCollaboratorProjectWorkItem.title" placeholder="Work Item Title" (input)="workItemTitleChanged()">
         <div class="styles-info-message">{{aliasExistsInfoMessage}}</div>
     </mat-form-field>
     <mat-form-field class="styles-full-width">
-        <input matInput #alias formControlName="alias" placeholder="Work Item Alias" [(ngModel)]="newCollaboratorProjectWorkItem.alias" readonly>
+        <input matInput #alias formControlName="alias" [(ngModel)]="newCollaboratorProjectWorkItem.alias" placeholder="Work Item Alias" readonly>
         <div class="styles-error-message">{{aliasExistsMessage}}</div>
+    </mat-form-field>
+    <mat-form-field class="styles-full-width">
+        <textarea matInput formControlName="notes" [(ngModel)]="newCollaboratorProjectWorkItem.notes" placeholder="Work Item Notes"></textarea>
     </mat-form-field>
     <mat-dialog-actions align="end">
         <button mat-button mat-dialog-close>Close</button>

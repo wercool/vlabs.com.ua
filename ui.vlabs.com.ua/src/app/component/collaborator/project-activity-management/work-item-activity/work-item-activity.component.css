@@ -1,0 +1,12 @@
+.work-item-resource-header-image {
+    background-image: url('/assets/resource-item.png');
+    background-size: cover;
+}
+.work-item-blender-header-image {
+    background-image: url('/assets/blender-item.png');
+    background-size: cover;
+}
+.work-item-vlabitem-header-image {
+    background-image: url('/assets/vlabitem-item.png');
+    background-size: cover;
+}

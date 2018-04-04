@@ -9,6 +9,8 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateLoader } from '@ngx-translate/core';
 import { QrScannerModule } from 'angular2-qrscanner';
 
+import { FileSelectDirective } from 'ng2-file-upload';
+
 import { QuillModule } from 'ngx-quill-wrapper';
 import { QUILL_CONFIG } from 'ngx-quill-wrapper';
 import { QuillConfigInterface } from 'ngx-quill-wrapper';
@@ -102,6 +104,7 @@ import {
 
   CollaboratorProjectActivityManagementComponent,
   AddCollaboratorProjectWorkItemDialogComponent,
+  CollaboratorWorkItemActivityComponent,
 
   CElementItemComponent,
   CelementLabelComponent,
@@ -149,6 +152,9 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 @NgModule({
   declarations:
   [
+    /* 3rd-party */
+    FileSelectDirective,
+
     /* Pipes */
     TruncatePipe,
     CelementPipe,
@@ -214,6 +220,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 
     CollaboratorProjectActivityManagementComponent,
     AddCollaboratorProjectWorkItemDialogComponent,
+    CollaboratorWorkItemActivityComponent,
 
     NewModuleComponent,
     NewDepartmentComponent,

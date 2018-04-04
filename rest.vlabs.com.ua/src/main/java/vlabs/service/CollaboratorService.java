@@ -176,4 +176,9 @@ public class CollaboratorService
         return collaboratorProjectRepository.getOne(collaboratorProjectWorkItem.getProject_id());
     }
 
+    public CollaboratorProjectWorkItem findCollaboratorProjectWorkItemsById(Long collaboratorProjectWorkItemId) throws AccessDeniedException {
+        CollaboratorProjectWorkItem collaboratorProjectWorkItem = collaboratorProjectWorkItemRepository.getOne(collaboratorProjectWorkItemId);
+        return collaboratorProjectWorkItem;
+    }
+
 }

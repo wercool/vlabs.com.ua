@@ -61,4 +61,8 @@ export class CollaboratorService {
   addNewProjectWorkItem(projectWorkItem: CollaboratorProjectWorkItem) {
     return this.apiService.post(this.config.collaborator_project_work_item_add_url, projectWorkItem);
   }
+  getProjectWorkItem(collaboratorProjectWorkItemId: number) {
+    return this.apiService.get(this.config.collaborator_project_work_item_url
+                               .replace("{collaboratorProjectWorkItemId}", collaboratorProjectWorkItemId.toString()));
+  }
 }

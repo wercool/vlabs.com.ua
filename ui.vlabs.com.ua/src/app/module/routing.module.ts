@@ -37,6 +37,7 @@ import {
   EditCollaboratorComponent,
   CollaboratorProjectManagementComponent,
   CollaboratorProjectActivityManagementComponent,
+  CollaboratorWorkItemActivityComponent,
 } from '../component';
 
 import {
@@ -166,6 +167,11 @@ export const routes: Routes = [
   {
     path: 'collaborator/project-activity-management/:id',
     component: CollaboratorProjectActivityManagementComponent,
+    canActivate: [CollaboratorGuard]
+  },
+  {
+    path: 'collaborator/work-item-activity/:id',
+    component: CollaboratorWorkItemActivityComponent,
     canActivate: [CollaboratorGuard]
   },
 

@@ -147,4 +147,9 @@ public class CollaboratorContoller
         }
         return collaboratorService.addCollaboratorProjectWorkItem(collaboratorProjectWorkItem);
     }
+
+    @RequestMapping(method = RequestMethod.GET, value= "/collaborator/project/workitem/{collaboratorProjectWorkItemId}")
+    public CollaboratorProjectWorkItem getCollaboratorProjectWorkItemsById(@PathVariable Long collaboratorProjectWorkItemId) {
+        return collaboratorService.findCollaboratorProjectWorkItemsById(collaboratorProjectWorkItemId);
+    }
 }
