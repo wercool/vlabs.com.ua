@@ -7,7 +7,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import vlabs.model.Course;
 import vlabs.model.Vlab;
 import vlabs.repository.VlabRepository;
 

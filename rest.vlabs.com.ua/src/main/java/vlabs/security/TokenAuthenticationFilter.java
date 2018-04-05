@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
-    private final Log logger = LogFactory.getLog(this.getClass());
+    private final Log log = LogFactory.getLog(this.getClass());
 
     @Autowired
     TokenHelper tokenHelper;
@@ -76,6 +76,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             try
             {
                 String username = tokenHelper.getUsernameFromToken(authToken);
+                log.info(username + " authentication attempt");
                 // get user
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 // create authentication

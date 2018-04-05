@@ -14,7 +14,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import vlabs.controller.CollaboratorContoller;
 import vlabs.model.collaborator.Collaborator;
 import vlabs.model.collaborator.CollaboratorProject;
 import vlabs.model.collaborator.CollaboratorProjectWorkItem;
