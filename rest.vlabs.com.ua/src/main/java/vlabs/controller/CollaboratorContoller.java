@@ -1,23 +1,34 @@
 package vlabs.controller;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.AccessDeniedException;
+import java.sql.Timestamp;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import vlabs.common.EmptyJsonResponse;
 import vlabs.controller.exception.EntityAlreadyExistsException;
 import vlabs.model.collaborator.Collaborator;
 import vlabs.model.collaborator.CollaboratorProject;
 import vlabs.model.collaborator.CollaboratorProjectWorkItem;
+import vlabs.model.user.User;
 import vlabs.service.CollaboratorService;
 
 @RestController
@@ -151,5 +162,33 @@ public class CollaboratorContoller
     @RequestMapping(method = RequestMethod.GET, value= "/collaborator/project/workitem/{collaboratorProjectWorkItemId}")
     public CollaboratorProjectWorkItem getCollaboratorProjectWorkItemsById(@PathVariable Long collaboratorProjectWorkItemId) {
         return collaboratorService.findCollaboratorProjectWorkItemsById(collaboratorProjectWorkItemId);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value= "/collaborator/project/workitem/upload/{collaboratorProjectWorkItemId}")
+    public ResponseEntity<EmptyJsonResponse> workItemUpload(@RequestPart("file") MultipartFile workItemFile, @PathVariable Long collaboratorProjectWorkItemId) throws AccessDeniedException, IllegalStateException, IOException {
+        CollaboratorProjectWorkItem collaboratorProjectWorkItem = collaboratorService.findCollaboratorProjectWorkItemsById(collaboratorProjectWorkItemId);
+        CollaboratorProject collaboratorProject = collaboratorService.findCollaboratorProjectById(collaboratorProjectWorkItem.getProject_id());
+
+//        Collaborator collaborator = collaboratorService.findById(collaboratorProjectWorkItem.getCollaborator_id());
+
+        User user = (User)SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        Collaborator collaborator  = collaboratorService.findByUserId(user.getId());
+
+        File collaboratorProjectWorkItemDir = new File(VLABS_COLLABORATOR_PROJECTS + "/" + collaboratorProject.getAlias() + "/" + collaborator.getAlias() + "/" + collaboratorProjectWorkItem.getAlias());
+        if (!collaboratorProjectWorkItemDir.exists()) {
+            throw new AccessDeniedException("Work Item Directrory");
+        }
+
+        File collaboratorProjectWorkItemPath = new File(VLABS_COLLABORATOR_PROJECTS + "/" + collaboratorProject.getAlias() + "/" + collaborator.getAlias() + "/" + collaboratorProjectWorkItem.getAlias() + "/" + workItemFile.getOriginalFilename());
+        workItemFile.transferTo(collaboratorProjectWorkItemPath);
+
+        collaboratorProjectWorkItem.setLastUpdateDate(new Timestamp(DateTime.now().getMillis()));
+
+        collaboratorService.updateCollaboratorProjectWorkItem(collaboratorProjectWorkItem);
+
+        return new ResponseEntity<EmptyJsonResponse>(new EmptyJsonResponse(), HttpStatus.OK);
     }
 }

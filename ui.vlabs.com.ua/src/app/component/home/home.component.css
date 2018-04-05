@@ -1,21 +1,24 @@
+.home-banner {
+  width: 100%;
+  min-height: 400px;
+  background-color: slategray;
+  background-image: url('/assets/img/banner-bg.png'), linear-gradient(to right, #204061, #2a63a9);
+  background-repeat: no-repeat;
+  background-position: center;
+  text-align: center;
+}
+.home-banner-text {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+  color: rgba(255, 255, 255, 0.75);
+  text-shadow: -10px 0 3px #204061, 0 0 15px #2a63a9;
+  font-size: 34pt;
+}
+
 .directory-card-home {
-    margin: 25px;
-    min-width: 700px;
+    margin: 15px;
+    min-width: 300px;
     float: left;
     display: block !important;
-}
-
-@media screen and (min-width: 600px) and (max-width: 1279px) {
-  .directory-card-home  {
-    margin: 30px;
-    min-width: 500px;
-  }
-}
-
-@media screen and (max-width: 599px) {
-  .directory-card-home {
-    min-width: 320px;
-    display: block !important;
-    margin: 12px;
-  }
 }

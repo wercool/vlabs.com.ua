@@ -49,4 +49,22 @@ public class RESTExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(responseBody.toString(), headers, HttpStatus.CONFLICT);
     }  
+
+    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)  
+    @ExceptionHandler(value = IllegalStateException.class)  
+    public ResponseEntity<Object> handleIllegalStateException(IllegalStateException ex){
+        JSONObject responseBody = new JSONObject();
+        try {
+            responseBody.put("errorCause", ex.getCause().getMessage());
+            responseBody.put("detailMessage", ex.getMessage());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("errorDetails", responseBody.toString());
+
+        return new ResponseEntity<>(responseBody.toString(), headers, HttpStatus.PAYLOAD_TOO_LARGE);
+    }
+
 }

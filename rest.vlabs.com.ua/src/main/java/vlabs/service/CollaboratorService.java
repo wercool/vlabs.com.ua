@@ -180,4 +180,8 @@ public class CollaboratorService
         return collaboratorProjectWorkItem;
     }
 
+    public CollaboratorProjectWorkItem updateCollaboratorProjectWorkItem(CollaboratorProjectWorkItem collaboratorProjectWorkItem) throws AccessDeniedException {
+        return collaboratorProjectWorkItemRepository.save(collaboratorProjectWorkItem);
+    }
+
 }

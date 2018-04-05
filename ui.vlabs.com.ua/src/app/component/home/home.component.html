@@ -10,42 +10,21 @@
 
 <app-admin-home *ngIf="authorizedFor('ADMIN')"></app-admin-home>
 
-<!-- 
-<div class="carousel-wrapper" *ngIf="!isLoggedIn()">
-    <span id="target-item-1"></span>
-    <span id="target-item-2"></span>
-    <span id="target-item-3"></span>
-    <div class="carousel-item item-1">
-        <h2>Item 1</h2>
-        <p>Content goes here.</p>
-        <a class="arrow arrow-prev" href="#target-item-3"></a>
-        <a class="arrow arrow-next" href="#target-item-2"></a>
-    </div>
-    <div class="carousel-item item-2">
-        <h2>Item 2</h2>
-        <p>Content goes here.</p>
-        <a class="arrow arrow-prev" href="#target-item-1"></a>
-        <a class="arrow arrow-next" href="#target-item-3"></a>
-    </div>
-    <div class="carousel-item item-3">
-        <h2>Item 3</h2>
-        <p>Content goes here.</p>
-        <a class="arrow arrow-prev" href="#target-item-2"></a>
-        <a class="arrow arrow-next" href="#target-item-1"></a>
-    </div>
-</div>
- -->
 <div *ngIf="!isLoggedIn()" fxLayout="row" fxLayoutAlign="center none">
+
+    <div class="home-banner">
+        <h1 class="home-banner-text">Welcome to </h1>
+    </div>
+
     <mat-card class="directory-card-home">
         <mat-card-header>
             <mat-card-title><b>Welcome to VLabs</b></mat-card-title>
             <mat-card-subtitle>I'm happy to see you here!</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
-            <img src="/assets/valter-avatar.png" height="300" style="float:left;">
-            <div style="text-align:left;">
-                <iframe width="320" height="200" style="margin-top: 25pt;" src="https://www.youtube.com/embed/WtxceaXECRI" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
-            </div>
+            <p>
+                content....
+            </p>
         </mat-card-content>
     </mat-card>
 
@@ -55,9 +34,8 @@
             <mat-card-subtitle>VLabs Directory</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
-            <img src="/assets/valter-vlabs.png" height="300" style="float:left;">
-            <p style="float:left; padding-left:20pt;">
-                <iframe width="320" height="200" style="margin-top: 25pt;" src="https://www.youtube.com/embed/M7PEsSordZE" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
+            <p>
+                content....
             </p>
         </mat-card-content>
     </mat-card>
@@ -67,7 +45,6 @@
             <mat-card-title><b>EClasses</b></mat-card-title>
             <mat-card-subtitle>EClasses Directory</mat-card-subtitle>
         </mat-card-header>
-        <!-- <img mat-card-image [src]="imgUrl"> -->
         <mat-card-content>
             <p>
             content....

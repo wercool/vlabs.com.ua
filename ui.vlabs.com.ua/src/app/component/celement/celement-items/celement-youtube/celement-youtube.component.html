@@ -8,7 +8,7 @@
 <mat-expansion-panel *ngIf="youTubeItem.videoURL" #youTubeItemPanel>
     <mat-expansion-panel-header (click)="itemsPanelHeaderClicked($event, youTubeItemPanel)">
         <mat-panel-title>
-            <img src="/assets/youtube.png" matTooltip="{{ youTubeItem.videoURL }}" height="32" width="32" style="vertical-align: middle;"/>
+            <img src="/assets/img/youtube.png" matTooltip="{{ youTubeItem.videoURL }}" height="32" width="32" style="vertical-align: middle;"/>
             <mat-icon (click)="editYoutubeVideoURL()" matTooltip="Change YouTube Video URL" style="float: left; margin-left: 2pt;" class="md-18">mode_edit</mat-icon>
         </mat-panel-title>
         <mat-panel-description>
