@@ -15,7 +15,6 @@ import {
   AuthService,
   SubscriptionService
 } from '../../service';
-import { QrScannerComponent } from 'angular2-qrscanner';
 
 @Component({
   selector: 'app-register',
@@ -52,10 +51,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   regMethods = [
     {value: 'Generic'},
-    {value: 'QR Code Invitation'}
   ];
 
-  @ViewChild ('qrScanner') qrScanner: QrScannerComponent;
   @ViewChild ('registrationMethodSelector') registrationMethodSelector: MatSelect;
 
   qrDecoded = false;
@@ -136,33 +133,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
     } else {
       self.registrationMethod = event.value;
-    }
-  }
-
-  qrDecodedOutput(decodedResult:string) {
-    try {
-      this.invSubCardsRetrieving = true;
-      let invitation = JSON.parse(decodedResult);
-      console.log(invitation);
-      this.subscriptionService.getSubscriptionCards(invitation.subId)
-      .delay(500)
-      .subscribe(invSubCards => {
-        this.invSubCards = invSubCards;
-        this.invSubCardsRetrieving = false;
-      },
-      error => {
-        this.notification = { msgType: 'error', msgBody: error.message };
-      });
-
-      this.qrDecoded = true;
-    } catch (e) {
-      this.snackBar.open("Error happened while QR code scanning", 'Registration', {
-        panelClass: ['errorSnackBar'],
-        duration: 3000,
-        verticalPosition: 'top'
-      }).afterDismissed().subscribe(()=>{
-        this.qrScanner.startScanning();
-      });
     }
   }
 

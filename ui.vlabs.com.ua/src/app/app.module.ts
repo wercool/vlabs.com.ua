@@ -7,9 +7,8 @@ import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateLoader } from '@ngx-translate/core';
-import { QrScannerModule } from 'angular2-qrscanner';
 
-import { FileSelectDirective } from 'ng2-file-upload';
+import { FileUploadModule } from 'ng2-file-upload';
 
 import { QuillModule } from 'ngx-quill-wrapper';
 import { QUILL_CONFIG } from 'ngx-quill-wrapper';
@@ -152,9 +151,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 @NgModule({
   declarations:
   [
-    /* 3rd-party */
-    FileSelectDirective,
-
     /* Pipes */
     TruncatePipe,
     CelementPipe,
@@ -260,7 +256,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     ReactiveFormsModule,
     HttpClientModule,
     QuillModule,
-    QrScannerModule,
+    FileUploadModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

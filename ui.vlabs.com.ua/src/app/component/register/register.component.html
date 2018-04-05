@@ -23,15 +23,6 @@
             </mat-select>
         </mat-form-field>
 
-        <qr-scanner *ngIf="registrationMethod == 'QR Code Invitation' && !qrDecoded"
-                    #qrScanner
-                    [debug]="false"
-                    [mirror]="true"
-                    [stopAfterScan]="true"
-                    [updateTime]="500"
-                    (onRead)="qrDecodedOutput($event)">
-        </qr-scanner>
-
         <mat-progress-spinner *ngIf="invSubCardsRetrieving" class="mat-progress-spinner-login" mode="indeterminate"></mat-progress-spinner>
         <div *ngIf="!submitted && qrDecoded && invSubCards?.length > 0">
             <h3>Invitation Subscriptions</h3>
