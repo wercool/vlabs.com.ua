@@ -10,3 +10,14 @@
     background-image: url('/assets/vlabitem-item.png');
     background-size: cover;
 }
+
+.file-drop-zone-over { border: dotted 5px greenyellow; }
+
+.file-drop-zone { 
+    border: dotted 3px lightgray; 
+    min-height: 250px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/assets/drag-drop-upload-1.gif');
+    background-color: #e7f0f4;
+}

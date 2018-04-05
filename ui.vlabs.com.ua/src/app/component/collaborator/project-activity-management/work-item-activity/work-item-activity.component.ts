@@ -22,6 +22,7 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
     workItem: CollaboratorProjectWorkItem;
 
     public uploader:FileUploader = new FileUploader({url: ''});
+    public hasBaseDropZoneOver:boolean = false;
 
     completed = false;
 
@@ -69,5 +70,8 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
         });
     }
 
+    public fileOverBase(e:any):void {
+      this.hasBaseDropZoneOver = true;
+    }
 
 }
