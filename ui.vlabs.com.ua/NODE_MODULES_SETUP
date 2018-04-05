@@ -1,0 +1,6 @@
+============================================== quill ====================================================== (Rich Text Editor)
+INFO: https://quilljs.com/guides/adding-quill-to-your-build-pipeline/
+[node_modules/ngx-quill-wrapper/dist/lib/quill.directive.d.ts]
+
+import Quill from 'quill/core';
+...
