@@ -21,3 +21,7 @@
     background-image: url('/assets/img/drag-drop-upload-1.gif');
     background-color: #e7f0f4;
 }
+
+.mat-column-isDirectory {
+    flex: 0 0 75px;
+}

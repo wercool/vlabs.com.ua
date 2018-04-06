@@ -1,6 +1,7 @@
 package vlabs.model.collaborator;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,8 +9,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import vlabs.model.generic.VLabsFileItem;
 
 
 @Entity
@@ -49,6 +53,9 @@ public class CollaboratorProjectWorkItem
 
     @Column(name = "last_update_date")
     private Timestamp lastUpdateDate;
+
+    @Transient
+    private List<VLabsFileItem> fileItems;
 
     public Long getId() {
         return id;
@@ -112,6 +119,14 @@ public class CollaboratorProjectWorkItem
 
     public void setLastUpdateDate(Timestamp lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public List<VLabsFileItem> getFileItems() {
+        return fileItems;
+    }
+
+    public void setFileItems(List<VLabsFileItem> fileItems) {
+        this.fileItems = fileItems;
     }
 
 }

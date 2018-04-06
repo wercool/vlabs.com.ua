@@ -1,11 +1,16 @@
 package vlabs.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.AccessDeniedException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +33,7 @@ import vlabs.controller.exception.EntityAlreadyExistsException;
 import vlabs.model.collaborator.Collaborator;
 import vlabs.model.collaborator.CollaboratorProject;
 import vlabs.model.collaborator.CollaboratorProjectWorkItem;
+import vlabs.model.generic.VLabsFileItem;
 import vlabs.model.user.User;
 import vlabs.service.CollaboratorService;
 
@@ -36,6 +42,12 @@ import vlabs.service.CollaboratorService;
 public class CollaboratorContoller
 {
     private static final Logger log = LoggerFactory.getLogger(CollaboratorContoller.class);
+
+    @Value("${vlabs.dir.blender}")
+    private String BLENDER;
+
+    @Value("${vlabs.dir.blender_export}")
+    private String VLABS_BLENDER_EXPORT_DIR;
 
     @Value("${vlabs.dir.collaborators.projects}")
     private String VLABS_COLLABORATOR_PROJECTS;
@@ -161,11 +173,33 @@ public class CollaboratorContoller
 
     @RequestMapping(method = RequestMethod.GET, value= "/collaborator/project/workitem/{collaboratorProjectWorkItemId}")
     public CollaboratorProjectWorkItem getCollaboratorProjectWorkItemsById(@PathVariable Long collaboratorProjectWorkItemId) {
-        return collaboratorService.findCollaboratorProjectWorkItemsById(collaboratorProjectWorkItemId);
+        CollaboratorProjectWorkItem сollaboratorProjectWorkItem = collaboratorService.findCollaboratorProjectWorkItemsById(collaboratorProjectWorkItemId);
+
+        CollaboratorProject collaboratorProject = collaboratorService.findCollaboratorProjectById(сollaboratorProjectWorkItem.getProject_id());
+
+        Collaborator collaborator = collaboratorService.findById(сollaboratorProjectWorkItem.getCollaborator_id());
+        File collaboratorProjectWorkItemDir = new File(VLABS_COLLABORATOR_PROJECTS + "/" + collaboratorProject.getAlias() + "/" + collaborator.getAlias() + "/" + сollaboratorProjectWorkItem.getAlias());
+
+        List<VLabsFileItem> fileItems = new ArrayList<VLabsFileItem>();
+        File[] collaboratorProjectWorkItemDirAllSubFiles = collaboratorProjectWorkItemDir.listFiles();
+        for (File file : collaboratorProjectWorkItemDirAllSubFiles) {
+            VLabsFileItem vLabsFileItem = new VLabsFileItem();
+            vLabsFileItem.setName(file.getName());
+            vLabsFileItem.setLastModified(file.lastModified());
+            if(file.isDirectory())
+            {
+                log.info(file.getName() + " is DIRECTORY");
+                vLabsFileItem.setIsDirectory(true);
+            }
+            fileItems.add(vLabsFileItem);
+        }
+
+        сollaboratorProjectWorkItem.setFileItems(fileItems);
+        return сollaboratorProjectWorkItem;
     }
 
     @RequestMapping(method = RequestMethod.POST, value= "/collaborator/project/workitem/upload/{collaboratorProjectWorkItemId}")
-    public ResponseEntity<EmptyJsonResponse> workItemUpload(@RequestPart("file") MultipartFile workItemFile, @PathVariable Long collaboratorProjectWorkItemId) throws AccessDeniedException, IllegalStateException, IOException {
+    public ResponseEntity<EmptyJsonResponse> workItemUpload(@RequestPart("file") MultipartFile workItemFile, @PathVariable Long collaboratorProjectWorkItemId) throws AccessDeniedException, IllegalStateException, IOException, InterruptedException {
         CollaboratorProjectWorkItem collaboratorProjectWorkItem = collaboratorService.findCollaboratorProjectWorkItemsById(collaboratorProjectWorkItemId);
         CollaboratorProject collaboratorProject = collaboratorService.findCollaboratorProjectById(collaboratorProjectWorkItem.getProject_id());
 
@@ -175,6 +209,9 @@ public class CollaboratorContoller
                 .getContext()
                 .getAuthentication()
                 .getPrincipal();
+        if (user == null) {
+            return new ResponseEntity<EmptyJsonResponse>(new EmptyJsonResponse(), HttpStatus.FORBIDDEN);
+        }
         Collaborator collaborator  = collaboratorService.findByUserId(user.getId());
 
         File collaboratorProjectWorkItemDir = new File(VLABS_COLLABORATOR_PROJECTS + "/" + collaboratorProject.getAlias() + "/" + collaborator.getAlias() + "/" + collaboratorProjectWorkItem.getAlias());
@@ -182,8 +219,84 @@ public class CollaboratorContoller
             throw new AccessDeniedException("Work Item Directrory");
         }
 
+        if (collaboratorProjectWorkItem.getType().equals("blender_model") 
+         || collaboratorProjectWorkItem.getType().equals("vlab_item")) {
+            FileUtils.cleanDirectory(collaboratorProjectWorkItemDir); 
+        }
+
         File collaboratorProjectWorkItemPath = new File(VLABS_COLLABORATOR_PROJECTS + "/" + collaboratorProject.getAlias() + "/" + collaborator.getAlias() + "/" + collaboratorProjectWorkItem.getAlias() + "/" + workItemFile.getOriginalFilename());
         workItemFile.transferTo(collaboratorProjectWorkItemPath);
+
+        if (collaboratorProjectWorkItem.getType().equals("blender_model") 
+        || collaboratorProjectWorkItem.getType().equals("vlab_item")) {
+//            ZipInputStream zis = new ZipInputStream(new FileInputStream(collaboratorProjectWorkItemPath));
+//            ZipEntry zipEntry = zis.getNextEntry();
+//            byte[] buffer = new byte[1024];
+//            while(zipEntry != null){
+//                String fileName = zipEntry.getName();
+//                File newFile = new File(collaboratorProjectWorkItemDir + "/" + fileName);
+//                FileOutputStream fos = new FileOutputStream(newFile);
+//                int len;
+//                while ((len = zis.read(buffer)) > 0) {
+//                    fos.write(buffer, 0, len);
+//                }
+//                fos.close();
+//                zipEntry = zis.getNextEntry();
+//            }
+//            zis.closeEntry();
+//            zis.close();
+
+            String unzipCMD = "/usr/bin/unzip " + collaboratorProjectWorkItemPath.getAbsolutePath() + " -d " + collaboratorProjectWorkItemDir.getAbsolutePath();
+            log.info("Executing bash cmd:\n\n" + unzipCMD + "\n");
+            Runtime rt = Runtime.getRuntime();
+            Process proc = rt.exec(unzipCMD);
+            InputStream stderr = proc.getErrorStream();
+            InputStreamReader isr = new InputStreamReader(stderr);
+            BufferedReader br = new BufferedReader(isr);
+            String line = null;
+            System.out.println("<ERROR>");
+            while ( (line = br.readLine()) != null)
+                System.out.println(line);
+            System.out.println("</ERROR>");
+            int exitVal = proc.waitFor();
+            System.out.println("Process exitValue: " + exitVal);
+            proc.waitFor();
+
+            if (collaboratorProjectWorkItem.getType().equals("blender_model")) {
+
+                //Create 'result' dir
+                File collaboratorProjectWorkItemResultDir = new File(VLABS_COLLABORATOR_PROJECTS + "/" + collaboratorProject.getAlias() + "/" + collaborator.getAlias() + "/" + collaboratorProjectWorkItem.getAlias() + "/result");
+                collaboratorProjectWorkItemResultDir.mkdir();
+
+                String blederFile = null;
+                File[] collaboratorProjectWorkItemDirAllSubFiles = collaboratorProjectWorkItemDir.listFiles();
+                for (File file : collaboratorProjectWorkItemDirAllSubFiles) {
+                    if(!file.isDirectory())
+                    {
+                        if (file.getName().indexOf(".blend") > -1) {
+                            blederFile = file.getName();
+                            log.info("Blender file found: " + file.getName());
+                        }
+                    }
+                }
+
+                String JSONResultFile = blederFile.replaceAll(".blend", ".json");
+                String JSONBlenderExportCMD = BLENDER + " " + collaboratorProjectWorkItemDir.getAbsolutePath() + "/" + blederFile + " --background --python " + VLABS_BLENDER_EXPORT_DIR + "/vlab-export.py -- " + collaboratorProjectWorkItemResultDir.getCanonicalPath() + "/" + JSONResultFile;
+                log.info("Executing bash cmd:\n\n" + JSONBlenderExportCMD + "\n");
+                proc = rt.exec(JSONBlenderExportCMD);
+                stderr = proc.getErrorStream();
+                isr = new InputStreamReader(stderr);
+                br = new BufferedReader(isr);
+                line = null;
+                System.out.println("<ERROR>");
+                while ( (line = br.readLine()) != null)
+                    System.out.println(line);
+                System.out.println("</ERROR>");
+                exitVal = proc.waitFor();
+                System.out.println("Process exitValue: " + exitVal);
+                proc.waitFor();
+            }
+       }
 
         collaboratorProjectWorkItem.setLastUpdateDate(new Timestamp(DateTime.now().getMillis()));
 

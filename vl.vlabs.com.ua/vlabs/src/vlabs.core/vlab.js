@@ -40,7 +40,7 @@ export default class VLab {
         this.name = this.initObj.name;
         this.initialized = false;
         this.paused = true;
-        this.nature = {};
+        this.nature = this.initObj.natureObj ? this.initObj.natureObj : {};
         this.webGLContainer = undefined;
         this.webGLRenderer = undefined;
 
@@ -190,8 +190,6 @@ export default class VLab {
     }
 
     initialize() {
-        this.buildHTML();
-
         return Promise.all([
             this.getNatureFromURL((this.initObj.natureURL) ? this.initObj.natureURL : "./resources/nature.json", this.initObj.naturePassphrase)
         ])
@@ -200,21 +198,27 @@ export default class VLab {
 
             this.nature = nature;
 
-            if (document.getElementById('loader')) {
-                document.body.removeChild(document.getElementById('loader'));
-            }
-
-            if (this.initObj.authRequired === 'true') {
-                this.authenticate();
-            }
-
-            this.setProgressBar();
+            this.completeInitialization();
 
             return result;
         })
         .catch(error => {
             console.error(error);
         });
+    }
+
+    completeInitialization() {
+        this.buildHTML();
+
+        if (document.getElementById('loader')) {
+            document.body.removeChild(document.getElementById('loader'));
+        }
+
+        if (this.initObj.authRequired === 'true') {
+            this.authenticate();
+        }
+
+        this.setProgressBar();
     }
 
     authenticate() {
@@ -661,6 +665,7 @@ export default class VLab {
 
     setInteractiveObjects(except) {
         this.interactiveObjects = [];
+        if (!this.nature.interactiveObjects) return;
         for (var interactiveObjectName of this.nature.interactiveObjects) {
             if ((Array.isArray(except) && !except.includes(interactiveObjectName)) || (!Array.isArray(except) && except !== interactiveObjectName)) {
                 this.interactiveObjects.push(this.vLabScene.getObjectByName(interactiveObjectName));
@@ -686,6 +691,7 @@ export default class VLab {
 
     setReponsiveObjects(except) {
         this.responosiveObjects = [];
+        if (!this.nature.responsiveObjects) return;
         for (var responsiveObjectName of this.nature.responsiveObjects) {
             if ((Array.isArray(except) && !except.includes(responsiveObjectName)) || (!Array.isArray(except) && except !== responsiveObjectName)) {
                 this.responosiveObjects.push(this.vLabScene.getObjectByName(responsiveObjectName));

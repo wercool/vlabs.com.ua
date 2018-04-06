@@ -1,3 +1,5 @@
+import { VLabsFileItem } from ".";
+
 export class CollaboratorProjectWorkItem {
     id: number;
     collaborator_id: number;
@@ -7,6 +9,7 @@ export class CollaboratorProjectWorkItem {
     alias: string;
     notes: string;
     lastUpdateDate: number;
+    fileItems: VLabsFileItem[];
 
     constructor() {
         this.id = undefined;
@@ -17,6 +20,7 @@ export class CollaboratorProjectWorkItem {
         this.alias = undefined;
         this.notes = undefined;
         this.lastUpdateDate = undefined;
+        this.fileItems = undefined;
     }
 
     map(anyCollaboratorProjectWorkItemViewItem: any): CollaboratorProjectWorkItem {

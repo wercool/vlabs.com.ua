@@ -1,3 +1,5 @@
+export * from './generic/vlabs-file-item';
+
 export * from './user';
 export * from './authority';
 export * from './vlab';

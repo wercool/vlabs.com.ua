@@ -76,7 +76,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             try
             {
                 String username = tokenHelper.getUsernameFromToken(authToken);
-                log.info(username + " authentication attempt");
+                log.info("User [" + username + "] authentication attempt");
                 // get user
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 // create authentication
