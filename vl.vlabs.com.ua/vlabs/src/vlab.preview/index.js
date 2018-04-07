@@ -1,7 +1,6 @@
 import * as THREE           from 'three';
 import VLab                 from '../vlabs.core/vlab';
 
-import DetailedView         from '../vlabs.core/detailed-view';
 import TransformControls    from '../vlabs.core/three-transformcontrols/index';
 
 class VlabPreview extends VLab {
@@ -35,9 +34,35 @@ class VlabPreview extends VLab {
     onSceneCompleteEvent(event) {
         super.activate();
         super.switchCameraControls(this.nature.cameraControls);
-        for (var object of this.vLabScene.children) {
-            console.log(object.type, object.name);
+
+
+        this.biggestBoundingSphereRadius = 0.0;
+        this.biggestObject = undefined;
+        var self = this;
+        for (var idx in this.vLabSceneMeshes) {
+            var object = this.vLabSceneMeshes[idx];
+            object.traverse(function(object) {
+                object.geometry.computeBoundingSphere();
+                if (object.geometry.boundingSphere) {
+
+                    if (self.nature.manipulators) {
+                        if (object.geometry.boundingSphere.radius >= self.nature.manipulators.minBoundingSphereRadius) {
+                            var manipulators = new TransformControls(self.defaultCamera, self.webGLRenderer.domElement);
+                            manipulators.setSize(0.5);
+                            self.vLabScene.add(manipulators);
+                            manipulators.attach(object);
+                        }
+                    }
+
+                    if (object.geometry.boundingSphere.radius > self.biggestBoundingSphereRadius) {
+                        self.biggestBoundingSphereRadius = object.geometry.boundingSphere.radius;
+                        self.biggestObject = object;
+                    }
+                }
+            });
         }
+        this.defaultCameraControls.position0 = new THREE.Vector3(0.0, this.biggestBoundingSphereRadius, this.biggestBoundingSphereRadius * 1.25);
+        this.defaultCameraControls.reset();
     }
 
     onActivatedEvent() {
@@ -71,15 +96,18 @@ let vlabPreview = new VlabPreview({
         "cameraControls": {
             "type": "orbit",
             "forced": true,
-            "position0": new THREE.Vector3(0.0, 0.25, 0.25),
+//            "position0": new THREE.Vector3(0.0, 0.0, 0.0),
             "targetPos": new THREE.Vector3(0.0, 1.0, 0.0),
             "maxDistance": 2.0,
             "minDistance": 0.1,
-            "minPolarAngle": 0.0,
+            "minPolarAngle": -Math.PI * 2,
             "maxPolarAngle": Math.PI * 2,
             "minClip": 0.01
         },
-        "showTHREEStats": true
+        "showTHREEStats": true,
+        "manipulators": {
+            minBoundingSphereRadius: 0.05,
+        }
     },
     webGLRendererClearColor: 0xb7b7b7,
     crossOrigin: 'anonymous'

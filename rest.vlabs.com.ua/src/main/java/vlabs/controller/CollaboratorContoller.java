@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import utils.ExecCommand;
 import vlabs.common.EmptyJsonResponse;
 import vlabs.controller.exception.EntityAlreadyExistsException;
 import vlabs.model.collaborator.Collaborator;
@@ -232,20 +233,7 @@ public class CollaboratorContoller
 
             String unzipCMD = "/usr/bin/unzip " + collaboratorProjectWorkItemPath.getAbsolutePath() + " -d " + collaboratorProjectWorkItemDir.getAbsolutePath();
             log.info("Executing bash cmd:\n\n" + unzipCMD + "\n");
-            Runtime rt = Runtime.getRuntime();
-            Process proc = rt.exec(unzipCMD);
-            InputStream stderr = proc.getErrorStream();
-            InputStreamReader isr = new InputStreamReader(stderr);
-            BufferedReader br = new BufferedReader(isr);
-            String line = null;
-            System.out.println("<ERROR>");
-            while ( (line = br.readLine()) != null)
-                System.out.println(line);
-            System.out.println("</ERROR>");
-            int exitVal = proc.waitFor();
-            System.out.println("Process exitValue: " + exitVal);
-            isr.close();
-            br.close();
+            new ExecCommand(unzipCMD);
 
             if (collaboratorProjectWorkItem.getType().equals("blender_model")) {
 
@@ -273,19 +261,7 @@ public class CollaboratorContoller
                                               + collaboratorProjectWorkItemResultDir.getCanonicalPath() 
                                               + "/" + JSONResultFile;
                 log.info("Executing bash cmd:\n\n" + JSONBlenderExportCMD + "\n");
-                Process procExporter = rt.exec(JSONBlenderExportCMD);
-//                InputStream stderrExporter = procExporter.getErrorStream();
-//                InputStreamReader isrExporter = new InputStreamReader(stderrExporter);
-//                BufferedReader brExporter = new BufferedReader(isrExporter);
-//                line = null;
-//                System.out.println("<ERROR>");
-//                while ( (line = brExporter.readLine()) != null)
-//                    System.out.println(line);
-//                System.out.println("</ERROR>");
-                exitVal = procExporter.waitFor();
-                System.out.println("Process exitValue: " + exitVal);
-//                isrExporter.close();
-//                brExporter.close();
+                new ExecCommand(JSONBlenderExportCMD);
             }
        }
 

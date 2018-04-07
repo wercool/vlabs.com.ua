@@ -30,7 +30,7 @@ export default class VLab {
             throw new TypeError("Cannot construct VLab instances directly");
         }
 
-		THREE.ImageUtils.crossOrigin = 'use-credentials';
+        THREE.ImageUtils.crossOrigin = 'use-credentials';
 
         this.authenticated = false;
 
@@ -52,6 +52,7 @@ export default class VLab {
         this.redererFrameEvent  = new Event(this.name + 'RedererFrameEvent');
 
         this.vLabScene = undefined;
+        this.vLabSceneMeshes = [];
         this.defaultCamera = undefined;
         this.defaultCameraInitialPosition = undefined;
         this.defaultCameraControls = undefined;
@@ -394,9 +395,12 @@ export default class VLab {
         // console.log(vLabScene);
         // return;
 
-        // vLabScene.traverse(function(obj) {
-        //     console.log(obj);
-        // });
+        var self = this;
+        vLabScene.traverse(function(object) {
+            if (object instanceof THREE.Mesh) {
+                self.vLabSceneMeshes.push(object);
+            }
+        });
 
         this.vLabScene = (vLabScene) ? vLabScene : new THREE.Scene();
 
