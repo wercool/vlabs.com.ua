@@ -188,7 +188,7 @@ public class CollaboratorContoller
             vLabsFileItem.setLastModified(file.lastModified());
             if(file.isDirectory())
             {
-                log.info(file.getName() + " is DIRECTORY");
+//                log.info(file.getName() + " is DIRECTORY");
                 vLabsFileItem.setIsDirectory(true);
             }
             fileItems.add(vLabsFileItem);
@@ -229,22 +229,6 @@ public class CollaboratorContoller
 
         if (collaboratorProjectWorkItem.getType().equals("blender_model") 
         || collaboratorProjectWorkItem.getType().equals("vlab_item")) {
-//            ZipInputStream zis = new ZipInputStream(new FileInputStream(collaboratorProjectWorkItemPath));
-//            ZipEntry zipEntry = zis.getNextEntry();
-//            byte[] buffer = new byte[1024];
-//            while(zipEntry != null){
-//                String fileName = zipEntry.getName();
-//                File newFile = new File(collaboratorProjectWorkItemDir + "/" + fileName);
-//                FileOutputStream fos = new FileOutputStream(newFile);
-//                int len;
-//                while ((len = zis.read(buffer)) > 0) {
-//                    fos.write(buffer, 0, len);
-//                }
-//                fos.close();
-//                zipEntry = zis.getNextEntry();
-//            }
-//            zis.closeEntry();
-//            zis.close();
 
             String unzipCMD = "/usr/bin/unzip " + collaboratorProjectWorkItemPath.getAbsolutePath() + " -d " + collaboratorProjectWorkItemDir.getAbsolutePath();
             log.info("Executing bash cmd:\n\n" + unzipCMD + "\n");
@@ -260,7 +244,8 @@ public class CollaboratorContoller
             System.out.println("</ERROR>");
             int exitVal = proc.waitFor();
             System.out.println("Process exitValue: " + exitVal);
-            proc.waitFor();
+            isr.close();
+            br.close();
 
             if (collaboratorProjectWorkItem.getType().equals("blender_model")) {
 
@@ -281,20 +266,26 @@ public class CollaboratorContoller
                 }
 
                 String JSONResultFile = blederFile.replaceAll(".blend", ".json");
-                String JSONBlenderExportCMD = BLENDER + " " + collaboratorProjectWorkItemDir.getAbsolutePath() + "/" + blederFile + " --background --python " + VLABS_BLENDER_EXPORT_DIR + "/vlab-export.py -- " + collaboratorProjectWorkItemResultDir.getCanonicalPath() + "/" + JSONResultFile;
+                String JSONBlenderExportCMD = BLENDER + " " 
+                                              + collaboratorProjectWorkItemDir.getAbsolutePath() + "/" 
+                                              + blederFile + " --background --python " 
+                                              + VLABS_BLENDER_EXPORT_DIR + "/vlab-export.py -- " 
+                                              + collaboratorProjectWorkItemResultDir.getCanonicalPath() 
+                                              + "/" + JSONResultFile;
                 log.info("Executing bash cmd:\n\n" + JSONBlenderExportCMD + "\n");
-                proc = rt.exec(JSONBlenderExportCMD);
-                stderr = proc.getErrorStream();
-                isr = new InputStreamReader(stderr);
-                br = new BufferedReader(isr);
-                line = null;
-                System.out.println("<ERROR>");
-                while ( (line = br.readLine()) != null)
-                    System.out.println(line);
-                System.out.println("</ERROR>");
-                exitVal = proc.waitFor();
+                Process procExporter = rt.exec(JSONBlenderExportCMD);
+//                InputStream stderrExporter = procExporter.getErrorStream();
+//                InputStreamReader isrExporter = new InputStreamReader(stderrExporter);
+//                BufferedReader brExporter = new BufferedReader(isrExporter);
+//                line = null;
+//                System.out.println("<ERROR>");
+//                while ( (line = brExporter.readLine()) != null)
+//                    System.out.println(line);
+//                System.out.println("</ERROR>");
+                exitVal = procExporter.waitFor();
                 System.out.println("Process exitValue: " + exitVal);
-                proc.waitFor();
+//                isrExporter.close();
+//                brExporter.close();
             }
        }
 

@@ -12,6 +12,7 @@ import { HTTPStatusCodes } from '../../../../shared/lib/http-status-codes';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 
 import { environment } from '../../../../../environments/environment';
+import { HttpHeaderResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-collaborator-work-item-activity',
@@ -22,7 +23,7 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
 
     private sub: any;
 
-    host = environment.host;
+    vlabsHost = environment.vlabsHost;
 
     project: CollaboratorProject;
     workItem: CollaboratorProjectWorkItem;
@@ -37,6 +38,8 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
     blendSceneJSONFile = '';
 
     completed = false;
+    uploading = false;
+    vlabModelPreviewActivated = false;
 
     constructor(
         private route: ActivatedRoute,
@@ -49,6 +52,7 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
     ) {
     }
     ngOnInit() {
+        this.uploading = false;
         this.sub = this.route.params.subscribe(params => {
             // console.log("Selected Work Item Id", params['id']);
             this.collaboratorService.getProjectWorkItem(params['id'])
@@ -108,8 +112,8 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
     setPreviewURL() {
         //this.host
         if (this.blendSceneJSONFile) {
-          let vLabPreviewParam = this.project.alias + "/" + this.collaboratorService.currentCollaborator.alias + "/" + this.workItem.alias + "/result/" + this.blendSceneJSONFile;
-          this.vLabPreviewEmbedSafeURL = this.sanitizer.bypassSecurityTrustResourceUrl("http://localhost:9001/vlab.preview/?path=" + vLabPreviewParam);
+          let vLabPreviewURL = this.vlabsHost + '/vlab.preview/?path=' + this.project.alias + "/" + this.collaboratorService.currentCollaborator.alias + "/" + this.workItem.alias + "/result/" + this.blendSceneJSONFile;
+          this.vLabPreviewEmbedSafeURL = this.sanitizer.bypassSecurityTrustResourceUrl(vLabPreviewURL);
         }
     }
 
@@ -117,7 +121,13 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
       this.hasBaseDropZoneOver = true;
     }
 
+    uploadAll() {
+      this.uploading = true;
+      this.uploader.uploadAll();
+    }
+
     uploadItemError(item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) {
+      console.log("Error Status: " + status);
       try{
         this.snackBar.open(JSON.parse(response).errorCause, item.file.name, {
           panelClass: ['errorSnackBar'],
@@ -125,7 +135,16 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
           verticalPosition: 'top'
         });
       } catch (ex) {
-        this.snackBar.open(response, item.file.name, {
+        let errMessage = "Server Error";
+        switch (status) {
+          case HTTPStatusCodes.FORBIDDEN:
+            errMessage = 'ACCESS FORBIDDEN';
+          break;
+          case HTTPStatusCodes.INTERNAL_SERVER_ERROR:
+            errMessage = 'INTERNAL SERVER ERROR';
+          break;
+        }
+        this.snackBar.open(errMessage, item.file.name, {
           panelClass: ['errorSnackBar'],
           duration: 5000,
           verticalPosition: 'top'
@@ -146,5 +165,9 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
 
     uploadComplete() {
       this.ngOnInit();
+    }
+
+    vlabModelPreviewPanelOpened(event) {
+      this.vlabModelPreviewActivated = true;
     }
 }

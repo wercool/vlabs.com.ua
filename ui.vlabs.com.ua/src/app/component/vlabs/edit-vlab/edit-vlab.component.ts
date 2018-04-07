@@ -23,7 +23,7 @@ export class EditVLabComponent implements OnInit {
     private sub: any;
     private vlab: Vlab;
 
-    host = environment.host;
+    vlabsHost = environment.vlabsHost;
 
     generalVlabFormGroup: FormGroup;
 
@@ -85,7 +85,7 @@ export class EditVLabComponent implements OnInit {
     }
 
     aliasInputChanged(alias: String) {
-      this.vlab.path = this.host + '/vlabs/' + this.vlab.alias + '/index.html';
+      this.vlab.path = this.vlabsHost + '/' + this.vlab.alias + '/index.html';
     }
 
     onGeneralVlabFormGroupSubmit() {
@@ -114,7 +114,7 @@ export class EditVLabComponent implements OnInit {
         this.vLabEmbedSafeURL = this.sanitizer.bypassSecurityTrustResourceUrl(this.vlab.path);
     }
 
-    vlabRepresentationPaneOpened(event) {
+    vlabRepresentationPanelOpened(event) {
         this.prepareVLabSafeURL();
         this.vlabImplementationActivated = true;
     }

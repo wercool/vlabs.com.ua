@@ -1,4 +1,9 @@
 -----------------
+https://www.npmjs.com/package/http-server
+sudo npm install http-server -g
+cd ~/vlabs.com.ua/collaborators/projects
+http-server -p 8000 -c -1 --cors
+-----------------
 1) Create initial database structure
 mysql -uroot -p < init-db.sql
 

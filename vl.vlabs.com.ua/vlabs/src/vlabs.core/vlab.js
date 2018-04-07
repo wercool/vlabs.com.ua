@@ -30,6 +30,8 @@ export default class VLab {
             throw new TypeError("Cannot construct VLab instances directly");
         }
 
+		THREE.ImageUtils.crossOrigin = 'use-credentials';
+
         this.authenticated = false;
 
         this.initObj = initObj;
@@ -170,11 +172,12 @@ export default class VLab {
     showErrorMessage(error) {
         this.overlayContainer.style.display = 'block';
         this.modalMessage.style.display = 'block';
-        this.modalMessage.innerHTML = error.message;
+        this.modalMessage.innerHTML = error.message ? error.message : error;
         console.log(error);
     }
 
     preInitialize() {
+        this.buildHTML();
         return new Promise((resolve, reject) => {
             if (!webglDetect) {
                 let error = { error: 'WebGL Not Supported', 
@@ -208,8 +211,6 @@ export default class VLab {
     }
 
     completeInitialization() {
-        this.buildHTML();
-
         if (document.getElementById('loader')) {
             document.body.removeChild(document.getElementById('loader'));
         }
@@ -272,7 +273,7 @@ export default class VLab {
             precision: 'lowp'
         });
 
-        this.webGLRenderer.setClearColor(0x000000);
+        this.webGLRenderer.setClearColor(this.initObj.webGLRendererClearColor ? this.initObj.webGLRendererClearColor : 0x000000);
 
         // // prevent logging
         // this.webGLRenderer.context.getShaderInfoLog = function () { return '' };
@@ -354,7 +355,7 @@ export default class VLab {
         if (this.nature.defaultSceneCameraName) {
             this.defaultCamera = this.vLabScene.getObjectByName(this.nature.defaultSceneCameraName);
         } else {
-            this.defaultCamera = new THREE.PerspectiveCamera(70, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.1, 200);
+            this.defaultCamera = new THREE.PerspectiveCamera(70, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, (this.nature.cameraControls.minClip ? this.nature.cameraControls.minClip : 0.1), 25.0);
             this.defaultCamera.name = 'defaultCamera';
         }
         if (!this.defaultCameraInitialPosition) {
@@ -466,6 +467,7 @@ export default class VLab {
             thisVLab.progressBarPrependText = (loaderMessage)? loaderMessage : "The world of VLab is loaded by ";
             if (this.nature.sceneJSONFile) {
                 let loader = new THREE.ObjectLoader();
+				if (thisVLab.initObj.crossOrigin) loader.setCrossOrigin(thisVLab.initObj.crossOrigin);
                 loader.convertUpAxis = true;
                 loader.load(this.nature.sceneJSONFile, 
                     // onLoad callback
@@ -756,11 +758,20 @@ export default class VLab {
                 if (this.nature.cameraControls.maxDistance) {
                     this.defaultCameraControls.maxDistance = this.nature.cameraControls.maxDistance;
                 }
+                if (this.nature.cameraControls.minDistance) {
+                    this.defaultCameraControls.minDistance = this.nature.cameraControls.minDistance;
+                }
                 if (this.nature.cameraControls.maxPolarAngle) {
                     this.defaultCameraControls.maxPolarAngle = this.nature.cameraControls.maxPolarAngle;
                 }
                 if (this.nature.cameraControls.minPolarAngle) {
                     this.defaultCameraControls.minPolarAngle = this.nature.cameraControls.minPolarAngle;
+                }
+                if (this.nature.cameraControls.position0) {
+                    this.defaultCameraControls.position0 = this.nature.cameraControls.position0;
+                }
+                if (cameraControlConfig.forced) {
+                    this.defaultCameraControls.reset();
                 }
                 this.defaultCameraControls.update();
             break;

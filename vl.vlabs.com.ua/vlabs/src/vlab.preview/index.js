@@ -2,6 +2,7 @@ import * as THREE           from 'three';
 import VLab                 from '../vlabs.core/vlab';
 
 import DetailedView         from '../vlabs.core/detailed-view';
+import TransformControls    from '../vlabs.core/three-transformcontrols/index';
 
 class VlabPreview extends VLab {
     constructor(initObj = {}) {
@@ -27,13 +28,16 @@ class VlabPreview extends VLab {
             console.log("VLab Preview initialized");
         }).catch(error => {
             console.error(error);
-            this.showErrorMessage(error);
+            super.showErrorMessage(error);
         });
     }
 
     onSceneCompleteEvent(event) {
         super.activate();
         super.switchCameraControls(this.nature.cameraControls);
+        for (var object of this.vLabScene.children) {
+            console.log(object.type, object.name);
+        }
     }
 
     onActivatedEvent() {
@@ -52,7 +56,7 @@ class VlabPreview extends VLab {
 
 let loc = (location.pathname+location.search).substr(1);
 let path = loc.substr(loc.indexOf('path=') + 5);
-path = 'http://192.168.101.106:8000/' + path;
+path = '<!--VLAB COLLABORATOR HOST-->/' + path;
 console.log('PATH:' + path);
 
 let vlabPreview = new VlabPreview({
@@ -66,9 +70,17 @@ let vlabPreview = new VlabPreview({
         "lang": "en",
         "cameraControls": {
             "type": "orbit",
+            "forced": true,
+            "position0": new THREE.Vector3(0.0, 0.25, 0.25),
+            "targetPos": new THREE.Vector3(0.0, 1.0, 0.0),
             "maxDistance": 2.0,
-            "minDistance": 0.1
+            "minDistance": 0.1,
+            "minPolarAngle": 0.0,
+            "maxPolarAngle": Math.PI * 2,
+            "minClip": 0.01
         },
         "showTHREEStats": true
     },
+    webGLRendererClearColor: 0xb7b7b7,
+    crossOrigin: 'anonymous'
 });
