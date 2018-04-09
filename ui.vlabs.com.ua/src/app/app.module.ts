@@ -32,7 +32,8 @@ import {
   AuthenticatedGuard,
   ManagerGuard,
   CollaboratorGuard,
-  AdminGuard
+  AdminGuard,
+  CollaboratorManagerGuard
 } from './guard';
 
 /* Components */
@@ -45,6 +46,7 @@ import {
   UserHomeComponent,
   ManagerHomeComponent,
   CollaboratorHomeComponent,
+  CollaboratorManagerHomeComponent,
 
   NotFoundComponent,
   LoginComponent,
@@ -53,6 +55,7 @@ import {
   ResetPasswordComponent,
   UserSidenavComponent,
   CollaboratorSidenavComponent,
+  CollaboratorManagerSidenavComponent,
   ManagerSidenavComponent,
 
   VlabsManagementComponent,
@@ -104,6 +107,8 @@ import {
   CollaboratorProjectActivityManagementComponent,
   AddCollaboratorProjectWorkItemDialogComponent,
   CollaboratorWorkItemActivityComponent,
+
+  CollabortatorWorkItemsTableComponent,
 
   CElementItemComponent,
   CelementLabelComponent,
@@ -164,6 +169,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     UserHomeComponent,
     ManagerHomeComponent,
     CollaboratorHomeComponent,
+    CollaboratorManagerHomeComponent,
 
     NotFoundComponent,
     LoginComponent,
@@ -177,6 +183,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     EditUserDialogComponent,
     ManagerSidenavComponent,
     CollaboratorSidenavComponent,
+    CollaboratorManagerSidenavComponent,
     ResetPasswordComponent,
 
     VlabsManagementComponent,
@@ -217,6 +224,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     CollaboratorProjectActivityManagementComponent,
     AddCollaboratorProjectWorkItemDialogComponent,
     CollaboratorWorkItemActivityComponent,
+
+    CollabortatorWorkItemsTableComponent,
 
     NewModuleComponent,
     NewDepartmentComponent,
@@ -272,6 +281,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     GuestGuard,
     AuthenticatedGuard,
     CollaboratorGuard,
+    CollaboratorManagerGuard,
     ManagerGuard,
     AdminGuard,
     ConfigService,

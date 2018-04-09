@@ -7,10 +7,12 @@
                     <app-admin-sidenav *ngIf="authorizedFor('ADMIN')" (navigateEvent)="navigate($event)"></app-admin-sidenav>
                     <app-manager-sidenav *ngIf="authorizedFor('MANAGER')" (navigateEvent)="navigate($event)"></app-manager-sidenav>
                     <app-collaborator-sidenav *ngIf="authorizedFor('COLLABORATOR')" (navigateEvent)="navigate($event)"></app-collaborator-sidenav>
+                    <app-collaborator-manager-sidenav *ngIf="authorizedFor('COLLABORATOR_MANAGER')" (navigateEvent)="navigate($event)"></app-collaborator-manager-sidenav>
                     <app-user-sidenav *ngIf="authorizedFor('USER') 
                                         && !authorizedFor('ADMIN')
                                         && !authorizedFor('MANAGER')
-                                        && !authorizedFor('COLLABORATOR')"></app-user-sidenav>
+                                        && !authorizedFor('COLLABORATOR')
+                                        && !authorizedFor('COLLABORATOR_MANAGER')"></app-user-sidenav>
                 </mat-accordion>
             </div>
 

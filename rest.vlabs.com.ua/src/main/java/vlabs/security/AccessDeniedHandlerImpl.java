@@ -27,7 +27,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         String method = ((HttpServletRequest)request).getMethod();
         String url = ((HttpServletRequest)request).getRequestURL().toString();
 
-        log.info("ACCESS FORBIDDEN to [" + url + "] requested [" + method + "] from " + request.getRemoteAddr());
+        log.info("ACCESS FORBIDDEN to [ " + url + " ] requested [ " + method + " ] from " + request.getRemoteAddr());
 
         JSONObject responseBody = new JSONObject();
         try {

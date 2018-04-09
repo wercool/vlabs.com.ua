@@ -38,6 +38,7 @@ import {
   CollaboratorProjectManagementComponent,
   CollaboratorProjectActivityManagementComponent,
   CollaboratorWorkItemActivityComponent,
+  CollabortatorWorkItemsTableComponent,
 } from '../component';
 
 import {
@@ -45,7 +46,8 @@ import {
   AuthenticatedGuard,
   AdminGuard,
   ManagerGuard,
-  CollaboratorGuard
+  CollaboratorGuard,
+  CollaboratorManagerGuard
 } from '../guard';
 
 export const routes: Routes = [
@@ -152,17 +154,17 @@ export const routes: Routes = [
   {
     path: 'collaborator-management',
     component: CollaboratorManagementComponent,
-    canActivate: [AdminGuard]
+    canActivate: [CollaboratorManagerGuard]
   },
   {
     path: 'collaborator-project-management',
     component: CollaboratorProjectManagementComponent,
-    canActivate: [AdminGuard]
+    canActivate: [CollaboratorManagerGuard]
   },
   {
     path: 'collaborator-edit/:id',
     component: EditCollaboratorComponent,
-    canActivate: [AdminGuard]
+    canActivate: [CollaboratorManagerGuard]
   },
   {
     path: 'collaborator/project-activity-management/:id',
@@ -173,6 +175,11 @@ export const routes: Routes = [
     path: 'collaborator/work-item-activity/:id',
     component: CollaboratorWorkItemActivityComponent,
     canActivate: [CollaboratorGuard]
+  },
+  {
+    path: 'collaborator-work-items-table',
+    component: CollabortatorWorkItemsTableComponent,
+    canActivate: [CollaboratorManagerGuard]
   },
 
   /* Service */

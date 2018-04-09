@@ -50,13 +50,13 @@ public class CollaboratorService
         return collaborator;
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     public List<Collaborator> findAll() throws AccessDeniedException {
         List<Collaborator> collaborators = collaboratorRepository.findAll();
         return collaborators;
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     public Collaborator addNew(Collaborator collaborator) throws AccessDeniedException {
         return collaboratorRepository.save(collaborator);
     }
@@ -65,13 +65,13 @@ public class CollaboratorService
         return collaboratorRepository.save(collaborator);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     public List<CollaboratorProject> findAllCollaboratorProjects() throws AccessDeniedException {
         List<CollaboratorProject> collaboratorProjects = collaboratorProjectRepository.findAll();
         return collaboratorProjects;
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     public CollaboratorProject addNewCollaboratorProject(CollaboratorProject collaboratorProject) throws AccessDeniedException {
         return collaboratorProjectRepository.save(collaboratorProject);
     }
@@ -81,7 +81,7 @@ public class CollaboratorService
         return collaboratorProject;
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     public List<CollaboratorProject> findAllNonCollaboratorProjectsByCollabortorId(Long collaboratorId) throws AccessDeniedException {
         List<CollaboratorProject> collaboratorProjects = collaboratorProjectRepository.findCollaboratorProjects(collaboratorId);
         List<Long> collaboratorProjectsIds = new ArrayList<Long>();
@@ -105,7 +105,7 @@ public class CollaboratorService
         return potentialCollaboratorProjects;
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     public Collaborator updateCollaboratorProjects(Long collaboratorId, List<CollaboratorProject> modifiedCollaboratorProjects, String action) throws SecurityException, AccessDeniedException {
         Collaborator existingCollaborator = collaboratorRepository.getOne(collaboratorId);
         List<CollaboratorProject> collaboratorProjects = existingCollaborator.getProjects();
@@ -167,7 +167,7 @@ public class CollaboratorService
         return collaboratorProjectWorkItems;
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR') or hasRole('COLLABORATOR_MANAGER')")
     public CollaboratorProject addCollaboratorProjectWorkItem(CollaboratorProjectWorkItem collaboratorProjectWorkItem) throws AccessDeniedException {
         Timestamp now = new Timestamp(DateTime.now().getMillis());
         collaboratorProjectWorkItem.setLastUpdateDate(now);

@@ -1,0 +1,30 @@
+<mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+          <mat-icon class="md-18">work</mat-icon>
+          <span class="styles-row-spacer"></span>
+          Collaborators Management
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <button mat-button (click)="navigate('/collaborator-management')" class="sidenav-button">
+      <mat-icon class="md-18">contacts</mat-icon>
+      <span>Collaborators</span>
+    </button>
+    <button mat-button (click)="navigate('/collaborator-project-management')" class="sidenav-button">
+      <mat-icon class="md-18">folder</mat-icon>
+      <span>Projects</span>
+    </button>
+</mat-expansion-panel>
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+        <mat-icon class="md-18">business_center</mat-icon>
+        <span class="styles-row-spacer"></span>
+        Work Items
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <button mat-button (click)="navigate('/collaborator-work-items-table')" class="sidenav-button">
+    <mat-icon class="md-18">view_list</mat-icon>
+    <span>Work Items Table</span>
+  </button>
+</mat-expansion-panel>

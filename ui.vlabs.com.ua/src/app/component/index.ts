@@ -6,6 +6,7 @@ export * from './home/admin-home/admin-home.component';
 export * from './home/manager-home/manager-home.component';
 export * from './home/user-home/user-home.component';
 export * from './home/collaborator-home/collaborator-home.component';
+export * from './home/collaborator-manager-home/collaborator-manager-home.component';
 
 export * from './login/login.component';
 export * from './register/register.component';
@@ -16,6 +17,8 @@ export * from './reset-password/reset-password.component'
 export * from './side-nav/user-sidenav/user-sidenav.component';
 export * from './side-nav/manager-sidenav/manager-sidenav.component';
 export * from './side-nav/collaborator-sidenav/collaborator-sidenav.component';
+export * from './side-nav/collaborator-manager-sidenav/collaborator-manager-sidenav.component';
+
 export * from './manager/department/department-management.component';
 export * from './manager/department/new-department/new-department.component';
 
@@ -46,6 +49,8 @@ export * from './admin/collaborator-management/edit-collaborator/edit-collaborat
 export * from './admin/collaborator-management/collaborator-project-management/collaborator-project-management.component';
 export * from './admin/collaborator-management/collaborator-project-management/new-collaborator-project/new-collaborator-project.component';
 export * from './admin/collaborator-management/edit-collaborator/add-collaborator-project-dialog/add-collaborator-project-dialog.component';
+
+export * from './collaborator/manager/collaborator-work-items-table/collaborator-work-items-table.component';
 
 export * from './collaborator/project-activity-management/project-activity-management.component';
 export * from './collaborator/project-activity-management/add-project-work-item-dialog/add-project-work-item-dialog.component';

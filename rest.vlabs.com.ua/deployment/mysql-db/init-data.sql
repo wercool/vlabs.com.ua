@@ -37,6 +37,7 @@ INSERT INTO authority (id, name) VALUES (1, 'ROLE_USER');
 INSERT INTO authority (id, name) VALUES (2, 'ROLE_MANAGER');
 INSERT INTO authority (id, name) VALUES (3, 'ROLE_ADMIN');
 INSERT INTO authority (id, name) VALUES (4, 'ROLE_COLLABORATOR');
+INSERT INTO authority (id, name) VALUES (5, 'ROLE_COLLABORATOR_MANAGER');
 
 -- 'initial admin' authorities
 INSERT INTO user_authority (user_id, authority_id) VALUES (1, 1);
