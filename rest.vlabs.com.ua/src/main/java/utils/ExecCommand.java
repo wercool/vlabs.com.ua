@@ -46,7 +46,7 @@ public class ExecCommand {
                 String buff = new String();
                 while ((buff = isr.readLine()) != null) {
                     readBuffer.append(buff);
-                    System.out.println(buff);
+//                    System.out.println(buff);
                 }
                 output = readBuffer.toString();
                 outputSem.release();
@@ -79,8 +79,8 @@ public class ExecCommand {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (error.length() > 0)
-            System.out.println(error);
+//            if (error.length() > 0)
+//                System.out.println(error);
         }
     }
 

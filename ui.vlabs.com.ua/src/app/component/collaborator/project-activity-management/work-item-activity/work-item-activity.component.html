@@ -42,39 +42,37 @@
                 </mat-card-content>
             </mat-card>
 
-            <div>
-                <div *ngIf="uploader?.queue?.length > 0">
-                    <hr/>
-                    <div *ngIf="workItem.type == 'resource'">
-                        <h3>Upload queue</h3>
-                        <p>Queue length: {{ uploader?.queue?.length }}</p>
-                    </div>
-                    <div *ngIf="workItem.type == 'blender_model' || workItem.type == 'vlab_item'">
-                        <h3>ZIP archive to be upload</h3>
-                    </div>
-                    <mat-list role="list">
-                        <mat-list-item *ngFor="let item of uploader.queue">
-                            <table style="width: 100%;">
-                                <tr>
-                                    <td width="50%">{{ item?.file?.name }}</td>
-                                    <td width="25%">{{ item?.file?.size /1024/1024 | number:'.3' }} Mb</td>
-                                    <td width="25%">
-                                        <button mat-button (click)="item.remove()" *ngIf="!item.isSuccess"><mat-icon style="color: rgba(201, 65, 65, 0.767)">remove_circle</mat-icon></button>
-                                        <mat-icon *ngIf="item.isSuccess" class="styles-success">done</mat-icon>
-                                    </td>
-                                </tr>
-                            </table>
-                        </mat-list-item>
-                    </mat-list>
-                    <hr/>
-
-                    <mat-progress-spinner *ngIf="uploading" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
-                    <button *ngIf="!uploading" mat-button class="addButton" (click)="uploadAll()" [disabled]="!uploader.getNotUploadedItems().length">
-                        <mat-icon>file_upload</mat-icon>
-                        <span *ngIf="workItem.type == 'resource'">Upload file(s)</span>
-                        <span *ngIf="workItem.type == 'blender_model' || workItem.type == 'vlab_item'">Upload ZIP archive</span>
-                    </button>
+            <div *ngIf="uploader?.queue?.length > 0">
+                <hr/>
+                <div *ngIf="workItem.type == 'resource'">
+                    <h3>Upload queue</h3>
+                    <p>Queue length: {{ uploader?.queue?.length }}</p>
                 </div>
+                <div *ngIf="workItem.type == 'blender_model' || workItem.type == 'vlab_item'">
+                    <h3>ZIP archive to be upload</h3>
+                </div>
+                <mat-list role="list">
+                    <mat-list-item *ngFor="let item of uploader.queue">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td width="50%">{{ item?.file?.name }}</td>
+                                <td width="25%">{{ item?.file?.size /1024/1024 | number:'.3' }} Mb</td>
+                                <td width="25%">
+                                    <button mat-button (click)="item.remove()" *ngIf="!item.isSuccess"><mat-icon style="color: rgba(201, 65, 65, 0.767)">remove_circle</mat-icon></button>
+                                    <mat-icon *ngIf="item.isSuccess" class="styles-success">done</mat-icon>
+                                </td>
+                            </tr>
+                        </table>
+                    </mat-list-item>
+                </mat-list>
+                <hr/>
+
+                <mat-progress-spinner *ngIf="uploading" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+                <button *ngIf="!uploading" mat-button class="addButton" (click)="uploadAll()" [disabled]="!uploader.getNotUploadedItems().length">
+                    <mat-icon>file_upload</mat-icon>
+                    <span *ngIf="workItem.type == 'resource'">Upload file(s)</span>
+                    <span *ngIf="workItem.type == 'blender_model' || workItem.type == 'vlab_item'">Upload ZIP archive</span>
+                </button>
             </div>
 
             <!-- Work Item File Items -->
@@ -99,12 +97,12 @@
             </mat-table>
 
             <mat-card-content>
-                <button *ngIf="workItem.type == 'resource'" mat-button (click)="fileInput.click()">
+                <button *ngIf="workItem.type == 'resource'" mat-button (click)="fileInput.value=''; fileInput.click()">
                     <mat-icon>attach_file</mat-icon>
                     <span>Select file(s) for upload</span>
                     <input #fileInput  type="file" ng2FileSelect [uploader]="uploader" multiple hidden/>
                 </button>
-                <button *ngIf="workItem.type == 'blender_model' || workItem.type == 'vlab_item'" mat-button (click)="fileInput.click()">
+                <button *ngIf="workItem.type == 'blender_model' || workItem.type == 'vlab_item'" mat-button (click)="fileInput.value=''; fileInput.click()">
                     <mat-icon>attach_file</mat-icon>
                     <span>Select ZIP archive for upload</span>
                     <input #fileInput type="file" accept="application/zip" ng2FileSelect [uploader]="uploader" hidden/>

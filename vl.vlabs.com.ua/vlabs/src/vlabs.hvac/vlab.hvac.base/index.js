@@ -249,5 +249,6 @@ class VlabHVACBase extends VLab {
 
 let vlabHVACBase = new VlabHVACBase({
     name: "BriantB225BHeatPump",
-    natureURL: "./resources/nature.json"
+    natureURL: "./resources/nature.json",
+    webGLRendererClearColor: 0xb7b7b7
 });

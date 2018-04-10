@@ -1,4 +1,4 @@
-import { VLabsFileItem } from ".";
+import { VLabsFileItem, Collaborator } from ".";
 
 export class CollaboratorProjectWorkItem {
     id: number;
@@ -10,6 +10,7 @@ export class CollaboratorProjectWorkItem {
     notes: string;
     lastUpdateDate: number;
     fileItems: VLabsFileItem[];
+    collaborator: Collaborator;
 
     constructor() {
         this.id = undefined;
@@ -21,6 +22,7 @@ export class CollaboratorProjectWorkItem {
         this.notes = undefined;
         this.lastUpdateDate = undefined;
         this.fileItems = undefined;
+        this.collaborator = undefined;
     }
 
     map(anyCollaboratorProjectWorkItemViewItem: any): CollaboratorProjectWorkItem {

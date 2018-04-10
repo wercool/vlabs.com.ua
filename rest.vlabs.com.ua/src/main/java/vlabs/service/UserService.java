@@ -151,7 +151,7 @@ public class UserService
         userRepository.save(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public User findById(Long id) throws AccessDeniedException {
         User user = userRepository.getOne(id);
         return user;

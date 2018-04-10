@@ -6,6 +6,8 @@ import { ApiService } from './api.service';
 import { ConfigService } from './config.service';
 import { UserService } from './user.service';
 
+import { environment } from '../../environments/environment';
+
 import { 
   User,
   Authority
@@ -76,4 +78,18 @@ export class AuthService {
     return this.apiService.post(this.config.change_password_url, passwordChanger);
   }
 
+  basicCollaboratorsRepositoryAuth() {
+    let collaboratorsRepository = environment.collaboratorsRepository;
+    let username: string = 'vlabs';
+    let password: string = 'q1w2e3r4t5';
+    let headers: Headers = new Headers();
+    headers.append("Authorization", "Basic " + btoa(username + ":" + password));
+    headers.append("Access-Control-Allow-Origin", "*");
+    headers.append("Access-Control-Allow-Headers", "Content-Type,Authorization");
+    headers.append("Access-Control-Allow-Methods", "POST")
+    headers.append("Content-Type", "application/x-www-form-urlencoded");
+    headers.append("Access-Control-Allow-Credentials", "true");
+    console.log(location.origin);
+    return this.apiService.post(collaboratorsRepository, {}, headers);
+  }
 }

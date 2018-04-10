@@ -121,6 +121,10 @@ html{
     align-items: center;
 }
 
+.styles-full-width {
+    width: 100%;
+}
+
 .addButton {
     background-color: rgba(99, 205, 50, 0.562);
 }

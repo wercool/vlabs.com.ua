@@ -5,9 +5,12 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -33,6 +36,10 @@ public class CollaboratorProjectWorkItem
     @Column(name = "project_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long project_id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "collaborator_id", referencedColumnName = "id", nullable=true, insertable=false, updatable=false)
+    private Collaborator collaborator;
 
     /*
      * RESOURCE
@@ -127,6 +134,14 @@ public class CollaboratorProjectWorkItem
 
     public void setFileItems(List<VLabsFileItem> fileItems) {
         this.fileItems = fileItems;
+    }
+
+    public Collaborator getCollaborator() {
+        return collaborator;
+    }
+
+    public void setCollaborator(Collaborator collaborator) {
+        this.collaborator = collaborator;
     }
 
 }

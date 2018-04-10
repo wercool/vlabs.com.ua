@@ -1,3 +1,6 @@
+<div class="styles-error" *ngIf="!hasAuthority">
+  You do not have enough authority. Contact VLabs Administrator.
+</div>
 <mat-dialog-content *ngIf="hasAuthority">
   <mat-tab-group class="mat-tab-group">
       <mat-tab label="Profile">

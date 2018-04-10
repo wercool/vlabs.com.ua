@@ -65,4 +65,7 @@ export class CollaboratorService {
     return this.apiService.get(this.config.collaborator_project_work_item_url
                                .replace("{collaboratorProjectWorkItemId}", collaboratorProjectWorkItemId.toString()));
   }
+  getAllWorkItems() {
+    return this.apiService.get(this.config.collaborator_project_work_items_all_url);
+  }
 }

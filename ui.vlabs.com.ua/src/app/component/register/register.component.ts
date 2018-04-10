@@ -162,7 +162,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
     },
     error => {
       this.submitted = false;
-      this.notification = { msgType: 'error', msgBody: error.message };
+      try {
+        let errorObj = error.json();
+        this.notification = { msgType: 'styles-error', msgBody: errorObj.message };
+      } catch (ex) {
+        console.log(error, ex);
+      }
     });
   }
 

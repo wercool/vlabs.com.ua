@@ -1,1 +1,40 @@
-COLLABORATOR WORK ITEMS TABLE COMPONENT
+<mat-progress-spinner *ngIf="!workItemsCompleted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+<mat-card *ngIf="workItemsCompleted">
+    <mat-card-header>
+        <mat-card-title>Collaborator Work Items List</mat-card-title>
+        <mat-card-subtitle>Total: <i>{{workItems.length}}</i></mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+        <mat-table #projectWorkItemsDSTable [dataSource]="projectWorkItemsDS" *ngIf="workItemsCompleted" matSort>
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="collaboratorAlias">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>COLLABORATOR</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.collaborator.alias}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="title">
+                <mat-header-cell *matHeaderCellDef>TITLE</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.title}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="alias">
+                <mat-header-cell *matHeaderCellDef>ALIAS</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.alias}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="type">
+                <mat-header-cell *matHeaderCellDef>TYPE</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <img *ngIf="element.type == 'resource'" src="/assets/img/resource-item.png" height="48">
+                    <img *ngIf="element.type == 'blender_model'" src="/assets/img/blender-item.png" height="48">
+                    <img *ngIf="element.type == 'vlab_item'" src="/assets/img/vlabitem-item.png" height="48">
+                </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="projectWorkItemsDisplayedColumns"></mat-header-row>
+            <mat-row 
+            class="styles-mat-table-row"
+            (click)="workItemRowClicked(row);"
+            *matRowDef="let row; columns: projectWorkItemsDisplayedColumns;"></mat-row>
+        </mat-table>
+    </mat-card-content>
+</mat-card>

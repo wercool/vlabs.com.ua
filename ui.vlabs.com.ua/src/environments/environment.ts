@@ -6,5 +6,6 @@
 export const environment = {
   production: false,
   host: 'http://localhost:8090',
-  vlabsHost: 'http://localhost:9001'
+  vlabsHost: 'http://localhost:9001',
+  collaboratorsRepository: 'http://localhost:8000',
 };

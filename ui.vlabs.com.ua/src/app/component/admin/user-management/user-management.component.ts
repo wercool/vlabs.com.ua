@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   MatTableDataSource,
-  MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSort, MatPaginator, MatPaginatorIntl
+  MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSort, MatPaginator, MatPaginatorIntl, MatSnackBar
 } from '@angular/material';
 
 import {
-  UserService
+  UserService, AuthService
 } from '../../../service';
 
 import {
@@ -15,6 +15,9 @@ import {
 import { AuthUserDialogComponent } from './auth-user-dialog/auth-user-dialog.component';
 import { EditUserDialogComponent } from './edit-user-dialog/edit-user-dialog.component';
 import { TranslateService } from '@ngx-translate/core';
+import { FormGroup, FormBuilder, Validators, AbstractControl, Form, NgForm } from '@angular/forms';
+import { PasswordValidation } from '../../../shared/utils/password-validation';
+import { DisplayMessage } from '../../../shared/models/display-message';
 
 @Component({
   selector: 'app-user-management',
@@ -42,10 +45,20 @@ export class UserManagementComponent implements OnInit {
   @ViewChild(MatSort) sortUsersDS: MatSort;
   @ViewChild(MatPaginator) paginatorUsersDS: MatPaginator;
 
+  // Add New User Form
+  notification: DisplayMessage;
+  addNewUserFormGroup: FormGroup;
+  @ViewChild("addNewUserForm") addNewUserForm: NgForm;
+  submitted = false;
+  addNewUserFormActive = true;
+
   constructor(
     private translate: TranslateService,
     private userService: UserService,
-    private authUserDialog: MatDialog
+    private authUserDialog: MatDialog,
+    private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private snackBar: MatSnackBar
   ) {
   }
 
@@ -56,6 +69,18 @@ export class UserManagementComponent implements OnInit {
       this.usersDSPageSize = event.pageSize;
       this.usersDSCurrentPage = event.pageIndex;
       this.getAllUsersPaged();
+    });
+
+    this.addNewUserFormGroup = this.formBuilder.group({
+      username: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
+      password: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
+      confirmPassword: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
+      firstName: [''],
+      lastName: [''],
+      email: ['', Validators.compose([Validators.required, Validators.email])],
+      phoneNumber: [''],
+    }, {
+      validator: PasswordValidation.MatchPassword // password validation method
     });
   }
 
@@ -122,4 +147,39 @@ export class UserManagementComponent implements OnInit {
       this.getUsersWoAuthorities();
     });
   }
+
+  onNewUserSubmit() {
+    this.submitted = true;
+    this.notification = undefined;
+
+    let registrationObject = {
+      type: 'generic'
+    };
+
+    this.authService.register(this.addNewUserFormGroup.value, registrationObject)
+    // show the animation
+    .delay(1000)
+    .subscribe(data => {
+      this.snackBar.open(data.message, 'New User', {
+        panelClass: ['successSnackBar'],
+        duration: 20000,
+        verticalPosition: 'top'
+      });
+      this.submitted = false;
+      this.addNewUserForm.reset();
+      this.ngOnInit();
+      this.addNewUserFormActive = false;
+      setTimeout(() => this.addNewUserFormActive = true, 50);
+    },
+    error => {
+      this.submitted = false;
+      try {
+        let errorObj = error.json();
+        this.notification = { msgType: 'styles-error', msgBody: errorObj.message };
+      } catch (ex) {
+        console.log(error, ex);
+      }
+    });
+  }
+
 }

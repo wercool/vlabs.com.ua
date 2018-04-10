@@ -72,16 +72,16 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
     }
 
     setWorkItem(workItem: CollaboratorProjectWorkItem) {
+        this.workItem = workItem;
+
         this.uploader = new FileUploader({
           url: this.configService.collaborator_project_work_item_upload_url.replace('{collaboratorProjectWorkItemId}', workItem.id.toString()),
           queueLimit: (workItem.type == 'resource') ? undefined : 1,
           allowedMimeType: (workItem.type == 'resource') ? undefined : ['application/zip'],
-        })
+        });
         this.uploader.onCompleteAll = this.uploadComplete.bind(this);;
         this.uploader.onCompleteItem = this.uploadItemComplete.bind(this);;
         this.uploader.onErrorItem = this.uploadItemError.bind(this);
-
-        this.workItem = workItem;
 
         this.workItemFileItemsDS = new MatTableDataSource<VLabsFileItem>(this.workItem.fileItems);
         // console.log(this.workItemFileItemsDS);
@@ -92,13 +92,12 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
           }
         }
 
-        this.collaboratorService. getProject(this.workItem.project_id)
+        this.collaboratorService.getProject(this.workItem.project_id)
         .delay(250)
         .subscribe(project => {
           this.project = project;
           this.completed = true;
           this.setPreviewURL();
-        //   console.log(this.project);
         },
         error => {
           this.snackBar.open(error.message, 'SERVER ERROR', {
@@ -112,7 +111,7 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
     setPreviewURL() {
         //this.host
         if (this.blendSceneJSONFile) {
-          let vLabPreviewURL = this.vlabsHost + '/vlab.preview/?path=' + this.project.alias + "/" + this.collaboratorService.currentCollaborator.alias + "/" + this.workItem.alias + "/result/" + this.blendSceneJSONFile;
+          let vLabPreviewURL = this.vlabsHost + '/vlab.preview/?path=' + this.project.alias + "/" + ((this.collaboratorService.currentCollaborator)? this.collaboratorService.currentCollaborator.alias : this.workItem.collaborator.alias) + "/" + this.workItem.alias + "/result/" + this.blendSceneJSONFile;
           this.vLabPreviewEmbedSafeURL = this.sanitizer.bypassSecurityTrustResourceUrl(vLabPreviewURL);
         }
     }
@@ -128,28 +127,20 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
 
     uploadItemError(item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) {
       console.log("Error Status: " + status);
-      try{
-        this.snackBar.open(JSON.parse(response).errorCause, item.file.name, {
-          panelClass: ['errorSnackBar'],
-          duration: 5000,
-          verticalPosition: 'top'
-        });
-      } catch (ex) {
-        let errMessage = "Server Error";
-        switch (status) {
-          case HTTPStatusCodes.FORBIDDEN:
-            errMessage = 'ACCESS FORBIDDEN';
-          break;
-          case HTTPStatusCodes.INTERNAL_SERVER_ERROR:
-            errMessage = 'INTERNAL SERVER ERROR';
-          break;
-        }
-        this.snackBar.open(errMessage, item.file.name, {
-          panelClass: ['errorSnackBar'],
-          duration: 5000,
-          verticalPosition: 'top'
-        });
+      let errMessage = "Server Error";
+      switch (status) {
+        case HTTPStatusCodes.FORBIDDEN:
+          errMessage = 'ACCESS FORBIDDEN';
+        break;
+        case HTTPStatusCodes.INTERNAL_SERVER_ERROR:
+          errMessage = 'INTERNAL SERVER ERROR';
+        break;
       }
+      this.snackBar.open(errMessage, item.file.name, {
+        panelClass: ['errorSnackBar'],
+        duration: 5000,
+        verticalPosition: 'top'
+      });
       if (status == HTTPStatusCodes.FORBIDDEN) {
         this.authService.logout().subscribe(res => {
           this.router.navigate(['/login']);
@@ -168,6 +159,10 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
     }
 
     vlabModelPreviewPanelOpened(event) {
+      // this.authService.basicCollaboratorsRepositoryAuth().subscribe(result => {
+      //   console.log(result);
+      //   this.vlabModelPreviewActivated = true;
+      // });
       this.vlabModelPreviewActivated = true;
     }
 }

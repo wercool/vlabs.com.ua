@@ -38,3 +38,8 @@
   text-align: left;
   padding-left: 2pt;
 }
+
+.register-form {
+  min-width: 300px;
+  width: 100%;
+}

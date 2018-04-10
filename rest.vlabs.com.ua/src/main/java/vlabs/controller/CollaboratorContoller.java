@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +38,7 @@ import vlabs.service.CollaboratorService;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR') or hasRole('COLLABORATOR_MANAGER')")
 public class CollaboratorContoller
 {
     private static final Logger log = LoggerFactory.getLogger(CollaboratorContoller.class);
@@ -63,6 +65,7 @@ public class CollaboratorContoller
         return collaboratorService.findByUserId(userId);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     @RequestMapping(method = RequestMethod.POST, value= "/collaborator/add")
     public Collaborator addNewCollaborator(@RequestBody Collaborator collaborator) {
         return collaboratorService.addNew(collaborator);
@@ -74,16 +77,19 @@ public class CollaboratorContoller
         return collaboratorService.updateCollaborator(collaborator);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     @RequestMapping(method = RequestMethod.GET, value= "/collaborator/all")
     public List<Collaborator> getAllCollaborators() {
         return collaboratorService.findAll();
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     @RequestMapping(method = RequestMethod.GET, value= "/collaborator/project/all")
     public List<CollaboratorProject> getAllCollaboratorProjects() {
         return collaboratorService.findAllCollaboratorProjects();
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     @RequestMapping(method = RequestMethod.POST, value= "/collaborator/project/add")
     public CollaboratorProject addNewCollaboratorProject(@RequestBody CollaboratorProject collaboratorProject) throws SecurityException, EntityAlreadyExistsException {
 
@@ -115,16 +121,19 @@ public class CollaboratorContoller
         return collaboratorService.addNewCollaboratorProject(collaboratorProject);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     @RequestMapping(method = RequestMethod.GET, value= "/collaborator/project/{collaboratorId}/non-collaborator-projects")
     public List<CollaboratorProject> getAllNonCollaboratorProjects(@PathVariable Long collaboratorId) {
         return collaboratorService.findAllNonCollaboratorProjectsByCollabortorId(collaboratorId);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     @RequestMapping(method = RequestMethod.POST, value= "/collaborator/project/{collaboratorId}/addprojects")
     public Collaborator addCollaboratorProjects(@PathVariable Long collaboratorId, @RequestBody List<CollaboratorProject> newCollaboratorProjects) {
         return collaboratorService.updateCollaboratorProjects(collaboratorId, newCollaboratorProjects, "add");
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     @RequestMapping(method = RequestMethod.POST, value= "/collaborator/project/{collaboratorId}/removeprojects")
     public Collaborator removeGroupMembers(@PathVariable Long collaboratorId, @RequestBody List<CollaboratorProject> removeCollaboratorProjects) {
         return collaboratorService.updateCollaboratorProjects(collaboratorId, removeCollaboratorProjects, "remove");
@@ -133,6 +142,12 @@ public class CollaboratorContoller
     @RequestMapping(method = RequestMethod.GET, value= "/collaborator/project/{collaboratorProjectId}")
     public CollaboratorProject getCollaboratorProjectById(@PathVariable Long collaboratorProjectId) {
         return collaboratorService.findCollaboratorProjectById(collaboratorProjectId);
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
+    @RequestMapping(method = RequestMethod.GET, value= "/collaborator/project/workitem/all")
+    public List<CollaboratorProjectWorkItem> getAllCollaboratorWorkItems() {
+        return collaboratorService.findAllCollaboratorWorkItems();
     }
 
     @RequestMapping(method = RequestMethod.GET, value= "/collaborator/project/workitems/{collaboratorId}/{collaboratorProjectId}")

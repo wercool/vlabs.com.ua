@@ -11,10 +11,10 @@
     background-size: cover;
 }
 
-.file-drop-zone-over { border: dotted 5px greenyellow; }
+.file-drop-zone-over { border: dotted 5px greenyellow !important; }
 
 .file-drop-zone { 
-    border: dotted 3px lightgray; 
+    border: dotted 3px lightgray;
     min-height: 250px;
     background-repeat: no-repeat;
     background-position: center;

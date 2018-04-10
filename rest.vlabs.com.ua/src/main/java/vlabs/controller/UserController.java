@@ -98,7 +98,7 @@ public class UserController
     }
 
     @RequestMapping(method = RequestMethod.GET, value= "/user/get-profile-photo/{userId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('COLLABORATOR_MANAGER')")
     public ResponseEntity<ImageJsonResponse> getProfilePhotoForUser(@PathVariable Long userId) {
         User user = this.userService.findById(userId);
         byte[] profilePhoto = this.userService.getProfilePhoto(user);

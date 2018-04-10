@@ -112,6 +112,37 @@
                 Add New User
             </mat-panel-title>
         </mat-expansion-panel-header>
+        <div class="styles-full-width">
+            <h3>New VLab User</h3>
+            <p [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></p>
+            <form *ngIf="addNewUserFormActive" [formGroup]="addNewUserFormGroup" (ngSubmit)="onNewUserSubmit()" #addNewUserForm="ngForm" class="register-form">
+                <mat-form-field class="styles-full-width">
+                    <input matInput formControlName="username" type="text" placeholder="username (email)" required>
+                </mat-form-field>
+                <mat-form-field class="styles-full-width">
+                    <input matInput formControlName="password" type="password" placeholder="password" required>
+                </mat-form-field>
+                <mat-form-field class="styles-full-width">
+                    <input matInput formControlName="confirmPassword" type="password" placeholder="confirm password" required>
+                </mat-form-field>
+                <mat-form-field class="styles-full-width">
+                    <input matInput formControlName="email" type="email" placeholder="email" required>
+                </mat-form-field>
+                <mat-form-field class="styles-full-width">
+                    <input matInput formControlName="firstName" type="text" placeholder="First Name">
+                </mat-form-field>
+                <mat-form-field class="styles-full-width">
+                    <input matInput formControlName="lastName" type="text" placeholder="Last Name">
+                </mat-form-field>
+                <mat-form-field class="styles-full-width">
+                    <input matInput formControlName="phoneNumber" type="tel" placeholder="phone number">
+                </mat-form-field>
+                <div style="text-align: right;">
+                    <mat-progress-spinner *ngIf="submitted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+                    <button type="submit" mat-button [disabled]="!addNewUserForm.form.valid">SUBMIT</button>
+                </div>
+            </form>
+        </div>
 
     </mat-expansion-panel>
 </mat-accordion>

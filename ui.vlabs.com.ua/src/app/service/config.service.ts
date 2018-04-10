@@ -110,6 +110,7 @@ export class ConfigService {
   private _collaborator_project_work_items_url          = this._collaborators_project_url + '/workitems/{collaboratorId}/{collaboratorProjectId}';
   private _collaborator_project_work_item_add_url       = this._collaborators_project_url + '/workitem/add';
   private _collaborator_project_work_item_upload_url    = this._collaborators_project_url + '/workitem/upload/{collaboratorProjectWorkItemId}';
+  private _collaborator_project_work_items_all_url      = this._collaborators_project_url + '/workitem/all';
 
   //Subscription
   private _subscription_url                         = this._api_url + '/subscription';
@@ -227,6 +228,7 @@ export class ConfigService {
   get collaborator_project_work_items_url(): string { return this._collaborator_project_work_items_url; };
   get collaborator_project_work_item_add_url(): string { return this._collaborator_project_work_item_add_url; };
   get collaborator_project_work_item_upload_url(): string { return this._collaborator_project_work_item_upload_url; };
+  get collaborator_project_work_items_all_url(): string { return this._collaborator_project_work_items_all_url; };
 
   //Subscription
   get subscription_cards_url(): string { return this._subscription_cards_url; };
