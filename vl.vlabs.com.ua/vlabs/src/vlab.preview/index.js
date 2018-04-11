@@ -69,7 +69,7 @@ class VlabPreview extends VLab {
         var light0 = new THREE.AmbientLight(0xffffff, 0.35);
         this.vLabScene.add(light0);
 
-        this.SpotLight1 = new THREE.PointLight(0xffffff, 0.55);
+        this.SpotLight1 = new THREE.PointLight(0xffffff, 1.0);
         this.SpotLight1.position.set(0.0, 3.0, 1.0);
         this.vLabScene.add(this.SpotLight1);
     }

@@ -30,7 +30,20 @@ app.use(function(req, res, next) {
   }
 });
 
-app.get(/\/auth/, function( req, res ) {
+function ignoreFavicon(req, res, next) {
+  if (req.originalUrl === '/favicon.ico') {
+    res.status(204).json({nope: true});
+  } else {
+    next();
+  }
+}
+
+app.use(ignoreFavicon);
+
+app.get(/\/auth/, function(req, res) {
+    return res.sendStatus(200);
+});
+app.post(/\/auth/, function(req, res) {
     return res.sendStatus(200);
 });
 app.get(/\.(jpg|jpeg|png|gif)$/, static);

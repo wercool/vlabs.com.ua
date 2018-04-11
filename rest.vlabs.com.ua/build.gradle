@@ -146,13 +146,32 @@ task cleanUIFolder(){
     group = 'clean'
     description = 'Cleans UI folder'
     doLast {
-        FileTree UIFolderTree = fileTree (dir: "./src/main/resources/static");
+        FileTree UIFolderTree = fileTree (dir: "./src/main/resources/static")
         def filesToBeKept = persistantToList(file('./src/main/resources/static/.persistant'))
         UIFolderTree.exclude filesToBeKept
 
         if (UIFolderTree.size() > 0){
             println "The following files are deleted from UI folder in rest.vlabs.com.ua: "
             UIFolderTree.each { File file ->
+                println file
+                delete(file)
+            }
+        }
+
+    }
+}
+
+task cleanVLabsFolder(){
+    group = 'clean'
+    description = 'Cleans VLabs folder'
+    doLast {
+        FileTree VLabsFolderTree = fileTree (dir: "./src/main/resources/static/vlabs")
+        def filesToBeKept = persistantToList(file('./src/main/resources/static/vlabs/.persistant'))
+        VLabsFolderTree.exclude filesToBeKept
+
+        if (VLabsFolderTree.size() > 0){
+            println "The following files are deleted from VLbas folder in rest.vlabs.com.ua: "
+            VLabsFolderTree.each { File file ->
                 println file
                 delete(file)
             }

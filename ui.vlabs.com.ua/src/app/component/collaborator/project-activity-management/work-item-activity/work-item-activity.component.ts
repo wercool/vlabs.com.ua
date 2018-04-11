@@ -113,7 +113,7 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
     setPreviewURL() {
         //this.host
         if (this.blendSceneJSONFile) {
-          let vLabPreviewURL = this.vlabsHost + '/vlab.preview/?path=' + this.project.alias + "/" + ((this.collaboratorService.currentCollaborator)? this.collaboratorService.currentCollaborator.alias : this.workItem.collaborator.alias) + "/" + this.workItem.alias + "/result/" + this.blendSceneJSONFile;
+          let vLabPreviewURL = this.vlabsHost + '/vlab.preview/index.html?path=' + this.project.alias + "/" + ((this.collaboratorService.currentCollaborator)? this.collaboratorService.currentCollaborator.alias : this.workItem.collaborator.alias) + "/" + this.workItem.alias + "/result/" + this.blendSceneJSONFile;
           this.vLabPreviewEmbedSafeURL = this.sanitizer.bypassSecurityTrustResourceUrl(vLabPreviewURL);
         }
     }

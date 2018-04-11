@@ -1,4 +1,11 @@
 -----------------
+Collaborator Repository Structure
+
+1) mkdir ~/vlabs.com.ua
+2) cd ~/vlabs.com.ua
+2) unzip ~/git/vlabs.com.ua/vl.vlabs.com.ua/misc/blender_server_side_export/BLENDER_EXPORT.zip -d .
+2) mkdir -p ~/vlabs.com.ua/collaborators/projects
+-----------------
 Collaborator Repository Server
 
 1) cd ~/vlabs.com.ua/collaborators/projects
@@ -14,11 +21,3 @@ mysql -uvlabs -p < init-data.sql
 
 -----------------
 VLabs server by default is running on 8090 port (`server.port` in application.properties)
------------------
-1) Download Apache Tomcat ^8.5.29
-https://tomcat.apache.org/download-80.cgi
-2) mv apache-tomcat-*.tar.gz to /opt/
-3) cd /opt/
-4) sudo tar -xvf apache-tomcat-8.5.29.tar.gz
-5) sudo chmod -R 755 /opt/apache-tomcat-*
-6) https://turbofuture.com/computers/How-to-install-Apache-tomcat-in-Spring-Tool-Suite-Eclipse

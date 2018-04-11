@@ -1,5 +1,5 @@
 {
-    "VLabsREST": "http://192.168.0.100:8090/api",
+    "VLabsREST": "http://calima.3sicorp.com:8090/api",
     "VLabNaturePassPhrase": "vlabnature",
-    "VLabsCollaboratorHost": "http://192.168.0.100:8000"
+    "VLabsCollaboratorHost": "http://calima.3sicorp.com:8000"
 }

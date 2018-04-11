@@ -116,7 +116,7 @@ public class UserService
         {
             BufferedImage noPhotoBI;
             try {
-                noPhotoBI = ImageIO.read(ClassLoader.getSystemResource("static/images/no-profile-photo.jpg"));
+                noPhotoBI = ImageIO.read(getClass().getResource("/static/images/no-profile-photo.jpg"));
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ImageIO.write(noPhotoBI, "JPG", baos);
                 photo = baos.toByteArray();
