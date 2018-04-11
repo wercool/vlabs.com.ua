@@ -471,7 +471,7 @@ export default class VLab {
             thisVLab.progressBarPrependText = (loaderMessage)? loaderMessage : "The world of VLab is loaded by ";
             if (this.nature.sceneJSONFile) {
                 let loader = new THREE.ObjectLoader();
-				if (thisVLab.initObj.crossOrigin) loader.setCrossOrigin(thisVLab.initObj.crossOrigin);
+                if (thisVLab.initObj.crossOrigin) loader.setCrossOrigin(thisVLab.initObj.crossOrigin);
                 loader.convertUpAxis = true;
                 loader.load(this.nature.sceneJSONFile, 
                     // onLoad callback

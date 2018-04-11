@@ -37,26 +37,26 @@ export class ApiService {
     .catch(this.handleError.bind(this));
   }
 
-  get(path: string, customHeaders?): Observable<any> {
+  get(path: string, customHeaders?, withoutCredentials?): Observable<any> {
     return this.http.get(
       path,
       {
         headers: customHeaders || this.jsonHeaders,
-        withCredentials: true
+        withCredentials: withoutCredentials ? false : true
       }
     )
     .map(this.extractData)
     .catch(this.handleError.bind(this));
   }
 
-  post(path: string, body, customHeaders?, put?): Observable<any> {
+  post(path: string, body, customHeaders?, put?, withoutCredentials?): Observable<any> {
     return this.http.request(
       path,
       {
         method: put ? RequestMethod.Put : RequestMethod.Post,
         body: body,
         headers: customHeaders || this.jsonHeaders,
-        withCredentials: true
+        withCredentials: withoutCredentials ? false : true
       }
     )
     .map(this.extractData)

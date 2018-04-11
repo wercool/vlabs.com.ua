@@ -51,6 +51,25 @@ public class Application
             e.printStackTrace();
         }
 
+        try {
+            prop.load(resource.getInputStream());
+            String BLENDER_DIR = prop.getProperty("vlabs.dir.blender");
+            log.info("vlabs.dir.blender = " + BLENDER_DIR);
+
+            File VLabsHomeDir = new File(BLENDER_DIR);
+            boolean VLabsHomeDirExists = VLabsHomeDir.exists();
+
+            if (!VLabsHomeDirExists) {
+                log.error("Obligatory directory " + BLENDER_DIR + " does not exist");
+                System.exit(0);
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         SpringApplication.run(Application.class, args);
         log.info("VLabs REST server is up and running");
     }

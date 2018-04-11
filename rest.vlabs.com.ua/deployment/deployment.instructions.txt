@@ -1,13 +1,10 @@
 -----------------
-https://www.npmjs.com/package/http-server
-sudo npm install http-server -g
-cd ~/vlabs.com.ua/collaborators/projects
-http-server -p 8000 -c -1 --cors
------------------
-https://www.npmjs.com/package/http-server-with-auth
-sudo npm install http-server-with-auth -g
-cd ~/vlabs.com.ua/collaborators/projects
-http-server-with-auth -p 8000 -c -1 --cors --username vlabs --password q1w2e3r4t5
+Collaborator Repository Server
+
+1) cd ~/vlabs.com.ua/collaborators/projects
+2) cp ~/git/vlabs.com.ua/vl.vlabs.com.ua/misc/collaborators-repository-server/collaborator-repository-server.js .
+3) npm install express cors express-basic-auth
+4) node collaborator-repository-server.js
 -----------------
 1) Create initial database structure
 mysql -uroot -p < init-db.sql

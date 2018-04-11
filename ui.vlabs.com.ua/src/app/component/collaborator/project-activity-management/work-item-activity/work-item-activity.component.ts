@@ -62,6 +62,7 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
               // console.log(this.workItem);
             },
             error => {
+              if (this.snackBar["opened"]) return;
               this.snackBar.open(error.message, 'SERVER ERROR', {
                 panelClass: ['errorSnackBar'],
                 duration: 1000,
@@ -100,6 +101,7 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
           this.setPreviewURL();
         },
         error => {
+          if (this.snackBar["opened"]) return;
           this.snackBar.open(error.message, 'SERVER ERROR', {
             panelClass: ['errorSnackBar'],
             duration: 1000,
@@ -159,10 +161,15 @@ export class CollaboratorWorkItemActivityComponent implements OnInit {
     }
 
     vlabModelPreviewPanelOpened(event) {
-      // this.authService.basicCollaboratorsRepositoryAuth().subscribe(result => {
-      //   console.log(result);
-      //   this.vlabModelPreviewActivated = true;
-      // });
-      this.vlabModelPreviewActivated = true;
+      this.authService.basicCollaboratorsRepositoryAuth().subscribe(result => {
+        this.vlabModelPreviewActivated = true;
+      },
+      error => {
+        this.snackBar.open('UNAUTHORIZED', 'ACCESS FORBIDDEN', {
+          panelClass: ['errorSnackBar'],
+          duration: 1000,
+          verticalPosition: 'top'
+        });
+      });
     }
 }

@@ -75,6 +75,7 @@ export class EditEclassComponent implements OnInit {
         });
     },
     error => {
+      if (this.snackBar["opened"]) return;
       this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
@@ -107,6 +108,7 @@ export class EditEclassComponent implements OnInit {
             this.completed = true;
         },
         error => {
+          if (this.snackBar["opened"]) return;
           this.snackBar.open(error.message, 'SERVER ERROR', {
             panelClass: ['errorSnackBar'],
             duration: 1000,
@@ -116,6 +118,7 @@ export class EditEclassComponent implements OnInit {
 
       },
       error => {
+        if (this.snackBar["opened"]) return;
         this.snackBar.open(error.message, 'SERVER ERROR', {
           panelClass: ['errorSnackBar'],
           duration: 1000,
@@ -143,6 +146,7 @@ export class EditEclassComponent implements OnInit {
         },
         error => {
           this.submitted = false;
+          if (this.snackBar["opened"]) return;
           this.snackBar.open(error.message, 'SERVER ERROR', {
             panelClass: ['errorSnackBar'],
             duration: 1000,
@@ -158,6 +162,7 @@ export class EditEclassComponent implements OnInit {
     },
     error => {
       this.submitted = false;
+      if (this.snackBar["opened"]) return;
       this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
@@ -178,6 +183,7 @@ export class EditEclassComponent implements OnInit {
       this.eClassStrcutureNeedsUpdate = false;
     },
     error => {
+      if (this.snackBar["opened"]) return;
       this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
@@ -215,6 +221,7 @@ export class EditEclassComponent implements OnInit {
     },
     error => {
       this.cElementSaving = false;
+      if (this.snackBar["opened"]) return;
       this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
@@ -249,6 +256,7 @@ export class EditEclassComponent implements OnInit {
         },
         error => {
           this.cElementSaving = false;
+          if (this.snackBar["opened"]) return;
           this.snackBar.open(error.message, 'SERVER ERROR', {
             panelClass: ['errorSnackBar'],
             duration: 1000,

@@ -43,6 +43,7 @@ export class CollaboratorProjectActivityManagementComponent implements OnInit {
         // console.log(this.collaboratorProject);
       },
       error => {
+        if (this.snackBar["opened"]) return;
         this.snackBar.open(error.message, 'SERVER ERROR', {
           panelClass: ['errorSnackBar'],
           duration: 1000,
@@ -67,6 +68,7 @@ export class CollaboratorProjectActivityManagementComponent implements OnInit {
         this.getProjectWorkItems(collaborator.id);
       },
       error => {
+        if (this.snackBar["opened"]) return;
         this.snackBar.open(error.message, 'SERVER ERROR', {
           panelClass: ['errorSnackBar'],
           duration: 1000,
@@ -84,6 +86,7 @@ export class CollaboratorProjectActivityManagementComponent implements OnInit {
       // console.log(this.collaboratorProjectWorkItems);
     },
     error => {
+      if (this.snackBar["opened"]) return;
       this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,

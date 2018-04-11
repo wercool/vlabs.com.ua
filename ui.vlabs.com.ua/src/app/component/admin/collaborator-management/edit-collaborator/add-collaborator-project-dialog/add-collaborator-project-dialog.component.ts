@@ -46,6 +46,7 @@ export class AddCollaboratorProjectDialogComponent implements OnInit {
       this.potentialCollaboratorProjectsDS = new MatTableDataSource<CollaboratorProjectItem>(this.nonCollaboratorProjectsItems);
     },
     error => {
+      if (this.snackBar["opened"]) return;
       this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
@@ -80,6 +81,7 @@ export class AddCollaboratorProjectDialogComponent implements OnInit {
       this.dialogRef.close(collaborator);
     },
     error => {
+      if (this.snackBar["opened"]) return;
       this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,

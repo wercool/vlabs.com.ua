@@ -84,6 +84,16 @@ let path = loc.substr(loc.indexOf('path=') + 5);
 path = '<!--VLAB COLLABORATOR HOST-->/' + path;
 console.log('PATH:' + path);
 
+var auth = "Basic " + btoa('vlabs:q1w2e3r4t5');
+var XHR = new XMLHttpRequest();
+XHR.open('GET', '<!--VLAB COLLABORATOR HOST-->/auth');
+XHR.setRequestHeader('Authorization', auth);
+XHR.send(null);
+
+Object.assign(THREE.FileLoader.prototype, {
+    requestHeader: { 'Authorization': auth }
+});
+
 let vlabPreview = new VlabPreview({
     name: "VLab Model Preview",
     natureObj: {
@@ -110,5 +120,5 @@ let vlabPreview = new VlabPreview({
         }
     },
     webGLRendererClearColor: 0xb7b7b7,
-    crossOrigin: 'anonymous'
+    crossOrigin: 'anonymous'//'use-credentials'
 });

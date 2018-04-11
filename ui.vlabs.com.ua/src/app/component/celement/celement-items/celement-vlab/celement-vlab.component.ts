@@ -40,6 +40,7 @@ export class CelementVLabComponent implements OnInit {
       this.cElementItemsCompleted = true;
     },
     error => {
+      if (this.snackBar["opened"]) return;
       this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
@@ -68,6 +69,7 @@ export class CelementVLabComponent implements OnInit {
   //       },
   //       error => {
   //         this.cElementItemsCompleted = false;
+  //         if (this.snackBar["opened"]) return;
   //         this.snackBar.open(error.message, 'SERVER ERROR', {
   //           panelClass: ['errorSnackBar'],
   //           duration: 1000,
@@ -101,6 +103,7 @@ export class CelementVLabComponent implements OnInit {
         // },
         // error => {
         //   this.cElementItemsCompleted = false;
+        //   if (this.snackBar["opened"]) return;
         //   this.snackBar.open(error.message, 'SERVER ERROR', {
         //     panelClass: ['errorSnackBar'],
         //     duration: 1000,

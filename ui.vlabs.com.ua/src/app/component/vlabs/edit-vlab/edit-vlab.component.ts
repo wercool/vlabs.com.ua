@@ -102,6 +102,7 @@ export class EditVLabComponent implements OnInit {
         },
         error => {
           this.submitted = false;
+          if (this.snackBar["opened"]) return;
           this.snackBar.open(error.message, 'SERVER ERROR', {
             panelClass: ['errorSnackBar'],
             duration: 1000,

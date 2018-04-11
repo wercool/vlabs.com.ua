@@ -68,6 +68,7 @@ export class AppComponent implements OnInit, OnDestroy{
             switch(error.status)
             {
                 case HTTPStatusCodes.NOT_FOUND:
+                    this.snackBar["opened"] = true;
                     error.statusText = "Resource not found";
                     this.snackBar.open(error.statusText, error.status, {
                         duration: 2000
@@ -77,9 +78,11 @@ export class AppComponent implements OnInit, OnDestroy{
                         } else {
                             console.log('On production will be redirected to /login');
                         }
+                        this.snackBar["opened"] = false;
                     });
                 break;
                 case HTTPStatusCodes.FORBIDDEN:
+                    this.snackBar["opened"] = true;
                     this.snackBar.open('ACCESS FORBIDDEN', error.statusText + ': ' + error.status, {
                         duration: 2000
                     }).afterDismissed().subscribe(() => {
@@ -89,39 +92,56 @@ export class AppComponent implements OnInit, OnDestroy{
                                 this.sidenav.close();
                             });
                         } else {
-                            console.log('On production will be redirected to /login');
+                            console.log('ACCESS FORBIDDEN, On production will be redirected to /login');
                         }
+                        this.snackBar["opened"] = false;
                     });
                 break;
                 case HTTPStatusCodes.GATEWAY_TIMEOUT:
+                    this.snackBar["opened"] = true;
                     this.snackBar.open(error.statusText, error.status, {
                         duration: 5000
+                    }).afterDismissed().subscribe(() => {
+                        this.snackBar["opened"] = false;
                     });
                 break;
                 case HTTPStatusCodes.CONFLICT:
+                    this.snackBar["opened"] = true;
                     this.snackBar.open(error.statusText, error.status, {
                         duration: 1000
+                    }).afterDismissed().subscribe(() => {
+                        this.snackBar["opened"] = false;
                     });
                 break;
                 case HTTPStatusCodes.UNAUTHORIZED:
+                    this.snackBar["opened"] = true;
                     this.snackBar.open(error.statusText, error.status, {
                         duration: 2000
+                    }).afterDismissed().subscribe(() => {
+                        this.snackBar["opened"] = false;
                     });
                 break;
                 default:
+                    this.snackBar["opened"] = true;
                     if (environment.production) {
                         this.snackBar.open(error.statusText, error.status, {
                             duration: 5000
+                        }).afterDismissed().subscribe(() => {
+                            this.snackBar["opened"] = false;
                         });
                     } else {
                         let errorDetails = JSON.parse(error.headers.get('errorDetails'));
                         if (errorDetails) {
                             this.snackBar.open(errorDetails.detailMessage, error.status, {
                                 duration: 10000
+                            }).afterDismissed().subscribe(() => {
+                                this.snackBar["opened"] = false;
                             });
                         } else {
                             this.snackBar.open(error.statusText, error.status, {
                                 duration: 1000
+                            }).afterDismissed().subscribe(() => {
+                                this.snackBar["opened"] = false;
                             });
                         }
                     }

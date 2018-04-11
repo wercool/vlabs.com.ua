@@ -64,6 +64,7 @@ export class EditFacultyComponent implements OnInit {
               console.log(this.faculty);
             },
             error => {
+              if (this.snackBar["opened"]) return;
               this.snackBar.open(error.message, 'SERVER ERROR', {
                 panelClass: ['errorSnackBar'],
                 duration: 1000,
@@ -100,6 +101,7 @@ export class EditFacultyComponent implements OnInit {
         },
         error => {
           this.submitted = false;
+          if (this.snackBar["opened"]) return;
           this.snackBar.open(error.message, 'SERVER ERROR', {
             panelClass: ['errorSnackBar'],
             duration: 1000,
@@ -153,6 +155,7 @@ export class EditFacultyComponent implements OnInit {
                 this.submitted = false;
               },
               error => {
+                if (this.snackBar["opened"]) return;
                 this.snackBar.open(error.message, 'SERVER ERROR', {
                   panelClass: ['errorSnackBar'],
                   duration: 1000,

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Headers } from '@angular/http';
+import { Headers, RequestMethod } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 
 import { ApiService } from './api.service';
@@ -79,17 +79,12 @@ export class AuthService {
   }
 
   basicCollaboratorsRepositoryAuth() {
-    let collaboratorsRepository = environment.collaboratorsRepository;
+    let collaboratorsRepository = environment.collaboratorsRepository + '/auth';
     let username: string = 'vlabs';
     let password: string = 'q1w2e3r4t5';
     let headers: Headers = new Headers();
     headers.append("Authorization", "Basic " + btoa(username + ":" + password));
-    headers.append("Access-Control-Allow-Origin", "*");
-    headers.append("Access-Control-Allow-Headers", "Content-Type,Authorization");
-    headers.append("Access-Control-Allow-Methods", "POST")
     headers.append("Content-Type", "application/x-www-form-urlencoded");
-    headers.append("Access-Control-Allow-Credentials", "true");
-    console.log(location.origin);
-    return this.apiService.post(collaboratorsRepository, {}, headers);
+    return this.apiService.get(collaboratorsRepository, headers, true);
   }
 }

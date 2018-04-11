@@ -78,6 +78,7 @@ export class AddCollaboratorProjectWorkItemDialogComponent implements OnInit {
       }
     },
     error => {
+      if (this.snackBar["opened"]) return;
       this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,

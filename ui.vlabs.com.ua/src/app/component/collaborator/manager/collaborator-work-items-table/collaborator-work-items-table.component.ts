@@ -34,6 +34,7 @@ export class CollabortatorWorkItemsTableComponent implements OnInit {
       this.setWorkItems(workItems);
     },
     error => {
+      if (this.snackBar["opened"]) return;
       this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,

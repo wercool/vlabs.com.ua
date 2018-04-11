@@ -46,6 +46,7 @@ export class AddGroupMemberDialogComponent implements OnInit {
       this.potentialGroupMembersDS = new MatTableDataSource<UserItem>(this.nonMembersItems);
     },
     error => {
+      if (this.snackBar["opened"]) return;
       this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
@@ -80,6 +81,7 @@ export class AddGroupMemberDialogComponent implements OnInit {
       this.dialogRef.close(group);
     },
     error => {
+      if (this.snackBar["opened"]) return;
       this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,

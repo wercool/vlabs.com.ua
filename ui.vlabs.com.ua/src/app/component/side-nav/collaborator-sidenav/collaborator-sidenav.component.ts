@@ -32,6 +32,7 @@ export class CollaboratorSidenavComponent implements OnInit {
       // console.log(this.collaborator);
     },
     error => {
+      if (this.snackBar["opened"]) return;
       this.snackBar.open(error.message, 'SERVER ERROR', {
         panelClass: ['errorSnackBar'],
         duration: 1000,
