@@ -12,7 +12,7 @@ export class CollaboratorGuard implements CanActivate {
       ) {}
 
   canActivate(): boolean {
-    if (this.authService.hasAuthority('COLLABORATOR') || this.authService.hasAuthority('COLLABORATOR_MANAGER')) {
+    if (this.authService.hasAuthority('COLLABORATOR') || this.authService.hasAuthority('ADMIN') || this.authService.hasAuthority('COLLABORATOR_MANAGER')) {
       return true;
     } else {
       this.router.navigate(['/login']);
