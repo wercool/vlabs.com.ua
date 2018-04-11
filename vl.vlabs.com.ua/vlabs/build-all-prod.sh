@@ -2,6 +2,7 @@
 
 #MISC
 gulp --vlab vlab.base --mode prod
+gulp --vlab vlab.preview --mode prod
 gulp --vlab vlab.apartment --mode prod
 gulp --vlab vlab.kitchen --mode prod
 
