@@ -38,6 +38,8 @@ export default class DetailedView {
         .catch(error => {
             console.error(error);
         });
+
+        this.clock = new THREE.Clock();
     }
 
     initialize() {
@@ -148,6 +150,9 @@ export default class DetailedView {
             this.defaultCamera.position.set(0, 0.0, 0.25);
         }
 
+        this.defaultAudioListener = new THREE.AudioListener();
+        this.defaultCamera.add(this.defaultAudioListener);
+
         //Controls
         this.controls = new OrbitControls(this.defaultCamera);
         this.controls.minDistance = this.initObj.controls.minDistance ? this.initObj.controls.minDistance : 0.25;
@@ -214,6 +219,21 @@ export default class DetailedView {
     }
 
     activate() {
+        let activating = false;
+        //Initialize non-initialized yet Detailed View VLab Items
+        for (var itemName in this.items) {
+            if (this.items[itemName].initialized === false) {
+                this.items[itemName].initialize().then((vLabItem) => {
+                    this.activate();
+                });
+                activating = true;
+            }
+        }
+        if (activating) {
+            console.log("Items in the Detailed View are initialized...");
+            return;
+        }
+
         this.context.paused = true;
 
         this.context.statsTHREE.domElement.style.display = 'none';
@@ -233,6 +253,12 @@ export default class DetailedView {
 
         this.context.overlayContainer.style.display = 'block';
         this.container.style.display = 'block';
+
+        for (var itemName in this.items) {
+            if (this.items[itemName].onOpen) {
+                this.items[itemName].onOpen.call(this.items[itemName], {  });
+            }
+        }
 
         this.paused = false;
         this.resiezeWebGLContainer();
@@ -263,6 +289,12 @@ export default class DetailedView {
 
         this.context.mouseCoordsRaycaster.set(-1.0, -1.0);
 
+        for (var itemName in this.items) {
+            if (this.items[itemName].onClose) {
+                this.items[itemName].onClose.call(this.items[itemName], {  });
+            }
+        }
+
         console.log(this.initObj.targetObjectName + " Detailed View closed");
     }
 
@@ -273,6 +305,12 @@ export default class DetailedView {
             this.controls.update();
 
             this.webGLRenderer.render(this.scene, this.defaultCamera);
+
+            for (var itemName in this.items) {
+                if (this.items[itemName].onDetailedViewRenderFrameEvent) {
+                    this.items[itemName].onDetailedViewRenderFrameEvent.call(this.items[itemName], { clockDelta: this.clock.getDelta() });
+                }
+            }
 
             requestAnimationFrame(this.render.bind(this));
         } else {
@@ -285,7 +323,10 @@ export default class DetailedView {
             this.items[vLabItem.itemName] = vLabItem;
         }
 
-        this.scene.add(vLabItem.model);
+        if (vLabItem.model) {
+            this.scene.add(vLabItem.model);
+        }
+
         if (vLabItem.setupEnvMaterials) {
             vLabItem.setupEnvMaterials.call(vLabItem, {
                 envMap: this.envMap

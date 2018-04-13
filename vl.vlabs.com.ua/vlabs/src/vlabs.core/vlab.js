@@ -504,7 +504,7 @@ export default class VLab {
         return new Promise((resolve, reject) => {
             let thisVLab = this;
             this.overlayContainer.style.display = 'block';
-            this.overlayContainer.style.display = 'block';
+            this.progressBarElement.style.display = 'block';
             thisVLab.progressBarPrependText = (vlabItemName)? "VLab Item [" + vlabItemName + "] is loaded by " : "VLab item is loaded by ";
             if (itemURL) {
                 let loader = new THREE.ObjectLoader();

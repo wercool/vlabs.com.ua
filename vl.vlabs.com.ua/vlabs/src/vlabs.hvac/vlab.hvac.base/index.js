@@ -6,11 +6,12 @@ import ZoomHelper           from '../../vlabs.core/zoom-helper';
 import TransformControls    from '../../vlabs.core/three-transformcontrols/index';
 
 //VLab Items
-import BoshScrewdriver          from '../../vlabs.items/boshScrewdriver';
-import ClampMeterUEIDL479       from '../../vlabs.items/clampMeterUEIDL479';
-import FatMaxScrewdriver        from '../../vlabs.items/fatMaxScrewdriver';
-import ReversingValveEF17BZ251  from '../../vlabs.items/hvac/reversingValveEF17BZ251'
-import ControlBoardCEBD430433   from '../../vlabs.items/hvac/controlBoardCEBD430433'
+import BoshScrewdriver              from '../../vlabs.items/boshScrewdriver';
+import ClampMeterUEIDL479           from '../../vlabs.items/clampMeterUEIDL479';
+import FatMaxScrewdriver            from '../../vlabs.items/fatMaxScrewdriver';
+import ReversingValveEF17BZ251      from '../../vlabs.items/hvac/reversingValveEF17BZ251'
+import ControlBoardCEBD430433       from '../../vlabs.items/hvac/controlBoardCEBD430433'
+import ScrollCompressorZP25K5E      from '../../vlabs.items/hvac/scrollCompressorZP25K5E'
 
 class VlabHVACBase extends VLab {
     constructor(initObj = {}) {
@@ -103,6 +104,20 @@ class VlabHVACBase extends VLab {
                 maxPolarAngle: Math.PI * 2
             },
             defaultCameraInitialPosition: new THREE.Vector3(0.0, 0.3, 0.2)
+        });
+
+        this.bryantB225B_heatPumpCompressorDetailedView = new DetailedView({
+            context: this,
+            targetObjectName: "bryantB225B_heatPumpCompressor",
+            scale: new THREE.Vector3(0.1, 0.1, 0.1),
+            positionDeltas: new THREE.Vector3(0.0, 0.0, 0.45),
+            controls: {
+                minDistance: 0.05,
+                maxDistance: 0.5,
+                minPolarAngle: 0,
+                maxPolarAngle: Math.PI * 2
+            },
+            defaultCameraInitialPosition: new THREE.Vector3(0.0, 0.5, 0.5)
         });
 
         //Zoom helpers
@@ -213,6 +228,14 @@ class VlabHVACBase extends VLab {
             name: null,
             itemName: "ControlBoardCEBD430433",
             detailedView: this.bryantB225B_controlBoardDetailedView
+        });
+
+        this.ScrollCompressorZP25K5E = new ScrollCompressorZP25K5E({
+            context: this,
+            pos: new THREE.Vector3(0.0, 0.0, 0.0),
+            name: null,
+            itemName: "ScrollCompressorZP25K5E",
+            detailedView: this.bryantB225B_heatPumpCompressorDetailedView
         });
 
         // Misc helpers
