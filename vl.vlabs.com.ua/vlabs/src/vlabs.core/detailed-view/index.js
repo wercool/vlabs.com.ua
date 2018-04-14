@@ -143,7 +143,7 @@ export default class DetailedView {
         this.scene.add(spotLight1);
 
         //Cameras
-        this.defaultCamera = new THREE.PerspectiveCamera(60, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.01, 10.0);
+        this.defaultCamera = new THREE.PerspectiveCamera(60, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.01, 1000.0);
         if (this.initObj.defaultCameraInitialPosition) {
             this.defaultCamera.position.copy(this.initObj.defaultCameraInitialPosition);
         } else {

@@ -44,6 +44,19 @@ class VlabHVACBase extends VLab {
             light1.position.set(0.0, 6.0, 3.0);
             this.vLabScene.add(light1);
 
+            //Z-fighting fixes
+            var ZFightingMaterial = this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameBottom").material;
+            ZFightingMaterial.polygonOffset = true;
+            ZFightingMaterial.polygonOffsetFactor = -1.0;
+            ZFightingMaterial.polygonOffsetUnits = -4.0;
+            ZFightingMaterial.needsUpdate = true;
+
+            // var ZFightingMaterial = this.vLabScene.getObjectByName("contactror").material;
+            // ZFightingMaterial.polygonOffset = true;
+            // ZFightingMaterial.polygonOffsetFactor = 1.0;
+            // ZFightingMaterial.polygonOffsetUnits = 4.0;
+            // ZFightingMaterial.needsUpdate = true;
+
             console.log(this.name + " initialized");
         }).catch(error => {
             console.error(error);
@@ -113,11 +126,11 @@ class VlabHVACBase extends VLab {
             positionDeltas: new THREE.Vector3(0.0, 0.0, 0.45),
             controls: {
                 minDistance: 0.05,
-                maxDistance: 0.5,
+                maxDistance: 0.75,
                 minPolarAngle: 0,
                 maxPolarAngle: Math.PI * 2
             },
-            defaultCameraInitialPosition: new THREE.Vector3(0.0, 0.5, 0.5)
+            defaultCameraInitialPosition: new THREE.Vector3(0.0, 0.25, 0.1)
         });
 
         //Zoom helpers

@@ -27,6 +27,13 @@ initObj {
                 this.model.name = this.initObj.name;
             }
 
+            //Z-fighting fixes
+            var ZFightingMaterial = this.model.getObjectByName("ClampMeterUEIDL479Screen").material;
+            ZFightingMaterial.polygonOffset = true;
+            ZFightingMaterial.polygonOffsetFactor = -1.0;
+            ZFightingMaterial.polygonOffsetUnits = -4.0;
+            ZFightingMaterial.needsUpdate = true;
+
             this.context.nature.objectMenus[this.model.name] = {
                 "en": [{
                     "title": "Pick",

@@ -70,7 +70,7 @@ export default class Inventory {
         });
 
         this.scene = new THREE.Scene();
-        this.defaultCamera = new THREE.PerspectiveCamera(70, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.01, 5.0);
+        this.defaultCamera = new THREE.PerspectiveCamera(70, this.webGLContainer.clientWidth / this.webGLContainer.clientHeight, 0.01, 1000.0);
 
         this.defaultCameraControls = new OrbitControls(this.defaultCamera, this.webGLContainer, new THREE.Vector3(0, 0.2, 0.25));
         this.defaultCameraControls.enablePan = true;

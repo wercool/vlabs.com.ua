@@ -271,7 +271,8 @@ export default class VLab {
         this.webGLRenderer = new THREE.WebGLRenderer({
             antialias: false,
             powerPreference: 'high-performance',
-            precision: 'lowp'
+            precision: 'lowp',
+            // logarithmicDepthBuffer: true
         });
 
         this.webGLRenderer.setClearColor(this.initObj.webGLRendererClearColor ? this.initObj.webGLRendererClearColor : 0x000000);
@@ -398,6 +399,10 @@ export default class VLab {
         var self = this;
         vLabScene.traverse(function(object) {
             if (object instanceof THREE.Mesh) {
+                if (object.userData.matrixAutoUpdate === "false") {
+                    object.matrixAutoUpdate = false;
+                    object.updateMatrix();
+                }
                 self.vLabSceneMeshes.push(object);
             }
         });

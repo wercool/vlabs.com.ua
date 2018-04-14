@@ -1,2 +1,3 @@
-1) object.matrixAutoUpdate = false;
+DONE) object.matrixAutoUpdate = false;
 https://threejs.org/docs/#manual/introduction/Matrix-transformations
+WHAT) set matrixAutoUpdate cutom propety in Blender to false
