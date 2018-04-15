@@ -1,8 +1,8 @@
 {
-    "title": "HVAC Base VLab",
-    "alias": "vlab.hvac.base",
+    "title": "HVAC Base VLab Heat Pump",
+    "alias": "vlab.hvac.base.heat-pump",
     "resolutionFactor": "1.0",
-    "sceneJSONFile": "./resources/scene/vlab.hvac.base.json",
+    "sceneJSONFile": "./resources/scene-heat-pump/vlab.hvac.base-heat-pump.json",
     "lang": "en",
     "defaultSceneCameraName": "defaultCamera",
     "cameraControls": {

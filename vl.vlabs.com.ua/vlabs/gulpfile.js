@@ -60,7 +60,7 @@ gulp.task('build', ['vlab-nature-process'], function () {
 });
 
 gulp.task('vlab-nature-process', ['main', 'sync'], function () {
-    return gulp.src('./src/' + initObj.vlabDir + '/resources/nature.json')
+    return gulp.src('./src/' + initObj.vlabDir + '/resources/*.json')
     .pipe(replace('<!--VLAB REST API URL-->', initObj.settings.VLabsREST))
     .pipe(gulpif(!initObj.naturePlain, cryptoJs({algorithm: 'AES', action: 'encrypt', key: initObj.settings.VLabNaturePassPhrase})))
     .pipe(gulp.dest('./build/' + initObj.vLabName + '/resources'))
@@ -69,10 +69,15 @@ gulp.task('vlab-nature-process', ['main', 'sync'], function () {
 gulp.task('sync', ['main', 'sync-vlabs-assets', 'sync-vlab-items'], function() {
     return gulp.src('')
     .pipe(dirSync('./src/' + initObj.vlabDir, './build/' + initObj.vLabName, { 
-        ignore: [
-            'index.js',
-            './src/' + initObj.vlabDir + '/resources/nature.json'
-        ],
+        // ignore: [
+        //     'index.js',
+        //     './src/' + initObj.vlabDir + '/resources/nature.json'
+        // ],
+        ignore: function(dir, file) { 
+            var isJSFile = (new RegExp('.js$')).test(file);
+            if (isJSFile) return true;
+            return false;
+        },
         printSummary: true
     }));
 });

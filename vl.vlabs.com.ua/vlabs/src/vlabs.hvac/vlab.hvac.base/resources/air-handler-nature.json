@@ -1,0 +1,22 @@
+{
+    "title": "HVAC Base VLab Air Handler",
+    "alias": "vlab.hvac.base.air-handler",
+    "resolutionFactor": "1.0",
+    "sceneJSONFile": "./resources/scene-air-handler/vlab.hvac.base-air-handler.json",
+    "lang": "en",
+    "defaultSceneCameraName": "defaultCamera",
+    "cameraControls": {
+        "type": "orbit",
+        "target": {
+            "x": 0.0,
+            "y": 1.5,
+            "z": 0.0
+        },
+        "yPanDeltaUp": 0.5,
+        "yPanDeltaDown": 0.5
+    },
+    "showTHREEStats": true,
+    "bumpMaps": false,
+    "alphaMaps": true,
+    "advancedSelectionHelper": true
+}

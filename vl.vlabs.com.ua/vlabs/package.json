@@ -42,7 +42,7 @@
     "progressbar.js": "^1.0.1",
     "request": "^2.85.0",
     "stats.js": "^0.17.0",
-    "three": "^0.89.0",
+    "three": "^0.91.0",
     "three-orbit-controls": "^82.1.0",
     "three-particle-fire": "0.0.0",
     "three-pointerlock": "0.0.2",

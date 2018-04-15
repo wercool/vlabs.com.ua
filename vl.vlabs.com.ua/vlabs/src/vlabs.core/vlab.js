@@ -103,7 +103,7 @@ export default class VLab {
     }
 
     getVesrion() {
-        return "0.1.2";
+        return "0.1.3";
     }
 
     buildHTML() {
@@ -168,6 +168,18 @@ export default class VLab {
 
         this.container.appendChild(this.tooltipPlacer);
         this.container.appendChild(this.cMenuElement);
+    }
+
+    stopAndHide() {
+        this.paused = true;
+        this.statsTHREE.domElement.style.display = 'none';
+        this.container.style.display = 'none';
+    }
+
+    resumeAndShow() {
+        this.paused = false;
+        this.container.style.display = 'block';
+        this.statsTHREE.domElement.style.display = 'block';
     }
 
     showErrorMessage(error) {
