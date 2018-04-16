@@ -22,7 +22,7 @@ class HVACVLabBase {
                 },
                 "HVACBaseAirHandler": {
                     "HVACBaseHeatPump": {
-                        pos: new THREE.Vector3(2.0, 0.1, 1.5),
+                        pos: new THREE.Vector3(1.8, 0.15, 1.5),
                         scale: new THREE.Vector3(0.25, 0.25, 0.25),
                     }
                 }

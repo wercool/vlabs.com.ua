@@ -16,37 +16,49 @@ export default class ReversingValveEF17BZ251 {
 
        this.accessableInteractiveELements = [];
 
-       this.initialize();
+       this.initialized = false;
+
+       this.initObj.detailedView.addVLabItem(this);
+       this.parent = this.initObj.detailedView;
+
+    //    this.initialize();
     }
 
     initialize() {
-        this.context.loadVLabItem("../vlabs.items/hvac/reversingValveEF17BZ251/reversingValveEF17BZ251.json", "reversingValveEF17BZ251").then((scene) => {
-            this.model = scene.children[0];
-            if (this.initObj.name) {
-                this.model.name = this.initObj.name;
-            }
+        return new Promise((resolve, reject) => {
+            this.context.loadVLabItem("../vlabs.items/hvac/reversingValveEF17BZ251/reversingValveEF17BZ251.json", "reversingValveEF17BZ251").then((scene) => {
+                this.model = scene.children[0];
+                if (this.initObj.name) {
+                    this.model.name = this.initObj.name;
+                }
 
-            if (this.initObj.detailedView) {
-                this.initObj.detailedView.addVLabItem(this);
-                this.parent = this.initObj.detailedView;
-            } else {
-                this.context.vLabScene.add(this.model);
-                this.parent = this.context;
-            }
+                this.initialized = true;
+                if (this.initObj.detailedView) {
+                    this.initObj.detailedView.addVLabItem(this);
+                    this.parent = this.initObj.detailedView;
+                } else {
+                    this.context.vLabScene.add(this.model);
+                    this.parent = this.context;
+                }
 
+                resolve(this);
 
-            if (this.pos) {
-                this.model.position.copy(this.pos);
-            } else {r
-                console.error("Reversing Valve EF17BZ251 is not set");
-            }
+                if (this.pos) {
+                    this.model.position.copy(this.pos);
+                } else {r
+                    console.error("Reversing Valve EF17BZ251 is not set");
+                }
 
-        }).catch(error => {
-            console.error(error);
+            }).catch(error => {
+                console.error(error);
+                reject('An error happened while loading VLab Item ' + this.itemName, error);
+            });
         });
     }
 
     setupEnvMaterials(materialsObj) {
+        if (!this.initialized) return;
+
         var textureLoader = new THREE.TextureLoader();
 
         var reversingValveEF17BZ251Tube = this.model.parent.getObjectByName("reversingValveEF17BZ251Tube");
@@ -109,6 +121,8 @@ export default class ReversingValveEF17BZ251 {
     }
 
     prepareInitialState() {
+        if (!this.initialized) return;
+
         var textureLoader = new THREE.TextureLoader();
 
         var reversingValveEF17BZ251PlungeCapLookThrough = this.model.parent.getObjectByName("reversingValveEF17BZ251PlungeCapLookThrough");

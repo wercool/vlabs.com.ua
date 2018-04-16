@@ -17,7 +17,7 @@ module.exports = function( THREE ) {
 //    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
 //    Pan - right mouse, or arrow keys / touch: three finter swipe
 
-	function OrbitControls( object, domElement , initialPos) {
+	function OrbitControls(object, domElement , initialPos) {
 
 		this.initialState = true;
 

@@ -494,6 +494,7 @@ export default class VLab {
                     // onLoad callback
                     function (vLabScene) {
                         resolve(vLabScene);
+                        thisVLab.progressBarPrependText = "loading...";
                     },
                     // onProgress callback
                     function (bytes) {
@@ -532,11 +533,15 @@ export default class VLab {
                         resolve(vLabItem);
                         thisVLab.overlayContainer.style.display = 'none';
                         thisVLab.progressBarElement.style.display = 'none';
+                        thisVLab.progressBarPrependText = "loading...";
                     },
                     // onProgress callback
                     function (bytes) {
                         let loadedRel = (bytes.loaded / bytes.total).toFixed(2);
                         console.info("VLab Item" + ((vlabItemName) ? (" [" + vlabItemName) + "] " : " ") + (loadedRel * 100).toFixed(2) + "% loaded");
+                        if (loadedRel == 1) {
+                            thisVLab.progressBarPrependText = "Loading textures... ";
+                        }
 
                         if (thisVLab.progressBarElement) {
                             thisVLab.progressBar.animate(loadedRel);
@@ -772,6 +777,7 @@ export default class VLab {
                 this.defaultCameraControls = new OrbitControls(this.defaultCamera, this.webGLContainer, initialPos);
                 if (cameraControlConfig.target) {
                     this.defaultCameraControls.target = cameraControlConfig.target;
+                    this.defaultCameraControls.target0 = this.defaultCameraControls.target.clone();
                 }
                 if (cameraControlConfig.targetObjectName) {
                     this.defaultCameraControls.target = this.vLabScene.getObjectByName(cameraControlConfig.targetObjectName).position.clone();

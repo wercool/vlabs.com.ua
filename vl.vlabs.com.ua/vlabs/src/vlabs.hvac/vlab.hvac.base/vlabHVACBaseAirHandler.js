@@ -35,11 +35,11 @@ export default class VlabHVACBaseAirHandler extends VLab {
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
 
-            var light0 = new THREE.AmbientLight(0xffffff, 0.4);
+            var light0 = new THREE.AmbientLight(0xffffff, 0.25);
             this.vLabScene.add(light0);
 
-            var light1 = new THREE.PointLight(0xffffff, 0.5);
-            light1.position.set(0.0, 6.0, 3.0);
+            var light1 = new THREE.PointLight(0xffffff, 0.75);
+            light1.position.set(-2.0, 4.0, 0.75);
             this.vLabScene.add(light1);
 
             console.log(this.name + " initialized");
@@ -53,7 +53,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
         // console.log(event.keyCode);
         switch (event.keyCode) {
             case 79: // o
-                this.switchCameraControls({ type: 'orbit', targetObjectName: 'Cube' });
+                this.switchCameraControls({ type: 'orbit' });
             break;
             case 80: // p
             case 32: // whitespace
