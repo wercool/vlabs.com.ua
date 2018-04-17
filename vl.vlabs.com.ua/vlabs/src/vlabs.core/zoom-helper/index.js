@@ -136,7 +136,7 @@ export default class ZoomHelper {
         })
         .onComplete(() => { 
             new TWEEN.Tween(this.context.defaultCameraControls)
-            .to({ maxDistance: 0.25 }, 750)
+            .to({ maxDistance: this.initObj.maxDistance ? this.initObj.maxDistance : 0.25 }, 750)
             .easing(TWEEN.Easing.Cubic.InOut)
             .onUpdate(() => { 
                 this.context.defaultCameraControls.update();
@@ -169,11 +169,15 @@ export default class ZoomHelper {
             this.context.defaultCameraControls.update();
         })
         .onComplete(() => {
+            new TWEEN.Tween(this.context.defaultCameraControls.target)
+            .to({ x: prevTarget.x, y: prevTarget.y, z: prevTarget.z }, 500)
+            .easing(TWEEN.Easing.Cubic.InOut)
+            .start();
             var prevPosition = this.context.defaultCameraControls.backState.position.clone();
             new TWEEN.Tween(this.context.defaultCameraControls.object.position)
             .to({ x: prevPosition.x, y: prevPosition.y, z: prevPosition.z }, 500)
             .easing(TWEEN.Easing.Cubic.InOut)
-            .onUpdate(() => { 
+            .onUpdate(() => {
                 this.context.defaultCameraControls.update();
             })
             .onComplete(() => {
