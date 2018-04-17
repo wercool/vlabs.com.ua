@@ -17,6 +17,9 @@ export default class CarrierTPWEM01 {
 
        this.accessableInteractiveELements = [];
 
+       this.screens = {};
+       this.curScreen = undefined;
+
        if (this.initObj.detailedView) {
         this.initialized = false;
 
@@ -53,6 +56,9 @@ export default class CarrierTPWEM01 {
                 this.screenCanvas.style.display = 'none';
                 document.body.appendChild(this.screenCanvas);
                 this.screenCanvasContext = this.screenCanvas.getContext('2d');
+
+                this.screens["welcomeScreen"] = this.welcomeScreen;
+                this.curScreen = "welcomeScreen";
 
                 this.addVLabEventListeners();
 
@@ -136,21 +142,26 @@ export default class CarrierTPWEM01 {
     }
 
     animate(time) {
-        //test
-        this.screenCanvasContext.fillStyle = "#00ff00";
+        this.screenCanvasContext.fillStyle = '#161616';
         this.screenCanvasContext.fillRect(0, 0, 512, 512);
-        this.screenCanvasContext.beginPath();
-        this.screenCanvasContext.arc(75, 75, 50, 0, Math.PI * 2, true); // Outer circle
-        this.screenCanvasContext.moveTo(110, 75);
-        this.screenCanvasContext.arc(75, 75, 35, 0, Math.PI, false);  // Mouth (clockwise)
-        this.screenCanvasContext.moveTo(65, 65);
-        this.screenCanvasContext.arc(60, 65, 5, 0, Math.PI * 2, true);  // Left eye
-        this.screenCanvasContext.moveTo(95, 65);
-        this.screenCanvasContext.arc(90, 65, 5, 0, Math.PI * 2, true);  // Right eye
-        this.screenCanvasContext.stroke();
+
+        this.screens[this.curScreen].call(this);
 
         this.screenMaterial.map = new THREE.Texture(this.screenCanvas);
         this.screenMaterial.map.needsUpdate = true;
+    }
+
+    welcomeScreen() {
+        this.screenCanvasContext.fillStyle = 'white';
+        this.screenCanvasContext.font = 'bold 18px Arial';
+        this.screenCanvasContext.fillText('Welcome to the guided setup process.', 10, 80);
+        this.screenCanvasContext.fillText('The following screen will walk you through', 10, 140);
+        this.screenCanvasContext.fillText('the initial setup process. If you get stuck or', 10, 170);
+        this.screenCanvasContext.fillText('have questions contact your Carrier dealer or visit us at ', 10, 200);
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('https://www.carrier.com/carrier/en/us/', 10, 280);
+        this.screenCanvasContext.font = 'bold 30px Arial';
+        this.screenCanvasContext.fillText('Next', 430, 340);
     }
 
 }

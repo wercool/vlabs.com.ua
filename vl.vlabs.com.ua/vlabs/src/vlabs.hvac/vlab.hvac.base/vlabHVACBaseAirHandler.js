@@ -83,7 +83,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
             maxDistance: 0.15,
             minAzimuthAngle: -1.0,
             maxAzimuthAngle: 1.0,
-            positionDeltas: new THREE.Vector3(0.0, 0.05, 0.0), 
+            positionDeltas: new THREE.Vector3(0.0, 0.1, 0.0), 
             scale: new THREE.Vector3(0.15, 0.15, 0.15),
             color: 0xfff495
         });
