@@ -119,7 +119,9 @@ export default class ZoomHelper {
             minDistance: this.context.defaultCameraControls.minDistance,
             maxDistance: this.context.defaultCameraControls.maxDistance,
             position: this.context.defaultCameraControls.object.position.clone(),
-            target: this.context.defaultCameraControls.target.clone()
+            target: this.context.defaultCameraControls.target.clone(),
+            minAzimuthAngle: this.context.defaultCameraControls.minAzimuthAngle,
+            maxAzimuthAngle: this.context.defaultCameraControls.maxAzimuthAngle
         };
 
         var zoomTarget = this.context.getWorldPosition(this.handlerSprite);
@@ -148,6 +150,11 @@ export default class ZoomHelper {
                 this.context.backFromViewButton.addEventListener("mouseup", this.reset.bind(this), false);
                 this.context.backFromViewButton.addEventListener("touchend", this.reset.bind(this), false);
 
+                if (this.initObj.minAzimuthAngle)
+                    this.context.defaultCameraControls.minAzimuthAngle =  this.initObj.minAzimuthAngle;
+                if (this.initObj.maxAzimuthAngle)
+                    this.context.defaultCameraControls.maxAzimuthAngle =  this.initObj.maxAzimuthAngle;
+
                 this.context.zoomHelperMode = true;
                 })
             .start();
@@ -161,6 +168,8 @@ export default class ZoomHelper {
         var prevTarget = this.context.defaultCameraControls.backState.target;
 
         this.context.defaultCameraControls.maxDistance = this.context.defaultCameraControls.backState.maxDistance;
+        this.context.defaultCameraControls.minAzimuthAngle =  this.context.defaultCameraControls.backState.minAzimuthAngle;
+        this.context.defaultCameraControls.maxAzimuthAngle = this.context.defaultCameraControls.backState.maxAzimuthAngle;
 
         new TWEEN.Tween(this.context.defaultCameraControls)
         .to({ minDistance: this.context.defaultCameraControls.backState.minDistance }, 250)

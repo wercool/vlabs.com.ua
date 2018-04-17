@@ -6,6 +6,9 @@ import DetailedView                 from '../../vlabs.core/detailed-view';
 import ZoomHelper                   from '../../vlabs.core/zoom-helper';
 import TransformControls            from '../../vlabs.core/three-transformcontrols/index';
 
+//VLab Items
+import CarrierTPWEM01              from '../../vlabs.items/hvac/carrierTPWEM01';
+
 export default class VlabHVACBaseAirHandler extends VLab {
     constructor(initObj = {}) {
         super(initObj);
@@ -73,15 +76,24 @@ export default class VlabHVACBaseAirHandler extends VLab {
         this.vLabLocator.addLocation(this);
 
         //Zoom helpers
-
         this.carrierTPWEM01WallMountZoomHelper = new ZoomHelper({
             context: this,
             targetObjectName: "carrierTPWEM01WallMount",
             minDistance: 0.02,
             maxDistance: 0.15,
+            minAzimuthAngle: -1.0,
+            maxAzimuthAngle: 1.0,
             positionDeltas: new THREE.Vector3(0.0, 0.05, 0.0), 
             scale: new THREE.Vector3(0.15, 0.15, 0.15),
             color: 0xfff495
+        });
+
+        //VLab Items
+        this.carrierTPWEM01 = new CarrierTPWEM01({
+            context: this,
+            pos: this.vLabScene.getObjectByName("carrierTPWEM01WallMount").position,
+            rot: this.vLabScene.getObjectByName("carrierTPWEM01WallMount").rotation,
+            name: "carrierTPWEM01"
         });
     }
 
