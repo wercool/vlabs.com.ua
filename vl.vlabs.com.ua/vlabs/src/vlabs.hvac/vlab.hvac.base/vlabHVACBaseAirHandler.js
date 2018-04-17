@@ -71,6 +71,18 @@ export default class VlabHVACBaseAirHandler extends VLab {
         //VLab Core Items
 
         this.vLabLocator.addLocation(this);
+
+        //Zoom helpers
+
+        this.carrierTPWEM01WallMountZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "carrierTPWEM01WallMount",
+            minDistance: 0.02,
+            maxDistance: 0.15,
+            positionDeltas: new THREE.Vector3(0.0, 0.05, 0.0), 
+            scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            color: 0xfff495
+        });
     }
 
     onRedererFrameEvent(event) {
