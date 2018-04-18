@@ -41,7 +41,7 @@ export default class ZoomHelper {
             color: this.initObj.color ? this.initObj.color : 0xffffff,
             blending: THREE.AdditiveBlending,
             transparent: true,
-            opacity: 0.5,
+            opacity: this.initObj.opacity ? this.initObj.opacity : 0.5,
             rotation: this.initObj.rotation ? this.initObj.rotation : 0.0,
             depthTest: this.initObj.inDepthTest ? this.initObj.inDepthTest : true,
             depthWrite: this.initObj.inDepthTest ? this.initObj.inDepthTest : true
@@ -105,7 +105,8 @@ export default class ZoomHelper {
 
         if (intersects.length > 0) {
             if (intersects[0].object.name == this.handlerSprite.name) {
-                this.activate();
+                if (!this.reseted) this.activate();
+                this.reseted = false;
             }
         }
     }
@@ -194,6 +195,7 @@ export default class ZoomHelper {
                     this.context.zoomHelperMode = false;
                     this.context.zoomViewArea.style.visibility = 'hidden';
                     this.context.zoomMode = false;
+                    this.reseted = false;
                 })
             .start();
             this.context.zoomViewArea.style.opacity = 0.0;
@@ -210,6 +212,9 @@ export default class ZoomHelper {
         this.context.backFromViewButton.style.display = 'none';
 
         this.handlerSprite.visible = true;
+        this.context.zoomMode = false;
+
+        this.reseted = true;
     }
 
 }

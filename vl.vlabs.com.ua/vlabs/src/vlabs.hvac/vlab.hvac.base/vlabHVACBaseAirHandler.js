@@ -38,12 +38,20 @@ export default class VlabHVACBaseAirHandler extends VLab {
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
 
-            var light0 = new THREE.AmbientLight(0xffffff, 0.25);
+            var light0 = new THREE.AmbientLight(0xffffff, 0.3);
             this.vLabScene.add(light0);
 
-            var light1 = new THREE.PointLight(0xffffff, 0.75);
-            light1.position.set(-2.0, 4.0, 0.75);
+            var light1 = new THREE.PointLight(0xffffff, 0.85);
+            light1.position.set(-3.0, 3.0, 1.0);
             this.vLabScene.add(light1);
+
+            // this.light1_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+            // this.light1_manipulationControl.setSize(0.5);
+            // this.vLabScene.add(this.light1_manipulationControl);
+            // this.light1_manipulationControl.attach(light1);
+            // this.light1_manipulationControl.addEventListener('change', function(){
+            //     console.log(light1.position);
+            // })
 
             console.log(this.name + " initialized");
         }).catch(error => {
@@ -85,7 +93,8 @@ export default class VlabHVACBaseAirHandler extends VLab {
             maxAzimuthAngle: 1.0,
             positionDeltas: new THREE.Vector3(0.0, 0.1, 0.0), 
             scale: new THREE.Vector3(0.15, 0.15, 0.15),
-            color: 0xfff495
+            color: 0xfff495,
+            opacity: 0.75
         });
 
         //VLab Items

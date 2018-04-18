@@ -183,11 +183,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
             color: 0xfff495
         });
 
-        this.suctionServiceValveZoomHelper = new ZoomHelper({
+        this.ACDisconnectClampZoomHelper = new ZoomHelper({
             context: this,
             targetObjectName: "ACDisconnectClamp",
             minDistance: 0.25,
-            positionDeltas: new THREE.Vector3(0.0, 0.0, 0.1), 
+            positionDeltas: new THREE.Vector3(0.0, -0.1, 0.05), 
             scale: new THREE.Vector3(0.1, 0.1, 0.1),
             color: 0xfff495
         });
