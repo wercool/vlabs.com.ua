@@ -15,16 +15,16 @@ export default class CarrierTPWEM01 {
 
        this.itemName = this.initObj.itemName;
 
-       this.accessableInteractiveELements = [];
-
        this.screenMapTopOffset = 158;
        this.screenMapIntersectionUV = undefined;
 
-       this.initial = true;
+       this.curState = {};
 
        this.screens = {};
        this.curScreen = undefined;
        this.curScreenActiveElements = [];
+
+       this.initial = true;
 
        if (this.initObj.detailedView) {
         this.initialized = false;
@@ -65,9 +65,47 @@ export default class CarrierTPWEM01 {
                 document.body.appendChild(this.screenCanvas);
                 this.screenCanvasContext = this.screenCanvas.getContext('2d');
 
+                /* Screen */
                 this.screens['welcomeScreen'] = this.welcomeScreen;
                 this.screens['myThermostatSetupScreen'] = this.myThermostatSetupScreen;
                 this.screens['powerConnectionsScreen'] = this.powerConnectionsScreen;
+                this.screens['terminalsConnectedScreen'] = this.terminalsConnectedScreen;
+                this.screens['terminalsConnectedManualOverrideConfirmationScreen'] = this.terminalsConnectedManualOverrideConfirmationScreen;
+                this.screens['terminalsConnectedManualScreen'] = this.terminalsConnectedManualScreen;
+                this.screens['terminalsConnectedManualEraseConfirmationScreen'] = this.terminalsConnectedManualEraseConfirmationScreen;
+                this.screens['accessoryScreen'] = this.accessoryScreen;
+                this.screens['accessoryPowerSourceScreen'] = this.accessoryPowerSourceScreen;
+                this.screens['accessoryTypeScreen'] = this.accessoryTypeScreen;
+                this.screens['equipmentConfiguredScreen'] = this.equipmentConfiguredScreen;
+                this.screens['myThermostatNameScreen'] = this.myThermostatNameScreen;
+
+                /* State */
+                this.curState['EquipmentConfiguration'] = false;
+                this.curState['Preferences'] = false;
+                this.curState['Rh_RcRh'] = 'Rh';
+                this.curState['terminalsConnected'] = {
+                    Rc: false,
+                    W1: true,
+                    Y1: true,
+                    Rh: true,
+                    W2: false,
+                    Y2: false,
+                    C: true,
+                    G: true,
+                    OB: false
+                };
+                this.curState['terminalsConnectedManual'] = {
+                    W1: this.curState['terminalsConnected'].W1,
+                    Y1: this.curState['terminalsConnected'].Y1,
+                    W2: this.curState['terminalsConnected'].W2,
+                    Y2: this.curState['terminalsConnected'].Y2,
+                    G: this.curState['terminalsConnected'].G,
+                    OB: this.curState['terminalsConnected'].OB
+                };
+                this.curState['terminalsConnectedScreenManualOverride'] = false;
+                this.curState['accessoryWiresToAcc'] = false;
+                this.curState['accessoryPowerSameAsThermostat'] = true;
+                this.curState['accessoryType'] = 'humidifier';
 
                 this.addVLabEventListeners();
 
@@ -184,7 +222,7 @@ export default class CarrierTPWEM01 {
         this.screenCanvasContext.fillStyle = '#161616';
         this.screenCanvasContext.fillRect(0, 0, 512, 512);
 
-        console.log("animate: " + this.curScreen);
+        console.log("switchScreen: " + this.curScreen);
         if (this.curScreen) this.screens[this.curScreen].call(this);
 
         this.screenMaterial.map = new THREE.Texture(this.screenCanvas);
@@ -204,8 +242,8 @@ export default class CarrierTPWEM01 {
 
         // console.log(activeElement.name, rectX1, rectY1, rectX2, rectY2, ' ? ', x, y);
 
-        this.screenMapIntersectionUV = undefined;
         if (x >= rectX1 && y >= rectY1 && x <= rectX2 && y <= rectY2) {
+            this.screenMapIntersectionUV = undefined;
             return true;
         } else {
             return false;
@@ -228,6 +266,47 @@ export default class CarrierTPWEM01 {
         }
     }
 
+    backButton(prevScreenName, buttonText) {
+        var self = this;
+        this.screenCanvasContext.fillStyle = 'white';
+        this.screenCanvasContext.font = 'bold 30px Arial';
+        this.screenCanvasContext.fillText(buttonText ? buttonText : 'Back', 10, this.screenMapTopOffset + 340);
+        this.curScreenActiveElements.push({
+            name: 'backButton',
+            rect: [5, this.screenMapTopOffset + 310, 80, 40],
+            onTouch: function() {
+                self.switchScreen(prevScreenName);
+            }
+        });
+    }
+
+    nextButton(nextScreenName, buttonText) {
+        var self = this;
+        this.screenCanvasContext.fillStyle = 'white';
+        this.screenCanvasContext.font = 'bold 30px Arial';
+        this.screenCanvasContext.fillText(buttonText ? buttonText : 'Next', 430, this.screenMapTopOffset + 340);
+        this.curScreenActiveElements.push({
+            name: 'nextButton',
+            rect: [425, this.screenMapTopOffset + 310, 75, 40],
+            onTouch: function() {
+                self.switchScreen(nextScreenName);
+            }
+        });
+    }
+
+    infoButton() {
+        var self = this;
+        var infoButtonImgData = this.screenAssetsCanvasContext.getImageData(35, 1, 40, 40);
+        this.screenCanvasContext.putImageData(infoButtonImgData, 240, this.screenMapTopOffset + 310);
+        this.curScreenActiveElements.push({
+            name: 'infoButton',
+            rect: [240, this.screenMapTopOffset + 310, 40, 40],
+            onTouch: function() {
+                console.log(this.name);
+            }
+        });
+    }
+
     welcomeScreen() {
         var self = this;
         this.curScreenActiveElements = [];
@@ -241,15 +320,9 @@ export default class CarrierTPWEM01 {
         this.screenCanvasContext.font = 'bold 20px Arial';
         this.screenCanvasContext.fillText('www.carrier.com/myhome', 10, this.screenMapTopOffset + 280);
 
-        Promise.all([
-            this.nextButton('myThermostatSetupScreen')
-        ])
-        .then((result) => {
-            this.processInteractions();
-        })
-        .catch(error => {
-            console.error(error);
-        });
+        this.nextButton('myThermostatSetupScreen');
+
+        this.processInteractions();
     }
 
     myThermostatSetupScreen() {
@@ -261,33 +334,31 @@ export default class CarrierTPWEM01 {
         this.screenCanvasContext.font = 'bold 20px Arial';
         this.screenCanvasContext.fillText('My Thermostat Setup', 150, this.screenMapTopOffset + 50);
 
-        var checkedCheckBoxImgData = this.screenAssetsCanvasContext.getImageData(1, 1, 35, 35);
+        var checkedCheckBoxImgData = this.screenAssetsCanvasContext.getImageData(1, 1, 35, 34);
         var unCheckedCheckBoxImgData = this.screenAssetsCanvasContext.getImageData(1, 35, 35, 35);
 
         this.screenCanvasContext.font = 'bold 18px Arial';
-        this.screenCanvasContext.putImageData(unCheckedCheckBoxImgData, 100, this.screenMapTopOffset + 85);
+        this.screenCanvasContext.putImageData(this.curState["EquipmentConfiguration"] ? checkedCheckBoxImgData : unCheckedCheckBoxImgData, 100, this.screenMapTopOffset + 85);
         this.screenCanvasContext.fillText('Equipment configuration', 150, this.screenMapTopOffset + 107);
 
-        this.screenCanvasContext.putImageData(unCheckedCheckBoxImgData, 100, this.screenMapTopOffset + 130);
+        this.screenCanvasContext.putImageData(this.curState['Preferences'] ? checkedCheckBoxImgData : unCheckedCheckBoxImgData, 100, this.screenMapTopOffset + 130);
         this.screenCanvasContext.fillText('Preferences', 150, this.screenMapTopOffset + 152);
 
         this.screenCanvasContext.putImageData(unCheckedCheckBoxImgData, 100, this.screenMapTopOffset + 175);
-        this.screenCanvasContext.fillText('Preferences', 150, this.screenMapTopOffset + 197);
+        this.screenCanvasContext.fillText('Network connection', 150, this.screenMapTopOffset + 197);
 
         this.screenCanvasContext.putImageData(unCheckedCheckBoxImgData, 100, this.screenMapTopOffset + 220);
         this.screenCanvasContext.fillText('Link to web portal', 150, this.screenMapTopOffset + 242);
 
-        Promise.all([
-            this.backButton('welcomeScreen'),
-            this.infoButton(),
-            this.nextButton('powerConnectionsScreen')
-        ])
-        .then((result) => {
-            this.processInteractions();
-        })
-        .catch(error => {
-            console.error(error);
-        });
+        this.backButton('welcomeScreen');
+        this.infoButton();
+        if (!this.curState["EquipmentConfiguration"]) {
+            this.nextButton('powerConnectionsScreen');
+        } else if (!this.curState['Preferences']) {
+            this.nextButton('myThermostatNameScreen');
+        }
+
+        this.processInteractions();
     }
 
     powerConnectionsScreen() {
@@ -306,88 +377,529 @@ export default class CarrierTPWEM01 {
 
         var frameImgDataRh = this.screenAssetsCanvasContext.getImageData(75, 1, 97, 102);
         var frameImgDataRcRh = this.screenAssetsCanvasContext.getImageData(171, 1, 97, 102);
-        this.screenCanvasContext.putImageData(frameImgDataRh, 210, this.screenMapTopOffset + 130);
+
+        this.screenCanvasContext.putImageData(this.curState["Rh_RcRh"] == 'Rh' ? frameImgDataRh : frameImgDataRcRh, 210, this.screenMapTopOffset + 130);
 
         this.screenCanvasContext.fillText('Rh only', 225, this.screenMapTopOffset + 165);
+        this.screenCanvasContext.fillText('Rc & Rh', 225, this.screenMapTopOffset + 210);
+
         this.curScreenActiveElements.push({
             name: 'RhOnlyButton',
-            rect: [215, this.screenMapTopOffset + 135, 85, 45],
+            rect: [215, this.screenMapTopOffset + 135, 90, 45],
             onTouch: function() {
-                // self.switchScreen('myThermostatSetupScreen');
-                console.log(this.name);
+                self.curState["Rh_RcRh"] = 'Rh';
+                self.switchScreen('powerConnectionsScreen');
             }
         });
 
-        this.screenCanvasContext.fillText('Rc & Rh', 225, this.screenMapTopOffset + 210);
         this.curScreenActiveElements.push({
             name: 'RcRhButton',
-            rect: [215, this.screenMapTopOffset + 185, 85, 45],
+            rect: [215, this.screenMapTopOffset + 185, 90, 45],
             onTouch: function() {
-                // self.switchScreen('myThermostatSetupScreen');
-                console.log(this.name);
+                self.curState["Rh_RcRh"] = 'RcRh';
+                self.switchScreen('powerConnectionsScreen');
             }
         });
 
-        Promise.all([
-            this.backButton('myThermostatSetupScreen'),
-            this.infoButton(),
-            this.nextButton('powerConnectionsScreen')
-        ])
-        .then((result) => {
-            this.processInteractions();
-        })
-        .catch(error => {
-            console.error(error);
-        });
+        if (!this.curState['terminalsConnectedScreenManualOverride']) {
+            this.backButton('myThermostatSetupScreen');
+            this.nextButton('terminalsConnectedScreen');
+        } else {
+            this.backButton('terminalsConnectedScreen');
+            this.nextButton('terminalsConnectedManualScreen');
+        }
 
+        this.infoButton();
+
+        this.processInteractions();
     }
 
-    backButton(prevScreenName) {
-        return new Promise((resolve, reject) => {
-            var self = this;
-            this.screenCanvasContext.font = 'bold 30px Arial';
-            this.screenCanvasContext.fillText('Back', 10, this.screenMapTopOffset + 340);
-            this.curScreenActiveElements.push({
-                name: 'backButton',
-                rect: [5, this.screenMapTopOffset + 310, 80, 40],
-                onTouch: function() {
-                    self.switchScreen(prevScreenName);
-                }
-            });
-            resolve(this);
+    terminalsConnectedScreen() {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        this.screenCanvasContext.fillStyle = 'white';
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Terminals Connected', 165, this.screenMapTopOffset + 40);
+
+
+        var grayButton = this.screenAssetsCanvasContext.getImageData(270, 1, 87, 43);
+        var greenButton = this.screenAssetsCanvasContext.getImageData(270, 43, 87, 43);
+        var overrideOptionBlock = this.screenAssetsCanvasContext.getImageData(357, 1, 134, 166);
+
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnected'].Rc ? greenButton : grayButton, 150, this.screenMapTopOffset + 60);
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnected'].W1 ? greenButton : grayButton, 250, this.screenMapTopOffset + 60);
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnected'].Y1 ? greenButton : grayButton, 350, this.screenMapTopOffset + 60);
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnected'].Rh ? greenButton : grayButton, 150, this.screenMapTopOffset + 120);
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnected'].W2 ? greenButton : grayButton, 250, this.screenMapTopOffset + 120);
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnected'].Y2 ? greenButton : grayButton, 350, this.screenMapTopOffset + 120);
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnected'].C ? greenButton : grayButton, 150, this.screenMapTopOffset + 180);
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnected'].G ? greenButton : grayButton, 250, this.screenMapTopOffset + 180);
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnected'].OB ? greenButton : grayButton, 350, this.screenMapTopOffset + 180);
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Rc', 180, this.screenMapTopOffset + 88);
+        this.screenCanvasContext.fillText('W1', 280, this.screenMapTopOffset + 88);
+        this.screenCanvasContext.fillText('Y1', 380, this.screenMapTopOffset + 88);
+        this.screenCanvasContext.fillText('Rh', 180, this.screenMapTopOffset + 148);
+        this.screenCanvasContext.fillText('W2', 280, this.screenMapTopOffset + 148);
+        this.screenCanvasContext.fillText('Y2', 380, this.screenMapTopOffset + 148);
+        this.screenCanvasContext.fillText('C', 185, this.screenMapTopOffset + 209);
+        this.screenCanvasContext.fillText('G', 285, this.screenMapTopOffset + 209);
+        this.screenCanvasContext.fillText('O/B', 375, this.screenMapTopOffset + 209);
+
+        this.screenCanvasContext.putImageData(overrideOptionBlock, 5, this.screenMapTopOffset + 60);
+
+        this.curScreenActiveElements.push({
+            name: 'overrideButton',
+            rect: [24, this.screenMapTopOffset + 170, 95, 45],
+            onTouch: function() {
+                self.switchScreen('terminalsConnectedManualOverrideConfirmationScreen');
+            }
+        });
+
+        this.screenCanvasContext.fillStyle = '#abcd89';
+        this.screenCanvasContext.font = '18px Arial';
+        this.screenCanvasContext.fillText('NOTE: For this configuration the indoor unit will control the fan', 5, this.screenMapTopOffset + 250);
+        this.screenCanvasContext.fillText('when heating. Thermostat fan control can be enabled in the', 5, this.screenMapTopOffset + 270);
+        this.screenCanvasContext.fillText('installation settings menu after initial setup is complete.', 5, this.screenMapTopOffset + 290);
+
+        this.backButton('powerConnectionsScreen');
+        this.infoButton();
+        this.nextButton('accessoryScreen');
+
+
+        this.processInteractions();
+    }
+
+    terminalsConnectedManualScreen() {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        this.screenCanvasContext.fillStyle = 'white';
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Terminals Connected', 165, this.screenMapTopOffset + 40);
+
+        var grayButton = this.screenAssetsCanvasContext.getImageData(270, 1, 87, 43);
+        var greenButton = this.screenAssetsCanvasContext.getImageData(270, 43, 87, 43);
+        var overrideOptionBlock = this.screenAssetsCanvasContext.getImageData(492, 1, 134, 166);
+
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnectedManual'].W1 ? greenButton : grayButton, 250, this.screenMapTopOffset + 60);
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnectedManual'].Y1 ? greenButton : grayButton, 350, this.screenMapTopOffset + 60);
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnectedManual'].W2 ? greenButton : grayButton, 250, this.screenMapTopOffset + 120);
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnectedManual'].Y2 ? greenButton : grayButton, 350, this.screenMapTopOffset + 120);
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnectedManual'].G ? greenButton : grayButton, 250, this.screenMapTopOffset + 180);
+        this.screenCanvasContext.putImageData(this.curState['terminalsConnectedManual'].OB ? greenButton : grayButton, 350, this.screenMapTopOffset + 180);
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('W1', 280, this.screenMapTopOffset + 88);
+        this.screenCanvasContext.fillText('Y1', 380, this.screenMapTopOffset + 88);
+        this.screenCanvasContext.fillText('W2', 280, this.screenMapTopOffset + 148);
+        this.screenCanvasContext.fillText('Y2', 380, this.screenMapTopOffset + 148);
+        this.screenCanvasContext.fillText('G', 285, this.screenMapTopOffset + 209);
+        this.screenCanvasContext.fillText('O/B', 375, this.screenMapTopOffset + 209);
+
+        this.curScreenActiveElements.push({
+            name: 'W1Button',
+            rect: [245, this.screenMapTopOffset + 60, 92, 45],
+            onTouch: function() {
+                self.curState['terminalsConnectedManual'].W1 = !self.curState['terminalsConnectedManual'].W1;
+                self.switchScreen('terminalsConnectedManualScreen');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'Y1Button',
+            rect: [345, this.screenMapTopOffset + 60, 92, 45],
+            onTouch: function() {
+                self.curState['terminalsConnectedManual'].Y1 = !self.curState['terminalsConnectedManual'].Y1;
+                self.switchScreen('terminalsConnectedManualScreen');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'W2Button',
+            rect: [245, this.screenMapTopOffset + 120, 92, 45],
+            onTouch: function() {
+                self.curState['terminalsConnectedManual'].W2 = !self.curState['terminalsConnectedManual'].W2;
+                self.switchScreen('terminalsConnectedManualScreen');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'Y2Button',
+            rect: [345, this.screenMapTopOffset + 120, 92, 45],
+            onTouch: function() {
+                self.curState['terminalsConnectedManual'].Y2 = !self.curState['terminalsConnectedManual'].Y2;
+                self.switchScreen('terminalsConnectedManualScreen');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'GButton',
+            rect: [245, this.screenMapTopOffset + 180, 92, 45],
+            onTouch: function() {
+                self.curState['terminalsConnectedManual'].G = !self.curState['terminalsConnectedManual'].G;
+                self.switchScreen('terminalsConnectedManualScreen');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'OBButton',
+            rect: [345, this.screenMapTopOffset + 180, 92, 45],
+            onTouch: function() {
+                self.curState['terminalsConnectedManual'].OB = !self.curState['terminalsConnectedManual'].OB;
+                self.switchScreen('terminalsConnectedManualScreen');
+            }
+        });
+
+        this.screenCanvasContext.putImageData(overrideOptionBlock, 5, this.screenMapTopOffset + 60);
+        this.curScreenActiveElements.push({
+            name: 'overrideOffButton',
+            rect: [24, this.screenMapTopOffset + 170, 95, 45],
+            onTouch: function() {
+                self.switchScreen('terminalsConnectedManualEraseConfirmationScreen');
+            }
+        });
+
+        this.backButton('terminalsConnectedManualEraseConfirmationScreen');
+        this.infoButton();
+        this.nextButton('accessoryScreen');
+
+        this.processInteractions();
+    }
+
+    terminalsConnectedManualEraseConfirmationScreen() {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        this.screenCanvasContext.fillStyle = 'white';
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Loss of Manual Override', 100, this.screenMapTopOffset + 40);
+
+        this.screenCanvasContext.fillText('Enabling equipment auto-detection will erase', 20, this.screenMapTopOffset + 150);
+        this.screenCanvasContext.fillText('your manual configuration. Are you sure you', 20, this.screenMapTopOffset + 175);
+        this.screenCanvasContext.fillText('want to continue?', 20, this.screenMapTopOffset + 200);
+
+        this.backButton('terminalsConnectedManualScreen', 'No');
+
+        this.screenCanvasContext.fillStyle = 'white';
+        this.screenCanvasContext.font = 'bold 30px Arial';
+        this.screenCanvasContext.fillText('Yes', 430, this.screenMapTopOffset + 340);
+        this.curScreenActiveElements.push({
+            name: 'nextButton',
+            rect: [425, this.screenMapTopOffset + 310, 75, 40],
+            onTouch: function() {
+                self.curState['terminalsConnectedScreenManualOverride'] = false;
+                self.switchScreen('terminalsConnectedScreen');
+            }
         });
     }
 
-    nextButton(nextScreenName) {
-        return new Promise((resolve, reject) => {
-            var self = this;
-            this.screenCanvasContext.font = 'bold 30px Arial';
-            this.screenCanvasContext.fillText('Next', 430, this.screenMapTopOffset + 340);
-            this.curScreenActiveElements.push({
-                name: 'nextButton',
-                rect: [425, this.screenMapTopOffset + 310, 75, 40],
-                onTouch: function() {
-                    self.switchScreen(nextScreenName);
-                }
-            });
-            resolve(this);
+    terminalsConnectedManualOverrideConfirmationScreen() {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        this.curState['terminalsConnectedScreenManualOverride'] = false;
+
+        this.screenCanvasContext.fillStyle = 'white';
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Manual Override', 165, this.screenMapTopOffset + 40);
+
+        this.screenCanvasContext.fillText('WARNING: Incorrect configuration of the', 20, this.screenMapTopOffset + 150);
+        this.screenCanvasContext.fillText('system may lead to improper operations and', 20, this.screenMapTopOffset + 175);
+        this.screenCanvasContext.fillText('system damage. Only professional installers', 20, this.screenMapTopOffset + 200);
+        this.screenCanvasContext.fillText('should proceed with auto detection disabled.', 20, this.screenMapTopOffset + 225);
+        this.screenCanvasContext.fillText('Are you sure you want to continue?', 20, this.screenMapTopOffset + 250);
+
+        this.backButton('terminalsConnectedScreen', 'No');
+
+        this.screenCanvasContext.fillStyle = 'white';
+        this.screenCanvasContext.font = 'bold 30px Arial';
+        this.screenCanvasContext.fillText('Yes', 430, this.screenMapTopOffset + 340);
+        this.curScreenActiveElements.push({
+            name: 'nextButton',
+            rect: [425, this.screenMapTopOffset + 310, 75, 40],
+            onTouch: function() {
+                self.curState['terminalsConnectedScreenManualOverride'] = true;
+                self.switchScreen('powerConnectionsScreen');
+            }
         });
+
+
+        this.processInteractions();
     }
 
-    infoButton() {
-        return new Promise((resolve, reject) => {
-            var self = this;
-            var infoButtonImgData = this.screenAssetsCanvasContext.getImageData(35, 1, 40, 40);
-            this.screenCanvasContext.putImageData(infoButtonImgData, 240, this.screenMapTopOffset + 310);
-            this.curScreenActiveElements.push({
-                name: 'infoButton',
-                rect: [240, this.screenMapTopOffset + 310, 40, 40],
-                onTouch: function() {
-                    console.log(this.name);
-                }
-            });
-            resolve(this);
+    accessoryScreen() {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        this.screenCanvasContext.fillStyle = 'white';
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Accessory', 200, this.screenMapTopOffset + 40);
+
+        var yesBlock = this.screenAssetsCanvasContext.getImageData(725, 1, 97, 103);
+        var noBlock = this.screenAssetsCanvasContext.getImageData(626, 1, 97, 103);
+
+        this.screenCanvasContext.font = 'bold 18px Arial';
+        this.screenCanvasContext.fillText('Are there accessory wires', 140, this.screenMapTopOffset + 90);
+        this.screenCanvasContext.fillText('connected to Acc+ and Acc- ?', 135, this.screenMapTopOffset + 110);
+
+        this.screenCanvasContext.putImageData(this.curState['accessoryWiresToAcc'] ? yesBlock : noBlock, 210, this.screenMapTopOffset + 140);
+
+        this.curScreenActiveElements.push({
+            name: 'yesButton',
+            rect: [215, this.screenMapTopOffset + 145, 90, 45],
+            onTouch: function() {
+                self.curState['accessoryWiresToAcc'] = true;
+                self.switchScreen('accessoryScreen');
+            }
         });
+
+        this.curScreenActiveElements.push({
+            name: 'noButton',
+            rect: [215, this.screenMapTopOffset + 193, 90, 45],
+            onTouch: function() {
+                self.curState['accessoryWiresToAcc'] = false;
+                self.switchScreen('accessoryScreen');
+            }
+        });
+
+        if (this.curState['terminalsConnectedScreenManualOverride'] === true) {
+            this.backButton('terminalsConnectedManualScreen');
+        } else {
+            this.backButton('terminalsConnectedScreen');
+        }
+        this.infoButton();
+
+        if (this.curState['accessoryWiresToAcc']) {
+            this.nextButton('accessoryPowerSourceScreen');
+        } else {
+            this.nextButton('equipmentConfiguredScreen');
+        }
+
+
+        this.processInteractions();
+    }
+
+    accessoryPowerSourceScreen() {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        this.screenCanvasContext.fillStyle = 'white';
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Accessory Power Source', 130, this.screenMapTopOffset + 40);
+
+        var yesBlock = this.screenAssetsCanvasContext.getImageData(725, 1, 97, 103);
+        var noBlock = this.screenAssetsCanvasContext.getImageData(626, 1, 97, 103);
+
+        this.screenCanvasContext.font = 'bold 18px Arial';
+        this.screenCanvasContext.fillText('Is the accessory control power', 135, this.screenMapTopOffset + 90);
+        this.screenCanvasContext.fillText('the same as the thermostat', 140, this.screenMapTopOffset + 110);
+
+        this.screenCanvasContext.putImageData(this.curState['accessoryPowerSameAsThermostat'] ? yesBlock : noBlock, 210, this.screenMapTopOffset + 140);
+
+        this.screenCanvasContext.font = 'bold 16px Arial';
+        if (this.curState['accessoryPowerSameAsThermostat']) {
+            this.screenCanvasContext.fillText('The thermostat', 325, this.screenMapTopOffset + 160);
+            this.screenCanvasContext.fillText('provides the', 325, this.screenMapTopOffset + 180);
+            this.screenCanvasContext.fillText('control power using', 325, this.screenMapTopOffset + 200);
+            this.screenCanvasContext.fillText('Rh/Rc', 325, this.screenMapTopOffset + 220);
+        } else {
+            this.screenCanvasContext.fillText('The control power is', 325, this.screenMapTopOffset + 160);
+            this.screenCanvasContext.fillText('isolated from the', 325, this.screenMapTopOffset + 180);
+            this.screenCanvasContext.fillText('thermostat', 325, this.screenMapTopOffset + 200);
+        }
+
+        this.curScreenActiveElements.push({
+            name: 'yesButton',
+            rect: [215, this.screenMapTopOffset + 145, 90, 45],
+            onTouch: function() {
+                self.curState['accessoryPowerSameAsThermostat'] = true;
+                self.switchScreen('accessoryPowerSourceScreen');
+            }
+        });
+
+        this.curScreenActiveElements.push({
+            name: 'noButton',
+            rect: [215, this.screenMapTopOffset + 193, 90, 45],
+            onTouch: function() {
+                self.curState['accessoryPowerSameAsThermostat'] = false;
+                self.switchScreen('accessoryPowerSourceScreen');
+            }
+        });
+
+        this.backButton('accessoryScreen');
+        this.infoButton();
+        this.nextButton('accessoryTypeScreen');
+
+
+        this.processInteractions();
+    }
+
+    accessoryTypeScreen() {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        this.screenCanvasContext.fillStyle = 'white';
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Accessory Type', 180, this.screenMapTopOffset + 40);
+
+        var grayButton = this.screenAssetsCanvasContext.getImageData(270, 1, 87, 43);
+        var greenButton = this.screenAssetsCanvasContext.getImageData(270, 43, 87, 43);
+
+        this.screenCanvasContext.putImageData(this.curState['accessoryType'] == 'humidifier' ? greenButton : grayButton, 210, this.screenMapTopOffset + 100);
+        this.screenCanvasContext.putImageData(this.curState['accessoryType'] == 'dehumidifier' ? greenButton : grayButton, 210, this.screenMapTopOffset + 150);
+        this.screenCanvasContext.putImageData(this.curState['accessoryType'] == 'ventilator' ? greenButton : grayButton, 210, this.screenMapTopOffset + 200);
+
+        this.screenCanvasContext.font = '14px Arial';
+        this.screenCanvasContext.fillText('Humidifier', 220, this.screenMapTopOffset + 125);
+        this.curScreenActiveElements.push({
+            name: 'humidifierButton',
+            rect: [210, this.screenMapTopOffset + 100, 83, 40],
+            onTouch: function() {
+                self.curState['accessoryType'] = 'humidifier';
+                self.switchScreen('accessoryTypeScreen');
+            }
+        });
+
+        this.screenCanvasContext.fillText('Dehumidifier', 215, this.screenMapTopOffset + 175);
+        this.curScreenActiveElements.push({
+            name: 'humidifierButton',
+            rect: [210, this.screenMapTopOffset + 150, 83, 40],
+            onTouch: function() {
+                self.curState['accessoryType'] = 'dehumidifier';
+                self.switchScreen('accessoryTypeScreen');
+            }
+        });
+
+        this.screenCanvasContext.fillText('Ventilator', 220, this.screenMapTopOffset + 225);
+        this.curScreenActiveElements.push({
+            name: 'humidifierButton',
+            rect: [210, this.screenMapTopOffset + 200, 83, 40],
+            onTouch: function() {
+                self.curState['accessoryType'] = 'ventilator';
+                self.switchScreen('accessoryTypeScreen');
+            }
+        });
+
+        // this.curScreenActiveElements.push({
+        //     name: 'noButton',
+        //     rect: [215, this.screenMapTopOffset + 193, 90, 45],
+        //     onTouch: function() {
+        //         self.curState['accessoryPowerSameAsThermostat'] = false;
+        //         self.switchScreen('accessoryPowerSourceScreen');
+        //     }
+        // });
+
+        this.backButton('accessoryPowerSourceScreen');
+        this.infoButton();
+        this.nextButton('equipmentConfiguredScreen');
+
+
+        this.processInteractions();
+    }
+
+    equipmentConfiguredScreen() {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        this.curState["EquipmentConfiguration"] = true;
+
+        this.screenCanvasContext.fillStyle = 'white';
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Equipment Configured', 135, this.screenMapTopOffset + 40);
+
+        var grayButton = this.screenAssetsCanvasContext.getImageData(270, 1, 87, 43);
+        var greenButton = this.screenAssetsCanvasContext.getImageData(270, 43, 87, 43);
+
+        this.screenCanvasContext.font = '18px Arial';
+        this.screenCanvasContext.fillText('Based on your wiring and selections the thermostat will be', 10, this.screenMapTopOffset + 80);
+        this.screenCanvasContext.fillText('configured to control the following equipment. Press next to', 10, this.screenMapTopOffset + 100);
+        this.screenCanvasContext.fillText('continue or back to change your selections.', 10, this.screenMapTopOffset + 120);
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('AC', 100, this.screenMapTopOffset + 170);
+        this.screenCanvasContext.fillText('Furnace', 50, this.screenMapTopOffset + 225);
+        this.screenCanvasContext.fillText('Accessory', 30, this.screenMapTopOffset + 278);
+
+        this.screenCanvasContext.putImageData(greenButton, 135, this.screenMapTopOffset + 140);
+        this.screenCanvasContext.fillText('1 Stage', 140, this.screenMapTopOffset + 168);
+        this.screenCanvasContext.putImageData(grayButton, 230, this.screenMapTopOffset + 140);
+        this.screenCanvasContext.fillText('2 Stage', 238, this.screenMapTopOffset + 168);
+        this.screenCanvasContext.putImageData(grayButton, 325, this.screenMapTopOffset + 140);
+        this.screenCanvasContext.fillText('No', 355, this.screenMapTopOffset + 168);
+
+        this.screenCanvasContext.putImageData(grayButton, 135, this.screenMapTopOffset + 195);
+        this.screenCanvasContext.fillText('1 Stage', 140, this.screenMapTopOffset + 223);
+        this.screenCanvasContext.putImageData(grayButton, 230, this.screenMapTopOffset + 195);
+        this.screenCanvasContext.fillText('2 Stage', 238, this.screenMapTopOffset + 223);
+        this.screenCanvasContext.putImageData(greenButton, 325, this.screenMapTopOffset + 195);
+        this.screenCanvasContext.fillText('No', 355, this.screenMapTopOffset + 223);
+
+        this.screenCanvasContext.putImageData(this.curState['accessoryWiresToAcc'] ? greenButton : grayButton, 135, this.screenMapTopOffset + 250);
+        this.screenCanvasContext.fillText('Yes', 160, this.screenMapTopOffset + 278);
+        this.screenCanvasContext.putImageData(this.curState['accessoryWiresToAcc'] ? grayButton : greenButton, 230, this.screenMapTopOffset + 250);
+        this.screenCanvasContext.fillText('No', 260, this.screenMapTopOffset + 278);
+
+        if (this.curState['accessoryWiresToAcc']) {
+            this.backButton('accessoryPowerSourceScreen');
+        } else {
+            this.backButton('accessoryScreen');
+        }
+
+        this.infoButton();
+        this.nextButton('myThermostatSetupScreen');
+
+
+        this.processInteractions();
+    }
+
+    myThermostatNameScreen() {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        this.screenCanvasContext.strokeStyle = 'white';
+        this.screenCanvasContext.fillStyle = 'white';
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Select My Thersmostat Name', 100, this.screenMapTopOffset + 40);
+
+        this.screenCanvasContext.lineWidth = 2;
+        this.screenCanvasContext.beginPath();
+        this.screenCanvasContext.moveTo(0, this.screenMapTopOffset + 60);
+        this.screenCanvasContext.lineTo(512, this.screenMapTopOffset + 60);
+        this.screenCanvasContext.stroke();
+
+        this.screenCanvasContext.fillStyle = '#3f3c85';
+        this.screenCanvasContext.fillRect(0, this.screenMapTopOffset + 65, 450, 60);
+        this.screenCanvasContext.fillStyle = 'white';
+        this.screenCanvasContext.fillText('My home', 20, this.screenMapTopOffset + 100);
+        this.screenCanvasContext.lineWidth = 1;
+        this.screenCanvasContext.beginPath();
+        this.screenCanvasContext.moveTo(0, this.screenMapTopOffset + 125);
+        this.screenCanvasContext.lineTo(450, this.screenMapTopOffset + 125);
+        this.screenCanvasContext.moveTo(0, this.screenMapTopOffset + 185);
+        this.screenCanvasContext.lineTo(450, this.screenMapTopOffset + 185);
+        this.screenCanvasContext.moveTo(0, this.screenMapTopOffset + 245);
+        this.screenCanvasContext.lineTo(450, this.screenMapTopOffset + 245);
+        this.screenCanvasContext.stroke();
+
+        this.screenCanvasContext.lineWidth = 2;
+        this.screenCanvasContext.beginPath();
+        this.screenCanvasContext.moveTo(0, this.screenMapTopOffset + 250);
+        this.screenCanvasContext.lineTo(512, this.screenMapTopOffset + 250);
+        this.screenCanvasContext.stroke();
+
+        this.backButton('myThermostatSetupScreen');
+        this.infoButton();
+        // this.nextButton('myThermostatSetupScreen');
+
+
+        this.processInteractions();
     }
 
 }
