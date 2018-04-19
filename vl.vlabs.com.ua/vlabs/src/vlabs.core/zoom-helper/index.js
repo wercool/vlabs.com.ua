@@ -130,8 +130,12 @@ export default class ZoomHelper {
         this.context.defaultCameraControls.enablePan = false;
         this.context.defaultCameraControls.minDistance = this.initObj.minDistance;
 
+        var orbitTargetPos = (this.initObj.targetObjectIsAnOrbitTarget === true) ? this.context.getWorldPosition(this.targetObject).clone() : zoomTarget;
+        if (this.initObj.orbitTargetPositionDeltas !== undefined) {
+            orbitTargetPos.add(this.initObj.orbitTargetPositionDeltas);
+        }
         new TWEEN.Tween(this.context.defaultCameraControls.target)
-        .to({ x: zoomTarget.x, y: zoomTarget.y, z: zoomTarget.z }, 500)
+        .to({ x: orbitTargetPos.x, y: orbitTargetPos.y, z: orbitTargetPos.z }, 500)
         .easing(TWEEN.Easing.Cubic.InOut)
         .onUpdate(() => {
             this.context.defaultCameraControls.update();

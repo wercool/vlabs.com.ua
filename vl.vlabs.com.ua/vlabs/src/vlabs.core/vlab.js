@@ -76,7 +76,8 @@ export default class VLab {
                 "url": "../vlabs.assets/img/place.png",
                 "texture": undefined,
                 "sprite": undefined
-            }
+            },
+            "VLabPositioners": []
         };
 
         this.mouseCoords = new THREE.Vector2();
@@ -180,6 +181,7 @@ export default class VLab {
         this.paused = false;
         this.container.style.display = 'block';
         this.statsTHREE.domElement.style.display = 'block';
+        this.resiezeWebGLContainer();
     }
 
     showErrorMessage(error) {
@@ -284,7 +286,7 @@ export default class VLab {
             antialias: false,
             powerPreference: 'high-performance',
             precision: 'lowp',
-            // logarithmicDepthBuffer: true
+            alpha: false
         });
 
         this.webGLRenderer.setClearColor(this.initObj.webGLRendererClearColor ? this.initObj.webGLRendererClearColor : 0x000000);
@@ -774,6 +776,11 @@ export default class VLab {
                 if (cameraControlConfig.targetPos) {
                     initialPos = cameraControlConfig.targetPos.clone();
                 }
+
+                if (cameraControlConfig.initialZoom) {
+                    this.defaultCamera.zoom = cameraControlConfig.initialZoom;
+                }
+
                 this.defaultCameraControls = new OrbitControls(this.defaultCamera, this.webGLContainer, initialPos);
                 if (cameraControlConfig.target) {
                     this.defaultCameraControls.target = cameraControlConfig.target;
@@ -797,10 +804,20 @@ export default class VLab {
                 if (this.nature.cameraControls.position0) {
                     this.defaultCameraControls.position0 = this.nature.cameraControls.position0;
                 }
+
+                //override with cameraControlConfig from argument
+                if (cameraControlConfig.maxDistance) {
+                    this.defaultCameraControls.maxDistance = cameraControlConfig.maxDistance;
+                }
+                if (cameraControlConfig.minDistance) {
+                    this.defaultCameraControls.minDistance = cameraControlConfig.minDistance;
+                }
+
                 if (cameraControlConfig.forced) {
                     this.defaultCameraControls.reset();
                 }
                 this.defaultCameraControls.update();
+
             break;
             case 'pointerlock':
                 if (this.defaultCameraControls) {

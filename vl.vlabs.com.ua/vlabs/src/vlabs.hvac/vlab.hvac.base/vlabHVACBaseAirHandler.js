@@ -5,6 +5,7 @@ import Inventory                    from '../../vlabs.core/inventory';
 import DetailedView                 from '../../vlabs.core/detailed-view';
 import ZoomHelper                   from '../../vlabs.core/zoom-helper';
 import TransformControls            from '../../vlabs.core/three-transformcontrols/index';
+import VLabPositioner               from '../../vlabs.core/vlab-positioner';
 
 //VLab Items
 import CarrierTPWEM01              from '../../vlabs.items/hvac/carrierTPWEM01';
@@ -53,6 +54,38 @@ export default class VlabHVACBaseAirHandler extends VLab {
             //     console.log(light1.position);
             // })
 
+            this.initialPosition = new VLabPositioner({
+                context: this,
+                active: true,
+                initial: true,
+                pos: this.defaultCameraControls.object.position.clone(),
+                name: 'initialPosition',
+                scale: new THREE.Vector3(0.2, 0.2, 0.2),
+                target: this.defaultCameraControls.target.clone()
+            });
+
+            this.positionInFrontOfTheNish = new VLabPositioner({
+                context: this,
+                active: false,
+                pos: new THREE.Vector3(-1.05, 1.75, 0.0),
+                name: 'positionInFrontOfTheNish',
+                scale: new THREE.Vector3(0.2, 0.2, 0.2),
+                target: new THREE.Vector3(-1.0, 1.65, 0.0)
+            });
+
+            var carrierTPWEM01WallMountPos = this.vLabScene.getObjectByName('carrierTPWEM01WallMount').position.clone();
+            carrierTPWEM01WallMountPos.z += 1.0
+            var carrierTPWEM01WallMountTarget = this.vLabScene.getObjectByName('carrierTPWEM01WallMount').position.clone();
+            carrierTPWEM01WallMountTarget.z += 0.25;
+            this.carrierTPWEM01WallPosition = new VLabPositioner({
+                context: this,
+                active: false,
+                pos: carrierTPWEM01WallMountPos,
+                name: 'carrierTPWEM01WallPosition',
+                scale: new THREE.Vector3(0.2, 0.2, 0.2),
+                target: carrierTPWEM01WallMountTarget
+            });
+
             console.log(this.name + " initialized");
         }).catch(error => {
             console.error(error);
@@ -75,7 +108,13 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
     onSceneCompleteEvent(event) {
         super.activate();
-        super.switchCameraControls(this.nature.cameraControls);
+        var cameraControlConfig = Object.assign({
+            forced: true, 
+            initialZoom: 1.0,
+            minDistance: 0.25,
+            maxDistance: 1.0
+        }, this.nature.cameraControls);
+        super.switchCameraControls(cameraControlConfig);
     }
 
     onActivatedEvent() {
@@ -86,23 +125,25 @@ export default class VlabHVACBaseAirHandler extends VLab {
         //Zoom helpers
         this.carrierTPWEM01WallMountZoomHelper = new ZoomHelper({
             context: this,
-            targetObjectName: "carrierTPWEM01WallMount",
+            targetObjectName: 'carrierTPWEM01WallMount',
+            targetObjectIsAnOrbitTarget: true,
+            orbitTargetPositionDeltas: new THREE.Vector3(0.0, 0.0, 0.1),
             minDistance: 0.02,
             maxDistance: 0.15,
             minAzimuthAngle: -1.0,
             maxAzimuthAngle: 1.0,
-            positionDeltas: new THREE.Vector3(0.0, 0.1, 0.0), 
+            positionDeltas: new THREE.Vector3(0.0, 0.1, 0.1), 
             scale: new THREE.Vector3(0.15, 0.15, 0.15),
             color: 0xfff495,
-            opacity: 0.75
+            opacity: 0.5
         });
 
         //VLab Items
         this.carrierTPWEM01 = new CarrierTPWEM01({
             context: this,
-            pos: this.vLabScene.getObjectByName("carrierTPWEM01WallMount").position,
-            rot: this.vLabScene.getObjectByName("carrierTPWEM01WallMount").rotation,
-            name: "carrierTPWEM01"
+            pos: this.vLabScene.getObjectByName('carrierTPWEM01WallMount').position,
+            rot: this.vLabScene.getObjectByName('carrierTPWEM01WallMount').rotation,
+            name: 'carrierTPWEM01'
         });
     }
 
