@@ -78,7 +78,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         // console.log(event.keyCode);
         switch (event.keyCode) {
             case 79: // o
-                this.switchCameraControls({ type: 'orbit', targetObjectName: 'Cube' });
+                this.switchCameraControls({ type: 'orbit' });
             break;
             case 80: // p
             case 32: // whitespace

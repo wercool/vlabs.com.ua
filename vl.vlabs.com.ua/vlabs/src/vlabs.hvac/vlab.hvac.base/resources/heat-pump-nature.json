@@ -9,8 +9,8 @@
         "allowedSpaceMapObjectName": "allowedSpacePlane",
         "type": "orbit",
         "target": {
-            "x": 0.0,
-            "y": 0.5,
+            "x": 0.5,
+            "y": 1.0,
             "z": 0.0
         },
         "yPanDeltaUp": 0.5,
