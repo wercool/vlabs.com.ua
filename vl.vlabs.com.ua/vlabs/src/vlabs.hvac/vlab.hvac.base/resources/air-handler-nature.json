@@ -15,7 +15,9 @@
         "yPanDeltaUp": 0.5,
         "yPanDeltaDown": 0.5,
         "maxPolarAngle": 1.5,
-        "minPolarAngle": 0.75
+        "minPolarAngle": 0.75,
+        "minDistance": 0.1,
+        "maxDistance": 2.0
     },
     "showTHREEStats": true,
     "bumpMaps": false,

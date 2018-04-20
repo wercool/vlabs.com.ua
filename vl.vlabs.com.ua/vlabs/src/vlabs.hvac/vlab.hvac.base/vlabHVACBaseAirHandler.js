@@ -54,14 +54,16 @@ export default class VlabHVACBaseAirHandler extends VLab {
             //     console.log(light1.position);
             // })
 
+            var defaultPos = this.defaultCameraControls.object.position.clone();
+            var defulatTarget = this.defaultCameraControls.target.clone();
             this.initialPosition = new VLabPositioner({
                 context: this,
                 active: true,
                 initial: true,
-                pos: this.defaultCameraControls.object.position.clone(),
+                pos: defaultPos,
                 name: 'initialPosition',
                 scale: new THREE.Vector3(0.2, 0.2, 0.2),
-                target: this.defaultCameraControls.target.clone()
+                target: defulatTarget
             });
 
             this.positionInFrontOfTheNish = new VLabPositioner({

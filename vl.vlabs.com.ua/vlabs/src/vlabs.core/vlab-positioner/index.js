@@ -115,13 +115,6 @@ export default class VLabPositioner {
     }
 
     moveToPosition() {
-        for (var i = 0; i < this.context.helpers.VLabPositioners.length; i++) {
-            if (this.context.helpers.VLabPositioners[i] != this) {
-                this.context.helpers.VLabPositioners[i].setActive(false);
-            }
-        }
-
-        this.setActive(true);
         this.context.tooltipHide();
 
         new TWEEN.Tween(this.context.defaultCameraControls.target)
@@ -133,10 +126,18 @@ export default class VLabPositioner {
         .start();
 
         new TWEEN.Tween(this.context.defaultCameraControls.object.position)
-        .to({ x: this.initObj.pos.x, y: this.initObj.pos.y, z: this.initObj.pos.z }, 750)
+        .to({ x: this.initObj.pos.x, y: this.initObj.pos.y, z: this.initObj.pos.z }, 1000)
         .easing(TWEEN.Easing.Cubic.InOut)
         .onUpdate(() => {
             this.context.defaultCameraControls.update();
+        })
+        .onComplete(() => {
+            for (var i = 0; i < this.context.helpers.VLabPositioners.length; i++) {
+                if (this.context.helpers.VLabPositioners[i] != this) {
+                    this.context.helpers.VLabPositioners[i].setActive(false);
+                }
+            }
+            this.setActive(true);
         })
         .start();
     }
