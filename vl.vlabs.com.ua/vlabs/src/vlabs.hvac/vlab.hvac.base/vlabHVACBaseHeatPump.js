@@ -5,6 +5,7 @@ import Inventory                    from '../../vlabs.core/inventory';
 import DetailedView                 from '../../vlabs.core/detailed-view';
 import ZoomHelper                   from '../../vlabs.core/zoom-helper';
 import TransformControls            from '../../vlabs.core/three-transformcontrols/index';
+import VLabPositioner               from '../../vlabs.core/vlab-positioner';
 
 //VLab Items
 import BoshScrewdriver              from '../../vlabs.items/boshScrewdriver';
@@ -66,6 +67,15 @@ export default class VlabHVACBaseHeatPump extends VLab {
             // ZFightingMaterial.polygonOffsetFactor = 1.0;
             // ZFightingMaterial.polygonOffsetUnits = 4.0;
             // ZFightingMaterial.needsUpdate = true;
+
+            this.serviceLoaction = new VLabPositioner({
+                context: this,
+                active: false,
+                pos: new THREE.Vector3(1.0, 1.5, 0.0),
+                name: 'serviceLoaction',
+                scale: new THREE.Vector3(0.2, 0.2, 0.2),
+                target: new THREE.Vector3(0.0, 0.5, 0.0)
+            });
 
             console.log(this.name + " initialized");
         }).catch(error => {

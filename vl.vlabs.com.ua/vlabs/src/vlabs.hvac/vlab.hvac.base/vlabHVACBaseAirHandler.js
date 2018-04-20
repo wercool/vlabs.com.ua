@@ -1,4 +1,5 @@
 import * as THREE                   from 'three';
+import * as TWEEN                   from 'tween.js';
 import VLab                         from '../../vlabs.core/vlab';
 
 import Inventory                    from '../../vlabs.core/inventory';
@@ -6,6 +7,7 @@ import DetailedView                 from '../../vlabs.core/detailed-view';
 import ZoomHelper                   from '../../vlabs.core/zoom-helper';
 import TransformControls            from '../../vlabs.core/three-transformcontrols/index';
 import VLabPositioner               from '../../vlabs.core/vlab-positioner';
+import VLabInteractor               from '../../vlabs.core/vlab-interactor';
 
 //VLab Items
 import CarrierTPWEM01              from '../../vlabs.items/hvac/carrierTPWEM01';
@@ -43,7 +45,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
             this.vLabScene.add(light0);
 
             var light1 = new THREE.PointLight(0xffffff, 0.85);
-            light1.position.set(-3.0, 3.0, 1.0);
+            light1.position.set(-2.0, 3.0, 1.0);
             this.vLabScene.add(light1);
 
             // this.light1_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
@@ -69,10 +71,10 @@ export default class VlabHVACBaseAirHandler extends VLab {
             this.positionInFrontOfTheNish = new VLabPositioner({
                 context: this,
                 active: false,
-                pos: new THREE.Vector3(-1.05, 1.75, 0.0),
+                pos: new THREE.Vector3(-1.25, 1.75, 0.0),
                 name: 'positionInFrontOfTheNish',
                 scale: new THREE.Vector3(0.2, 0.2, 0.2),
-                target: new THREE.Vector3(-1.0, 1.65, 0.0)
+                target: new THREE.Vector3(-1.0, 1.72, 0.0)
             });
 
             var carrierTPWEM01WallMountPos = this.vLabScene.getObjectByName('carrierTPWEM01WallMount').position.clone();
@@ -86,6 +88,17 @@ export default class VlabHVACBaseAirHandler extends VLab {
                 name: 'carrierTPWEM01WallPosition',
                 scale: new THREE.Vector3(0.2, 0.2, 0.2),
                 target: carrierTPWEM01WallMountTarget
+            });
+
+            /* VLab Interactors */
+            this.nishDoorHandleInteractor = new VLabInteractor({
+                context: this,
+                name: 'nishDoorHandleInteractor',
+                pos: new THREE.Vector3(0.0, 0.0, 0.0),
+                object: this.vLabScene.getObjectByName('nishDoorHandle'),
+                objectRelPos: new THREE.Vector3(0.05, 0.01, -0.02),
+                scale: new THREE.Vector3(0.15, 0.15, 0.15),
+                action: this.nishDoorOpenOrClose
             });
 
             console.log(this.name + " initialized");
@@ -147,9 +160,28 @@ export default class VlabHVACBaseAirHandler extends VLab {
             rot: this.vLabScene.getObjectByName('carrierTPWEM01WallMount').rotation,
             name: 'carrierTPWEM01'
         });
+
+        this.initializeActions();
     }
 
     onRedererFrameEvent(event) {
 
+    }
+
+    /* VlabHVACBaseAirHandler Actions */
+    initializeActions() {
+        this.nishDoorClosed = true;
+    }
+
+    nishDoorOpenOrClose(caller) {
+        caller.vLabInteractor.deactivate();
+        new TWEEN.Tween(this.vLabScene.getObjectByName('nishDoor').rotation)
+        .to({ z: (this.nishDoorClosed) ? (-Math.PI - Math.PI / 2) : -Math.PI }, 500)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .onComplete(() => {
+            caller.vLabInteractor.activate();
+            this.nishDoorClosed = !this.nishDoorClosed;
+        })
+        .start();
     }
 }
