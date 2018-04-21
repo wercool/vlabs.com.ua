@@ -82,6 +82,8 @@ export default class CarrierTPWEM01 {
                 this.screens['fahrenheitCelsiusScreen'] = this.fahrenheitCelsiusScreen;
                 this.screens['setIdealHomeTemperatureScreen'] = this.setIdealHomeTemperatureScreen;
                 this.screens['baseScreen'] = this.baseScreen;
+                this.screens['settingsScreen'] = this.settingsScreen;
+                this.screens['preferencesScreen'] = this.preferencesScreen;
 
                 /* State */
                 this.curState['roomTemperature'] = 23;
@@ -226,7 +228,7 @@ export default class CarrierTPWEM01 {
     onVLabRedererFrameEvent(event) {
     }
 
-    switchScreen(screen) {
+    switchScreen(screen, args) {
         this.curScreen = screen;
         this.screenCanvasContext.clearRect(0, 0, 512, 512);
         this.screenCanvasContext.fillStyle = '#161616';
@@ -236,7 +238,7 @@ export default class CarrierTPWEM01 {
             clearTimeout(this.screens['baseScreenTimer']);
         }
 
-        if (this.curScreen) this.screens[this.curScreen].call(this);
+        if (this.curScreen) this.screens[this.curScreen].call(this, args);
 
         this.screenMaterial.map = new THREE.Texture(this.screenCanvas);
         this.screenMaterial.map.needsUpdate = true;
@@ -882,7 +884,7 @@ export default class CarrierTPWEM01 {
         this.processInteractions();
     }
 
-    myThermostatNameScreen() {
+    myThermostatNameScreen(fromScreen) {
         var self = this;
         this.curScreenActiveElements = [];
 
@@ -918,9 +920,15 @@ export default class CarrierTPWEM01 {
         this.screenCanvasContext.lineTo(512, this.screenMapTopOffset + 250);
         this.screenCanvasContext.stroke();
 
-        this.backButton('myThermostatSetupScreen');
-        this.infoButton();
-        this.nextButton('fahrenheitCelsiusScreen');
+        if (fromScreen == 'preferencesScreen') {
+            this.backButton('preferencesScreen');
+            this.infoButton();
+            this.nextButton('preferencesScreen', 'Save');
+        } else {
+            this.backButton('myThermostatSetupScreen');
+            this.infoButton();
+            this.nextButton('fahrenheitCelsiusScreen');
+        }
 
 
         this.processInteractions();
@@ -1048,7 +1056,7 @@ export default class CarrierTPWEM01 {
 
         this.screenCanvasContext.font = 'bold 20px Arial';
         this.screenCanvasContext.fillText('Fan: Auto', 10, this.screenMapTopOffset + 20);
-        this.screenCanvasContext.fillText(aDays[date.getDay()] + ' ' + (date.getHours() > 12 ? date.getHours() - 12 : date.getHours())+':'+date.getMinutes()+':'+date.getSeconds()+' '+(date.getHours() >= 12 ? "PM" : "AM"), 185, this.screenMapTopOffset + 20);
+        this.screenCanvasContext.fillText(aDays[date.getDay()] + ' ' + (date.getHours() > 12 ? date.getHours() - 12 : date.getHours())+':'+date.getMinutes()+':'+(date.getSeconds() < 10 ? '0'+date.getSeconds() : date.getSeconds())+' '+(date.getHours() >= 12 ? "PM" : "AM"), 185, this.screenMapTopOffset + 20);
         this.screenCanvasContext.font = 'bold 20px Arial';
         this.screenCanvasContext.fillText('Mode: Off', 410, this.screenMapTopOffset + 20);
 
@@ -1074,7 +1082,268 @@ export default class CarrierTPWEM01 {
 
         this.screenCanvasContext.fillStyle = 'white';
 
+        var profilesIcon = this.screenAssetsCanvasContext.getImageData(1, 104, 100, 120);
+        var schedulesIcon = this.screenAssetsCanvasContext.getImageData(101, 104, 100, 120);
+        var vacationIcon = this.screenAssetsCanvasContext.getImageData(201, 104, 100, 120);
+        var settingsIcon = this.screenAssetsCanvasContext.getImageData(1, 224, 100, 120);
+        var weatherIcon = this.screenAssetsCanvasContext.getImageData(101, 224, 100, 120);
+        var alertsIcon = this.screenAssetsCanvasContext.getImageData(201, 224, 100, 120);
+        var systemIcon = this.screenAssetsCanvasContext.getImageData(302, 224, 100, 120);
+        var serviceIcon = this.screenAssetsCanvasContext.getImageData(907, 1, 100, 120);
+
+        this.screenCanvasContext.putImageData(profilesIcon, 0, this.screenMapTopOffset + 20);
+        this.screenCanvasContext.putImageData(schedulesIcon, 130, this.screenMapTopOffset + 20);
+        this.screenCanvasContext.putImageData(vacationIcon, 260, this.screenMapTopOffset + 20);
+        this.screenCanvasContext.putImageData(settingsIcon, 390, this.screenMapTopOffset + 20);
+        this.screenCanvasContext.putImageData(weatherIcon, 10, this.screenMapTopOffset + 150);
+        this.screenCanvasContext.putImageData(alertsIcon, 130, this.screenMapTopOffset + 150);
+        this.screenCanvasContext.putImageData(systemIcon, 260, this.screenMapTopOffset + 150);
+        this.screenCanvasContext.putImageData(serviceIcon, 390, this.screenMapTopOffset + 150);
+
+        this.curScreenActiveElements.push({
+            name: 'profilesIconButton',
+            rect: [5, this.screenMapTopOffset + 20, 110, 125],
+            onTouch: function() {
+                console.log('profilesIconButton');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'schedulesIconButton',
+            rect: [125, this.screenMapTopOffset + 20, 115, 125],
+            onTouch: function() {
+                console.log('schedulesIconButton');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'vacationIconButton',
+            rect: [255, this.screenMapTopOffset + 20, 115, 125],
+            onTouch: function() {
+                console.log('vacationIconButton');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'settingsIconButton',
+            rect: [385, this.screenMapTopOffset + 20, 115, 125],
+            onTouch: function() {
+                self.switchScreen('settingsScreen');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'weatherIconButton',
+            rect: [5, this.screenMapTopOffset + 150, 110, 125],
+            onTouch: function() {
+                console.log('weatherIconButton');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'alertsIconButton',
+            rect: [125, this.screenMapTopOffset + 150, 115, 125],
+            onTouch: function() {
+                console.log('alertsIconButton');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'systemIconButton',
+            rect: [255, this.screenMapTopOffset + 150, 115, 125],
+            onTouch: function() {
+                console.log('systemIconButton');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'serviceIconButton',
+            rect: [385, this.screenMapTopOffset + 150, 115, 125],
+            onTouch: function() {
+                console.log('serviceIconButton');
+            }
+        });
+
+        this.screenCanvasContext.strokeStyle = 'white';
+        this.screenCanvasContext.lineWidth = 2;
+        this.screenCanvasContext.beginPath();
+        this.screenCanvasContext.moveTo(0, this.screenMapTopOffset + 290);
+        this.screenCanvasContext.lineTo(512, this.screenMapTopOffset + 290);
+        this.screenCanvasContext.stroke();
+
         this.backButton('baseScreen');
+        this.infoButton();
+        this.nextButton('baseScreen', 'Done', 80);
+
+        this.processInteractions();
+    }
+
+    settingsScreen(scrollPage = 1) {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        var scrollUpIcon = this.screenAssetsCanvasContext.getImageData(627, 104, 46, 34);
+        var scrollDownIcon = this.screenAssetsCanvasContext.getImageData(627, 139, 46, 34);
+
+        this.screenCanvasContext.strokeStyle = 'white';
+        this.screenCanvasContext.fillStyle = 'white';
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Settings', 215, this.screenMapTopOffset + 30);
+
+        this.screenCanvasContext.lineWidth = 2;
+        this.screenCanvasContext.beginPath();
+        this.screenCanvasContext.moveTo(0, this.screenMapTopOffset + 40);
+        this.screenCanvasContext.lineTo(512, this.screenMapTopOffset + 40);
+        this.screenCanvasContext.stroke();
+
+
+        this.screenCanvasContext.strokeStyle = '#949494';
+        this.screenCanvasContext.lineWidth = 0.5;
+        this.screenCanvasContext.beginPath();
+        this.screenCanvasContext.moveTo(5, this.screenMapTopOffset + 105);
+        this.screenCanvasContext.lineTo(450, this.screenMapTopOffset + 105);
+        this.screenCanvasContext.moveTo(5, this.screenMapTopOffset + 155);
+        this.screenCanvasContext.lineTo(450, this.screenMapTopOffset + 155);
+        this.screenCanvasContext.moveTo(5, this.screenMapTopOffset + 205);
+        this.screenCanvasContext.lineTo(450, this.screenMapTopOffset + 205);
+        this.screenCanvasContext.stroke();
+
+
+        if (scrollPage == 1) {
+            this.screenCanvasContext.font = 'bold 20px Arial';
+            this.screenCanvasContext.fillText('Register thermostat', 10, this.screenMapTopOffset + 85);
+            this.screenCanvasContext.fillText('Preferences', 10, this.screenMapTopOffset + 135);
+            this.screenCanvasContext.fillText('Access control', 10, this.screenMapTopOffset + 185);
+            this.screenCanvasContext.fillText('Wi-Fi', 10, this.screenMapTopOffset + 235);
+
+            this.screenCanvasContext.font = 'bold 35px Arial';
+            this.screenCanvasContext.fillText('>', 430, this.screenMapTopOffset + 140);
+
+            this.screenCanvasContext.putImageData(scrollDownIcon, 460, this.screenMapTopOffset + 240);
+            this.curScreenActiveElements.push({
+                name: 'scrollDownButton',
+                rect: [460, this.screenMapTopOffset + 240, 46, 34],
+                onTouch: function() {
+                    self.switchScreen('settingsScreen', 2);
+                }
+            });
+
+            this.curScreenActiveElements.push({
+                name: 'preferencesItem',
+                rect: [5, this.screenMapTopOffset + 110, 400, 42],
+                onTouch: function() {
+                    self.switchScreen('preferencesScreen');
+                }
+            });
+
+        } else {
+            this.screenCanvasContext.font = 'bold 20px Arial';
+            this.screenCanvasContext.fillText('Time & locaiton', 10, this.screenMapTopOffset + 85);
+            this.screenCanvasContext.fillText('Reset', 10, this.screenMapTopOffset + 135);
+
+            this.screenCanvasContext.putImageData(scrollUpIcon, 460, this.screenMapTopOffset + 60);
+            this.curScreenActiveElements.push({
+                name: 'scrollUpButton',
+                rect: [460, this.screenMapTopOffset + 60, 46, 34],
+                onTouch: function() {
+                    self.switchScreen('settingsScreen', 1);
+                }
+            });
+        }
+
+        this.screenCanvasContext.strokeStyle = 'white';
+        this.screenCanvasContext.lineWidth = 2;
+        this.screenCanvasContext.beginPath();
+        this.screenCanvasContext.moveTo(0, this.screenMapTopOffset + 280);
+        this.screenCanvasContext.lineTo(512, this.screenMapTopOffset + 280);
+        this.screenCanvasContext.stroke();
+
+        this.backButton('menuScreen');
+        this.infoButton();
+        this.nextButton('baseScreen', 'Done', 80);
+
+
+        this.processInteractions();
+    }
+
+    preferencesScreen(scrollPage = 1) {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        var scrollUpIcon = this.screenAssetsCanvasContext.getImageData(627, 104, 46, 34);
+        var scrollDownIcon = this.screenAssetsCanvasContext.getImageData(627, 139, 46, 34);
+
+        this.screenCanvasContext.strokeStyle = 'white';
+        this.screenCanvasContext.fillStyle = 'white';
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Preferences', 200, this.screenMapTopOffset + 30);
+
+        this.screenCanvasContext.lineWidth = 2;
+        this.screenCanvasContext.beginPath();
+        this.screenCanvasContext.moveTo(0, this.screenMapTopOffset + 40);
+        this.screenCanvasContext.lineTo(512, this.screenMapTopOffset + 40);
+        this.screenCanvasContext.stroke();
+
+
+        this.screenCanvasContext.strokeStyle = '#949494';
+        this.screenCanvasContext.lineWidth = 0.5;
+        this.screenCanvasContext.beginPath();
+        this.screenCanvasContext.moveTo(5, this.screenMapTopOffset + 105);
+        this.screenCanvasContext.lineTo(450, this.screenMapTopOffset + 105);
+        this.screenCanvasContext.moveTo(5, this.screenMapTopOffset + 155);
+        this.screenCanvasContext.lineTo(450, this.screenMapTopOffset + 155);
+        this.screenCanvasContext.moveTo(5, this.screenMapTopOffset + 205);
+        this.screenCanvasContext.lineTo(450, this.screenMapTopOffset + 205);
+        this.screenCanvasContext.stroke();
+
+
+        if (scrollPage == 1) {
+            this.screenCanvasContext.font = 'bold 20px Arial';
+            this.screenCanvasContext.fillText('Thermostat name', 10, this.screenMapTopOffset + 85);
+            this.screenCanvasContext.fillText('Default Touch-N-Go hold time', 10, this.screenMapTopOffset + 135);
+            this.screenCanvasContext.fillText('Screen brightness', 10, this.screenMapTopOffset + 185);
+            this.screenCanvasContext.fillText('Active to standby timer', 10, this.screenMapTopOffset + 235);
+
+            // this.screenCanvasContext.font = 'bold 35px Arial';
+            // this.screenCanvasContext.fillText('>', 430, this.screenMapTopOffset + 140);
+
+            this.curScreenActiveElements.push({
+                name: 'thermostatNameItem',
+                rect: [5, this.screenMapTopOffset + 60, 400, 42],
+                onTouch: function() {
+                    self.switchScreen('myThermostatNameScreen', 'preferencesScreen');
+                }
+            });
+
+            this.screenCanvasContext.putImageData(scrollDownIcon, 460, this.screenMapTopOffset + 240);
+            this.curScreenActiveElements.push({
+                name: 'scrollDownButton',
+                rect: [460, this.screenMapTopOffset + 240, 46, 34],
+                onTouch: function() {
+                    self.switchScreen('preferencesScreen', 2);
+                }
+            });
+        } else {
+            // this.screenCanvasContext.font = 'bold 20px Arial';
+            // this.screenCanvasContext.fillText('Time & locaiton', 10, this.screenMapTopOffset + 85);
+            // this.screenCanvasContext.fillText('Reset', 10, this.screenMapTopOffset + 135);
+
+            this.screenCanvasContext.putImageData(scrollUpIcon, 460, this.screenMapTopOffset + 60);
+            this.curScreenActiveElements.push({
+                name: 'scrollUpButton',
+                rect: [460, this.screenMapTopOffset + 60, 46, 34],
+                onTouch: function() {
+                    self.switchScreen('preferencesScreen', 1);
+                }
+            });
+        }
+
+        this.screenCanvasContext.strokeStyle = 'white';
+        this.screenCanvasContext.lineWidth = 2;
+        this.screenCanvasContext.beginPath();
+        this.screenCanvasContext.moveTo(0, this.screenMapTopOffset + 280);
+        this.screenCanvasContext.lineTo(512, this.screenMapTopOffset + 280);
+        this.screenCanvasContext.stroke();
+
+        this.backButton('settingsScreen');
+        this.infoButton();
+        this.nextButton('baseScreen', 'Done', 80);
+
 
         this.processInteractions();
     }
