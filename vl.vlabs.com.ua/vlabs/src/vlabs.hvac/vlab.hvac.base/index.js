@@ -47,7 +47,7 @@ class HVACVLabBase {
 
         this.locations["HVACBaseHeatPump"]      = new this.locationInitObjs["HVACBaseHeatPump"].class(this.locationInitObjs["HVACBaseHeatPump"]);
         this.locations["HVACBaseAirHandler"]    = undefined;
-// this.locations["HVACBaseAirHandler"]    = new this.locationInitObjs["HVACBaseAirHandler"].class(this.locationInitObjs["HVACBaseAirHandler"]);
+// this.locations["HVACBaseAirHandler"] = new this.locationInitObjs["HVACBaseAirHandler"].class(this.locationInitObjs["HVACBaseAirHandler"]);
     }
 }
 

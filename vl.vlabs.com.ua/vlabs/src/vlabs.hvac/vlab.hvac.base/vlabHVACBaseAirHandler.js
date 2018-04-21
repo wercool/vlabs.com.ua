@@ -26,7 +26,22 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
         super.preInitialize().then(() => {
             super.initialize().then((result) => {
-                this.initialize(initObj);
+                var textureLoader = new THREE.TextureLoader();
+
+                Promise.all([
+                    textureLoader.load('../vlabs.assets/envmaps/metal.jpg'),
+                    textureLoader.load('../vlabs.assets/effectmaps/lampHalo.png'),
+                ])
+                .then((result) => {
+                    this.envMapMetal = result[0];
+                    this.lampHalo = result[1];
+
+                    this.initialize(initObj);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
             });
         }).catch(error => {
             console.error(error.error);
@@ -45,7 +60,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
             this.vLabScene.add(light0);
 
             var light1 = new THREE.PointLight(0xffffff, 0.85);
-            light1.position.set(-2.0, 3.0, 1.0);
+            light1.position.set(-2.25, 2.8, 1.0);
             this.vLabScene.add(light1);
 
             // this.light1_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
@@ -160,6 +175,33 @@ export default class VlabHVACBaseAirHandler extends VLab {
             rot: this.vLabScene.getObjectByName('carrierTPWEM01WallMount').rotation,
             name: 'carrierTPWEM01'
         });
+
+        /* Lamp setup */
+        this.vLabScene.getObjectByName('lamp').material.envMap = this.envMapMetal;
+        this.vLabScene.getObjectByName('lamp').material.combine = THREE.MixOperation;
+        this.vLabScene.getObjectByName('lamp').material.reflectivity = 0.2;
+        this.vLabScene.getObjectByName('lamp').material.needsUpdate = true;
+
+        this.lampHaloSpriteMaterial = new THREE.SpriteMaterial({
+            map: this.lampHalo,
+            transparent: true,
+            opacity: 0.85,
+            rotation: 0.0,
+            depthTest: false,
+            depthWrite: false
+        });
+        this.lampHaloSprite1 = new THREE.Sprite(this.lampHaloSpriteMaterial);
+        this.lampHaloSprite1.position.copy(new THREE.Vector3(-2.25, 2.785, 1.3));
+        this.vLabScene.add(this.lampHaloSprite1);
+        this.lampHaloSprite2 = new THREE.Sprite(this.lampHaloSpriteMaterial);
+        this.lampHaloSprite2.position.copy(new THREE.Vector3(-2.25, 2.785, 0.7));
+        this.vLabScene.add(this.lampHaloSprite2);
+        this.lampHaloSprite3 = new THREE.Sprite(this.lampHaloSpriteMaterial);
+        this.lampHaloSprite3.position.copy(new THREE.Vector3(-1.95, 2.785, 1.0));
+        this.vLabScene.add(this.lampHaloSprite3);
+        this.lampHaloSprite4 = new THREE.Sprite(this.lampHaloSpriteMaterial);
+        this.lampHaloSprite4.position.copy(new THREE.Vector3(-2.55, 2.785, 1.0));
+        this.vLabScene.add(this.lampHaloSprite4);
 
         this.initializeActions();
     }

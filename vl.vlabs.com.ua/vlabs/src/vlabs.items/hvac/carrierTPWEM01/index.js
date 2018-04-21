@@ -66,6 +66,7 @@ export default class CarrierTPWEM01 {
                 this.screenCanvasContext = this.screenCanvas.getContext('2d');
 
                 /* Screen */
+                this.screens['menuScreen'] = this.menuScreen;
                 this.screens['welcomeScreen'] = this.welcomeScreen;
                 this.screens['myThermostatSetupScreen'] = this.myThermostatSetupScreen;
                 this.screens['powerConnectionsScreen'] = this.powerConnectionsScreen;
@@ -78,8 +79,13 @@ export default class CarrierTPWEM01 {
                 this.screens['accessoryTypeScreen'] = this.accessoryTypeScreen;
                 this.screens['equipmentConfiguredScreen'] = this.equipmentConfiguredScreen;
                 this.screens['myThermostatNameScreen'] = this.myThermostatNameScreen;
+                this.screens['fahrenheitCelsiusScreen'] = this.fahrenheitCelsiusScreen;
+                this.screens['setIdealHomeTemperatureScreen'] = this.setIdealHomeTemperatureScreen;
+                this.screens['baseScreen'] = this.baseScreen;
 
                 /* State */
+                this.curState['roomTemperature'] = 23;
+                this.curState['roomHumidity'] = 40;
                 this.curState['EquipmentConfiguration'] = false;
                 this.curState['Preferences'] = false;
                 this.curState['Rh_RcRh'] = 'Rh';
@@ -106,6 +112,10 @@ export default class CarrierTPWEM01 {
                 this.curState['accessoryWiresToAcc'] = false;
                 this.curState['accessoryPowerSameAsThermostat'] = true;
                 this.curState['accessoryType'] = 'humidifier';
+                this.curState['fahrenheitOrCelsius'] = 'F';
+                this.curState['idealHomeTemperatureWinter'] = 20;
+                this.curState['idealHomeTemperatureSummer'] = 24;
+                this.screens['baseScreenTimer'] = undefined;
 
                 this.addVLabEventListeners();
 
@@ -222,7 +232,10 @@ export default class CarrierTPWEM01 {
         this.screenCanvasContext.fillStyle = '#161616';
         this.screenCanvasContext.fillRect(0, 0, 512, 512);
 
-        console.log("switchScreen: " + this.curScreen);
+        if (this.screens['baseScreenTimer'] != undefined) {
+            clearTimeout(this.screens['baseScreenTimer']);
+        }
+
         if (this.curScreen) this.screens[this.curScreen].call(this);
 
         this.screenMaterial.map = new THREE.Texture(this.screenCanvas);
@@ -266,6 +279,15 @@ export default class CarrierTPWEM01 {
         }
     }
 
+    putTemperatureLabel(x, y, t, font) {
+        this.screenCanvasContext.fillStyle = 'white';
+        if (this.curState['fahrenheitOrCelsius'] == 'F') {
+            t = t * 9/5 + 32;
+        }
+        this.screenCanvasContext.font = font ? font : '30px Arial';
+        this.screenCanvasContext.fillText(Math.round(t).toString() + '°' + this.curState['fahrenheitOrCelsius'], x, y);
+    }
+
     backButton(prevScreenName, buttonText) {
         var self = this;
         this.screenCanvasContext.fillStyle = 'white';
@@ -280,14 +302,14 @@ export default class CarrierTPWEM01 {
         });
     }
 
-    nextButton(nextScreenName, buttonText) {
+    nextButton(nextScreenName, buttonText, w, h) {
         var self = this;
         this.screenCanvasContext.fillStyle = 'white';
         this.screenCanvasContext.font = 'bold 30px Arial';
         this.screenCanvasContext.fillText(buttonText ? buttonText : 'Next', 430, this.screenMapTopOffset + 340);
         this.curScreenActiveElements.push({
             name: 'nextButton',
-            rect: [425, this.screenMapTopOffset + 310, 75, 40],
+            rect: [425, this.screenMapTopOffset + 310, w ? w : 75, 40],
             onTouch: function() {
                 self.switchScreen(nextScreenName);
             }
@@ -344,10 +366,10 @@ export default class CarrierTPWEM01 {
         this.screenCanvasContext.putImageData(this.curState['Preferences'] ? checkedCheckBoxImgData : unCheckedCheckBoxImgData, 100, this.screenMapTopOffset + 130);
         this.screenCanvasContext.fillText('Preferences', 150, this.screenMapTopOffset + 152);
 
-        this.screenCanvasContext.putImageData(unCheckedCheckBoxImgData, 100, this.screenMapTopOffset + 175);
+        this.screenCanvasContext.putImageData(checkedCheckBoxImgData, 100, this.screenMapTopOffset + 175);
         this.screenCanvasContext.fillText('Network connection', 150, this.screenMapTopOffset + 197);
 
-        this.screenCanvasContext.putImageData(unCheckedCheckBoxImgData, 100, this.screenMapTopOffset + 220);
+        this.screenCanvasContext.putImageData(checkedCheckBoxImgData, 100, this.screenMapTopOffset + 220);
         this.screenCanvasContext.fillText('Link to web portal', 150, this.screenMapTopOffset + 242);
 
         this.backButton('welcomeScreen');
@@ -356,6 +378,8 @@ export default class CarrierTPWEM01 {
             this.nextButton('powerConnectionsScreen');
         } else if (!this.curState['Preferences']) {
             this.nextButton('myThermostatNameScreen');
+        } else if (this.curState['Preferences']) {
+            this.nextButton('baseScreen');
         }
 
         this.processInteractions();
@@ -896,8 +920,161 @@ export default class CarrierTPWEM01 {
 
         this.backButton('myThermostatSetupScreen');
         this.infoButton();
-        // this.nextButton('myThermostatSetupScreen');
+        this.nextButton('fahrenheitCelsiusScreen');
 
+
+        this.processInteractions();
+    }
+
+    fahrenheitCelsiusScreen() {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        this.screenCanvasContext.fillStyle = 'white';
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Do you prefer Fahrenheit to Celsius', 70, this.screenMapTopOffset + 40);
+
+        var grayButton = this.screenAssetsCanvasContext.getImageData(270, 1, 87, 43);
+        var greenButton = this.screenAssetsCanvasContext.getImageData(270, 43, 87, 43);
+
+        this.screenCanvasContext.putImageData(this.curState['fahrenheitOrCelsius'] == 'F' ? greenButton : grayButton, 210, this.screenMapTopOffset + 130);
+        this.screenCanvasContext.putImageData(this.curState['fahrenheitOrCelsius'] == 'C' ? greenButton : grayButton, 210, this.screenMapTopOffset + 180);
+
+        this.screenCanvasContext.font = 'bold 14px Arial';
+        this.screenCanvasContext.fillText('Fahrenheit', 216, this.screenMapTopOffset + 155);
+        this.curScreenActiveElements.push({
+            name: 'fahrenheitButton',
+            rect: [210, this.screenMapTopOffset + 130, 85, 40],
+            onTouch: function() {
+                self.curState['fahrenheitOrCelsius'] = 'F';
+                self.switchScreen('fahrenheitCelsiusScreen');
+            }
+        });
+
+        this.screenCanvasContext.fillText('Celsius', 220, this.screenMapTopOffset + 205);
+        this.curScreenActiveElements.push({
+            name: 'celsiusButton',
+            rect: [210, this.screenMapTopOffset + 180, 85, 40],
+            onTouch: function() {
+                self.curState['fahrenheitOrCelsius'] = 'C';
+                self.switchScreen('fahrenheitCelsiusScreen');
+            }
+        });
+
+        this.backButton('myThermostatNameScreen');
+        this.infoButton();
+        this.nextButton('setIdealHomeTemperatureScreen');
+
+
+        this.processInteractions();
+    }
+
+    setIdealHomeTemperatureScreen() {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        this.curState['Preferences'] = true;
+
+        this.screenCanvasContext.fillStyle = 'white';
+
+        var upButton = this.screenAssetsCanvasContext.getImageData(825, 1, 78, 56);
+        var downButton = this.screenAssetsCanvasContext.getImageData(825, 57, 78, 56);
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Set Your Ideal Home Temperature', 70, this.screenMapTopOffset + 40);
+
+        this.putTemperatureLabel(130, this.screenMapTopOffset + 125, this.curState['idealHomeTemperatureWinter']);
+        this.screenCanvasContext.font = '14px Arial';
+        this.screenCanvasContext.fillText('in winter', 130, this.screenMapTopOffset + 150);
+        this.putTemperatureLabel(320, this.screenMapTopOffset + 125, this.curState['idealHomeTemperatureSummer']);
+        this.screenCanvasContext.font = '14px Arial';
+        this.screenCanvasContext.fillText('in summer', 315, this.screenMapTopOffset + 150);
+
+        this.screenCanvasContext.putImageData(upButton, 120, this.screenMapTopOffset + 160);
+        this.screenCanvasContext.putImageData(upButton, 310, this.screenMapTopOffset + 160);
+        this.screenCanvasContext.putImageData(downButton, 120, this.screenMapTopOffset + 221);
+        this.screenCanvasContext.putImageData(downButton, 310, this.screenMapTopOffset + 221);
+
+        this.curScreenActiveElements.push({
+            name: 'idealHomeTemperatureWinterUpButton',
+            rect: [120, this.screenMapTopOffset + 160, 79, 57],
+            onTouch: function() {
+                self.curState['idealHomeTemperatureWinter'] += 1;
+                self.switchScreen('setIdealHomeTemperatureScreen');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'idealHomeTemperatureWinterDownButton',
+            rect: [120, this.screenMapTopOffset + 221, 79, 57],
+            onTouch: function() {
+                self.curState['idealHomeTemperatureWinter'] -= 1;
+                self.switchScreen('setIdealHomeTemperatureScreen');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'idealHomeTemperatureSummerUpButton',
+            rect: [310, this.screenMapTopOffset + 160, 79, 57],
+            onTouch: function() {
+                self.curState['idealHomeTemperatureSummer'] += 1;
+                self.switchScreen('setIdealHomeTemperatureScreen');
+            }
+        });
+        this.curScreenActiveElements.push({
+            name: 'idealHomeTemperatureSummerDownButton',
+            rect: [310, this.screenMapTopOffset + 221, 79, 57],
+            onTouch: function() {
+                self.curState['idealHomeTemperatureSummer'] -= 1;
+                self.switchScreen('setIdealHomeTemperatureScreen');
+            }
+        });
+
+        this.backButton('fahrenheitCelsiusScreen');
+        this.infoButton();
+        this.nextButton('myThermostatSetupScreen');
+
+
+        this.processInteractions();
+    }
+
+    baseScreen() {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        this.screenCanvasContext.fillStyle = 'white';
+
+        var date = new Date();
+        var aDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Fan: Auto', 10, this.screenMapTopOffset + 20);
+        this.screenCanvasContext.fillText(aDays[date.getDay()] + ' ' + (date.getHours() > 12 ? date.getHours() - 12 : date.getHours())+':'+date.getMinutes()+':'+date.getSeconds()+' '+(date.getHours() >= 12 ? "PM" : "AM"), 185, this.screenMapTopOffset + 20);
+        this.screenCanvasContext.font = 'bold 20px Arial';
+        this.screenCanvasContext.fillText('Mode: Off', 410, this.screenMapTopOffset + 20);
+
+        this.putTemperatureLabel(170, this.screenMapTopOffset + 180, this.curState['roomTemperature'], '90px Arial');
+        this.screenCanvasContext.font = '24px Arial';
+        this.screenCanvasContext.fillText(this.curState['roomHumidity'].toString() + '%', 240, this.screenMapTopOffset + 240);
+
+        this.backButton('baseScreen');
+        this.infoButton();
+        this.nextButton('menuScreen', 'Menu', 80);
+
+        this.processInteractions();
+
+        var self = this;
+        this.screens['baseScreenTimer'] = setTimeout(() => {
+            self.switchScreen('baseScreen');
+        }, 1000);
+    }
+
+    menuScreen() {
+        var self = this;
+        this.curScreenActiveElements = [];
+
+        this.screenCanvasContext.fillStyle = 'white';
+
+        this.backButton('baseScreen');
 
         this.processInteractions();
     }
