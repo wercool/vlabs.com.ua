@@ -72,8 +72,9 @@ export default class ReversingValveEF17BZ251 {
                 textureLoader.load('../vlabs.items/hvac/reversingValveEF17BZ251/maps/brass-bump.jpg')
             ])
             .then((result) => {
-                reversingValveEF17BZ251Tube.material.bumpMap = result[0];
-                reversingValveEF17BZ251Tube.material.bumpScale = 0.000075;
+                var texture = result[0];
+                reversingValveEF17BZ251Tube.material.bumpMap = texture;
+                reversingValveEF17BZ251Tube.material.bumpScale = 0.01;
                 reversingValveEF17BZ251Tube.material.needsUpdate = true;
             })
             .catch(error => {

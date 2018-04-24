@@ -25,13 +25,17 @@ export default class DetailedView {
 
         Promise.all([
             textureLoader.load('../vlabs.assets/img/detailed-view.png'),
-            textureLoader.load('../vlabs.assets/envmaps/hdriEnvMap1.jpg')
+            textureLoader.load('../vlabs.assets/envmaps/hdriEnvMap1.jpg'),
+            textureLoader.load('../vlabs.assets/envmaps/hdriEnvMap1-refl.jpg')
         ])
         .then((result) => {
             this.handlerSpriteTexture = result[0];
 
             this.envMap = result[1];
             this.envMap.mapping = THREE.EquirectangularReflectionMapping;
+
+            this.envMapRefl = result[2];
+            this.envMapRefl.mapping = THREE.EquirectangularReflectionMapping;
 
             this.initialize();
         })
@@ -329,7 +333,7 @@ export default class DetailedView {
 
         if (vLabItem.setupEnvMaterials) {
             vLabItem.setupEnvMaterials.call(vLabItem, {
-                envMap: this.envMap
+                envMap: this.envMapRefl
             });
         }
         if (vLabItem.prepareInitialState) {
