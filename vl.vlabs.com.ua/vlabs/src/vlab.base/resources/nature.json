@@ -1,5 +1,5 @@
 {
-    "VLabsREST": "<!--VLAB REST API URL-->",
+    "INGORE_VLabsREST": "<!--VLAB REST API URL-->",
     "title": "Base VLab",
     "alias": "vlab.base",
     "version": "0.2.1",

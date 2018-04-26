@@ -8,6 +8,8 @@ import ParticleFireEffect   from '../vlabs.items/particle-fire-effect';
 import ZoomHelper           from '../vlabs.core/zoom-helper';
 import DetailedView         from '../vlabs.core/detailed-view';
 
+import BernzomaticTS8000Torch   from '../vlabs.items/bernzomaticTS8000Torch';
+
 class VlabBase extends VLab {
     constructor(initObj = {}) {
         super(initObj);
@@ -135,6 +137,15 @@ class VlabBase extends VLab {
                 scale: new THREE.Vector3(0.2, 0.2, 0.2),
                 positionDeltas: new THREE.Vector3(0.0, 0.0, 0.025),
                 controls: {}
+            });
+
+            this.BernzomaticTS8000Torch = new BernzomaticTS8000Torch({
+                context: this,
+                pos: new THREE.Vector3(0.0, 1.0, 0.0),
+                name: "BernzomaticTS8000Torch",
+                manipulation: false,
+                interactive: false,
+                inventory: undefined
             });
 
             console.log("VLab Base initialized");

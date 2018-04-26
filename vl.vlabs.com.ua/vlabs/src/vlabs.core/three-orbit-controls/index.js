@@ -69,7 +69,7 @@ module.exports = function( THREE ) {
 
 		// Set to false to disable rotating
 		this.enableRotate = true;
-		this.rotateSpeed = 1.0;
+		this.rotateSpeed = 0.5;
 
 		// Set to false to disable panning
 		this.enablePan = true;
