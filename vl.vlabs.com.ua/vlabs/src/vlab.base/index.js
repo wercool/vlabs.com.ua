@@ -141,7 +141,7 @@ class VlabBase extends VLab {
 
             this.BernzomaticTS8000Torch = new BernzomaticTS8000Torch({
                 context: this,
-                pos: new THREE.Vector3(0.0, 1.0, 0.0),
+                pos: new THREE.Vector3(0.0, 1.5, 1.5),
                 name: "BernzomaticTS8000Torch",
                 manipulation: false,
                 interactive: false,
