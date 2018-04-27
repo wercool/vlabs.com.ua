@@ -191,10 +191,12 @@ initObj {
             this.flamePlusSprite.position.y = 0.0;
             this.flamePlusSprite.position.z = 0.0;
             this.flamePlusSprite.mousePressHandler = function() {
-                if (this.flameStrength < 1.0) this.flameStrength += 0.1;
-                this.model.getObjectByName("bernzomaticTS800TorchFlame").scale.x = this.flameStrength;
-                this.bernzomaticTS800TorchFlameSound.setVolume(this.flameStrength);
-                this.model.getObjectByName("bernzomaticTS800TorchRegulator").rotateX(-0.05);
+                if (this.flameStrength < 1.0) {
+                    this.flameStrength += 0.1;
+                    this.model.getObjectByName("bernzomaticTS800TorchFlame").scale.x = this.flameStrength;
+                    this.bernzomaticTS800TorchFlameSound.setVolume(this.flameStrength);
+                    this.model.getObjectByName("bernzomaticTS800TorchRegulator").rotateX(-0.05);
+                }
             };
             this.flamePlusSprite.visible = false;
             this.model.getObjectByName("bernzomaticTS800TorchRegulator").add(this.flamePlusSprite);
@@ -217,10 +219,13 @@ initObj {
             this.flameMinusSprite.position.y = 0.0;
             this.flameMinusSprite.position.z = 0.0;
             this.flameMinusSprite.mousePressHandler = function() {
-                if (this.flameStrength > 0.1) this.flameStrength -= 0.1;
-                this.model.getObjectByName("bernzomaticTS800TorchFlame").scale.x = this.flameStrength;
-                this.bernzomaticTS800TorchFlameSound.setVolume((this.flameStrength > 0.1) ? this.flameStrength : 0.05);
-                this.model.getObjectByName("bernzomaticTS800TorchRegulator").rotateX(0.05);
+                if (this.flameStrength > 0.1)
+                {
+                    this.flameStrength -= 0.1;
+                    this.model.getObjectByName("bernzomaticTS800TorchFlame").scale.x = this.flameStrength;
+                    this.bernzomaticTS800TorchFlameSound.setVolume((this.flameStrength > 0.1) ? this.flameStrength : 0.05);
+                    this.model.getObjectByName("bernzomaticTS800TorchRegulator").rotateX(0.05);
+                }
             };
             this.flameMinusSprite.visible = false;
             this.model.getObjectByName("bernzomaticTS800TorchRegulator").add(this.flameMinusSprite);
