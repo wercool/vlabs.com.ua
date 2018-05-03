@@ -10,6 +10,8 @@ import DetailedView         from '../vlabs.core/detailed-view';
 
 import BernzomaticTS8000Torch   from '../vlabs.items/bernzomaticTS8000Torch';
 
+import FlowAlongTube            from '../vlabs.items/flow-along-tube';
+
 class VlabBase extends VLab {
     constructor(initObj = {}) {
         super(initObj);
@@ -34,6 +36,58 @@ class VlabBase extends VLab {
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
 
+            this.flowAlongWire1 = new FlowAlongTube({
+                context: this,
+                tube: this.vLabScene.getObjectByName('wire1'),
+                color: undefined,
+                scale: new THREE.Vector3(0.25, 0.25, 0.25),
+                cSectionVertices: 8,
+                speed: 5.0,
+                reversed: true
+            });
+            setTimeout(() => {
+                this.flowAlongWire1.start();
+            }, 1000);
+
+            this.flowAlongWire2 = new FlowAlongTube({
+                context: this,
+                tube: this.vLabScene.getObjectByName('wire2'),
+                color: undefined,
+                scale: new THREE.Vector3(0.25, 0.25, 0.25),
+                cSectionVertices: 12,
+                speed: 10.0,
+                reversed: true
+            });
+            setTimeout(() => {
+                this.flowAlongWire2.start();
+            }, 1000);
+
+            this.flowAlongWire3 = new FlowAlongTube({
+                context: this,
+                tube: this.vLabScene.getObjectByName('wire3'),
+                color: undefined,
+                scale: new THREE.Vector3(0.15, 0.15, 0.15),
+                cSectionVertices: 8,
+                speed: 0.5
+            });
+            setTimeout(() => {
+                this.flowAlongWire3.start();
+            }, 1000);
+
+            this.flowAlongWire4 = new FlowAlongTube({
+                context: this,
+                tube: this.vLabScene.getObjectByName('wire4'),
+                color: undefined,
+                scale: new THREE.Vector3(0.15, 0.15, 0.15),
+                cSectionVertices: 8,
+                speed: 0.5
+            });
+            setTimeout(() => {
+                this.flowAlongWire4.start();
+            }, 1000);
+
+
+/*
             this.SuzanneZoomHelper = new ZoomHelper({
                 context: this,
                 targetObjectName: "Suzanne",
@@ -44,6 +98,7 @@ class VlabBase extends VLab {
             });
 
             // VLab Items
+
             this.VLabsAssistant1 = new VLabAssistant({
                 context: this,
                 initPos: new THREE.Vector3(0, 0, -1.5),
@@ -147,7 +202,7 @@ class VlabBase extends VLab {
                 interactive: false,
                 inventory: undefined
             });
-
+*/
             console.log("VLab Base initialized");
         }).catch(error => {
             console.error(error);
