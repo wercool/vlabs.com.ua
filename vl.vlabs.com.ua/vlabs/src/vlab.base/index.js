@@ -46,18 +46,21 @@ class VlabBase extends VLab {
                         {
                             name: 'relayT9AV5022ContactCOM',
                             target: new THREE.Vector3(0.0352108, 0.02511, 0.0296565),
+                            orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(30.0)),
                             spritePosDeltas: new THREE.Vector3(0.0, 0.05, 0.05),
                             spriteScale: 0.05
                         },
                         {
                             name: 'relayT9AV5022ContactNC',
                             target: new THREE.Vector3(0.0550126, 0.0309874, 0.0296565),
+                            orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(-60.0)),
                             spritePosDeltas: new THREE.Vector3(0.05, -0.05, 0.05),
                             spriteScale: 0.05
                         },
                         {
                             name: 'relayT9AV5022ContactNO',
                             target: new THREE.Vector3(0.055229, 0.0400362, 0.0296565),
+                            orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, 0.0),
                             spritePosDeltas: new THREE.Vector3(0.05, 0.05, 0.05),
                             spriteScale: 0.05
                         },

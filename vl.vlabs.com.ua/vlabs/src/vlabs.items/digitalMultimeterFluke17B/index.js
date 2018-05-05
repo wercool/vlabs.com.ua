@@ -69,9 +69,26 @@ initObj {
                     vLabItem: this
                 });
                 console.log("DigitalMultimeterFluke17B added to Inventory");
+                return;
             } else {
 
                 this.context.defaultCamera.add(this.model);
+
+                this.blackNeedle = this.model.getObjectByName('digitalMultimeterFluke17BProbeBlackNeedle');
+                this.redNeedle = this.model.getObjectByName('digitalMultimeterFluke17BProbeRedNeedle');
+
+                this.probeBlack = this.model.getObjectByName('digitalMultimeterFluke17BProbeBlack');
+                this.probeRed = this.model.getObjectByName('digitalMultimeterFluke17BProbeRed');
+
+                this.probeBlackPlug = this.blackNeedle.clone();
+                this.probeBlackPlug.name += 'PlugNeedle';
+                this.probeBlackPlug.children[0].name += 'PlugHandle';
+                this.probeRedPlug = this.redNeedle.clone();
+                this.probeRedPlug.name += 'PlugNeedle';
+                this.probeRedPlug.children[0].name += 'PlugHandle';
+
+                this.probeBlack.userData['plug'] = this.probeBlackPlug;
+                this.probeRed.userData['plug'] = this.probeRedPlug;
 
                 this.model.quaternion.set(0.0, 0.0, 0.0, 0.0);
                 if (this.initObj.pos) {
@@ -84,9 +101,6 @@ initObj {
                     this.model.scale.multiplyScalar(this.initObj.scale);
                 }
 
-                // this.model.remove(this.blackNeedle);
-                // this.blackNeedle.position.set(0.0, 1.0, 1.0);
-                // this.context.vLabScene.add(this.blackNeedle);
             }
 
             this.screenMaterial = this.model.getObjectByName('digitalMultimeterFluke17BScreen').material;
@@ -102,19 +116,18 @@ initObj {
 
             this.onVLabSceneWebGLContainerResized();
 
-            this.blackNeedle = this.model.getObjectByName('digitalMultimeterFluke17BProbeBlackNeedle');
-            this.redNeedle = this.model.getObjectByName('digitalMultimeterFluke17BProbeRedNeedle');
-
             this.staticBlackWire = this.model.getObjectByName('digitalMultimeterFluke17BBlackWire');
             this.staticRedWire = this.model.getObjectByName('digitalMultimeterFluke17BRedWIre');
-
-            this.probeBlack = this.model.getObjectByName('digitalMultimeterFluke17BProbeBlack');
-            this.probeRed = this.model.getObjectByName('digitalMultimeterFluke17BProbeRed');
 
             this.probeBlack.mousePressHandler = this.probePressed;
             this.probeRed.mousePressHandler = this.probePressed;
             this.interactiveElements.push(this.probeBlack);
             this.interactiveElements.push(this.probeRed);
+
+            this.probeBlackPlug.children[0].mousePressHandler = this.probePlugPressed;
+            this.probeRedPlug.children[0].mousePressHandler = this.probePlugPressed;
+            this.interactiveElements.push(this.probeBlackPlug.children[0]);
+            this.interactiveElements.push(this.probeRedPlug.children[0]);
 
             this.accessableInteractiveELements = this.interactiveElements.concat(this.interactiveSuppressElements);
 
@@ -127,26 +140,16 @@ initObj {
 
     addVLabEventListeners() {
         //VLab events subscribers
-        this.context.webGLContainerEventsSubcribers.mousedown[this.name + "vLabSceneMouseDown"] = 
+        this.context.webGLContainerEventsSubcribers.mouseup[this.name + "vLabSceneMouseUp"] = 
         {
-            callback: this.onVLabSceneMouseDown,
+            callback: this.onVLabSceneMouseUp,
             instance: this
         };
-        this.context.webGLContainerEventsSubcribers.touchstart[this.name + "vLabSceneTouchStart"] = 
+        this.context.webGLContainerEventsSubcribers.touchend[this.name + "vLabSceneTouchEnd"] = 
         {
-            callback: this.onVLabSceneTouchStart,
+            callback: this.onVLabSceneTouchEnd,
             instance: this
         };
-        // this.context.webGLContainerEventsSubcribers.mouseup[this.name + "vLabSceneMouseUp"] = 
-        // {
-        //     callback: this.onVLabSceneMouseUp,
-        //     instance: this
-        // };
-        // this.context.webGLContainerEventsSubcribers.touchend[this.name + "vLabSceneTouchEnd"] = 
-        // {
-        //     callback: this.onVLabSceneTouchEnd,
-        //     instance: this
-        // };
         // this.context.webGLContainerEventsSubcribers.mousemove[this.name + "vLabSceneMouseMove"] = 
         // {
         //     callback: this.onVLabSceneMouseMove,
@@ -205,12 +208,11 @@ initObj {
         this.model.position.x = this.initObj.pos.x + cameraAspectOffset;
     }
 
-    onVLabSceneTouchStart(event) {
-        this.onVLabSceneMouseDown(event);
+    onVLabSceneTouchEnd(evnet) {
+        this.onVLabSceneMouseUp(event);
     }
 
-    onVLabSceneMouseDown(event) {
-        this.refreshScreen();
+    onVLabSceneMouseUp(event) {
         var interactiveObjectsWithInteractiveSuppressors = this.context.interactiveObjects.concat(this.context.interactivesSuppressorsObjects).concat(this.accessableInteractiveELements);
 
         this.context.iteractionRaycaster.setFromCamera(this.context.mouseCoordsRaycaster, this.context.defaultCamera);
@@ -225,17 +227,11 @@ initObj {
                     interactionObjectIntersects[0].object.mousePressHandler.call(this, interactionObjectIntersects[0].object);
                 }
             }
+        } else {
+            this.probePressed();
         }
     }
 /*
-    onVLabSceneTouchEnd(evnet) {
-        this.onVLabSceneMouseUp(event);
-    }
-
-    onVLabSceneMouseUp(event) {
-        this.boschScrewdriverButtonRelease();
-    }
-
     onVLabSceneMouseMove() {
         var interactiveObjectsWithInteractiveSuppressors = this.context.interactiveObjects.concat(this.context.interactivesSuppressorsObjects).concat(this.accessableInteractiveELements);
 
@@ -356,31 +352,29 @@ initObj {
         });
         responsiveObj.mesh.userData['DigitalMultimeterFluke17B'].forEach((testPoint) => {
             var helperSprite = new THREE.Sprite(this.probeSpriteMaterial);
-            helperSprite.name = testPoint.name + 'DigitalMultimeterFluke17BHelperSprite';
+            helperSprite.userData['testPoint'] = testPoint;
+            helperSprite.name = testPoint.name + '_digitalMultimeterFluke17BHelperSprite';
             helperSprite.scale.multiplyScalar(testPoint.spriteScale);
             helperSprite.position.copy(testPoint.target.clone().add(testPoint.spritePosDeltas));
-            // this.lockUnlockSprite.mousePressHandler = function() {
-            //     if (this.bernzomaticTS800TorchButtonLocked) {
-            //         this.bernzomaticTS800TorchButtonLocked = false;
-            //         this.lockUnlockSpriteMaterial.map = this.lockSpriteTexture;
-            //         this.model.getObjectByName("bernzomaticTS800TorchButton").rotateX(THREE.Math.degToRad(30.0));
-            //         this.flameOnOffSprite.visible = true;
-            //     } else {
-            //         this.bernzomaticTS800TorchButtonLocked = true;
-            //         this.lockUnlockSpriteMaterial.map = this.unlockSpriteTexture;
-            //         this.model.getObjectByName("bernzomaticTS800TorchButton").rotateX(THREE.Math.degToRad(-30.0));
-            //         this.flameOnOffSprite.visible = false;
-            //     }
-            // };
-            helperSprite.visible = true;
+            helperSprite.mousePressHandler = function(helperSprite) {
+                if (!this.preselectedProbe) return;
+                this.preselectedProbe.visible = false;
+                this.preselectedProbe.parent.visible = false;
+                this.preselectedProbe.userData['plug'].position.copy(helperSprite.userData['testPoint'].target)
+                this.preselectedProbe.userData['plug'].rotation.set(helperSprite.userData['testPoint'].orientation.x, helperSprite.userData['testPoint'].orientation.y, helperSprite.userData['testPoint'].orientation.z);
+                helperSprite.parent.remove(this.preselectedProbe.userData['plug']);
+                helperSprite.parent.add(this.preselectedProbe.userData['plug']);
+                this.preselectedProbe.userData['plug'].visible = true;
+                this.probePressed();
+            };
 
             var lineGeometry = new THREE.Geometry();
             lineGeometry.vertices.push(
                 testPoint.target,
                 helperSprite.position
             );
-            lineGeometry.computeLineDistances();
             var spriteLine = new THREE.Line(lineGeometry, lineMaterial);
+            spriteLine.computeLineDistances();
             responsiveObj.mesh.add(spriteLine);
             responsiveObj.mesh.add(helperSprite);
 
@@ -427,13 +421,38 @@ initObj {
         });
     }
 
-    probePressed(object) {
-        object.material.emissive = new THREE.Color(0.0, 0.75, 0.0);
-        if (object.name.indexOf('Black')) {
-            this.staticBlackWire.material.emissive = new THREE.Color(0.0, 0.75, 0.0);
+    probePressed(preselectedProbe) {
+        if (this.preselectedProbe || preselectedProbe === undefined) { 
+            if (!this.preselectedProbe) return;
+            this.preselectedProbe.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+            this.staticBlackWire.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+            this.staticRedWire.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+            if (preselectedProbe === undefined) {
+                this.preselectedProbe = undefined;
+                return;
+            }
         }
-        if (object.name.indexOf('Red')) {
-            this.staticRedWire.material.emissive = new THREE.Color(0.0, 0.75, 0.0);
+        this.preselectedProbe = preselectedProbe;
+        preselectedProbe.material.emissive = new THREE.Color(0.75, 0.75, 0.75);
+        if (preselectedProbe.name.indexOf('Black') > -1) {
+            this.staticBlackWire.material.emissive = new THREE.Color(0.75, 0.75, 0.75);
         }
+        if (preselectedProbe.name.indexOf('Red') > -1) {
+            this.staticRedWire.material.emissive = new THREE.Color(0.75, 0.75,0.75);
+        }
+    }
+
+    probePlugPressed(pressedProbePlug) {
+        if (pressedProbePlug.name.indexOf('Black') > -1) {
+            this.probeBlack.parent.visible = true;
+            this.probeBlack.visible = true;
+            this.probePressed(this.probeBlack);
+        }
+        if (pressedProbePlug.name.indexOf('Red') > -1) {
+            this.probeRed.parent.visible = true;
+            this.probeRed.visible = true;
+            this.probePressed(this.probeRed);
+        }
+        pressedProbePlug.parent.visible = false;
     }
 }

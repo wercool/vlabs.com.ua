@@ -14,6 +14,7 @@ import FatMaxScrewdriver            from '../../vlabs.items/fatMaxScrewdriver';
 import ReversingValveEF17BZ251      from '../../vlabs.items/hvac/reversingValveEF17BZ251';
 import ControlBoardCEBD430433       from '../../vlabs.items/hvac/controlBoardCEBD430433';
 import ScrollCompressorZP25K5E      from '../../vlabs.items/hvac/scrollCompressorZP25K5E';
+import DigitalMultimeterFluke17B    from '../../vlabs.items/digitalMultimeterFluke17B';
 
 export default class VlabHVACBaseHeatPump extends VLab {
     constructor(initObj = {}) {
@@ -271,6 +272,14 @@ export default class VlabHVACBaseHeatPump extends VLab {
             name: null,
             itemName: "ScrollCompressorZP25K5E",
             detailedView: this.bryantB225B_heatPumpCompressorDetailedView
+        });
+
+        this.DigitalMultimeterFluke17B = new DigitalMultimeterFluke17B({
+            context: this,
+            name: "DigitalMultimeterFluke17B",
+            // manipulation: true,
+            interactive: false,
+            inventory: this.inventory
         });
 
         // Misc helpers

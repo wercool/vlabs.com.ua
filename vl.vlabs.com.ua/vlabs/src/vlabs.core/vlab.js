@@ -109,6 +109,12 @@ export default class VLab {
     }
 
     buildHTML() {
+
+        window.onbeforeunload = function() { 
+            console.log('BACK IS DISABLED IN VLabs');
+            return false;
+        };
+
         this.container = document.createElement('div');
         this.container.id = this.initObj.name + 'VLabContainer';
         this.container.className = 'vLabConatiner';

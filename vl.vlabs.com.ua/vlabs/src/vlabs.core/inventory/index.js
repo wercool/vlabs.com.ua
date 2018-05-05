@@ -241,9 +241,11 @@ export default class Inventory {
 
         this.infoBox.innerHTML = '';
 
-        for (var objectMenuItem of this.context.nature.objectMenus[itemObj.item.name][this.context.nature.lang]) {
-            if (objectMenuItem.title == 'Info') {
-                this.infoBox.innerHTML = '<h4 style="color: white;">' + objectMenuItem.args.title + '</h4>' + objectMenuItem.args.html;
+        if (this.context.nature.objectMenus[itemObj.item.name]) {
+            for (var objectMenuItem of this.context.nature.objectMenus[itemObj.item.name][this.context.nature.lang]) {
+                if (objectMenuItem.title == 'Info') {
+                    this.infoBox.innerHTML = '<h4 style="color: white;">' + objectMenuItem.args.title + '</h4>' + objectMenuItem.args.html;
+                }
             }
         }
 
