@@ -8,7 +8,8 @@ import ParticleFireEffect   from '../vlabs.items/particle-fire-effect';
 import ZoomHelper           from '../vlabs.core/zoom-helper';
 import DetailedView         from '../vlabs.core/detailed-view';
 
-import BernzomaticTS8000Torch   from '../vlabs.items/bernzomaticTS8000Torch';
+import BernzomaticTS8000Torch       from '../vlabs.items/bernzomaticTS8000Torch';
+import DigitalMultimeterFluke17B    from '../vlabs.items/digitalMultimeterFluke17B';
 
 import FlowAlongTube            from '../vlabs.items/flow-along-tube';
 
@@ -36,6 +37,14 @@ class VlabBase extends VLab {
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
 
+            this.digitalMultimeterFluke17B = new DigitalMultimeterFluke17B({
+                context: this,
+                pos: new THREE.Vector3(-0.065, -0.06, -0.11),
+                quaternion: new THREE.Vector4(0.4, 0.2, 1.75, -0.1),
+                scale: 0.075
+            });
+
+/*
             this.flowAlongWire1 = new FlowAlongTube({
                 context: this,
                 tube: this.vLabScene.getObjectByName('wire1'),
@@ -85,7 +94,7 @@ class VlabBase extends VLab {
             setTimeout(() => {
                 this.flowAlongWire4.start();
             }, 1000);
-
+*/
 
 /*
             this.SuzanneZoomHelper = new ZoomHelper({
