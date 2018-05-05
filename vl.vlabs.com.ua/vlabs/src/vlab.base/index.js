@@ -38,10 +38,40 @@ class VlabBase extends VLab {
             this.setVLabScene(vLabScene);
 
             this.digitalMultimeterFluke17B = new DigitalMultimeterFluke17B({
+                context: this
+            }).then((instance) => {
+                instance.addResponsiveObject({
+                    mesh: this.vLabScene.getObjectByName('controlBoard'),
+                    testPoints: [
+                        {
+                            name: 'relayT9AV5022ContactCOM',
+                            target: new THREE.Vector3(0.0352108, 0.02511, 0.0296565),
+                            spritePosDeltas: new THREE.Vector3(0.0, 0.05, 0.05),
+                            spriteScale: 0.05
+                        },
+                        {
+                            name: 'relayT9AV5022ContactNC',
+                            target: new THREE.Vector3(0.0550126, 0.0309874, 0.0296565),
+                            spritePosDeltas: new THREE.Vector3(0.05, -0.05, 0.05),
+                            spriteScale: 0.05
+                        },
+                        {
+                            name: 'relayT9AV5022ContactNO',
+                            target: new THREE.Vector3(0.055229, 0.0400362, 0.0296565),
+                            spritePosDeltas: new THREE.Vector3(0.05, 0.05, 0.05),
+                            spriteScale: 0.05
+                        },
+                    ]
+                });
+            });
+
+            this.controlBoardZoomHelper = new ZoomHelper({
                 context: this,
-                pos: new THREE.Vector3(-0.065, -0.06, -0.11),
-                quaternion: new THREE.Vector4(0.4, 0.2, 1.75, -0.1),
-                scale: 0.075
+                targetObjectName: "controlBoard",
+                minDistance: 0.0,
+                positionDeltas: new THREE.Vector3(0.0, -0.1, 0.075), 
+                scale: new THREE.Vector3(0.1, 0.1, 0.1),
+                color: 0xfff495
             });
 
 /*

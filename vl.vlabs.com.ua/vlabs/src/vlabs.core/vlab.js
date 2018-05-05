@@ -68,7 +68,8 @@ export default class VLab {
             mouseup: {},
             touchstart: {},
             touchend: {},
-            resetview: {}
+            resetview: {},
+            webglcontainerresized: {}
         };
 
         this.helpers = {
@@ -322,6 +323,11 @@ export default class VLab {
             this.defaultCamera.aspect = (this.webGLContainer.clientWidth / this.webGLContainer.clientHeight);
             this.defaultCamera.updateProjectionMatrix();
             this.rearrangeTakenObjects();
+        }
+
+        for (var webglcontainerResizedSubscriberName in this.webGLContainerEventsSubcribers.webglcontainerresized) {
+            var subscriber = this.webGLContainerEventsSubcribers.webglcontainerresized[webglcontainerResizedSubscriberName];
+            subscriber.callback.call(subscriber.instance, event);
         }
     }
 
