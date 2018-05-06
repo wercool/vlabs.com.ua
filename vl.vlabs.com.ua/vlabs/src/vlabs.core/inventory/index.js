@@ -171,9 +171,11 @@ export default class Inventory {
             this.defaultCameraControls.update();
 
             var itemsKeys = Object.keys(this.items);
-            if (this.items[itemsKeys[this.currentItemIdx]].vLabItem) {
-                if (this.items[itemsKeys[this.currentItemIdx]].vLabItem.redererInventoryFrameEventHandler) {
-                    this.items[itemsKeys[this.currentItemIdx]].vLabItem.redererInventoryFrameEventHandler(time);
+            if (itemsKeys.length > 0) {
+                if (this.items[itemsKeys[this.currentItemIdx]].vLabItem) {
+                    if (this.items[itemsKeys[this.currentItemIdx]].vLabItem.redererInventoryFrameEventHandler) {
+                        this.items[itemsKeys[this.currentItemIdx]].vLabItem.redererInventoryFrameEventHandler(time);
+                    }
                 }
             }
 
@@ -335,8 +337,8 @@ export default class Inventory {
         this.mouseDown = false;
         var itemsKeys = Object.keys(this.items);
         if (this.items[itemsKeys[this.currentItemIdx]].vLabItem) {
-            if (this.items[itemsKeys[this.currentItemIdx]].vLabItem.mouseUpHandler) {
-                this.items[itemsKeys[this.currentItemIdx]].vLabItem.mouseUpHandler(event);
+            if (this.items[itemsKeys[this.currentItemIdx]].vLabItem.inventoryMouseUpHandler) {
+                this.items[itemsKeys[this.currentItemIdx]].vLabItem.inventoryMouseUpHandler(event);
             }
         }
     }

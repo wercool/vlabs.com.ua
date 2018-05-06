@@ -178,7 +178,7 @@ initObj {
         this.animate(time);
     }
 
-    mouseUpHandler(event) {
+    inventoryMouseUpHandler(event) {
         this.boschScrewdriverButtonRelease();
     }
 

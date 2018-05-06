@@ -15,7 +15,7 @@
     "showTHREEStats": true,
     "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001", "Suzanne"],
     "advancedSelectionHelper": true,
-    "responsiveObjects": ["Cube", "CubeResponosive"],
+    "responsiveObjects": ["Cube", "CubeResponosive", "controlBoard"],
     "tooltips": {
         "Sphere": {
             "en": "Central interactive object",
@@ -126,6 +126,10 @@
         },
         "Sphere|CubeResponosive": {
             "applyFn": "SphereToCubeResponsive",
+            "applyFnArgs": {}
+        },
+        "digitalMultimeterFluke17B|controlBoard": {
+            "applyFn": "digitalMultimeterFluke17BToControlBoard",
             "applyFnArgs": {}
         }
     }

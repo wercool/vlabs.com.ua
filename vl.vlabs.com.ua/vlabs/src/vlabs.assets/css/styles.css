@@ -148,7 +148,7 @@ html, body {
 /* Inventory */
 .inventoryContainer {
     width: 92vw;
-    height: 85vh;
+    height: 87vh;
     background-color: #0a283dc0;
     display: none;
     z-index: 2e9;
@@ -214,8 +214,8 @@ html, body {
     width: 48px;
     background-image: url('../img/closeInventory.png');
     background-repeat: no-repeat;
-    left: calc(50% - 24px);
-    top: 3.5vh;
+    left: calc(2vw + 24px);
+    top: calc(2vh + 24px);
     cursor: pointer;
     z-index: 2e12;
 }
@@ -271,8 +271,8 @@ html, body {
     width: 48px;
     background-image: url('../img/closeInventory.png');
     background-repeat: no-repeat;
-    left: calc(50% - 24px);
-    top: 3.5vh;
+    left: calc(2vw + 24px);
+    top: calc(2vh + 24px);
     cursor: pointer;
     z-index: 2e12;
 }

@@ -69,7 +69,9 @@ export default class VLab {
             touchstart: {},
             touchend: {},
             resetview: {},
-            webglcontainerresized: {}
+            webglcontainerresized: {},
+            zoommodein: {},
+            zoommodeout: {}
         };
 
         this.helpers = {
@@ -710,7 +712,12 @@ export default class VLab {
         if (!this.nature.interactiveObjects) return;
         for (var interactiveObjectName of this.nature.interactiveObjects) {
             if ((Array.isArray(except) && !except.includes(interactiveObjectName)) || (!Array.isArray(except) && except !== interactiveObjectName)) {
-                this.interactiveObjects.push(this.vLabScene.getObjectByName(interactiveObjectName));
+                var object = this.vLabScene.getObjectByName(interactiveObjectName);
+                if (object) {
+                    this.interactiveObjects.push(object);
+                } else {
+                    console.error('setInteractiveObjects: No Mesh found by Interactive Object name ' + interactiveObjectName);
+                }
             }
         }
         this.nature.interactiveObjects = [];
@@ -1222,7 +1229,7 @@ export default class VLab {
         this.cMenu.setContext(this);
     }
 
-    showObjectSpecificCircularMenu() {
+    showObjectSpecificCircularMenu(configObj) {
         if (!this.selectedObject) {
             return;
         }
@@ -1235,6 +1242,10 @@ export default class VLab {
 
                 var screenPos = this.toScreenPosition(this.selectedObject);
                 var cMenuPos = { x: screenPos.x, y: screenPos.y };
+                if (configObj['positionDeltas']) {
+                    cMenuPos.x += configObj['positionDeltas'].x;
+                    cMenuPos.y += configObj['positionDeltas'].y;
+                }
                 if (cMenuPos.x + 150 > this.webGLContainer.clientWidth) {
                     cMenuPos.x -= cMenuPos.x + 150 - this.webGLContainer.clientWidth;
                 }
@@ -1370,7 +1381,8 @@ export default class VLab {
 
     }
 
-    takeObjectToInventory() {
+    takeObjectToInventory(args) {
+        // console.log(args);
         if (this.inventory) {
 
             var self = this;
@@ -1396,17 +1408,28 @@ export default class VLab {
             this.selectedObject.rotationX = 0.0;
             this.selectedObject.rotationY = 0.0;
             this.selectedObject.rotationZ = 0.0;
-            this.selectedObject.position.set(0,0,0);
+            this.selectedObject.position.set(0.0, 0.0, 0.0);
+
+            if (args['resetscale']) {
+                this.selectedObject.scale.set(1.0, 1.0, 1.0);
+            }
+            if (args['resetquat']) {
+                this.selectedObject.quaternion.copy(args['resetquat']);
+            }
 
             this.inventory.addItem({
                 item: this.selectedObject,
                 initObj: this.selectedObject.userData["initObj"],
                 vLabItem: this.selectedObject.userData["VLabItem"]
             });
+
+            if (args['callback']) {
+                args['callback'].call(this.selectedObject.userData["VLabItem"]);
+            }
         }
     }
 
-    takeObject() {
+    takeObject(args) {
         if(Object.keys(this.takenObjects).length > 3) {
             iziToast.info({
                 title: 'Info',
@@ -1415,14 +1438,24 @@ export default class VLab {
             });
             return;
         }
+
+        if (args) {
+            if (args['resetscale']) {
+                this.selectedObject.scale.set(1.0, 1.0, 1.0);
+            }
+            if (args['resetquat']) {
+                this.selectedObject.quaternion.copy(args['resetquat']);
+            }
+        }
+
         this.selectedObject.traverse(function(node) {
             if (node.type === "Mesh") {
-                if (node.material.type === "MeshPhongMaterial") {
-                    node.material.emissive = new THREE.Color(0.5, 0.5, 0.5);
-                }
+                // if (node.material.type === "MeshPhongMaterial") {
+                //     node.material.emissive = new THREE.Color(0.5, 0.5, 0.5);
+                // }
                 if (!node.material.transparent) {
                     node.material.transparent = true;
-                    node.material.opacity = 0.75;
+                    node.material.opacity = 0.85;
                 }
             }
         });
@@ -1432,13 +1465,21 @@ export default class VLab {
         this.selectedObject.rotation.y = -0.1;
         this.selectedObject.geometry.computeBoundingSphere();
         this.selectedObject.position.set(0.17 - cameraAspectOffset, 0.075 - Object.keys(this.takenObjects).length / 15, -0.2);
-        this.selectedObject.scale.multiplyScalar(0.01 / this.selectedObject.geometry.boundingSphere.radius);
+        this.selectedObject.scale.multiplyScalar(0.02 / this.selectedObject.geometry.boundingSphere.radius);
         this.selectedObject.takenRotation = new TWEEN.Tween(this.selectedObject.rotation)
-        .to({z: Math.PI}, 10000)
+        .to({z: Math.PI}, 20000)
         .repeat(Infinity)
         .yoyo(true)
         .easing(TWEEN.Easing.Quadratic.InOut).start();
+        if (args) {
+            if (args['callback']) {
+                if (this.selectedObject.userData["VLabItem"]) {
+                    args['callback'].call(this.selectedObject.userData["VLabItem"]);
+                }
+            }
+        }
         this.takenObjects[this.selectedObject.name] = this.selectedObject;
+        this.defaultCamera.remove(this.selectedObject);
         this.defaultCamera.add(this.selectedObject);
         this.resetAllSelections();
     }
@@ -1545,6 +1586,20 @@ export default class VLab {
                 if (this[interaction.applyFn]) {
                     this[interaction.applyFn].call(this, interaction.applyFnArgs);
                 }
+            }
+        }
+    }
+
+    zoomModeHandler(state = false) {
+        if (state) {
+            for (var zoomModeInSubscriberName in this.webGLContainerEventsSubcribers.zoommodein) {
+                var subscriber = this.webGLContainerEventsSubcribers.zoommodein[zoomModeInSubscriberName];
+                subscriber.callback.call(subscriber.instance, event);
+            }
+        } else {
+            for (var zoomModeOutSubscriberName in this.webGLContainerEventsSubcribers.zoommodeout) {
+                var subscriber = this.webGLContainerEventsSubcribers.zoommodeout[zoomModeOutSubscriberName];
+                subscriber.callback.call(subscriber.instance, event);
             }
         }
     }

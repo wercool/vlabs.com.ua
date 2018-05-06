@@ -202,6 +202,7 @@ export default class ZoomHelper {
                     this.reseted = false;
                 })
             .start();
+            this.context.zoomModeHandler(false);
             this.context.zoomViewArea.style.opacity = 0.0;
         })
         .start();

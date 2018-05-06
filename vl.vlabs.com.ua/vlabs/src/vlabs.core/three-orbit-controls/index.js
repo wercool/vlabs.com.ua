@@ -126,6 +126,13 @@ module.exports = function( THREE ) {
 
 		};
 
+		this.resetState = function() {
+			this.enabled = true;
+			scope.update();
+
+			state = STATE.NONE;
+		}
+
 		// this method is exposed, but perhaps it would be better if we can make it private...
 		this.update = function() {
 

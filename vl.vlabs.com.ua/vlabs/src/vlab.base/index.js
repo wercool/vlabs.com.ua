@@ -1,5 +1,6 @@
 import * as THREE           from 'three';
 import VLab                 from '../vlabs.core/vlab';
+import Inventory            from '../vlabs.core/inventory';
 
 import VLabAssistant        from '../vlabs.items/vlab.assistant';
 import SpriteFireEffect     from '../vlabs.items/sprite-fire-effect';
@@ -37,10 +38,17 @@ class VlabBase extends VLab {
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
 
-            this.digitalMultimeterFluke17B = new DigitalMultimeterFluke17B({
+            this.inventory = new Inventory({
                 context: this
+            });
+
+            new DigitalMultimeterFluke17B({
+                context: this,
+                inventory: this.inventory,
+                interactive: true
             }).then((instance) => {
-                instance.addResponsiveObject({
+                this.digitalMultimeterFluke17B = instance;
+                this.digitalMultimeterFluke17B.addResponsiveObject({
                     mesh: this.vLabScene.getObjectByName('controlBoard'),
                     testPoints: [
                         {
@@ -308,6 +316,12 @@ class VlabBase extends VLab {
         this.spriteFireEffect1.stop();
     }
 
+    digitalMultimeterFluke17BToControlBoard() {
+        console.log('digitalMultimeterFluke17BToControlBoard');
+        this.takeOffObject(true);
+        this.setInteractiveObjects("digitalMultimeterFluke17B");
+        this.digitalMultimeterFluke17B.activate();
+    }
 }
 
 let vLabBase = new VlabBase({
