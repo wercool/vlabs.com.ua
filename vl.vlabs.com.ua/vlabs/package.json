@@ -48,6 +48,7 @@
     "three-pointerlock": "0.0.2",
     "three-transformcontrols": "^0.78.1",
     "tween.js": "^16.6.0",
+    "webfontloader": "^1.6.28",
     "webgl-detect": "0.0.1"
   }
 }

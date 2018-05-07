@@ -4,6 +4,7 @@ import VLab                 from '../../vlabs.core/vlab';
 import Inventory            from '../../vlabs.core/inventory';
 
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
+var WebFont                 = require('webfontloader');
 
 export default class DigitalMultimeterFluke17B {
 /*
@@ -34,6 +35,8 @@ initObj {
         return new Promise((resolve, reject) => {
             Promise.all([
                 textureLoader.load('../vlabs.items/digitalMultimeterFluke17B/sprites/probe.png'),
+                textureLoader.load('../vlabs.items/digitalMultimeterFluke17B/sprites/rotate-left.png'),
+                textureLoader.load('../vlabs.items/digitalMultimeterFluke17B/sprites/rotate-right.png'),
             ])
             .then((result) => {
                 this.probeSpriteTexture = result[0];
@@ -47,6 +50,36 @@ initObj {
                     rotation: 0.0,
                     depthTest: true,
                     depthWrite: true
+                });
+
+                this.rotateLeftSpriteTexture = result[1];
+                this.rotateLeftSpriteMaterial = new THREE.SpriteMaterial({
+                    map: this.rotateLeftSpriteTexture,
+                    color: 0xffffff,
+                    blending: THREE.AdditiveBlending,
+                    transparent: true,
+                    opacity: 0.75,
+                    rotation: 0.0,
+                    depthTest: true,
+                    depthWrite: true
+                });
+                this.rotateRightSpriteTexture = result[2];
+                this.rotateRightSpriteMaterial = new THREE.SpriteMaterial({
+                    map: this.rotateRightSpriteTexture,
+                    color: 0xffffff,
+                    blending: THREE.AdditiveBlending,
+                    transparent: true,
+                    opacity: 0.75,
+                    rotation: 0.0,
+                    depthTest: true,
+                    depthWrite: true
+                });
+
+                WebFont.load({
+                    custom: {
+                      families: ['DigitalFont'],
+                      urls: ['../vlabs.items/digitalMultimeterFluke17B/assets/styles.css']
+                    }
                 });
 
                 resolve(this);
@@ -131,16 +164,71 @@ initObj {
                     }],
             };
 
+
+            this.fluke17BCurrentState = {
+                'switch': {
+                    curPos: 0,
+                    altPos: [
+                        { title: 'OFF', angle: -155.27 },
+                        { title: 'V~',  angle: -177.08 },
+                        { title: 'V=',  angle: -200.78 },
+                        { title: 'mV=', angle: -222.41 },
+                        { title: 'Ohm', angle: -247.91 },
+                        { title: 'C',   angle: -270.11 },
+                        { title: 'A=',  angle: -293.15 },
+                        { title: 'mA=', angle: -316.64 },
+                        { title: 'uA=', angle: -339.36 },
+                        { title: 't',   angle: -361.98 }
+                    ]
+                }
+            };
+
+            // Sounds
+            this.fluke17BSwitchSound = new THREE.Audio(this.context.defaultAudioListener);
+
+            var audioLoader = new THREE.AudioLoader();
+            audioLoader.load('../vlabs.items/digitalMultimeterFluke17B/sounds/switch.mp3', function(buffer) {
+                self.fluke17BSwitchSound.setBuffer(buffer);
+                self.fluke17BSwitchSound.setVolume(1.0);
+            });
+
+
             this.model.mousePressHandler = this.modelPressed;
             this.interactiveElements.push(this.model);
+
+
 
             this.switch = this.model.getObjectByName('digitalMultimeterFluke17BSwitch');
             this.switch.mousePressHandler = this.switchPressed;
             this.interactiveElements.push(this.switch);
 
-            this.onOffButton = this.model.getObjectByName('digitalMultimeterFluke17BOnOffButton');
-            this.onOffButton.mousePressHandler = this.onOffButtonPressed;
-            this.interactiveElements.push(this.onOffButton);
+            this.rotateLeftHelperSprite = new THREE.Sprite(this.rotateLeftSpriteMaterial);
+            this.rotateLeftHelperSprite.name = this.switch.name + '_RotateLeftHelperSprite';
+            this.rotateLeftHelperSprite.scale.multiplyScalar(0.02);
+            this.rotateLeftHelperSprite.position.add(new THREE.Vector3(-0.02, 0.01, 0.02));
+            this.rotateLeftHelperSprite.mousePressHandler = function(rotateLeftHelperSprite) {
+                this.changeSwitchState(true);
+            };
+            this.switch.add(this.rotateLeftHelperSprite);
+            this.interactiveElements.push(this.rotateLeftHelperSprite);
+            this.rotateLeftHelperSprite.visible = false;
+
+            this.rotateRightHelperSprite = new THREE.Sprite(this.rotateRightSpriteMaterial);
+            this.rotateRightHelperSprite.name = this.switch.name + '_RotateRightHelperSprite';
+            this.rotateRightHelperSprite.scale.multiplyScalar(0.02);
+            this.rotateRightHelperSprite.position.add(new THREE.Vector3(0.02, -0.01, 0.02));
+            this.rotateRightHelperSprite.mousePressHandler = function(rotateRightHelperSprite) {
+                this.changeSwitchState(false);
+            };
+            this.switch.add(this.rotateRightHelperSprite);
+            this.interactiveElements.push(this.rotateRightHelperSprite);
+            this.rotateRightHelperSprite.visible = false;
+
+
+
+            this.sndFnButton = this.model.getObjectByName('digitalMultimeterFluke17BSecondaryFunctionButton');
+            this.sndFnButton.mousePressHandler = this.sndFnButtonPressed;
+            this.interactiveElements.push(this.sndFnButton);
 
             this.blackNeedle = this.model.getObjectByName('digitalMultimeterFluke17BProbeBlackNeedle');
             this.redNeedle = this.model.getObjectByName('digitalMultimeterFluke17BProbeRedNeedle');
@@ -329,7 +417,6 @@ initObj {
 
     animate(time) {
         // TWEEN.update(time);
-
         this.prevTime = this.clock.getDelta();
     }
 
@@ -368,7 +455,6 @@ initObj {
                 testPoint.target,
                 helperSprite.position
             );
-            try { lineGeometry.computeLineDistances(); } catch (e) {};
             var spriteLine = new THREE.Line(lineGeometry, lineMaterial);
             try { spriteLine.computeLineDistances(); } catch (e) {};
             responsiveObj.mesh.add(spriteLine);
@@ -383,13 +469,6 @@ initObj {
             this.interactiveElements.push(helperSprite);
         });
         this.accessableInteractiveELements = this.interactiveElements.concat(this.interactiveSuppressElements);
-    }
-
-    refreshScreen() {
-        this.screenCanvasContext.drawImage(this.screenMaterialTextureImage, 0, 0);
-
-        this.screenMaterial.map = new THREE.Texture(this.screenCanvas);
-        this.screenMaterial.map.needsUpdate = true;
     }
 
     showTestPointsHelpers(object) {
@@ -453,11 +532,50 @@ initObj {
     }
 
     switchPressed() {
-        console.log('switchPressed');
+        this.rotateLeftSpriteMaterial.opacity = 1.0;
+        this.rotateRightSpriteMaterial.opacity = 1.0;
+
+        if (this.rotateSwitchTween) this.rotateSwitchTween.stop();
+
+        this.rotateLeftHelperSprite.visible = true;
+        this.rotateRightHelperSprite.visible = true;
+
+        this.rotateSwitchTween = new TWEEN.Tween(this.rotateLeftSpriteMaterial)
+        .to({ opacity: 0.0 }, 5000)
+        .easing(TWEEN.Easing.Linear.None)
+        .onUpdate(() => {
+            this.rotateRightSpriteMaterial.opacity = this.rotateLeftSpriteMaterial.opacity;
+        })
+        .onComplete(() => {
+            this.rotateLeftHelperSprite.visible = false;
+            this.rotateRightHelperSprite.visible = false;
+        })
+        .start();
     }
 
-    onOffButtonPressed() {
-        console.log('onOffButtonPressed');
+    changeSwitchState(leftDir) {
+        var positionChanged = false;
+        if (leftDir) {
+            if (this.fluke17BCurrentState['switch'].curPos > 0) {
+                this.fluke17BCurrentState['switch'].curPos--;
+                this.switch.rotation.z = THREE.Math.degToRad(this.fluke17BCurrentState['switch'].altPos[this.fluke17BCurrentState['switch'].curPos].angle);
+                positionChanged = true;
+            }
+        } else {
+            if (this.fluke17BCurrentState['switch'].curPos < 9) {
+                this.fluke17BCurrentState['switch'].curPos++;
+                this.switch.rotation.z = THREE.Math.degToRad(this.fluke17BCurrentState['switch'].altPos[this.fluke17BCurrentState['switch'].curPos].angle);
+                positionChanged = true;
+            }
+        }
+        if (positionChanged) {
+            this.fluke17BSwitchSound.play();
+            this.refreshScreen();
+        }
+    }
+
+    sndFnButtonPressed() {
+        console.log('sndFnButtonPressed');
     }
 
     takenToInventory() {
@@ -504,5 +622,53 @@ initObj {
             self.context.resetAllSelections();
             self.context.defaultCameraControls.resetState();
         }, 2500);
+    }
+
+
+
+
+    refreshScreen() {
+        this.screenCanvasContext.drawImage(this.screenMaterialTextureImage, 0, 0);
+
+        if (this.fluke17BCurrentState['switch'].altPos[this.fluke17BCurrentState['switch'].curPos].title != 'OFF') {
+            this.screenCanvasContext.font = '170px DigitalFont';
+            this.screenCanvasContext.fillText(' 0.000', -10, 180);
+    
+            this.screenCanvasContext.font = 'bold 26px Arial';
+            this.screenCanvasContext.fillText('Auto Range', 170, 220);
+
+            this.screenCanvasContext.font = 'bold 34px Arial';
+            switch (this.fluke17BCurrentState['switch'].altPos[this.fluke17BCurrentState['switch'].curPos].title) {
+                case 'V~':
+                    this.screenCanvasContext.fillText('V', 460, 110);
+                    this.screenCanvasContext.fillText('AC', 430, 150);
+                break;
+                case 'V=':
+                    this.screenCanvasContext.fillText('V', 460, 110);
+                    this.screenCanvasContext.fillText('DC', 410, 150);
+                break;
+                case 'mV=':
+                    this.screenCanvasContext.fillText('m V', 420, 110);
+                    this.screenCanvasContext.fillText('DC', 410, 150);
+                break;
+                case 'Ohm':
+                    this.screenCanvasContext.fillText('Ω', 435, 180);
+                break;
+                case 'C':
+                    this.screenCanvasContext.fillText('µF', 435, 95);
+                break;
+                case 'A=':
+                break;
+                case 'mA=':
+                break;
+                case 'uA=':
+                break;
+                case 't':
+                break;
+            }
+        }
+
+        this.screenMaterial.map = new THREE.Texture(this.screenCanvas);
+        this.screenMaterial.map.needsUpdate = true;
     }
 }
