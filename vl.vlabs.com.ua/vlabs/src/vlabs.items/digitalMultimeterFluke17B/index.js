@@ -368,8 +368,9 @@ initObj {
                 testPoint.target,
                 helperSprite.position
             );
+            try { lineGeometry.computeLineDistances(); } catch (e) {};
             var spriteLine = new THREE.Line(lineGeometry, lineMaterial);
-            spriteLine.computeLineDistances();
+            try { spriteLine.computeLineDistances(); } catch (e) {};
             responsiveObj.mesh.add(spriteLine);
             responsiveObj.mesh.add(helperSprite);
 
