@@ -206,7 +206,7 @@ initObj {
             this.rotateLeftHelperSprite = new THREE.Sprite(this.rotateLeftSpriteMaterial);
             this.rotateLeftHelperSprite.name = this.switch.name + '_RotateLeftHelperSprite';
             this.rotateLeftHelperSprite.scale.multiplyScalar(0.02);
-            this.rotateLeftHelperSprite.position.add(new THREE.Vector3(0.02, -0.05, 0.03));
+            this.rotateLeftHelperSprite.position.add(new THREE.Vector3(0.018, -0.065, 0.034));
             this.rotateLeftHelperSprite.mousePressHandler = function(rotateLeftHelperSprite) {
                 this.changeSwitchState(true);
             };
@@ -217,7 +217,7 @@ initObj {
             this.rotateRightHelperSprite = new THREE.Sprite(this.rotateRightSpriteMaterial);
             this.rotateRightHelperSprite.name = this.switch.name + '_RotateRightHelperSprite';
             this.rotateRightHelperSprite.scale.multiplyScalar(0.02);
-            this.rotateRightHelperSprite.position.add(new THREE.Vector3(-0.02, -0.05, 0.03));
+            this.rotateRightHelperSprite.position.add(new THREE.Vector3(-0.015, -0.065, 0.034));
             this.rotateRightHelperSprite.mousePressHandler = function(rotateRightHelperSprite) {
                 this.changeSwitchState(false);
             };
