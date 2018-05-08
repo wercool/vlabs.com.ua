@@ -180,7 +180,8 @@ initObj {
                         { title: 'uA=', angle: -339.36 },
                         { title: 't',   angle: -361.98 }
                     ]
-                }
+                },
+                'sndFnButton': false
             };
 
             // Sounds
@@ -437,6 +438,11 @@ initObj {
             helperSprite.name = testPoint.name + '_digitalMultimeterFluke17BHelperSprite';
             helperSprite.scale.multiplyScalar(testPoint.spriteScale);
             helperSprite.position.copy(testPoint.target.clone().add(testPoint.spritePosDeltas));
+            if (testPoint.spriteRotation > 0.0) {
+                var rotatedMaterial = this.probeSpriteMaterial.clone();
+                rotatedMaterial.rotation = testPoint.spriteRotation; 
+                helperSprite.material = rotatedMaterial;
+            }
             helperSprite.mousePressHandler = function(helperSprite) {
                 if (!this.activated) return;
                 if (!this.preselectedProbe) return;
@@ -575,7 +581,9 @@ initObj {
     }
 
     sndFnButtonPressed() {
-        console.log('sndFnButtonPressed');
+        this.fluke17BCurrentState['sndFnButton'] = !this.fluke17BCurrentState['sndFnButton'];
+        this.sndFnButton.position.z = (this.fluke17BCurrentState['sndFnButton']) ? 0.013 : 0.0132794;
+        this.refreshScreen();
     }
 
     takenToInventory() {
@@ -658,12 +666,31 @@ initObj {
                     this.screenCanvasContext.fillText('µF', 435, 95);
                 break;
                 case 'A=':
+                    this.screenCanvasContext.fillText('A', 430, 110);
+                    if (this.fluke17BCurrentState['sndFnButton']) {
+                        this.screenCanvasContext.fillText('AC', 430, 150);
+                    } else {
+                        this.screenCanvasContext.fillText('DC', 410, 150);
+                    }
                 break;
                 case 'mA=':
+                    this.screenCanvasContext.fillText('mA', 405, 110);
+                    if (this.fluke17BCurrentState['sndFnButton']) {
+                        this.screenCanvasContext.fillText('AC', 430, 150);
+                    } else {
+                        this.screenCanvasContext.fillText('DC', 410, 150);
+                    }
                 break;
                 case 'uA=':
+                    this.screenCanvasContext.fillText('mA', 405, 110);
+                    if (this.fluke17BCurrentState['sndFnButton']) {
+                        this.screenCanvasContext.fillText('AC', 430, 150);
+                    } else {
+                        this.screenCanvasContext.fillText('DC', 410, 150);
+                    }
                 break;
                 case 't':
+                    this.screenCanvasContext.fillText('°C', 405, 60);
                 break;
             }
         }
