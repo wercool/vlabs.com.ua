@@ -246,16 +246,18 @@ class VlabBase extends VLab {
                 positionDeltas: new THREE.Vector3(0.0, 0.0, 0.025),
                 controls: {}
             });
+*/
 
             this.BernzomaticTS8000Torch = new BernzomaticTS8000Torch({
                 context: this,
-                pos: new THREE.Vector3(0.0, 1.5, 1.5),
+                pos: new THREE.Vector3(0.0, 1.5, -1.5),
                 name: "BernzomaticTS8000Torch",
                 manipulation: false,
                 interactive: false,
-                inventory: undefined
+                inventory: undefined,
+                zoomHelper: true
             });
-*/
+
             console.log("VLab Base initialized");
         }).catch(error => {
             console.error(error);

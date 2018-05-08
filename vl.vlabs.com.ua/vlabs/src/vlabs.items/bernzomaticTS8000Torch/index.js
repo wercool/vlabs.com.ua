@@ -2,6 +2,7 @@ import * as THREE           from 'three';
 import * as TWEEN           from 'tween.js';
 import VLab                 from '../../vlabs.core/vlab';
 import Inventory            from '../../vlabs.core/inventory';
+import ZoomHelper           from '../../vlabs.core/zoom-helper';
 
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
 
@@ -17,6 +18,8 @@ initObj {
        this.initObj = initObj;
        this.context = initObj.context;
        this.pos = initObj.pos;
+
+       this.name = this.initObj.name;
 
        this.interactiveElements = [];
        this.interactiveSuppressElements = [];
@@ -256,6 +259,17 @@ initObj {
             //         }],
             // };
 
+            if (this.initObj.zoomHelper) {
+                this.zoomHelper = new ZoomHelper({
+                    context: this.context,
+                    targetObjectName: "BernzomaticTS8000Torch",
+                    minDistance: 0.35,
+                    positionDeltas: new THREE.Vector3(0.0, 0.0, 0.2), 
+                    scale: new THREE.Vector3(0.1, 0.1, 0.1),
+                    color: 0xfff495
+                });
+            }
+
             if (this.initObj.inventory) {
                 this.initObj.inventory.addItem({
                     item: this.model,
@@ -283,6 +297,7 @@ initObj {
                 }
             }
 
+            console.log("BernzomaticTS8000Torch intialized");
             this.addVLabEventListeners();
 
         }).catch(error => {
@@ -468,7 +483,7 @@ initObj {
             if (this.currentDisplayTime > this.tileDisplayDuration)
             {
                 this.currentDisplayTime = 0;
-    
+
                 this.currentTile++;
                 if (this.currentTile == this.numberOfTiles) this.currentTile = 0;
                 var currentColumn = this.currentTile % this.tilesHorizontal;
