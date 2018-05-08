@@ -264,9 +264,11 @@ initObj {
                     context: this.context,
                     targetObjectName: "BernzomaticTS8000Torch",
                     minDistance: 0.35,
+                    minPolarAngle: THREE.Math.degToRad(-80.0),
+                    maxPolarAngle: THREE.Math.degToRad(160.0),
                     positionDeltas: new THREE.Vector3(0.0, 0.0, 0.2), 
                     scale: new THREE.Vector3(0.1, 0.1, 0.1),
-                    color: 0xfff495
+                    color: 0xffffff
                 });
             }
 
@@ -475,6 +477,7 @@ initObj {
     }
 
     animate(time) {
+
         if (this.bernzomaticTS800TorchFlameOn) {
             this.bernzomaticTS800TorchFlameSoundTime += (this.clock.getDelta() - this.prevTime);
             var delta = this.clock.getDelta() * 1000;

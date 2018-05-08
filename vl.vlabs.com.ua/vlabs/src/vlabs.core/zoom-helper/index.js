@@ -122,7 +122,9 @@ export default class ZoomHelper {
             position: this.context.defaultCameraControls.object.position.clone(),
             target: this.context.defaultCameraControls.target.clone(),
             minAzimuthAngle: this.context.defaultCameraControls.minAzimuthAngle,
-            maxAzimuthAngle: this.context.defaultCameraControls.maxAzimuthAngle
+            maxAzimuthAngle: this.context.defaultCameraControls.maxAzimuthAngle,
+            minPolarAngle: this.context.defaultCameraControls.minPolarAngle,
+            maxPolarAngle: this.context.defaultCameraControls.maxPolarAngle,
         };
 
         var zoomTarget = this.context.getWorldPosition(this.handlerSprite);
@@ -159,6 +161,10 @@ export default class ZoomHelper {
                     this.context.defaultCameraControls.minAzimuthAngle =  this.initObj.minAzimuthAngle;
                 if (this.initObj.maxAzimuthAngle)
                     this.context.defaultCameraControls.maxAzimuthAngle =  this.initObj.maxAzimuthAngle;
+                if (this.initObj.minPolarAngle)
+                    this.context.defaultCameraControls.minPolarAngle =  this.initObj.minPolarAngle;
+                if (this.initObj.maxPolarAngle)
+                    this.context.defaultCameraControls.maxPolarAngle =  this.initObj.maxPolarAngle;
 
                 this.context.zoomHelperMode = true;
                 })
@@ -175,6 +181,8 @@ export default class ZoomHelper {
         this.context.defaultCameraControls.maxDistance = this.context.defaultCameraControls.backState.maxDistance;
         this.context.defaultCameraControls.minAzimuthAngle =  this.context.defaultCameraControls.backState.minAzimuthAngle;
         this.context.defaultCameraControls.maxAzimuthAngle = this.context.defaultCameraControls.backState.maxAzimuthAngle;
+        this.context.defaultCameraControls.minPolarAngle =  this.context.defaultCameraControls.backState.minPolarAngle;
+        this.context.defaultCameraControls.maxPolarAngle = this.context.defaultCameraControls.backState.maxPolarAngle;
 
         new TWEEN.Tween(this.context.defaultCameraControls)
         .to({ minDistance: this.context.defaultCameraControls.backState.minDistance }, 250)
