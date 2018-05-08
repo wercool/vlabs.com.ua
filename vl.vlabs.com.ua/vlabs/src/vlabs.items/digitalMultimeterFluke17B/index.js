@@ -206,22 +206,22 @@ initObj {
             this.rotateLeftHelperSprite = new THREE.Sprite(this.rotateLeftSpriteMaterial);
             this.rotateLeftHelperSprite.name = this.switch.name + '_RotateLeftHelperSprite';
             this.rotateLeftHelperSprite.scale.multiplyScalar(0.02);
-            this.rotateLeftHelperSprite.position.add(new THREE.Vector3(-0.02, 0.01, 0.02));
+            this.rotateLeftHelperSprite.position.add(new THREE.Vector3(0.02, -0.05, 0.03));
             this.rotateLeftHelperSprite.mousePressHandler = function(rotateLeftHelperSprite) {
                 this.changeSwitchState(true);
             };
-            this.switch.add(this.rotateLeftHelperSprite);
+            this.model.add(this.rotateLeftHelperSprite);
             this.interactiveElements.push(this.rotateLeftHelperSprite);
             this.rotateLeftHelperSprite.visible = false;
 
             this.rotateRightHelperSprite = new THREE.Sprite(this.rotateRightSpriteMaterial);
             this.rotateRightHelperSprite.name = this.switch.name + '_RotateRightHelperSprite';
             this.rotateRightHelperSprite.scale.multiplyScalar(0.02);
-            this.rotateRightHelperSprite.position.add(new THREE.Vector3(0.02, -0.01, 0.02));
+            this.rotateRightHelperSprite.position.add(new THREE.Vector3(-0.02, -0.05, 0.03));
             this.rotateRightHelperSprite.mousePressHandler = function(rotateRightHelperSprite) {
                 this.changeSwitchState(false);
             };
-            this.switch.add(this.rotateRightHelperSprite);
+            this.model.add(this.rotateRightHelperSprite);
             this.interactiveElements.push(this.rotateRightHelperSprite);
             this.rotateRightHelperSprite.visible = false;
 
