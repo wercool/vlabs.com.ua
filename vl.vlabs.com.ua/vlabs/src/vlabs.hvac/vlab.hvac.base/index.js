@@ -16,14 +16,14 @@ class HVACVLabBase {
             transientLocationsMap: {
                 "HVACBaseHeatPump": {
                     "HVACBaseAirHandler": {
-                        pos: new THREE.Vector3(1.0, 0.15, -1.5),
-                        scale: new THREE.Vector3(0.25, 0.25, 0.25),
+                        pos: new THREE.Vector3(1.0, 0.5, -1.5),
+                        scale: new THREE.Vector3(0.5, 0.5, 0.5),
                     }
                 },
                 "HVACBaseAirHandler": {
                     "HVACBaseHeatPump": {
-                        pos: new THREE.Vector3(1.6, 0.15, 1.5),
-                        scale: new THREE.Vector3(0.25, 0.25, 0.25),
+                        pos: new THREE.Vector3(1.6, 0.5, 1.5),
+                        scale: new THREE.Vector3(0.5, 0.5, 0.5),
                     }
                 }
             }

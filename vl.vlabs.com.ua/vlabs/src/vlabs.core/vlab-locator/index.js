@@ -14,7 +14,7 @@ export default class VLabLocator {
         var textureLoader = new THREE.TextureLoader();
 
         Promise.all([
-            textureLoader.load('../vlabs.assets/img/new-location.png'),
+            textureLoader.load('../vlabs.assets/img/direction.png'),
         ])
         .then((result) => {
             this.handlerSpriteTexture = result[0];
@@ -57,12 +57,12 @@ export default class VLabLocator {
 
                 handlerSprite.userData["transientLocationName"] = transientLocationName;
 
-                var handlerSpriteAnimatedPosY = handlerSprite.position.clone().y + 0.02;
-                new TWEEN.Tween(handlerSprite.position)
-                .to({y: handlerSpriteAnimatedPosY}, 1000)
-                .repeat(Infinity)
-                .yoyo(true)
-                .easing(TWEEN.Easing.Quadratic.InOut).start();
+                // var handlerSpriteAnimatedPosY = handlerSprite.position.clone().y + 0.02;
+                // new TWEEN.Tween(handlerSprite.position)
+                // .to({y: handlerSpriteAnimatedPosY}, 1000)
+                // .repeat(Infinity)
+                // .yoyo(true)
+                // .easing(TWEEN.Easing.Quadratic.InOut).start();
 
                 vLab.vLabScene.add(handlerSprite);
 
