@@ -20,7 +20,7 @@ initObj {
 
         this.activated = false;
 
-        this.initObj.pos = new THREE.Vector3(-0.065, -0.06, -0.11);
+        this.initObj.pos = this.initObj.pos ? this.initObj.pos : new THREE.Vector3(-0.065, -0.06, -0.11);
         this.initObj.quaternion = new THREE.Vector4(0.4, 0.2, 1.75, -0.1);
         this.initObj.scale = 0.075;
 
@@ -306,8 +306,8 @@ initObj {
             this.model.scale.multiplyScalar(this.initObj.scale);
         }
         this.context.defaultCamera.add(this.model);
-        this.onVLabSceneWebGLContainerResized();
         this.activated = true;
+        this.onVLabSceneWebGLContainerResized();
     }
 
     addVLabEventListeners() {

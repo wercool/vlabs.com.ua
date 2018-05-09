@@ -17,6 +17,11 @@
         "yPanDeltaDown": 0.5
     },
     "showTHREEStats": true,
+    "useShadows": false,
+    "shadows": {
+        "cast": ["bryantB225B_heatPumpFrameBottom", "bryantB225B_heatPumpFrontVentPanel", "bryantB225B_heatPumpFrame", "bryantB225B_heatPumpFrameCap"],
+        "receive": ["houseWall", "ground"]
+    },
     "bumpMaps": false,
     "alphaMaps": true,
     "advancedSelectionHelper": true,
@@ -33,7 +38,8 @@
     "interactiveObjects": [],
     "responsiveObjects": [
         "frameCapBolt9", 
-        "frameCapBolt10"
+        "frameCapBolt10",
+        "controlBoard"
     ],
     "tooltips": {
         "frameCapBolt9": {
@@ -54,6 +60,10 @@
         "BoshScrewdriver|frameCapBolt10": {
             "applyFn": "frameCapBoltUnscrew",
             "applyFnArgs": {"arg": "frameCapBolt10"}
+        },
+        "digitalMultimeterFluke17B|controlBoard": {
+            "applyFn": "digitalMultimeterFluke17BToControlBoard",
+            "applyFnArgs": {}
         }
     }
 }

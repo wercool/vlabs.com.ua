@@ -43,12 +43,16 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
 
-            var light0 = new THREE.AmbientLight(0xffffff, 0.4);
-            this.vLabScene.add(light0);
+            this.light0 = new THREE.AmbientLight(0xffffff, 0.4);
+            this.vLabScene.add(this.light0);
 
-            var light1 = new THREE.PointLight(0xffffff, 0.5);
-            light1.position.set(0.0, 6.0, 3.0);
-            this.vLabScene.add(light1);
+            this.light1 = new THREE.PointLight(0xffffff, 0.5);
+            this.light1.position.set(3.0, 5.0, 0.0);
+            this.vLabScene.add(this.light1);
+
+            if (this.nature.useShadows) {
+                this.setupShadows({'defaultPointLight': this.light1});
+            }
 
             //Z-fighting fixes
             var ZFightingMaterial = this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameBottom").material;
@@ -274,12 +278,42 @@ export default class VlabHVACBaseHeatPump extends VLab {
             detailedView: this.bryantB225B_heatPumpCompressorDetailedView
         });
 
-        this.DigitalMultimeterFluke17B = new DigitalMultimeterFluke17B({
+        new DigitalMultimeterFluke17B({
             context: this,
-            name: "DigitalMultimeterFluke17B",
-            // manipulation: true,
-            interactive: false,
-            inventory: this.inventory
+            inventory: this.inventory,
+            interactive: true,
+            pos: new THREE.Vector3(-0.072, -0.07, -0.11)
+        }).then((instance) => {
+            this.digitalMultimeterFluke17B = instance;
+            this.digitalMultimeterFluke17B.addResponsiveObject({
+                mesh: this.vLabScene.getObjectByName('controlBoard'),
+                testPoints: [
+                    {
+                        name: 'relayT9AV5022ContactCOM',
+                        target: new THREE.Vector3(0.0352108, 0.02511, 0.0296565),
+                        orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(30.0)),
+                        spritePosDeltas: new THREE.Vector3(-0.03, 0.05, 0.05),
+                        spriteScale: 0.05,
+                        spriteRotation: 0.0
+                    },
+                    {
+                        name: 'relayT9AV5022ContactNC',
+                        target: new THREE.Vector3(0.0550126, 0.0309874, 0.0296565),
+                        orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(-60.0)),
+                        spritePosDeltas: new THREE.Vector3(0.05, -0.05, 0.05),
+                        spriteScale: 0.05,
+                        spriteRotation: THREE.Math.degToRad(270.0)
+                    },
+                    {
+                        name: 'relayT9AV5022ContactNO',
+                        target: new THREE.Vector3(0.055229, 0.0400362, 0.0296565),
+                        orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, 0.0),
+                        spritePosDeltas: new THREE.Vector3(0.05, 0.05, 0.05),
+                        spriteScale: 0.05,
+                        spriteRotation: THREE.Math.degToRad(300.0)
+                    },
+                ]
+            });
         });
 
         // Misc helpers
@@ -312,4 +346,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
         screwDriver.rotation.z = -Math.PI / 2;
     }
 
+    digitalMultimeterFluke17BToControlBoard() {
+        console.log('digitalMultimeterFluke17BToControlBoard');
+        this.takeOffObject(true);
+        this.setInteractiveObjects("digitalMultimeterFluke17B");
+        this.digitalMultimeterFluke17B.activate();
+    }
 }

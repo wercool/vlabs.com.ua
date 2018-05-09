@@ -431,6 +431,8 @@ export default class VLab {
                     object.matrixAutoUpdate = false;
                     object.updateMatrix();
                 }
+                object.castShadow = false;
+                object.receiveShadow = false;
                 self.vLabSceneMeshes.push(object);
             }
         });
@@ -1464,7 +1466,7 @@ export default class VLab {
         this.selectedObject.rotation.x = -0.75;
         this.selectedObject.rotation.y = -0.1;
         this.selectedObject.geometry.computeBoundingSphere();
-        this.selectedObject.position.set(0.2 - cameraAspectOffset, 0.075 - Object.keys(this.takenObjects).length / 15, -0.2);
+        this.selectedObject.position.set(0.18 - cameraAspectOffset, 0.075 - Object.keys(this.takenObjects).length / 15, -0.2);
         this.selectedObject.scale.multiplyScalar(0.02 / this.selectedObject.geometry.boundingSphere.radius);
         this.selectedObject.takenRotation = new TWEEN.Tween(this.selectedObject.rotation)
         .to({z: Math.PI}, 40000)
@@ -1490,7 +1492,7 @@ export default class VLab {
         var i = 0;
         for (var takenObjectName in this.takenObjects) {
             var takenObject = this.takenObjects[takenObjectName];
-            takenObject.position.set(0.17 - cameraAspectOffset, 0.075 - i / 15, -0.2);
+            takenObject.position.set(0.18 - cameraAspectOffset, 0.075 - i / 15, -0.2);
             i++;
         }
     }
@@ -1603,5 +1605,24 @@ export default class VLab {
                 subscriber.callback.call(subscriber.instance, event);
             }
         }
+    }
+
+    setupShadows(iniObj) {
+        iniObj.defaultPointLight.shadow.mapSize.width = 512;  // default
+        iniObj.defaultPointLight.shadow.mapSize.height = 512; // default
+        iniObj.defaultPointLight.shadow.camera.near = 0.5;    // default
+        iniObj.defaultPointLight.shadow.camera.far = 500      // default
+        iniObj.defaultPointLight.castShadow = true;
+
+        this.webGLRenderer.shadowMap.enabled = true;
+        this.webGLRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        this.nature.shadows.cast.forEach((castShadowMeshName) => {
+            this.vLabScene.getObjectByName(castShadowMeshName).castShadow = true;
+            this.vLabScene.getObjectByName(castShadowMeshName).receiveShadow = false;
+        });
+        this.nature.shadows.receive.forEach((receiveShadowMeshName) => {
+            this.vLabScene.getObjectByName(receiveShadowMeshName).receiveShadow = true;
+        });
     }
 }
