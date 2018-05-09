@@ -1,3 +1,20 @@
-<p>
-  login works!
-</p>
+<mat-card class="login-card centering">
+  <mat-card-header>
+    <div mat-card-avatar class="login-header-image"></div>
+    <mat-card-title>HelpClips</mat-card-title>
+    <mat-card-subtitle>Authentication</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+
+    <mat-form-field appearance="outline" class="global-full-width">
+      <mat-label>email</mat-label>
+      <input matInput placeholder="email@address">
+      <mat-icon matSuffix>email</mat-icon>
+      <mat-hint>Sign in or Sign up</mat-hint>
+    </mat-form-field>
+
+    </mat-card-content>
+  <mat-card-actions class="global-mat-card-actions">
+    <button mat-raised-button color="accent">CONTINUE</button>
+  </mat-card-actions>
+</mat-card>

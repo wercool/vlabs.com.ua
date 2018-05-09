@@ -5,3 +5,20 @@
 body {
     font-family: Roboto;
 }
+
+.content {
+    width: 100%;
+}
+
+.centering {
+    margin: auto;
+    width: 50%;
+}
+
+.global-mat-card-actions {
+    text-align: right;
+}
+
+.global-full-width {
+    width: 100%;
+}
