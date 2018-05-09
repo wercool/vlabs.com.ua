@@ -381,6 +381,7 @@ initObj {
 */
 
     onVLabSceneWebGLContainerResized() {
+        if (!this.activated) return;
         var cameraAspectOffset = ((this.context.defaultCamera.aspect < 1.4) ? 0.03 : -0.01) / this.context.defaultCamera.aspect;
         this.model.position.x = this.initObj.pos.x + cameraAspectOffset;
     }

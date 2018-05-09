@@ -1,5 +1,6 @@
 import * as THREE               from 'three';
 import * as DOMUtils            from '../../vlabs.core/utils/dom.utils.js';
+import iziToast                 from 'izitoast';
 
 var OrbitControls           = require('../../vlabs.core/three-orbit-controls/index')(THREE);
 
@@ -272,6 +273,15 @@ export default class Inventory {
     }
 
     takeItem() {
+        if(Object.keys(this.context.takenObjects).length > 2) {
+            iziToast.info({
+                title: 'Info',
+                message: 'You can carry maximum 3 objects at once',
+                timeout: 3000
+            });
+            return;
+        }
+
         var itemsKeys = Object.keys(this.items);
         var takenItem = this.items[itemsKeys[this.currentItemIdx]].item;
         takenItem.userData["initObj"] = this.items[itemsKeys[this.currentItemIdx]].initObj;

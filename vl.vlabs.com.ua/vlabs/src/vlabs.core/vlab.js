@@ -1430,7 +1430,7 @@ export default class VLab {
     }
 
     takeObject(args) {
-        if(Object.keys(this.takenObjects).length > 3) {
+        if(Object.keys(this.takenObjects).length > 2) {
             iziToast.info({
                 title: 'Info',
                 message: 'You can carry maximum 3 objects at once',
@@ -1464,10 +1464,10 @@ export default class VLab {
         this.selectedObject.rotation.x = -0.75;
         this.selectedObject.rotation.y = -0.1;
         this.selectedObject.geometry.computeBoundingSphere();
-        this.selectedObject.position.set(0.17 - cameraAspectOffset, 0.075 - Object.keys(this.takenObjects).length / 15, -0.2);
+        this.selectedObject.position.set(0.2 - cameraAspectOffset, 0.075 - Object.keys(this.takenObjects).length / 15, -0.2);
         this.selectedObject.scale.multiplyScalar(0.02 / this.selectedObject.geometry.boundingSphere.radius);
         this.selectedObject.takenRotation = new TWEEN.Tween(this.selectedObject.rotation)
-        .to({z: Math.PI}, 20000)
+        .to({z: Math.PI}, 40000)
         .repeat(Infinity)
         .yoyo(true)
         .easing(TWEEN.Easing.Quadratic.InOut).start();
@@ -1482,6 +1482,7 @@ export default class VLab {
         this.defaultCamera.remove(this.selectedObject);
         this.defaultCamera.add(this.selectedObject);
         this.resetAllSelections();
+        this.rearrangeTakenObjects();
     }
 
     rearrangeTakenObjects() {
