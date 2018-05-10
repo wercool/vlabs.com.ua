@@ -19,7 +19,7 @@
     "showTHREEStats": true,
     "useShadows": false,
     "shadows": {
-        "cast": ["bryantB225B_heatPumpFrameBottom", "bryantB225B_heatPumpFrontVentPanel", "bryantB225B_heatPumpFrame", "bryantB225B_heatPumpFrameCap"],
+        "cast": ["bryantB225B_heatPumpFrameBottom", "bryantB225B_heatPumpFrontVentPanel", "bryantB225B_heatPumpFrame", "bryantB225B_heatPumpFrameCap", "bryantB225B_heatPumpFanGrid"],
         "receive": ["houseWall", "ground"]
     },
     "bumpMaps": false,
