@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './component/login/login.component';
 import { DashboardComponent } from './component/dashboard/dashboard.component';
 import { CompatibilityTestComponent } from './component/compatibility-test/compatibility-test.component';
+import { HomeComponent } from './component/home/home.component';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { CompatibilityTestComponent } from './component/compatibility-test/compa
     AppComponent,
     LoginComponent,
     DashboardComponent,
-    CompatibilityTestComponent
+    CompatibilityTestComponent,
+    HomeComponent
   ],
   imports: [
     MaterialModule,

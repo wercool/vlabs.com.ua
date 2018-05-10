@@ -2,12 +2,30 @@
 @import 'https://fonts.googleapis.com/icon?family=Material+Icons';
 @import 'https://fonts.googleapis.com/icon?family=Roboto';
 
+/*DEBUG*/
+.border-debug {
+    /* border: solid 1px red; */
+}
+/*DEBUG*/
+
+html {
+    min-height: 100%;
+}
+
 body {
+    overflow: hidden;
     font-family: Roboto;
+    background: linear-gradient(-180deg, #B2EBF2 0%, #006064);
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .content {
     width: 100%;
+}
+
+.center-text {
+    text-align: center;
 }
 
 .centering {
@@ -20,5 +38,9 @@ body {
 }
 
 .global-full-width {
+    width: 100%;
+}
+
+.global-full-height {
     width: 100%;
 }

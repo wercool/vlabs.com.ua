@@ -1,7 +1,7 @@
 .login-card {
-    max-width: 320px;
-    min-width: 320px;
-    margin-top: 5%;
+    max-width: 350px;
+    min-width: 260px;
+    margin-top: 30vh;
 }
 
 .login-header-image {
