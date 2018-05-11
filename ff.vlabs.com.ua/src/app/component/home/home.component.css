@@ -36,8 +36,8 @@
 
 @media screen and (min-width: 769px) {
     .bg-img-pos {
-        background-size: 150vh 150vh;
-        background-position: -20vh -30vh;
+        background-size: 125vh 125vh;
+        background-position: -25vw -30vh;
         clear: bottom;
     }
 }
