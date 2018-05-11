@@ -47,9 +47,14 @@ public class UserService
 
     @Autowired
     private AuthorityRepository authorityRepository;
-    
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public boolean userExists(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+        return (user != null) ? true : false;
+    }
 
     @PreAuthorize("hasRole('USER')")
     public User findByUsername(String username) throws UsernameNotFoundException {

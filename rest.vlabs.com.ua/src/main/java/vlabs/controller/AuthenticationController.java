@@ -1,8 +1,11 @@
 package vlabs.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,14 +25,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import utils.PasswordGenerator;
 import vlabs.common.EmptyJsonResponse;
+import vlabs.model.Authority;
 import vlabs.model.collaborator.Collaborator;
 import vlabs.model.user.User;
 import vlabs.model.user.UserTokenState;
+import vlabs.repository.AuthorityRepository;
 import vlabs.security.TokenHelper;
 import vlabs.service.CollaboratorService;
 import vlabs.service.CustomUserDetailsService;
 import vlabs.service.UserService;
+import vlabs.service.util.SimpleEmailService;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -39,7 +46,13 @@ public class AuthenticationController
     private CustomUserDetailsService userDetailsService;
 
     @Autowired
+    private AuthorityRepository authorityRepository;
+
+    @Autowired
     private UserService userService;
+
+    @Autowired
+    private SimpleEmailService simpleEmailService;
 
     @Autowired
     TokenHelper tokenHelper;
@@ -74,6 +87,31 @@ public class AuthenticationController
            UserTokenState userTokenState = new UserTokenState();
            return ResponseEntity.accepted().body(userTokenState);
         }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/userexists/{usernameEmail}")
+    public ResponseEntity<?> userExists(@PathVariable String usernameEmail) throws MessagingException {
+        boolean userExists = this.userService.userExists(usernameEmail);
+        if (!userExists) {
+            String passwd = PasswordGenerator.generatePassword(5, PasswordGenerator.ALPHA_CAPS + PasswordGenerator.NUMERIC);
+            String message = "HelpClips temporary password:\n" + passwd;
+            simpleEmailService.sendEmail(message, usernameEmail, "HelpClips temporary password");
+
+            User newlyRegisteredUser = new User();
+            newlyRegisteredUser.setUsername(usernameEmail);
+            newlyRegisteredUser.setPassword(passwd);
+            newlyRegisteredUser.setEnabled(true);
+            newlyRegisteredUser.setEmail(usernameEmail);
+            Authority userAuthority = authorityRepository.findByName("ROLE_USER");
+            List<Authority> grantedAuthorities = new ArrayList<Authority>();
+            grantedAuthorities.add(userAuthority);
+            newlyRegisteredUser.setAuthorities(grantedAuthorities);
+
+            userService.createNewUser(newlyRegisteredUser);
+        }
+        Map<String, Boolean> result = new HashMap<>();
+        result.put("userExists", userExists);
+        return ResponseEntity.accepted().body(result);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes="application/json")

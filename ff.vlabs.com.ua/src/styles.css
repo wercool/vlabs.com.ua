@@ -33,6 +33,14 @@ body {
     width: 50%;
 }
 
+.float-left {
+    float: left;
+}
+
+.float-right {
+    float: right;
+}
+
 .global-mat-card-actions {
     text-align: right;
 }
@@ -43,4 +51,21 @@ body {
 
 .global-full-height {
     width: 100%;
+}
+
+.unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+ 
+    /*
+      Introduced in IE 10.
+      See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+    */
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.mat-snack-bar-container{
+    background-color: #006064 !important;
 }
