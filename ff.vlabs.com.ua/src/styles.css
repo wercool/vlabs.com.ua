@@ -2,26 +2,16 @@
 @import 'https://fonts.googleapis.com/icon?family=Material+Icons';
 @import 'https://fonts.googleapis.com/icon?family=Roboto';
 
-/*DEBUG*/
-.border-debug {
-    /* border: solid 1px red; */
-}
-/*DEBUG*/
-
 html {
     min-height: 100%;
+    margin: 0;
 }
 
 body {
-    overflow: hidden;
     font-family: Roboto;
     background: linear-gradient(-180deg, #B2EBF2 0%, #006064);
     background-repeat: no-repeat;
     background-size: cover;
-}
-
-.content {
-    width: 100%;
 }
 
 .center-text {
@@ -64,6 +54,10 @@ body {
     */
     -ms-user-select: none;
     user-select: none;
+}
+
+.border-radius-5px {
+    border-radius: 5px;
 }
 
 .mat-snack-bar-container{

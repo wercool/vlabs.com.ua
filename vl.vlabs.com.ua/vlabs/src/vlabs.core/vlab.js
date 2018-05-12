@@ -1244,9 +1244,11 @@ export default class VLab {
 
                 var screenPos = this.toScreenPosition(this.selectedObject);
                 var cMenuPos = { x: screenPos.x, y: screenPos.y };
-                if (configObj['positionDeltas']) {
-                    cMenuPos.x += configObj['positionDeltas'].x;
-                    cMenuPos.y += configObj['positionDeltas'].y;
+                if (configObj) {
+                    if (configObj['positionDeltas']) {
+                        cMenuPos.x += configObj['positionDeltas'].x;
+                        cMenuPos.y += configObj['positionDeltas'].y;
+                    }
                 }
                 if (cMenuPos.x + 150 > this.webGLContainer.clientWidth) {
                     cMenuPos.x -= cMenuPos.x + 150 - this.webGLContainer.clientWidth;

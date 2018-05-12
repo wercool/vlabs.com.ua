@@ -1,0 +1,14 @@
+.content {
+    margin-bottom: 4vh;
+}
+.footer {
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    bottom: 2vh;
+    width: 100%;
+    height: 2vh;
+    background: url('/assets/images/footer-line.png') center center no-repeat;
+    background-position: center;
+    background-size: 100% 5px;
+}

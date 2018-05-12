@@ -12,6 +12,8 @@ import { UserService } from './service';
 export class AppComponent {
     title = environment.title;
 
+    copyrightYear = (new Date()).getFullYear();
+
     constructor(
       public userService: UserService
     ) {}

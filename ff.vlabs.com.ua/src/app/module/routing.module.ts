@@ -2,12 +2,19 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { DashboardComponent } from "../component/dashboard/dashboard.component";
+import { AuthenticatedGuard } from '../guard';
+import { ProfileComponent } from '../component/profile/profile.component';
 
 export const routes: Routes = [
     {
-      path: '',
+      path: 'dashboard',
       component: DashboardComponent,
-      pathMatch: 'full'
+      canActivate: [AuthenticatedGuard]
+    },
+    {
+        path: 'profile',
+        component: ProfileComponent,
+        canActivate: [AuthenticatedGuard]
     }
 ];
 
@@ -17,4 +24,4 @@ export const routes: Routes = [
     providers: []
 })
 
-export class AppRoutingModule { }
+export class RoutingModule { }

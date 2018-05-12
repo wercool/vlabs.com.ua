@@ -105,8 +105,7 @@ export default class ZoomHelper {
 
         if (intersects.length > 0) {
             if (intersects[0].object.name == this.handlerSprite.name) {
-                if (!this.reseted) this.activate();
-                this.reseted = false;
+                this.activate();
             }
         }
     }
@@ -114,18 +113,21 @@ export default class ZoomHelper {
     activate() {
         this.handlerSprite.visible = false;
 
-        this.context.zoomMode = true;
+        /* Save back state only for first activation of ZoomHelper */
+        if (!this.context.zoomHelperMode) {
+            this.context.defaultCameraControls.backState = {
+                minDistance: this.context.defaultCameraControls.minDistance,
+                maxDistance: this.context.defaultCameraControls.maxDistance,
+                position: this.context.defaultCameraControls.object.position.clone(),
+                target: this.context.defaultCameraControls.target.clone(),
+                minAzimuthAngle: this.context.defaultCameraControls.minAzimuthAngle,
+                maxAzimuthAngle: this.context.defaultCameraControls.maxAzimuthAngle,
+                minPolarAngle: this.context.defaultCameraControls.minPolarAngle,
+                maxPolarAngle: this.context.defaultCameraControls.maxPolarAngle,
+            };
+        }
 
-        this.context.defaultCameraControls.backState = {
-            minDistance: this.context.defaultCameraControls.minDistance,
-            maxDistance: this.context.defaultCameraControls.maxDistance,
-            position: this.context.defaultCameraControls.object.position.clone(),
-            target: this.context.defaultCameraControls.target.clone(),
-            minAzimuthAngle: this.context.defaultCameraControls.minAzimuthAngle,
-            maxAzimuthAngle: this.context.defaultCameraControls.maxAzimuthAngle,
-            minPolarAngle: this.context.defaultCameraControls.minPolarAngle,
-            maxPolarAngle: this.context.defaultCameraControls.maxPolarAngle,
-        };
+        this.context.zoomMode = true;
 
         var zoomTarget = this.context.getWorldPosition(this.handlerSprite);
         this.context.defaultCameraControls.enableZoom = false;
@@ -178,6 +180,8 @@ export default class ZoomHelper {
     reset() {
         var prevTarget = this.context.defaultCameraControls.backState.target;
 
+        this.context.defaultCameraControls.enabled = false;
+
         this.context.defaultCameraControls.maxDistance = this.context.defaultCameraControls.backState.maxDistance;
         this.context.defaultCameraControls.minAzimuthAngle =  this.context.defaultCameraControls.backState.minAzimuthAngle;
         this.context.defaultCameraControls.maxAzimuthAngle = this.context.defaultCameraControls.backState.maxAzimuthAngle;
@@ -207,7 +211,7 @@ export default class ZoomHelper {
                     this.context.zoomHelperMode = false;
                     this.context.zoomViewArea.style.visibility = 'hidden';
                     this.context.zoomMode = false;
-                    this.reseted = false;
+                    this.context.defaultCameraControls.resetState();
                 })
             .start();
             this.context.zoomModeHandler(false);
@@ -227,7 +231,7 @@ export default class ZoomHelper {
         this.handlerSprite.visible = true;
         this.context.zoomMode = false;
 
-        this.reseted = true;
+        this.context.zoomHelperMode = false;
     }
 
 }

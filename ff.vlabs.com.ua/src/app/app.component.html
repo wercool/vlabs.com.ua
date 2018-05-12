@@ -1,4 +1,9 @@
-<div class="content">
+<div class="global-full-width global-full-height content">
     <app-home *ngIf="!this.userService.isLoggedIn()"></app-home>
-    <!-- <app-dashboard></app-dashboard> -->
+    <app-dashboard *ngIf="this.userService.isLoggedIn()"></app-dashboard>
 </div>
+<footer class="footer">
+    <div class="global-full-width center-text" style="font-size: 1vh; color: rgba(255, 255, 255, 0.65); padding-top: 1vh;">
+        <p>Copyright © {{copyrightYear}} [COPYRIGHT OWNER’S NAME]. All Rights Reserved.</p>
+    </div>
+</footer>

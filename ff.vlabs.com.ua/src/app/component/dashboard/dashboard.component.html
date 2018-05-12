@@ -1,8 +1,16 @@
-<mat-toolbar color="primary">
+<mat-toolbar class="unselectable border-radius-5px" color="primary">
   <mat-toolbar-row>
-    <span>Material App</span>
-    <span class="example-spacer"></span>
-    <mat-icon class="example-icon">favorite</mat-icon>
-    <mat-icon class="example-icon">delete</mat-icon>
+    <img [src]="'/assets/images/icon-round-white-bg-48.png'" alt="image"/>
+    <span class="spacer"></span>
+    <a mat-button class="mat-body-1" matTooltip="Profile" (click)="profile()">{{this.userService.currentUser.username}}</a>
+    <a mat-icon-button>
+        <mat-icon matTooltip="Logout" (click)="logout()">exit_to_app</mat-icon>
+    </a>
   </mat-toolbar-row>
 </mat-toolbar>
+
+<mat-tab-group class="unselectable">
+  <mat-tab label="Tab One"></mat-tab>
+  <mat-tab label="Tab Two"></mat-tab>
+  <mat-tab label="Tab Three"></mat-tab>
+</mat-tab-group>

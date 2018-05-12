@@ -88,7 +88,7 @@ class VlabBase extends VLab {
                 color: 0xfff495
             });
 
-/*
+
             this.flowAlongWire1 = new FlowAlongTube({
                 context: this,
                 tube: this.vLabScene.getObjectByName('wire1'),
@@ -138,9 +138,9 @@ class VlabBase extends VLab {
             setTimeout(() => {
                 this.flowAlongWire4.start();
             }, 1000);
-*/
 
-/*
+
+
             this.SuzanneZoomHelper = new ZoomHelper({
                 context: this,
                 targetObjectName: "Suzanne",
@@ -246,11 +246,11 @@ class VlabBase extends VLab {
                 positionDeltas: new THREE.Vector3(0.0, 0.0, 0.025),
                 controls: {}
             });
-*/
+
 
             this.BernzomaticTS8000Torch = new BernzomaticTS8000Torch({
                 context: this,
-                pos: new THREE.Vector3(0.0, 1.5, -1.5),
+                pos: new THREE.Vector3(0.0, 1.5, -1.2),
                 name: "BernzomaticTS8000Torch",
                 manipulation: false,
                 interactive: false,

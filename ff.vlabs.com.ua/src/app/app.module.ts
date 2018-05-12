@@ -6,14 +6,17 @@ import { FormsModule, ReactiveFormsModule }   from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { ServiceModule } from './module/service.module';
-import { AppRoutingModule } from './module/routing.module';
+import { RoutingModule } from './module/routing.module';
+import { GuardModule } from './module/guard.module';
+
+import { ApiService, AuthService, UserService } from './service';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './component/login/login.component';
 import { DashboardComponent } from './component/dashboard/dashboard.component';
 import { CompatibilityTestComponent } from './component/compatibility-test/compatibility-test.component';
 import { HomeComponent } from './component/home/home.component';
-import { ApiService, AuthService, UserService } from './service';
+import { ProfileComponent } from './component/profile/profile.component';
 
 export function initUserFactory(userService: UserService)
 {
@@ -26,7 +29,8 @@ export function initUserFactory(userService: UserService)
     LoginComponent,
     DashboardComponent,
     CompatibilityTestComponent,
-    HomeComponent
+    HomeComponent,
+    ProfileComponent
   ],
   imports: [
     MaterialModule,
@@ -35,8 +39,9 @@ export function initUserFactory(userService: UserService)
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
+    GuardModule,
     ServiceModule,
-    AppRoutingModule
+    RoutingModule
   ],
   providers: [
     {

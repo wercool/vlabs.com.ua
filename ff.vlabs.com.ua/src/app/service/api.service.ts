@@ -86,6 +86,7 @@ export class ApiService {
     private _foo_url: string =                        '/foo';
       private _userexists_url: string =               '/userexists/{username}';
       private _login_url: string =                    '/login';
+      private _logout_url: string =                   '/logout';
       private _refresh_token_url: string =            '/refresh';
       private _whoami_url: string =                   '/whoami'
 
@@ -103,6 +104,10 @@ export class ApiService {
 
   get loginURL(): string {
     return this.apiURL + this._login_url;
+  }
+
+  get logoutURL(): string {
+    return this.apiURL + this._logout_url;
   }
 
   get refreshTokenURL(): string {

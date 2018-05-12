@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators, NgForm } from '@angular/forms';
-import { MatSnackBar } from '@angular/material';
-import { AuthService } from '../../service';
+import { MatSnackBar, MatInput } from '@angular/material';
+import { AuthService, UserService } from '../../service';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -10,16 +11,21 @@ import { AuthService } from '../../service';
 })
 export class LoginComponent implements OnInit {
 
-  form: FormGroup;
   @ViewChild ('loginForm') loginForm: NgForm;
-  submitted = false;
 
+  form: FormGroup;
+
+  submitted = false;
   userExists = undefined;
+  passwordDoesNotMach = false;
 
   constructor(
+    private router: Router,
+    private route: ActivatedRoute,
     private snackBar: MatSnackBar,
     private formBuilder: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private userService: UserService
   ) { }
 
   ngOnInit() {
@@ -53,13 +59,23 @@ export class LoginComponent implements OnInit {
       });
     } else {
       this.snackBar.dismiss();
+      this.passwordDoesNotMach = false;
       this.authService.login(this.form.value)
       .delay(500)
       .subscribe(data => {
         this.submitted = false;
-        console.log(data);
+
+        this.userService.getMyInfo().subscribe(
+          user => {
+            this.router.navigate(['/dashboard']);
+          },
+          error => {
+
+          });
+
       },
       error => {
+        this.passwordDoesNotMach = true;
         this.submitted = false;
       });
     }
