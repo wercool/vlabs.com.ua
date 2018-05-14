@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Table(name="helpclips")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class HelpClip {
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

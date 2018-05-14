@@ -3,6 +3,7 @@ export * from './user.service';
 export * from './config.service';
 export * from './auth.service';
 export * from './vlab.service';
+export * from './help-clips.service';
 export * from './course.service';
 export * from './department.service';
 export * from './eclass.service';

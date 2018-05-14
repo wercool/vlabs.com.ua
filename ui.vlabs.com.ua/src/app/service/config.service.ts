@@ -82,10 +82,17 @@ export class ConfigService {
   private _celement_items_url                       = this._celement_url + '/items';
   private _celement_item_update_url                 = this._celement_item_url + '/update';
 
+  //VLabs
   private _vlab_url                                 = this._api_url + '/vlab';
   private _vlab_add_url                             = this._vlab_url + '/add';
   private _vlabs_url                                = this._vlab_url + '/all';
   private _vlabs_update_url                         = this._vlab_url + '/update';
+
+  //HelpClips
+  private _helpclip_url                              = this._api_url + '/helpclip';
+  private _helpclip_add_url                          = this._helpclip_url + '/add';
+  private _helpclips_url                             = this._helpclip_url + '/all';
+  private _helpclip_update_url                       = this._helpclip_url + '/update';
 
   private _partner_url                              = this._api_url + '/partner';
   private _partner_add_url                          = this._partner_url + '/add';
@@ -151,6 +158,12 @@ export class ConfigService {
   get vlab_add_url(): string { return this._vlab_add_url; }
   get vlabs_url(): string { return this._vlabs_url; }
   get vlabs_update_url(): string { return this._vlabs_update_url; };
+
+    //HelpClips
+  get helpclip_url(): string { return this._helpclip_url; };
+  get helpclip_add_url(): string { return this._helpclip_add_url; }
+  get helpclips_url(): string { return this._helpclips_url; }
+  get helpclip_update_url(): string { return this._helpclip_update_url; };
 
   //Courses
   get course_url(): string { return this._course_url; };
