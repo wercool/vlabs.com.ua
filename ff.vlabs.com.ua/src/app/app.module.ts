@@ -17,6 +17,10 @@ import { DashboardComponent } from './component/dashboard/dashboard.component';
 import { CompatibilityTestComponent } from './component/compatibility-test/compatibility-test.component';
 import { HomeComponent } from './component/home/home.component';
 import { ProfileComponent } from './component/profile/profile.component';
+import { CoursesComponent } from './component/dashboard/courses/courses.component';
+import { HelpClipsComponent } from './component/dashboard/help-clips/help-clips.component';
+import { HelpClipsMarketComponent } from './component/dashboard/help-clips-market/help-clips-market.component';
+import { HelpClipComponent } from './component/dashboard/help-clip/help-clip.component';
 
 export function initUserFactory(userService: UserService)
 {
@@ -30,7 +34,11 @@ export function initUserFactory(userService: UserService)
     DashboardComponent,
     CompatibilityTestComponent,
     HomeComponent,
-    ProfileComponent
+    ProfileComponent,
+    CoursesComponent,
+    HelpClipsComponent,
+    HelpClipsMarketComponent,
+    HelpClipComponent
   ],
   imports: [
     MaterialModule,

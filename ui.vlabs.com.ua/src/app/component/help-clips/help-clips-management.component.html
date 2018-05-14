@@ -1,0 +1,49 @@
+<mat-accordion>
+    <mat-expansion-panel [expanded]="true" #vlabsListPanel>
+        <mat-expansion-panel-header>
+            <mat-panel-title class="styles-mat-panel-title-pad">
+            HelpClips List
+            </mat-panel-title>
+            <mat-panel-description>
+            ({{helpclipsNum}})
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-table #helpClipsDSTable [dataSource]="helpClipsDS">
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="title">
+                <mat-header-cell *matHeaderCellDef>TITLE</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.title}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="alias">
+                <mat-header-cell *matHeaderCellDef>ALIAS</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.alias}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="path">
+                <mat-header-cell *matHeaderCellDef>PATH</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <a href="{{element.path}}" target="_blank">{{element.path}}</a>
+                </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="helpClipsDisplayedColumns"></mat-header-row>
+            <mat-row 
+            class="styles-mat-table-row"
+            (click)="helpClipRowClicked(row)" 
+            *matRowDef="let row; columns: helpClipsDisplayedColumns;"></mat-row>
+        </mat-table>
+
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+        <mat-expansion-panel-header class="styles-new-expansion-panel-header-header">
+            <mat-panel-title class="styles-mat-panel-title-pad">
+                Add New HelpClip
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <br/>
+        <app-new-help-clip (newHelpClipAddedEvent)="onNewHelpClipAddedEvent($event)"></app-new-help-clip>
+    </mat-expansion-panel>
+</mat-accordion>

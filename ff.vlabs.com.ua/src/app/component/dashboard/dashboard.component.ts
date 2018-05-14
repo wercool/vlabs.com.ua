@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
 })
 export class DashboardComponent implements OnInit {
 
+  currentTabLabel = 'My HelpClips';
+
   constructor(
     private router: Router,
     private authService: AuthService,
@@ -18,13 +20,8 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
   }
 
-  logout() {
-    this.authService.logout().subscribe(res => {
-      this.router.navigate(['/']);
-    });
-  }
-
-  profile() {
-    this.router.navigate(['/profile']);
+  tabSelectionChanged(event){
+    let selectedTab = event.tab;
+    this.currentTabLabel = selectedTab.textLabel;
   }
 }

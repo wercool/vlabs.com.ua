@@ -15,6 +15,8 @@ import {
   VlabsManagementComponent,
   EditVLabComponent,
 
+  HelpClipsManagementComponent,
+
   CourseManagementComponent,
   EditCourseComponent,
 
@@ -89,6 +91,11 @@ export const routes: Routes = [
   {
     path: 'vlab-edit/:id',
     component: EditVLabComponent,
+    canActivate: [ManagerGuard]
+  },
+  {
+    path: 'helpclips-management',
+    component: HelpClipsManagementComponent,
     canActivate: [ManagerGuard]
   },
   {

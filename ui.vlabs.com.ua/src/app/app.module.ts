@@ -63,6 +63,9 @@ import {
   EditVLabComponent,
   AddVLabItemDialogComponent,
 
+  HelpClipsManagementComponent,
+  NewHelpClipComponent,
+
   CourseManagementComponent,
   NewCourseComponent,
   EditCourseComponent,
@@ -190,6 +193,9 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     NewVlabComponent,
     EditVLabComponent,
     AddVLabItemDialogComponent,
+
+    HelpClipsManagementComponent,
+    NewHelpClipComponent,
 
     CourseManagementComponent,
     NewCourseComponent,

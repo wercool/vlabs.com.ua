@@ -1,0 +1,16 @@
+.content {
+    padding-top: 5px;
+}
+
+.help-clip-card {
+    margin: 10px;
+    min-width: 320px;
+    max-width: 375px;
+    float: left;
+    box-sizing: border-box;
+    background-color: rgb(202, 220, 221);
+}
+
+.help-clip-header {
+    background-size: cover;
+}

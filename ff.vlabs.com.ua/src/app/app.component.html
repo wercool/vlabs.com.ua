@@ -1,9 +1,28 @@
-<div class="global-full-width global-full-height content">
-    <app-home *ngIf="!this.userService.isLoggedIn()"></app-home>
-    <app-dashboard *ngIf="this.userService.isLoggedIn()"></app-dashboard>
-</div>
-<footer class="footer">
-    <div class="global-full-width center-text" style="font-size: 1vh; color: rgba(255, 255, 255, 0.65); padding-top: 1vh;">
-        <p>Copyright © {{copyrightYear}} [COPYRIGHT OWNER’S NAME]. All Rights Reserved.</p>
+<div id="container">
+    <div class="content">
+        <app-home *ngIf="!this.userService.isLoggedIn()"></app-home>
+
+        <div *ngIf="this.userService.isLoggedIn()">
+            <mat-toolbar class="toolbar unselectable border-radius-2px" color="accent">
+                <mat-toolbar-row>
+                    <button mat-fab id="logoBtn" (click)="gotoDashboard()" matTooltip="Dashbord"></button>
+                    <span class="spacer"></span>
+                    <a mat-button class="mat-body-1" matTooltip="Profile" (click)="gotoProfile()">{{this.userService.currentUser.username}}</a>
+                    <a mat-icon-button>
+                        <mat-icon matTooltip="Logout" (click)="gotoLogout()">exit_to_app</mat-icon>
+                    </a>
+                </mat-toolbar-row>
+            </mat-toolbar>
+
+            <router-outlet></router-outlet>
+        </div>
+
     </div>
-</footer>
+
+    <footer id="footer">
+        <div class="global-full-width center-text" style="font-size: 1vh; color: rgba(255, 255, 255, 0.65); padding-top: 1vh;">
+            <p>Copyright © {{copyrightYear}} [COPYRIGHT OWNER’S NAME]. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</div>

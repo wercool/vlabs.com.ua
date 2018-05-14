@@ -1,16 +1,23 @@
-<mat-toolbar class="unselectable border-radius-5px" color="primary">
-  <mat-toolbar-row>
-    <img [src]="'/assets/images/icon-round-white-bg-48.png'" alt="image"/>
-    <span class="spacer"></span>
-    <a mat-button class="mat-body-1" matTooltip="Profile" (click)="profile()">{{this.userService.currentUser.username}}</a>
-    <a mat-icon-button>
-        <mat-icon matTooltip="Logout" (click)="logout()">exit_to_app</mat-icon>
-    </a>
-  </mat-toolbar-row>
-</mat-toolbar>
-
-<mat-tab-group class="unselectable">
-  <mat-tab label="Tab One"></mat-tab>
-  <mat-tab label="Tab Two"></mat-tab>
-  <mat-tab label="Tab Three"></mat-tab>
+<mat-tab-group class="unselectable" (selectChange)="tabSelectionChanged($event)">
+    <mat-tab label="My HelpClips">
+        <ng-template mat-tab-label>
+            <mat-icon class="tabIcon">airplay</mat-icon>
+            <p class="tabLabel">My HelpClips</p>
+        </ng-template>
+        <app-help-clips *ngIf="currentTabLabel == 'My HelpClips'"></app-help-clips>
+    </mat-tab>
+    <mat-tab label="HelpClips Market">
+        <ng-template mat-tab-label>
+            <mat-icon class="tabIcon">local_mall</mat-icon>
+            <p class="tabLabel">HelpClips Market</p>
+        </ng-template>
+        <app-help-clips-market *ngIf="currentTabLabel == 'HelpClips Market'"></app-help-clips-market>
+    </mat-tab>
+    <!-- <mat-tab label="My Courses">
+        <ng-template mat-tab-label>
+            <mat-icon class="tabIcon">library_books</mat-icon>
+            <p class="tabLabel">My Courses</p>
+        </ng-template>
+        <app-courses *ngIf="currentTabLabel == 'My Courses'"></app-courses>
+    </mat-tab> -->
 </mat-tab-group>

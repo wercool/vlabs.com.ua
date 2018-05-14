@@ -3,6 +3,7 @@ export * from './generic/vlabs-file-item';
 export * from './user';
 export * from './authority';
 export * from './vlab';
+export * from './help_clip';
 export * from './course';
 export * from './module';
 export * from './course';

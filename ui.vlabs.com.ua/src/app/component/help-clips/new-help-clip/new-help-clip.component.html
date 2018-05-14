@@ -1,0 +1,16 @@
+<p [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></p>
+<mat-progress-spinner *ngIf="submitted" mode="indeterminate"></mat-progress-spinner>
+<form *ngIf="!submitted" [formGroup]="form" (ngSubmit)="onSubmit()" #newHelpClipForm="ngForm">
+  <mat-form-field class="styles-full-width">
+      <input matInput [(ngModel)]="newHelpClip.title" formControlName="title" type="text" placeholder="HelpClip Title" required>
+  </mat-form-field>
+  <mat-form-field class="styles-full-width">
+    <input matInput [(ngModel)]="newHelpClip.alias" formControlName="alias" type="text" placeholder="HelpClip Alias" required (input)="aliasInputChanged($event.target.value)">
+  </mat-form-field>
+  <mat-form-field class="styles-full-width">
+    <input matInput [(ngModel)]="newHelpClip.path" formControlName="path" type="text" placeholder="HelpClip URL" required>
+  </mat-form-field>
+  <div class="styles-mat-card-actions">
+      <button type="submit" mat-button [disabled]="!newHelpClipForm.form.valid">SAVE</button>
+  </div>
+</form>

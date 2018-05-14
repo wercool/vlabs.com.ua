@@ -1,13 +1,33 @@
-.content {
-    margin-bottom: 4vh;
+#container {
+    min-height: 100%;
+    position: relative;
+    background: linear-gradient(-180deg, #B2EBF2 0%, #006064);
+    background-repeat: no-repeat;
+    background-size: cover;
 }
-.footer {
-    position: fixed;
-    z-index: 2;
-    left: 0;
-    bottom: 2vh;
+.toolbar {
+    min-height: 70px;
+}
+.content {
+    padding: 5px 5px 0px 5px;
+    padding-bottom: 3vh;
+}
+.spacer {
+    flex: 1 1 auto;
+}
+#logoBtn {
+    width: 52px;
+    height: 52px;
+    background: url('/assets/images/icon-round-white-bg-48.png') center center no-repeat;
+    background-position: center;
+}
+#footer {
+    position: absolute;
+    clear: both;
     width: 100%;
+    bottom: 2vh;
     height: 2vh;
+    z-index: 10;
     background: url('/assets/images/footer-line.png') center center no-repeat;
     background-position: center;
     background-size: 100% 5px;

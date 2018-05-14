@@ -5,6 +5,7 @@
     width: 100%;
     height: 100%;
     background: url('/assets/images/home-bg.png') center center no-repeat;
+    float: none;
 }
 
 @media screen and (min-width: 0px) and (max-width: 375px) {

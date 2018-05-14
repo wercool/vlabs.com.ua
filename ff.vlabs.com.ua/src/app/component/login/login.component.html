@@ -40,7 +40,7 @@
   </mat-card-content>
   <mat-card-actions class="global-mat-card-actions">
     <mat-progress-spinner *ngIf="submitted" class="centering" diameter="30" mode="indeterminate"></mat-progress-spinner>
-    <button *ngIf="!submitted && this.userExists === false || passwordDoesNotMach" mat-raised-button class="float-left" color="descent">HELP</button>
+    <button *ngIf="!submitted && this.userExists === false || passwordDoesNotMach" mat-raised-button class="float-left">HELP</button>
     <button *ngIf="!submitted" mat-raised-button color="accent" form="ngForm" type="submit">CONTINUE</button>
   </mat-card-actions>
 </mat-card>
