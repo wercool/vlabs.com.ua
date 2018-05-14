@@ -1414,11 +1414,13 @@ export default class VLab {
             this.selectedObject.rotationZ = 0.0;
             this.selectedObject.position.set(0.0, 0.0, 0.0);
 
-            if (args['resetscale']) {
-                this.selectedObject.scale.set(1.0, 1.0, 1.0);
-            }
-            if (args['resetquat']) {
-                this.selectedObject.quaternion.copy(args['resetquat']);
+            if (args) {
+                if (args['resetscale']) {
+                    this.selectedObject.scale.set(1.0, 1.0, 1.0);
+                }
+                if (args['resetquat']) {
+                    this.selectedObject.quaternion.copy(args['resetquat']);
+                }
             }
 
             this.inventory.addItem({
@@ -1427,8 +1429,10 @@ export default class VLab {
                 vLabItem: this.selectedObject.userData["VLabItem"]
             });
 
-            if (args['callback']) {
-                args['callback'].call(this.selectedObject.userData["VLabItem"]);
+            if (args) {
+                if (args['callback']) {
+                    args['callback'].call(this.selectedObject.userData["VLabItem"]);
+                }
             }
         }
     }

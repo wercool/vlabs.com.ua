@@ -20,6 +20,6 @@ export class HelpClipComponent implements OnInit {
   }
 
   prepareVLabSafeURL() {
-      this.vLabEmbedSafeURL = this.sanitizer.bypassSecurityTrustResourceUrl('http://192.168.101.106:9001/vlab.hvac.base/');
+      this.vLabEmbedSafeURL = this.sanitizer.bypassSecurityTrustResourceUrl('http://192.168.0.100:9001/vlab.hvac.base/');
   }
 }
