@@ -1,0 +1,42 @@
+<mat-accordion>
+    <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
+                HelpClip General Properties
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-progress-spinner *ngIf="!completed" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+        <form *ngIf="completed" [formGroup]="generalHelpClipFormGroup" (ngSubmit)="onGeneralHelpClipFormGroupSubmit()" #generalHelpClipForm="ngForm">
+          <mat-form-field class="styles-full-width">
+            <input [(ngModel)]="helpClip.title" matInput formControlName="title" type="text" placeholder="HelpClip Title" required>
+          </mat-form-field>
+          <mat-form-field class="styles-full-width">
+            <input [(ngModel)]="helpClip.alias" matInput formControlName="alias" type="text" placeholder="HelpClip Alias" required (input)="aliasInputChanged($event.target.value)">
+          </mat-form-field>
+          <mat-form-field class="styles-full-width">
+            <input [(ngModel)]="helpClip.path" matInput formControlName="path" type="text" placeholder="HelpClip URL" required>
+          </mat-form-field>
+
+          <div class="styles-mat-card-actions" style="margin-top:10pt;">
+              <div style="display: block; float: left;" [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></div>
+              <mat-progress-spinner style="display: inline-block; vertical-align:middle;" *ngIf="submitted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>
+              <button style="display: inline-block;" type="submit" mat-button [disabled]="!generalHelpClipForm.form.valid">UPDATE</button>
+          </div>
+        </form>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel *ngIf="completed" (opened)="helpClipRepresentationPanelOpened($event)">
+        <mat-expansion-panel-header>
+            <mat-panel-title class="styles-mat-panel-title-pad styles-not-selectable">
+                HelpClip Representation
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <iframe *ngIf="helpClipImplementationActivated"
+                [src]="helpClipEmbedSafeURL"
+                style="flex-grow: 1; border: none; margin: 0; padding: 0; min-height: 70vh; width: 100%;" scrolling="no" frameborder="0px" allowfullscreen>
+        </iframe>
+    </mat-expansion-panel>
+
+
+</mat-accordion>

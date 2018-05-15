@@ -26,6 +26,6 @@ export class HelpClipService {
     return this.apiService.post(this.config.helpclip_update_url, helpClip);
   }
   getAll() {
-    return this.apiService.get(this.config.helpclip_url);
+    return this.apiService.get(this.config.helpclips_url);
   }
 }

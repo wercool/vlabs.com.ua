@@ -38,7 +38,8 @@ export * from './vlabs/edit-vlab/edit-vlab.component';
 export * from './vlabs/add-vlab-item-dialog/add-vlab-item-dialog.component';
 
 export * from './help-clips/help-clips-management.component';
-export * from './help-clips/new-help-clip/new-help-clip.component';
+export * from './help-clips/new-helpclip/new-helpclip.component';
+export * from './help-clips/edit-helpclip/edit-helpclip.component';
 
 export * from './side-nav/admin-sidenav/admin-sidenav.component';
 export * from './admin/user-management/user-management.component';

@@ -5,11 +5,12 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { environment } from '../../../../environments/environment';
 import { DisplayMessage } from '../../../shared/models/display-message';
 import { HelpClip } from '../../../model/index';
+import { HelpClipService } from '../../../service';
 
 @Component({
-  selector: 'app-new-help-clip',
-  templateUrl: './new-help-clip.component.html',
-  styleUrls: ['./new-help-clip.component.css']
+  selector: 'app-new-helpclip',
+  templateUrl: './new-helpclip.component.html',
+  styleUrls: ['./new-helpclip.component.css']
 })
 export class NewHelpClipComponent implements OnInit {
 
@@ -35,7 +36,7 @@ export class NewHelpClipComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    // private vlabService: VlabService
+    private helpClipService: HelpClipService
   ) {}
 
   ngOnInit() {
@@ -47,25 +48,25 @@ export class NewHelpClipComponent implements OnInit {
   }
 
   onSubmit(){
-    // this.submitted = true;
+    this.submitted = true;
 
-    // this.vlabService.addNew(this.form.value)
-    // // show the animation
-    // .delay(1000)
-    // .subscribe(vlab => {
-    //   this.submitted = false;
-    //   this.form.reset();
-    //   this.notification = { msgType: 'styles-success', msgBody: '<b>' + vlab.title + '</b>' + ' successfully added' };
-    //   setTimeout(()=>{ this.notification = undefined; }, 5000);
-    //   this.newVlabAddedEvent.emit(vlab);
-    // },
-    // error => {
-    //   this.submitted = false;
-    //   this.notification = { msgType: 'styles-error', msgBody: error.message };
-    // });
+    this.helpClipService.addNew(this.form.value)
+    // show the animation
+    .delay(1000)
+    .subscribe(helpClip => {
+      this.submitted = false;
+      this.form.reset();
+      this.notification = { msgType: 'styles-success', msgBody: '<b>' + helpClip.title + '</b>' + ' successfully added' };
+      setTimeout(()=>{ this.notification = undefined; }, 5000);
+      this.newHelpClipAddedEvent.emit(helpClip);
+    },
+    error => {
+      this.submitted = false;
+      this.notification = { msgType: 'styles-error', msgBody: error.message };
+    });
   }
 
   aliasInputChanged(alias: String) {
-    // this.newVLab.path = this.host + '/vlabs/' + this.newVLab.alias + '/index.html';
+    this.newHelpClip.path = this.host + '/vlabs/' + this.newHelpClip.alias + '/index.html';
   }
 }

@@ -65,6 +65,7 @@ import {
 
   HelpClipsManagementComponent,
   NewHelpClipComponent,
+  EditHelpClipComponent,
 
   CourseManagementComponent,
   NewCourseComponent,
@@ -197,6 +198,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 
     HelpClipsManagementComponent,
     NewHelpClipComponent,
+    EditHelpClipComponent,
 
     CourseManagementComponent,
     NewCourseComponent,

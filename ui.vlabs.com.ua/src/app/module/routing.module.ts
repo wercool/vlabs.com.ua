@@ -41,6 +41,7 @@ import {
   CollaboratorProjectActivityManagementComponent,
   CollaboratorWorkItemActivityComponent,
   CollabortatorWorkItemsTableComponent,
+  EditHelpClipComponent,
 } from '../component';
 
 import {
@@ -96,6 +97,11 @@ export const routes: Routes = [
   {
     path: 'helpclips-management',
     component: HelpClipsManagementComponent,
+    canActivate: [ManagerGuard]
+  },
+  {
+    path: 'helpclip-edit/:id',
+    component: EditHelpClipComponent,
     canActivate: [ManagerGuard]
   },
   {

@@ -1,5 +1,5 @@
 <mat-accordion>
-    <mat-expansion-panel [expanded]="true" #vlabsListPanel>
+    <mat-expansion-panel [expanded]="true" #helpClipsListPanel>
         <mat-expansion-panel-header>
             <mat-panel-title class="styles-mat-panel-title-pad">
             HelpClips List
@@ -44,6 +44,6 @@
             </mat-panel-title>
         </mat-expansion-panel-header>
         <br/>
-        <app-new-help-clip (newHelpClipAddedEvent)="onNewHelpClipAddedEvent($event)"></app-new-help-clip>
+        <app-new-helpclip (newHelpClipAddedEvent)="onNewHelpClipAddedEvent($event)"></app-new-helpclip>
     </mat-expansion-panel>
 </mat-accordion>
