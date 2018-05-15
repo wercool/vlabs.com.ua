@@ -17,33 +17,34 @@ import vlabs.service.HelpClipService;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
-public class HelpClipsController {
+public class HelpClipsController
+{
     @Autowired
     private HelpClipService helpClipService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/helpclip/{helpclipId}")
+    @RequestMapping(method = RequestMethod.GET, value = "/helpclip/{helpClipId}")
     public HelpClip loadById(@PathVariable Long helpClipId) {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        User user = (User)authentication.getPrincipal();
         return helpClipService.findById(helpClipId);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value= "/helpclip/add")
+    @RequestMapping(method = RequestMethod.POST, value = "/helpclip/add")
     public HelpClip addNewVlab(@RequestBody HelpClip helpClip) {
         return helpClipService.addNew(helpClip);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value= "/helpclip/all")
+    @RequestMapping(method = RequestMethod.GET, value = "/helpclip/all")
     public List<HelpClip> getAllHelpClips() {
         return helpClipService.findAll();
     }
 
-    @RequestMapping(method = RequestMethod.POST, value= "/helpclip/update")
+    @RequestMapping(method = RequestMethod.POST, value = "/helpclip/update")
     public HelpClip updateHelpClip(@RequestBody HelpClip helpClip) {
         return helpClipService.updateHelpClip(helpClip);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value= "/helpclip/info/{alias_Base64Encoded}")
+    @RequestMapping(method = RequestMethod.GET, value = "/helpclip/info/{alias_Base64Encoded}")
     public HelpClip getHelpClipInfoByAlias(@PathVariable String alias_Base64Encoded) {
         String alias = "";
         try {

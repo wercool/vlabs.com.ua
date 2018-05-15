@@ -29,22 +29,22 @@ public class VlabsContoller
         return vlabService.findById(vlabId);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value= "/vlab/add")
+    @RequestMapping(method = RequestMethod.POST, value = "/vlab/add")
     public Vlab addNewVlab(@RequestBody Vlab vlab) {
         return vlabService.addNew(vlab);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value= "/vlab/all")
+    @RequestMapping(method = RequestMethod.GET, value = "/vlab/all")
     public List<Vlab> getAllVlabs() {
         return vlabService.findAll();
     }
 
-    @RequestMapping(method = RequestMethod.POST, value= "/vlab/update")
+    @RequestMapping(method = RequestMethod.POST, value = "/vlab/update")
     public Vlab updateVlab(@RequestBody Vlab vlab) {
         return vlabService.updateVlab(vlab);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value= "/vlab/info/{alias_Base64Encoded}")
+    @RequestMapping(method = RequestMethod.GET, value = "/vlab/info/{alias_Base64Encoded}")
     public Vlab getVlabInfoByAlias(@PathVariable String alias_Base64Encoded) {
         String alias = "";
         try {
