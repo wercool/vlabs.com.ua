@@ -1,21 +1,33 @@
 <div id="container">
+
     <div class="content">
-        <app-home *ngIf="!this.userService.isLoggedIn()"></app-home>
 
-        <div *ngIf="this.userService.isLoggedIn()">
-            <mat-toolbar class="toolbar unselectable border-radius-2px" color="accent">
-                <mat-toolbar-row>
-                    <button mat-fab id="logoBtn" (click)="gotoDashboard()" matTooltip="Dashbord"></button>
-                    <span class="spacer"></span>
-                    <a mat-button class="mat-body-1" matTooltip="Profile" (click)="gotoProfile()">{{this.userService.currentUser.username}}</a>
-                    <a mat-icon-button>
-                        <mat-icon matTooltip="Logout" (click)="gotoLogout()">exit_to_app</mat-icon>
-                    </a>
-                </mat-toolbar-row>
-            </mat-toolbar>
+        <mat-toolbar *ngIf="this.userService.isLoggedIn()" class="toolbar unselectable border-radius-2px" color="accent">
+            <mat-toolbar-row>
+                <button mat-fab id="logoBtn" (click)="gotoDashboard()" matTooltip="Dashbord"></button>
+                <h3 style="margin-left: 20px;" #toolbarLabelElement>Dashboard</h3>
+                <span class="spacer"></span>
+                <a mat-button class="mat-body-1" matTooltip="Profile" (click)="gotoProfile()">{{this.userService.currentUser.username}}</a>
+                <a mat-icon-button>
+                    <mat-icon matTooltip="Logout" (click)="gotoLogout()">exit_to_app</mat-icon>
+                </a>
+            </mat-toolbar-row>
+        </mat-toolbar>
 
-            <router-outlet></router-outlet>
-        </div>
+        <nav mat-tab-nav-bar *ngIf="this.userService.isLoggedIn()">
+            <a mat-tab-link
+                *ngFor="let routeLink of routeLinks"
+                [routerLink]="routeLink.path"
+                routerLinkActive #rla="routerLinkActive"
+                [active]="rla.isActive">
+                <div>
+                    <mat-icon class="tabIcon">{{routeLink.icon}}</mat-icon>
+                    <p class="tabLabel">{{routeLink.label}}</p>
+                </div>
+            </a>
+        </nav>
+
+        <router-outlet></router-outlet>
 
     </div>
 

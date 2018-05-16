@@ -21,8 +21,8 @@ public class HelpClipService {
         HelpClip helpClip = helpClipRepository.getOne(id);
         return helpClip;
     }
-    
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+
+    @PreAuthorize("hasRole('USER')")
     public List<HelpClip> findAll() throws AccessDeniedException {
         List<HelpClip> helpClips = helpClipRepository.findAll();
         return helpClips;
@@ -39,6 +39,8 @@ public class HelpClipService {
         existingHelpClip.setTitle(helpClip.getTitle());
         existingHelpClip.setAlias(helpClip.getAlias());
         existingHelpClip.setPath(helpClip.getPath());
+        existingHelpClip.setShortdesc(helpClip.getShortdesc());
+        existingHelpClip.setDescription(helpClip.getDescription());
 
         return helpClipRepository.save(existingHelpClip);
     }

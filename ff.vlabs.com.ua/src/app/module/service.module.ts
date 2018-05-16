@@ -1,13 +1,15 @@
 import { NgModule } from '@angular/core';
 
-import { ApiService, AuthService, UserService } from '../service';
+import { ApiService, AuthService, UserService, HelpClipService, ToolbarLabelService } from '../service';
 
 @NgModule({
   providers:
   [
+    ToolbarLabelService,
     ApiService,
     AuthService,
-    UserService
+    UserService,
+    HelpClipService
   ],
   declarations: []
 })

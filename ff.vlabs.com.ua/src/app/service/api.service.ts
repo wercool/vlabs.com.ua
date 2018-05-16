@@ -82,13 +82,16 @@ export class ApiService {
 
   /* VLabs REST API endpoints */
 
-  private _api_url: string =                      '/api';
-    private _foo_url: string =                        '/foo';
-      private _userexists_url: string =               '/userexists/{username}';
-      private _login_url: string =                    '/login';
-      private _logout_url: string =                   '/logout';
-      private _refresh_token_url: string =            '/refresh';
-      private _whoami_url: string =                   '/whoami'
+  private _api_url =                            '/api';
+    private _foo_url =                            '/foo';
+      private _userexists_url =                   '/userexists/{username}';
+      private _login_url =                        '/login';
+      private _logout_url =                       '/logout';
+      private _refresh_token_url =                '/refresh';
+      private _whoami_url =                       '/whoami'
+      private _helpclip_url =                     '/helpclip';
+      private _helpclips_url =                    '/helpclip/all';
+      private _helpclip_by_alias_url =            '/helpclip/info/{alias_Base64Encoded}';
 
   get apiURL(): string {
     return this._api_url;
@@ -116,5 +119,13 @@ export class ApiService {
 
   get whoamiURL(): string {
     return this.apiURL + this._whoami_url;
+  }
+
+  /* HelpClip */
+  get helpclipURL(): string {
+    return this.apiURL + this._helpclip_url;
+  }
+  get helpclipsURL(): string {
+    return this.apiURL + this._helpclips_url;
   }
 }

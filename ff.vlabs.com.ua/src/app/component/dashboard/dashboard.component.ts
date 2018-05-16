@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService, UserService } from '../../service';
+import { AuthService, UserService, ToolbarLabelService } from '../../service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -9,19 +9,14 @@ import { Router } from '@angular/router';
 })
 export class DashboardComponent implements OnInit {
 
-  currentTabLabel = 'My HelpClips';
+  private sub: any;
 
   constructor(
-    private router: Router,
-    private authService: AuthService,
-    public userService: UserService
-  ) { }
+    public router: Router,
+    private toolbarLabelService: ToolbarLabelService,
+  ) {}
 
   ngOnInit() {
-  }
-
-  tabSelectionChanged(event){
-    let selectedTab = event.tab;
-    this.currentTabLabel = selectedTab.textLabel;
+    this.toolbarLabelService.setLabel('Dashboard');
   }
 }

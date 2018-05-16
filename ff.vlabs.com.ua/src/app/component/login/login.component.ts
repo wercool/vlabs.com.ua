@@ -11,8 +11,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
 
-  @ViewChild ('loginForm') loginForm: NgForm;
-
   form: FormGroup;
 
   submitted = false;

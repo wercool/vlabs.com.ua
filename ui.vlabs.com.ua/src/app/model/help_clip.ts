@@ -3,4 +3,6 @@ export class HelpClip {
     title: string;
     alias: string;
     path: string;
+    shortdesc: string;
+    description: string;
 }

@@ -63,6 +63,8 @@ CREATE TABLE `helpclips` (
   `title` varchar(255) DEFAULT NULL,
   `alias` varchar(255) DEFAULT NULL,
   `path` varchar(2048) DEFAULT NULL,
+  `shortdesc` varchar(1024) DEFAULT NULL,
+  `description` varchar(2048) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

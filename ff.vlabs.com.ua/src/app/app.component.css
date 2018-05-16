@@ -5,21 +5,9 @@
     background-repeat: no-repeat;
     background-size: cover;
 }
-.toolbar {
-    min-height: 70px;
-}
 .content {
     padding: 5px 5px 0px 5px;
     padding-bottom: 3vh;
-}
-.spacer {
-    flex: 1 1 auto;
-}
-#logoBtn {
-    width: 52px;
-    height: 52px;
-    background: url('/assets/images/icon-round-white-bg-48.png') center center no-repeat;
-    background-position: center;
 }
 #footer {
     position: absolute;
@@ -31,4 +19,23 @@
     background: url('/assets/images/footer-line.png') center center no-repeat;
     background-position: center;
     background-size: 100% 5px;
+}
+#logoBtn {
+    width: 52px;
+    height: 52px;
+    background: url('/assets/images/icon-round-white-bg-48.png') center center no-repeat;
+    background-position: center;
+}
+.toolbar {
+    min-height: 70px;
+}
+.spacer {
+    flex: 1 1 auto;
+}
+.tabIcon {
+    font-size: 18px;
+    margin-top:10px;
+}
+.tabLabel {
+    margin-top:-6px;
 }

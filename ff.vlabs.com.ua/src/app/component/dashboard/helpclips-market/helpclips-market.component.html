@@ -1,0 +1,22 @@
+<div class="content">
+
+  <mat-progress-spinner *ngIf="!completed" [diameter]="50" mode="indeterminate"></mat-progress-spinner>
+
+  <mat-card class="help-clip-card" *ngFor="let helpClip of helpClips">
+    <mat-card-header>
+      <div mat-card-avatar class="help-clip-header" [ngStyle]="{'background-image': 'url(' + helpClip.iconPath + ')'}" style="max-height: 64px;"></div>
+      <mat-card-title>{{helpClip.title}}</mat-card-title>
+      <mat-card-subtitle style="height: 40px;">{{helpClip.shortdesc}}</mat-card-subtitle>
+    </mat-card-header>
+    <img mat-card-image src="{{helpClip.thumbnailPath}}" alt="{{helpClip.shortdesc}}">
+    <mat-card-content style="height: 80px;">
+      <p>
+          {{helpClip.description}}
+      </p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="accent" class="global-full-width" (click)="subscribe(helpClip.id)">SUBSCRIBE FOR FREE</button>
+    </mat-card-actions>
+  </mat-card>
+
+</div>

@@ -1,2 +1,3 @@
 <div class="bg-img bg-img-pos"></div>
-<app-login class="centering"></app-login>
+
+<app-login *ngIf="!this.userService.isLoggedIn()" class="centering"></app-login>

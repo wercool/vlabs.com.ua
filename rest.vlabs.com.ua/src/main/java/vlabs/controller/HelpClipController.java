@@ -17,7 +17,7 @@ import vlabs.service.HelpClipService;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
-public class HelpClipsController
+public class HelpClipController
 {
     @Autowired
     private HelpClipService helpClipService;

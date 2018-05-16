@@ -3,9 +3,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { SafeResourceUrl } from '@angular/platform-browser/src/security/dom_sanitization_service';
 
 @Component({
-  selector: 'app-help-clip',
-  templateUrl: './help-clip.component.html',
-  styleUrls: ['./help-clip.component.css']
+  selector: 'app-helpclip',
+  templateUrl: './helpclip.component.html',
+  styleUrls: ['./helpclip.component.css']
 })
 export class HelpClipComponent implements OnInit {
 
@@ -20,6 +20,6 @@ export class HelpClipComponent implements OnInit {
   }
 
   prepareVLabSafeURL() {
-      this.vLabEmbedSafeURL = this.sanitizer.bypassSecurityTrustResourceUrl('http://192.168.0.100:9001/vlab.hvac.base/');
+      this.vLabEmbedSafeURL = this.sanitizer.bypassSecurityTrustResourceUrl('http://192.168.101.106:9001/vlab.hvac.base/');
   }
 }

@@ -28,6 +28,12 @@ public class HelpClip {
     @Column(name = "path", length = 2048)
     private String path;
 
+    @Column(name = "shortdesc", length = 1024)
+    private String shortdesc;
+
+    @Column(name = "description", length = 2048)
+    private String description;
+
     public Long getId() {
         return id;
     }
@@ -59,6 +65,22 @@ public class HelpClip {
     public void setPath(String path) {
         this.path = path;
     }
-    
+
+    public String getShortdesc() {
+        return shortdesc;
+    }
+
+    public void setShortdesc(String shortdesc) {
+        this.shortdesc = shortdesc;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
 
 }

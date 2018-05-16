@@ -17,7 +17,12 @@
           <mat-form-field class="styles-full-width">
             <input [(ngModel)]="helpClip.path" matInput formControlName="path" type="text" placeholder="HelpClip URL" required>
           </mat-form-field>
-
+          <mat-form-field class="styles-full-width">
+              <input matInput [(ngModel)]="helpClip.shortdesc" formControlName="shortdesc" type="text" placeholder="Short description">
+          </mat-form-field>
+          <mat-form-field class="styles-full-width">
+              <textarea matInput [(ngModel)]="helpClip.description" formControlName="description" placeholder="Description"></textarea>
+          </mat-form-field>
           <div class="styles-mat-card-actions" style="margin-top:10pt;">
               <div style="display: block; float: left;" [class]="notification.msgType" *ngIf="notification" [innerHTML]="notification.msgBody"></div>
               <mat-progress-spinner style="display: inline-block; vertical-align:middle;" *ngIf="submitted" [diameter]="35" mode="indeterminate"></mat-progress-spinner>

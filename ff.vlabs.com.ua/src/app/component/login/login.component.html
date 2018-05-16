@@ -5,7 +5,7 @@
     <mat-card-subtitle>Authentication</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <form *ngIf="!submitted" [formGroup]="form" id="ngForm" (ngSubmit)="onSubmit()" #loginForm="ngForm">
+    <form *ngIf="!submitted" [formGroup]="form" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="outline" class="global-full-width">
         <mat-label>Email</mat-label>
         <input matInput type="email" formControlName="username" placeholder="email@address" autocapitalize="off"  [readonly]="this.userExists !== undefined">
@@ -36,11 +36,12 @@
             The provided password does not match
         </mat-error>
       </p>
+      <input type="submit" style="display: none;">
     </form>
-  </mat-card-content>
-  <mat-card-actions class="global-mat-card-actions">
     <mat-progress-spinner *ngIf="submitted" class="centering" diameter="30" mode="indeterminate"></mat-progress-spinner>
-    <button *ngIf="!submitted && this.userExists === false || passwordDoesNotMach" mat-raised-button class="float-left">HELP</button>
-    <button *ngIf="!submitted" mat-raised-button color="accent" form="ngForm" type="submit">CONTINUE</button>
+  </mat-card-content>
+  <mat-card-actions *ngIf="!submitted" class="global-mat-card-actions">
+    <button *ngIf="this.userExists === false || passwordDoesNotMach" mat-raised-button class="float-left">HELP</button>
+    <button mat-raised-button color="accent" (click)="onSubmit()">CONTINUE</button>
   </mat-card-actions>
 </mat-card>
