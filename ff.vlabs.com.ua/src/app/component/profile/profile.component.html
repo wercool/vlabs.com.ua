@@ -1,3 +1,32 @@
-<p>
-  profile works!
-</p>
+<div class="global-full-width">
+  <mat-card class="mat-card-profile">
+    <mat-card-title>Profile</mat-card-title>
+    <mat-card-subtitle *ngIf="!submitted">
+        <strong>{{userProfile.username}}</strong>
+    </mat-card-subtitle>
+
+    <mat-progress-spinner *ngIf="submitted" [diameter]="50" mode="indeterminate"></mat-progress-spinner>
+    
+    <mat-card-content>
+        <form *ngIf="!submitted" [formGroup]="form" (ngSubmit)="onSubmit()" #profileForm="ngForm" class="profile-form">
+            <mat-form-field class="global-full-width">
+                <input [(ngModel)]="userProfile.email" matInput formControlName="email" type="email" placeholder="email" required>
+            </mat-form-field>
+            <mat-form-field class="global-full-width">
+                <input [(ngModel)]="userProfile.firstName" matInput formControlName="firstName" type="text" placeholder="First Name">
+            </mat-form-field>
+            <mat-form-field class="global-full-width">
+                <input [(ngModel)]="userProfile.lastName" matInput formControlName="lastName" type="text" placeholder="Last Name">
+            </mat-form-field>
+            <mat-form-field class="global-full-width">
+                <input [(ngModel)]="userProfile.phoneNumber" matInput formControlName="phoneNumber" type="tel" placeholder="phone number">
+            </mat-form-field>
+            <div class="global-mat-card-actions">
+                <button type="submit" mat-button [disabled]="!profileForm.form.valid">UPDATE</button>
+                <button type="button" (click)="onResetPassword()" mat-button>RESET PASSWORD</button>
+            </div>
+        </form>
+    </mat-card-content>
+
+  </mat-card>
+</div>

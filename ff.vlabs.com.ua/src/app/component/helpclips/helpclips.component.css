@@ -1,15 +1,13 @@
 .content {
-    padding-top: 5px;
     display: inline-block;
 }
 
 .help-clip-card {
     margin: 10px;
-    min-width: 375px;
+    min-width: 330px;
     max-width: 375px;
     float: left;
     box-sizing: border-box;
-    background-color: rgb(202, 220, 221);
 }
 
 .help-clip-header {

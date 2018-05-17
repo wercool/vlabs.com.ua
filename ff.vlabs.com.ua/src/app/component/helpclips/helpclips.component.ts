@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToolbarLabelService } from '../../../service';
+import { ToolbarLabelService } from '../../service';
 
 @Component({
   selector: 'app-helpclips',

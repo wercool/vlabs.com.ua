@@ -33,4 +33,8 @@ export class UserService {
   getMyInfo() {
     return this.apiService.get(this.apiService.whoamiURL).map(user => this.currentUser = user);
   }
+
+  updateProfile() {
+    return this.apiService.post(this.apiService.userProfileURL, this.currentUser).map(user => this.currentUser = user);
+  }
 }

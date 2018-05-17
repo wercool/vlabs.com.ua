@@ -27,6 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
     selectedTabIndex = -1;
 
     @ViewChild('toolbarLabelElement') private toolbarLabelElement : ElementRef; 
+    @ViewChild('overlayNavMenu') private overlayNavMenuElement : ElementRef; 
 
     constructor(
       private router: Router,
@@ -40,13 +41,15 @@ export class AppComponent implements OnInit, OnDestroy {
             {
                 label: 'My HelpClips',
                 path: './helpclips',
-                icon: 'airplay',
-                index: 0
+                icon: 'airplay'
             }, {
                 label: 'HelpClips Market',
                 path: './helpclips-market',
-                icon: 'local_mall',
-                index: 1
+                icon: 'local_mall'
+            }, {
+                label: 'My Profile',
+                path: './profile',
+                icon: 'account_circle'
             }
         ];
     }
@@ -81,6 +84,19 @@ export class AppComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.alive = false;
+    }
+
+    showOverlayNavMenu() {
+        this.overlayNavMenuElement.nativeElement.style.display = 'block';
+    }
+
+    hideOverlayNavMenu() {
+        console.log('hideOverlayNavMenu');
+        this.overlayNavMenuElement.nativeElement.style.display = 'none';
+    }
+
+    navigate(url: string){
+        this.router.navigate([url]);
     }
 
     gotoLogout() {

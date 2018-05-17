@@ -2,19 +2,26 @@
 
     <div class="content">
 
-        <mat-toolbar *ngIf="this.userService.isLoggedIn()" class="toolbar unselectable border-radius-2px" color="accent">
+        <mat-toolbar *ngIf="userService.isLoggedIn()" class="toolbar unselectable border-radius-2px" color="accent">
             <mat-toolbar-row>
                 <button mat-fab id="logoBtn" (click)="gotoDashboard()" matTooltip="Dashbord"></button>
-                <h3 style="margin-left: 20px;" #toolbarLabelElement>Dashboard</h3>
+                <span style="margin-left: 20px;" #toolbarLabelElement>Dashboard</span>
                 <span class="spacer"></span>
-                <a mat-button class="mat-body-1" matTooltip="Profile" (click)="gotoProfile()">{{this.userService.currentUser.username}}</a>
-                <a mat-icon-button>
-                    <mat-icon matTooltip="Logout" (click)="gotoLogout()">exit_to_app</mat-icon>
-                </a>
+                <div class="small-res-hidden">
+                    <a mat-button matTooltip="Profile" (click)="gotoProfile()">{{userService.currentUser.username}}</a>
+                    <a mat-icon-button>
+                        <mat-icon matTooltip="Logout" (click)="gotoLogout()">exit_to_app</mat-icon>
+                    </a>
+                </div>
+                <div class="hi-res-hidden">
+                    <a mat-icon-button>
+                        <mat-icon (click)="showOverlayNavMenu()">menu</mat-icon>
+                    </a>
+                </div>
             </mat-toolbar-row>
         </mat-toolbar>
 
-        <nav mat-tab-nav-bar *ngIf="this.userService.isLoggedIn()">
+        <nav mat-tab-nav-bar *ngIf="userService.isLoggedIn()" class="small-res-hidden">
             <a mat-tab-link
                 *ngFor="let routeLink of routeLinks"
                 [routerLink]="routeLink.path"
@@ -26,6 +33,20 @@
                 </div>
             </a>
         </nav>
+
+        <div #overlayNavMenu *ngIf="userService.isLoggedIn()" class="overlay hi-res-hidden">
+            <a mat-icon-button>
+                <mat-icon class="overlayNavMenuCloseBtn" (click)="hideOverlayNavMenu()">close</mat-icon>
+            </a>
+            <mat-selection-list *ngFor="let routeLink of routeLinks" class="overlayNavMenu global-full-width">
+                <mat-list-item>
+                    <a mat-button [routerLink]="routeLink.path" (click)="hideOverlayNavMenu()" class="overlayNavMenuItem global-full-width" style="text-align: left;">
+                        <mat-icon mat-icon>{{routeLink.icon}}</mat-icon>
+                        <span style="padding-left: 20px;">{{routeLink.label}}</span>
+                    </a>
+                </mat-list-item>
+            </mat-selection-list>
+        </div>
 
         <router-outlet></router-outlet>
 

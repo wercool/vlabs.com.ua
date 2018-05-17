@@ -2,13 +2,14 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { DashboardComponent } from "../component/dashboard/dashboard.component";
-import { AuthenticatedGuard } from '../guard';
+import { AuthenticatedGuard, HelpClipDeactivateGuard } from '../guard';
 import { ProfileComponent } from '../component/profile/profile.component';
-import { HelpClipComponent } from '../component/dashboard/helpclip/helpclip.component';
-import { HelpClipsComponent } from '../component/dashboard/helpclips/helpclips.component';
+import { HelpClipComponent } from '../component/helpclip/helpclip.component';
+import { HelpClipsComponent } from '../component/helpclips/helpclips.component';
 import { HomeComponent } from '../component/home/home.component';
-import { HelpClipsMarketComponent } from '../component/dashboard/helpclips-market/helpclips-market.component';
+import { HelpClipsMarketComponent } from '../component/helpclips-market/helpclips-market.component';
 import { NotFoundComponent } from '../component/not-found/not-found.component';
+import { ResetPasswordComponent } from '../component/profile/reset-password/reset-password.component';
 
 export const routes: Routes = [
     {
@@ -36,9 +37,15 @@ export const routes: Routes = [
         canActivate: [AuthenticatedGuard]
     },
     {
+        path: 'reset-password',
+        component: ResetPasswordComponent,
+        canActivate: [AuthenticatedGuard]
+    },
+    {
         path: 'helpclip/:helpclip-alias',
         component: HelpClipComponent,
-        canActivate: [AuthenticatedGuard]
+        canActivate: [AuthenticatedGuard],
+        canDeactivate: [HelpClipDeactivateGuard]
     },
     {
         path: '404',

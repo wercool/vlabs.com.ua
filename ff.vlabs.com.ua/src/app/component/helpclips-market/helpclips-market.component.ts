@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { HelpClipService, ToolbarLabelService } from '../../../service';
-import { HelpClip, HelpClipItem } from '../../../model';
+import { HelpClipService, ToolbarLabelService } from '../../service';
+import { HelpClip, HelpClipItem } from '../../model';
 import { Router } from '@angular/router';
 
 @Component({

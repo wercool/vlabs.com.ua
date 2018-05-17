@@ -26,4 +26,8 @@ export class AuthService {
   logout() {
     return this.apiService.post(this.apiService.logoutURL, {}).map(() => { this.userService.currentUser = null; });
   }
+
+  changePassowrd(passwordChanger) {
+    return this.apiService.post(this.apiService.changePasswordURL, passwordChanger);
+  }
 }

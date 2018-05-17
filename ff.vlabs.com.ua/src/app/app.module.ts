@@ -17,10 +17,11 @@ import { DashboardComponent } from './component/dashboard/dashboard.component';
 import { CompatibilityTestComponent } from './component/compatibility-test/compatibility-test.component';
 import { HomeComponent } from './component/home/home.component';
 import { ProfileComponent } from './component/profile/profile.component';
-import { CoursesComponent } from './component/dashboard/courses/courses.component';
-import { HelpClipsComponent } from './component/dashboard/helpclips/helpclips.component';
-import { HelpClipsMarketComponent } from './component/dashboard/helpclips-market/helpclips-market.component';
-import { HelpClipComponent } from './component/dashboard/helpclip/helpclip.component';
+import { ResetPasswordComponent } from './component/profile/reset-password/reset-password.component';
+import { CoursesComponent } from './component/courses/courses.component';
+import { HelpClipsComponent } from './component/helpclips/helpclips.component';
+import { HelpClipsMarketComponent } from './component/helpclips-market/helpclips-market.component';
+import { HelpClipComponent } from './component/helpclip/helpclip.component';
 import { NotFoundComponent } from './component/not-found/not-found.component';
 
 export function initUserFactory(userService: UserService)
@@ -37,6 +38,7 @@ export function initUserFactory(userService: UserService)
     CompatibilityTestComponent,
     HomeComponent,
     ProfileComponent,
+    ResetPasswordComponent,
     CoursesComponent,
     HelpClipsComponent,
     HelpClipsMarketComponent,

@@ -88,7 +88,12 @@ export class ApiService {
       private _login_url =                        '/login';
       private _logout_url =                       '/logout';
       private _refresh_token_url =                '/refresh';
-      private _whoami_url =                       '/whoami'
+      private _whoami_url =                       '/whoami';
+      private _change_password_url =              '/change-password';
+      /* User */
+      private _user_url =                         '/user';
+      private _user_profile_url =                 '/user/update-profile';
+      /* HelpClip */
       private _helpclip_url =                     '/helpclip';
       private _helpclips_url =                    '/helpclip/all';
       private _helpclip_by_alias_url =            '/helpclip/info/{alias_Base64Encoded}';
@@ -119,6 +124,15 @@ export class ApiService {
 
   get whoamiURL(): string {
     return this.apiURL + this._whoami_url;
+  }
+
+  get changePasswordURL(): string {
+    return this.apiURL + this._change_password_url;
+  }
+
+  /* User */
+  get userProfileURL(): string {
+    return this.apiURL + this._user_profile_url;
   }
 
   /* HelpClip */

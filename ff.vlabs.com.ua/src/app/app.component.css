@@ -27,7 +27,7 @@
     background-position: center;
 }
 .toolbar {
-    min-height: 70px;
+    min-height: 60px;
 }
 .spacer {
     flex: 1 1 auto;
@@ -38,4 +38,32 @@
 }
 .tabLabel {
     margin-top:-6px;
+}
+.overlay {
+    /* Height & width depends on how you want to reveal the overlay (see JS below) */
+    height: 100%;
+    width: 100%;
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    background-color: #0c3f41f5; /* Black w/opacity */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+    display: none;
+}
+.overlayNavMenuCloseBtn {
+    position: absolute;
+    top: 15px;
+    left: 85vw;
+    font-size: 36px;
+    color: #B2EBF2;
+}
+.overlayNavMenu {
+    margin-top: 40px;
+    max-height: 80%;
+}
+.overlayNavMenuItem {
+    font-size: 24px;
+    color: #B2EBF2;
 }
