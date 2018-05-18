@@ -96,7 +96,7 @@ export class ApiService {
       /* HelpClip */
       private _helpclip_url =                     '/helpclip';
       private _helpclips_url =                    '/helpclip/all';
-      private _helpclip_by_alias_url =            '/helpclip/info/{alias_Base64Encoded}';
+      private _helpclip_by_alias_url =            '/helpclip/alias/{alias_Base64Encoded}';
 
   get apiURL(): string {
     return this._api_url;
@@ -141,5 +141,8 @@ export class ApiService {
   }
   get helpclipsURL(): string {
     return this.apiURL + this._helpclips_url;
+  }
+  get helpclipByAliasURL(): string {
+    return this.apiURL + this._helpclip_by_alias_url;
   }
 }

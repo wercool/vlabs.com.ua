@@ -1,6 +1,8 @@
 {
+    "VLabsREST": "<!--VLAB REST API URL-->",
     "title": "HVAC Base VLab Air Handler",
     "alias": "vlab.hvac.base.air-handler",
+    "HCAlias": "vlab.hvac.base",
     "resolutionFactor": "1.0",
     "sceneJSONFile": "./resources/scene-air-handler/vlab.hvac.base-air-handler.json",
     "lang": "en",

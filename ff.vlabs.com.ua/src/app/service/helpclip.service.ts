@@ -15,7 +15,10 @@ export class HelpClipService {
     private apiService: ApiService
     ) { }
   getById(id: number) {
-    return this.apiService.get(this.apiService.helpclipURL+ '/' + id);
+    return this.apiService.get(this.apiService.helpclipURL + '/' + id);
+  }
+  getByAlis(alias: string) {
+    return this.apiService.get(this.apiService.helpclipByAliasURL.replace('{alias_Base64Encoded}', btoa(alias)));
   }
   getAll() {
     return this.apiService.get(this.apiService.helpclipsURL);

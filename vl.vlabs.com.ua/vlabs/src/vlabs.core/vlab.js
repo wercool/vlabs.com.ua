@@ -276,7 +276,8 @@ export default class VLab {
 
     RESTVLabInfo() {
         var self = this;
-        request(this.nature.VLabsREST + '/vlab/info/' + btoa(this.nature.alias), function (error, response, body) {
+        var infoURL = this.nature.VLabsREST + (this.nature.HCAlias ? '/helpclip/info/' + btoa(this.nature.HCAlias): '/vlab/info/' + btoa(this.nature.alias))
+        request(infoURL, function (error, response, body) {
             if (error) {
                 console.error(error);
             } else {

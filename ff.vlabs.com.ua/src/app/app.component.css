@@ -7,18 +7,21 @@
 }
 .content {
     padding: 5px 5px 0px 5px;
-    padding-bottom: 3vh;
 }
 #footer {
     position: absolute;
     clear: both;
     width: 100%;
-    bottom: 2vh;
-    height: 2vh;
-    z-index: 10;
+    bottom: 0;
+    z-index: 0;
     background: url('assets/images/footer-line.png') center center no-repeat;
-    background-position: center;
+    background-position: center top;
     background-size: 100% 5px;
+    font-size: 1vh;
+    color: rgba(255, 255, 255, 0.65);
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 2px;
 }
 #logoBtn {
     width: 52px;
@@ -27,7 +30,7 @@
     background-position: center;
 }
 .toolbar {
-    min-height: 60px;
+    height: 60px;
 }
 .spacer {
     flex: 1 1 auto;

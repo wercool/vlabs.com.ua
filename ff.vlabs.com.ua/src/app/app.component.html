@@ -38,11 +38,17 @@
             <a mat-icon-button>
                 <mat-icon class="overlayNavMenuCloseBtn" (click)="hideOverlayNavMenu()">close</mat-icon>
             </a>
-            <mat-selection-list *ngFor="let routeLink of routeLinks" class="overlayNavMenu global-full-width">
-                <mat-list-item>
+            <mat-selection-list class="overlayNavMenu global-full-width">
+                <mat-list-item *ngFor="let routeLink of routeLinks">
                     <a mat-button [routerLink]="routeLink.path" (click)="hideOverlayNavMenu()" class="overlayNavMenuItem global-full-width" style="text-align: left;">
                         <mat-icon mat-icon>{{routeLink.icon}}</mat-icon>
                         <span style="padding-left: 20px;">{{routeLink.label}}</span>
+                    </a>
+                </mat-list-item>
+                <mat-list-item>
+                    <a mat-button (click)="gotoLogout()" class="overlayNavMenuItem global-full-width" style="text-align: left;">
+                        <mat-icon mat-icon>exit_to_app</mat-icon>
+                        <span style="padding-left: 20px;">Log out</span>
                     </a>
                 </mat-list-item>
             </mat-selection-list>
@@ -53,9 +59,7 @@
     </div>
 
     <footer id="footer">
-        <div class="global-full-width center-text" style="font-size: 1vh; color: rgba(255, 255, 255, 0.65); padding-top: 1vh;">
-            <p>Copyright © {{copyrightYear}} [COPYRIGHT OWNER’S NAME]. All Rights Reserved.</p>
-        </div>
+        Copyright © {{copyrightYear}} [COPYRIGHT OWNER’S NAME]. All Rights Reserved.
     </footer>
 
 </div>

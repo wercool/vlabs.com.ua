@@ -2,6 +2,7 @@
     "VLabsREST": "<!--VLAB REST API URL-->",
     "title": "HVAC Base VLab Heat Pump",
     "alias": "vlab.hvac.base.heat-pump",
+    "HCAlias": "vlab.hvac.base",
     "resolutionFactor": "1.0",
     "sceneJSONFile": "./resources/scene-heat-pump/vlab.hvac.base-heat-pump.json",
     "lang": "en",

@@ -42,7 +42,7 @@ export const routes: Routes = [
         canActivate: [AuthenticatedGuard]
     },
     {
-        path: 'helpclip/:helpclip-alias',
+        path: 'helpclip/:alias',
         component: HelpClipComponent,
         canActivate: [AuthenticatedGuard],
         canDeactivate: [HelpClipDeactivateGuard]

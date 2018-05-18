@@ -7,7 +7,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import vlabs.model.HelpClip;
+import vlabs.model.helpclip.HelpClip;
 import vlabs.repository.HelpClipRepository;
 
 @Service

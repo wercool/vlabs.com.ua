@@ -1,9 +1,10 @@
 .content {
     display: inline-block;
+    padding-bottom: 15px;
 }
 
 .help-clip-card {
-    margin: 10px;
+    margin: 5px;
     min-width: 330px;
     max-width: 375px;
     float: left;

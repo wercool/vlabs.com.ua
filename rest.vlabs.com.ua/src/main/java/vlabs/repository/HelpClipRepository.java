@@ -3,7 +3,7 @@ package vlabs.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import vlabs.model.HelpClip;
+import vlabs.model.helpclip.HelpClip;
 
 @Repository
 public interface HelpClipRepository  extends JpaRepository<HelpClip, Long> {

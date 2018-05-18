@@ -21,6 +21,12 @@ export class HelpClipsComponent implements OnInit {
   }
 
   launchHelpClip(helpClipAlias) {
-    this.router.navigate(['/helpclip', helpClipAlias]);
+    let self = this;
+    setTimeout(function() {
+        window.scrollTo(0, 0);
+        setTimeout(function() {
+          self.router.navigate(['/helpclip', helpClipAlias]);
+        }, 100);
+    }, 0);
   }
 }

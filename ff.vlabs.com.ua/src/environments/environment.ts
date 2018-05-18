@@ -6,5 +6,6 @@
 export const environment = {
   production: false,
   title: 'HelpClips',
-  APIName: 'HelpClips'
+  APIName: 'HelpClips',
+  vlabsHost: 'http://localhost:8090/vlabs',
 };

@@ -1,4 +1,4 @@
-package vlabs.model;
+package vlabs.model.helpclip;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

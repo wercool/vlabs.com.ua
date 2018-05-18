@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import vlabs.model.HelpClip;
+import vlabs.model.helpclip.HelpClip;
+import vlabs.model.helpclip.HelpClipInfo;
 import vlabs.service.HelpClipService;
 
 @RestController
@@ -44,14 +45,32 @@ public class HelpClipController
         return helpClipService.updateHelpClip(helpClip);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/helpclip/info/{alias_Base64Encoded}")
-    public HelpClip getHelpClipInfoByAlias(@PathVariable String alias_Base64Encoded) {
+    @RequestMapping(method = RequestMethod.GET, value = "/helpclip/alias/{alias_Base64Encoded}")
+    public HelpClip getHelpClipByAlias(@PathVariable String alias_Base64Encoded) {
         String alias = "";
         try {
             alias = new String(Base64.getDecoder().decode(alias_Base64Encoded), "UTF8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
         return helpClipService.findByAlias(alias);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/helpclip/info/{alias_Base64Encoded}")
+    public HelpClipInfo getHelpClipInfoByAlias(@PathVariable String alias_Base64Encoded) {
+        HelpClipInfo helpClipInfo = new HelpClipInfo();
+        String alias = "";
+        try {
+            alias = new String(Base64.getDecoder().decode(alias_Base64Encoded), "UTF8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            helpClipInfo.setHelpClip(null);
+        }
+        HelpClip helpClip = helpClipService.findByAlias(alias);
+        helpClipInfo.setHelpClip(helpClip);
+        helpClipInfo.setGranted(true);
+
+        return helpClipInfo;
     }
 }
