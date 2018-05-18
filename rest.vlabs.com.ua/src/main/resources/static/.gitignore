@@ -1,10 +1,11 @@
 # Ignore everything
 *
 
-# But not these files...
+# But not these files:
 !.gitignore
 !.persistant
 !index.html
+!images
 !hc
 !staff
 !vlabs
