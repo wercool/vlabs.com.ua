@@ -1,0 +1,254 @@
+buildscript
+{
+    ext
+    {
+        springBootVersion = '2.0.0.RELEASE'
+        comMooworkNodeVersion = '1.2.0'
+        gradleJSPluginVersion = '1.12.1'
+    }
+    repositories
+    {
+        jcenter()
+        mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies
+    {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "com.moowork.gradle:gradle-node-plugin:${comMooworkNodeVersion}"
+        classpath "com.eriwen:gradle-js-plugin:${gradleJSPluginVersion}"
+    }
+}
+
+
+plugins {
+  id "com.eriwen.gradle.js" version "2.14.1"
+}
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.moowork.node'
+apply plugin: "com.eriwen.gradle.js"
+
+group = 'ua.com.vlabs'
+version = '0.1.1-SNAPSHOT'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories
+{
+    mavenCentral()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+}
+
+dependencies
+{
+    // https://mvnrepository.com/artifact/org.springframework/spring-core
+    compile group: 'org.springframework', name: 'spring-core', version: '5.0.4.RELEASE'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.0.0.RELEASE'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.0.0.RELEASE'
+
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto
+    compile group: 'org.springframework.security', name: 'spring-security-crypto', version: '5.0.3.RELEASE'
+
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-web
+    compile group: 'org.springframework.security', name: 'spring-security-web', version: '5.0.3.RELEASE'
+
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-config
+    compile group: 'org.springframework.security', name: 'spring-security-config', version: '5.0.3.RELEASE'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mobile
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mobile', version: '1.5.10.RELEASE'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-configuration-processor
+    compile group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.0.0.RELEASE'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.0.2.RELEASE'
+
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.8-dmr'
+
+    // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.0'
+
+    // https://mvnrepository.com/artifact/org.json/json
+    compile group: 'org.json', name: 'json', version: '20180130'
+
+    // https://mvnrepository.com/artifact/joda-time/joda-time
+    compile group: 'joda-time', name: 'joda-time', version: '2.9.9'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.0.0.RELEASE'
+
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-test
+    testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '5.0.3.RELEASE'
+
+    // https://mvnrepository.com/artifact/junit/junit
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+node {
+  version = "7.10.1"
+  download = true
+  nodeModulesDir = file("../ui.vlabs.com.ua")
+}
+
+def persistantToList(File f) {
+  def includes = []
+  f.eachLine { line ->
+    //ignore comments and empty lines
+      if (!line.startsWith('#') && !line.isEmpty()) {
+       includes.add(line)
+    }
+  }
+  return includes
+}
+
+task buildUIDev(type: NpmTask, dependsOn: 'npmInstall') {
+    group = 'build'
+    description = 'Compile UI for development'
+    args = ['run', 'buildDev']
+}
+
+task buildUIProd(type: NpmTask, dependsOn: 'npmInstall') {
+  group = 'build'
+  description = "Compile UI for production"
+  args = ['run', 'build-prod']
+}
+
+task deployUIProd(type: Copy, dependsOn: 'buildUIProd') {
+  group = 'deploy'
+  from '../ui.vlabs.com.ua/dist'
+  into './src/main/resources/static'
+}
+
+task deployUIDev(type: Copy, dependsOn: 'buildUIDev') {
+  group = 'deploy'
+  from '../ui.vlabs.com.ua/dist'
+  into './src/main/resources/static'
+}
+
+task copyUIDist(type: Copy) {
+  group = 'deploy'
+  from '../ui.vlabs.com.ua/dist'
+  into './src/main/resources/static'
+}
+
+task cleanUIFolder(){
+    group = 'clean'
+    description = 'Cleans UI folder'
+    doLast {
+        FileTree UIFolderTree = fileTree (dir: "./src/main/resources/static")
+        def filesToBeKept = persistantToList(file('./src/main/resources/static/.persistant'))
+        UIFolderTree.exclude filesToBeKept
+
+        if (UIFolderTree.size() > 0){
+            println "The following files are deleted from UI folder in rest.vlabs.com.ua: "
+            UIFolderTree.each { File file ->
+                println file
+                delete(file)
+            }
+        }
+
+    }
+}
+
+task cleanVLabsFolder(){
+    group = 'clean'
+    description = 'Cleans VLabs folder'
+    doLast {
+        FileTree VLabsFolderTree = fileTree (dir: "./src/main/resources/static/vlabs")
+        def filesToBeKept = persistantToList(file('./src/main/resources/static/vlabs/.persistant'))
+        VLabsFolderTree.exclude filesToBeKept
+
+        if (VLabsFolderTree.size() > 0){
+            println "The following files are deleted from VLbas folder in rest.vlabs.com.ua: "
+            VLabsFolderTree.each { File file ->
+                println file
+                delete(file)
+            }
+        }
+
+    }
+}
+
+javascript.source {
+    vlab {
+        js {
+            srcDir "./src/main/resources/static/vl/"
+
+            include "js/vlab/aktakomPowerSupply.js"
+            include "js/vlab/button.js"
+            include "js/vlab/kuka.js"
+            include "js/vlab/kukaVacuumGripper.js"
+            include "js/vlab/valter.js"
+            include "js/vlab/vlab.js"
+            include "js/vlab/zoomHelper.js"
+            include "js/vlab/exp/valter-extr-simplified.js"
+
+            include "ph-mpd-fcm/ph-mpd-fcm.js"
+            include "toy-store/toy-store.js"
+            include "valter-ik-lab/valter-ik-lab.js"
+            include "valter-lab/valter-lab.js"
+            include "valter-locus-originis/valter-locus-originis.js"
+            include "valter-navigation-ann/valter-navigation-ann.js"
+
+        }
+    }
+}
+
+javascript.source.vlab.js.files.eachWithIndex { jsFile, idx ->
+    tasks.create(name: "minifyJS${idx}", type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+        source = jsFile
+        dest = jsFile
+        closure { 
+            warningLevel = 'QUIET'
+            compilationLevel = 'WHITESPACE_ONLY'
+            compilerOptions.languageIn = 'ECMASCRIPT6_STRICT'
+        }
+    }
+}
+
+task minifyVLJS(dependsOn: tasks.matching {Task task -> task.name.startsWith("minifyJS")}){
+    group = 'Minify & Uglify JS'
+}
+
+javascript.source.vlab.js.files.eachWithIndex { jsFile, idx ->
+    tasks.create(name: "uglifyJS${idx}", type:Exec) {
+        executable "bash"
+        //args "-c","uglifyjs --self --compress --wrap --export-all --output '${jsFile}'"
+        //args "-c","yui-compressor --type js --line-break 256 '${jsFile}' -o '${jsFile}'"
+        //args "-c","closure-compiler --js '${jsFile}' --js_output_file '${jsFile}_'; mv '${jsFile}_' '${jsFile}'"
+    }
+}
+
+task uglifyVLJS(dependsOn: tasks.matching {Task task -> task.name.startsWith("uglifyJS")}){
+    group = 'Minify & Uglify JS'
+}
+
+task syncVLFolder(type:Exec) {
+  group = 'deploy'
+  executable "bash"
+  args "-c","rsync -rav ../vl.vlabs.com.ua/vl/ src/main/resources/static/vl/"
+}
+
+task syncVLabsFolder(type:Exec) {
+  group = 'deploy'
+  executable "bash"
+  args "-c","rsync -rav ../vl.vlabs.com.ua/vlabs/build/ src/main/resources/static/vlabs/"
+}
+
+buildUIDev.dependsOn(cleanUIFolder)
+buildUIProd.dependsOn(cleanUIFolder)
+war.dependsOn(deployUIProd)

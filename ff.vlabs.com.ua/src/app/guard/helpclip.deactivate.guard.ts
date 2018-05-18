@@ -13,7 +13,7 @@ export class HelpClipDeactivateGuard implements CanDeactivate<CanComponentDeacti
     let can = component.canDeactivate();
     console.log('HelpClipDeactivateGuard#canDeactivate called, can: ', can);
     if (!can) {
-      alert('HelpClipDeactivateGuard: navigation out is blocked');
+      // alert('HelpClipDeactivateGuard: navigation out is blocked');
       return false;
     }
 

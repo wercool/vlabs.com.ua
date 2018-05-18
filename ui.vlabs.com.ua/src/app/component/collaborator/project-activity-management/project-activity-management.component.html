@@ -32,9 +32,9 @@
             <ng-container matColumnDef="type">
                 <mat-header-cell *matHeaderCellDef>TYPE</mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <img *ngIf="element.type == 'resource'" src="/assets/img/resource-item.png" height="48">
-                    <img *ngIf="element.type == 'blender_model'" src="/assets/img/blender-item.png" height="48">
-                    <img *ngIf="element.type == 'vlab_item'" src="/assets/img/vlabitem-item.png" height="48">
+                    <img *ngIf="element.type == 'resource'" src="assets/img/resource-item.png" height="48">
+                    <img *ngIf="element.type == 'blender_model'" src="assets/img/blender-item.png" height="48">
+                    <img *ngIf="element.type == 'vlab_item'" src="assets/img/vlabitem-item.png" height="48">
                 </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="projectWorkItemsDisplayedColumns"></mat-header-row>

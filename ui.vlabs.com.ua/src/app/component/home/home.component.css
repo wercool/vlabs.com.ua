@@ -2,7 +2,7 @@
   width: 100%;
   min-height: 400px;
   background-color: slategray;
-  background-image: url('/assets/img/banner-bg.png'), linear-gradient(to right, #204061, #2a63a9);
+  background-image: url('assets/img/banner-bg.png'), linear-gradient(to right, #204061, #2a63a9);
   background-repeat: no-repeat;
   background-position: center;
   text-align: center;

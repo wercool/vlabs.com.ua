@@ -1,13 +1,13 @@
 .work-item-resource-header-image {
-    background-image: url('/assets/img/resource-item.png');
+    background-image: url('assets/img/resource-item.png');
     background-size: cover;
 }
 .work-item-blender-header-image {
-    background-image: url('/assets/img/blender-item.png');
+    background-image: url('assets/img/blender-item.png');
     background-size: cover;
 }
 .work-item-vlabitem-header-image {
-    background-image: url('/assets/img/vlabitem-item.png');
+    background-image: url('assets/img/vlabitem-item.png');
     background-size: cover;
 }
 
@@ -18,7 +18,7 @@
     min-height: 250px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/assets/img/drag-drop-upload-1.gif');
+    background-image: url('assets/img/drag-drop-upload-1.gif');
     background-color: #e7f0f4;
 }
 

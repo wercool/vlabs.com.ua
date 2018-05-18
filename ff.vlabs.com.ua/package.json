@@ -1,13 +1,13 @@
 {
   "name": "ff.vlabs.com.ua",
-  "version": "0.0.0",
+  "version": "0.1.1",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0 --port 4201 --aot false --proxy-config proxy.conf.json",
     "startAOT": "ng serve --host 0.0.0.0 --port 4201 --aot true --proxy-config proxy.conf.json",
     "build": "ng build --aot true",
-    "build-prod": "ng build --prod --aot true",
+    "buildProd": "ng build --prod --aot true",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

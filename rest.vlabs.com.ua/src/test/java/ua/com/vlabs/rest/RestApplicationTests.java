@@ -27,9 +27,6 @@ public class RestApplicationTests
     @Autowired
     @Qualifier("vlabsDS")
     DataSource vlabsDS;
-    @Autowired
-    @Qualifier("valterikDS")
-    DataSource valterikDS;
 
     @Test
     public void vlabsDSConnectionTest() throws SQLException
@@ -40,12 +37,4 @@ public class RestApplicationTests
         connection.close();
     }
 
-    @Test
-    public void valterikDSConnectionTest() throws SQLException
-    {
-        Connection connection = valterikDS.getConnection();
-        log.info("valterikDS connection catalog: " + connection.getCatalog());
-        assertEquals("valterik", connection.getCatalog());
-        connection.close();
-    }
 }

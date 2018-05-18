@@ -4,7 +4,3 @@
 # But not these files...
 !.gitignore
 !.persistant
-!index.html
-!hc
-!staff
-!vlabs

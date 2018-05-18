@@ -1,4 +1,5 @@
 {
+    "VLabsREST": "<!--VLAB REST API URL-->",
     "title": "HVAC Base VLab Heat Pump",
     "alias": "vlab.hvac.base.heat-pump",
     "resolutionFactor": "1.0",
