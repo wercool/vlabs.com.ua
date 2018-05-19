@@ -6,6 +6,3 @@ iframe {
     width: calc(100% - 10px);
     height: calc(100% - 88px);
 }
-.content {
-    display: inline-block;
-}

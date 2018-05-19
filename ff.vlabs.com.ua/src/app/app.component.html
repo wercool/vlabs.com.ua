@@ -38,7 +38,25 @@
             <a mat-icon-button>
                 <mat-icon class="overlayNavMenuCloseBtn" (click)="hideOverlayNavMenu()">close</mat-icon>
             </a>
-            <mat-selection-list class="overlayNavMenu global-full-width">
+            <table class="overlayNavMenu">
+                <tr *ngFor="let routeLink of routeLinks">
+                    <td class="overlayMenuRow">
+                        <a mat-button [routerLink]="routeLink.path" (click)="hideOverlayNavMenu()" class="overlayNavMenuItem global-full-width" style="text-align: left;">
+                                <mat-icon mat-icon>{{routeLink.icon}}</mat-icon>
+                                <span style="padding-left: 20px;">{{routeLink.label}}</span>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="overlayMenuRow">
+                        <a mat-button (click)="gotoLogout()" class="overlayNavMenuItem global-full-width" style="text-align: left;">
+                            <mat-icon mat-icon>exit_to_app</mat-icon>
+                            <span style="padding-left: 20px;">Log out</span>
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            <!-- <mat-selection-list class="overlayNavMenu global-full-width">
                 <mat-list-item *ngFor="let routeLink of routeLinks">
                     <a mat-button [routerLink]="routeLink.path" (click)="hideOverlayNavMenu()" class="overlayNavMenuItem global-full-width" style="text-align: left;">
                         <mat-icon mat-icon>{{routeLink.icon}}</mat-icon>
@@ -51,7 +69,7 @@
                         <span style="padding-left: 20px;">Log out</span>
                     </a>
                 </mat-list-item>
-            </mat-selection-list>
+            </mat-selection-list> -->
         </div>
 
         <router-outlet></router-outlet>

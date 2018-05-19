@@ -63,10 +63,13 @@
     color: #B2EBF2;
 }
 .overlayNavMenu {
-    margin-top: 40px;
+    margin-top: 2vh;
     max-height: 80%;
 }
+.overlayMenuRow {
+    height: 10vh;
+}
 .overlayNavMenuItem {
-    font-size: 24px;
+    font-size: 28px;
     color: #B2EBF2;
 }

@@ -1,8 +1,6 @@
-<div class="content">
-        <iframe #helpClipIFrame
-                *ngIf="helpClipReadyToStart" [src] = "vLabEmbedSafeURL ? vLabEmbedSafeURL : ''"
-                scrolling = "no"
-                frameborder = "0"
-                allowfullscreen>
-        </iframe>
-</div>
+<iframe #helpClipIFrame
+        *ngIf="helpClipReadyToStart" [src] = "vLabEmbedSafeURL ? vLabEmbedSafeURL : ''"
+        scrolling = "no"
+        frameborder = "0"
+        allowfullscreen>
+</iframe>

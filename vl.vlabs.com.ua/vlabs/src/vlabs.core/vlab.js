@@ -33,6 +33,7 @@ export default class VLab {
         THREE.ImageUtils.crossOrigin = 'use-credentials';
 
         this.authenticated = false;
+        this.authAttemptFailed = false;
 
         this.initObj = initObj;
 
@@ -253,6 +254,7 @@ export default class VLab {
             var self = this;
             request(this.nature.VLabsREST + '/refresh', function (error, response, body) {
                 if (error) {
+                    self.authAttemptFailed = true;
                     console.error(error);
                     self.showErrorMessage({message: '<h3 style="color: red;">Failed to connecto to VLab REST API</h3>'})
                     self.progressBarElement.style.display = 'none';
@@ -263,18 +265,19 @@ export default class VLab {
                     this.authResult = JSON.parse(body);
                     console.log("AUTH", this.authResult);
                     if (!this.authResult.access_token) {
+                        self.authAttemptFailed = true;
                         self.showErrorMessage({message: '<h3 style="color: yellow;">VLab REST API authentication failed</h3>'})
                         self.progressBarElement.style.display = 'none';
                         window.stop();
                     } else {
-                        self.RESTVLabInfo();
+                        self.VLabRESTInfo();
                     }
                 }
             });
         }
     }
 
-    RESTVLabInfo() {
+    VLabRESTInfo() {
         var self = this;
         var infoURL = this.nature.VLabsREST + (this.nature.HCAlias ? '/helpclip/info/' + btoa(this.nature.HCAlias): '/vlab/info/' + btoa(this.nature.alias))
         request(infoURL, function (error, response, body) {
@@ -313,6 +316,16 @@ export default class VLab {
         });
 
         this.resiezeWebGLContainer();
+
+        if (this.authAttemptFailed) {
+            this.webGLContainer.style.display = 'none';
+            this.fullscreenButton.style.display = 'none';
+            this.resetViewButton.style.display = 'none';
+            this.progressBarElement.style.display = 'none';
+            this.statsTHREE.domElement.style.display = 'none';
+            this.toolboxBtn.style.display = 'none';
+            return;
+        }
 
         this.render();
     }
