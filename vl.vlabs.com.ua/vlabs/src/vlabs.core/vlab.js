@@ -317,16 +317,6 @@ export default class VLab {
 
         this.resiezeWebGLContainer();
 
-        if (this.authAttemptFailed) {
-            this.webGLContainer.style.display = 'none';
-            this.fullscreenButton.style.display = 'none';
-            this.resetViewButton.style.display = 'none';
-            this.progressBarElement.style.display = 'none';
-            this.statsTHREE.domElement.style.display = 'none';
-            this.toolboxBtn.style.display = 'none';
-            return;
-        }
-
         this.render();
     }
 
@@ -595,6 +585,17 @@ export default class VLab {
 
     render(time) {
         if (this.initialized && !this.paused) {
+
+            if (this.authAttemptFailed) {
+                this.webGLContainer.style.display = 'none';
+                this.fullscreenButton.style.display = 'none';
+                this.resetViewButton.style.display = 'none';
+                this.progressBarElement.style.display = 'none';
+                this.statsTHREE.domElement.style.display = 'none';
+                this.toolboxBtn.style.display = 'none';
+                return;
+            }
+
             if (this.statsTHREE) this.statsTHREE.begin();
 
             this.webGLRenderer.clear();
