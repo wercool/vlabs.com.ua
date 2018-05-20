@@ -33,6 +33,7 @@ export default class VLab {
         THREE.ImageUtils.crossOrigin = 'use-credentials';
 
         this.authenticated = false;
+        this.authAttemptFailed = false;
 
         this.initObj = initObj;
 
@@ -221,13 +222,9 @@ export default class VLab {
             this.getNatureFromURL((this.initObj.natureURL) ? this.initObj.natureURL : "./resources/nature.json", this.initObj.naturePassphrase)
         ])
         .then((result) => {
-            let [ nature ] = result;
+            this.nature = result[0];
 
-            this.nature = nature;
-
-            this.completeInitialization();
-
-            return result;
+            return this.completeInitialization();
         })
         .catch(error => {
             console.error(error);
@@ -235,56 +232,53 @@ export default class VLab {
     }
 
     completeInitialization() {
-        if (document.getElementById('loader')) {
-            document.body.removeChild(document.getElementById('loader'));
-        }
+        return new Promise((resolve, reject) => {
 
-        if (this.initObj.authRequired === 'true') {
-            this.authenticate();
-        }
+            if (document.getElementById('loader')) {
+                document.body.removeChild(document.getElementById('loader'));
+            }
 
-        this.setProgressBar();
+            if (this.initObj.authRequired === 'true') {
+                this.authenticate().then((result) => {
+                    resolve(result);
+                });
+            } else {
+                resolve(true);
+            }
+
+        });
     }
 
     authenticate() {
-        if (this.nature.VLabsREST) {
-            console.log('REST API AUTHENTICATION ATTEMPT');
+        return new Promise((resolve, reject) => {
+            if (this.nature.VLabsREST) {
+                console.log('REST API AUTHENTICATION ATTEMPT');
 
-            var self = this;
-            request(this.nature.VLabsREST + '/refresh', function (error, response, body) {
-                if (error) {
-                    self.authAttemptFailed();
-                    console.error(error);
-                    self.showErrorMessage({message: '<h3 style="color: red;">Failed to connecto to VLab REST API</h3>'})
-                    self.progressBarElement.style.display = 'none';
-                    window.stop();
-                } else {
-                    console.log('statusCode:', response && response.statusCode);
-                    // console.log('body:', body);
-                    this.authResult = JSON.parse(body);
-                    console.log("AUTH", this.authResult);
-                    if (!this.authResult.access_token) {
-                        self.authAttemptFailed();
-                        self.showErrorMessage({message: '<h3 style="color: yellow;">VLab REST API authentication failed</h3>'})
-                        self.progressBarElement.style.display = 'none';
-                        window.stop();
+                var self = this;
+                request(this.nature.VLabsREST + '/refresh', function (error, response, body) {
+                    if (error) {
+                        console.error(error);
+                        self.showErrorMessage({message: '<h3 style="color: red;">Failed to connecto to REST API</h3>'});
+                        resolve(false);
                     } else {
-                        self.VLabRESTInfo();
+                        console.log('statusCode:', response && response.statusCode);
+                        // console.log('body:', body);
+                        self.authResult = JSON.parse(body);
+                        console.log("AUTH", self.authResult);
+                        if (!self.authResult.access_token) {
+                            self.showErrorMessage({message: '<h3 style="color: yellow;">REST API authentication failed</h3>'});
+                            resolve(false);
+                        } else {
+                            self.VLabRESTInfo();
+                            resolve(true);
+                        }
                     }
-                }
-            });
-        }
-    }
-
-    authAttemptFailed() {
-        this.initialized = false;
-        this.webGLContainer.style.display = 'none';
-        this.fullscreenButton.style.display = 'none';
-        this.resetViewButton.style.display = 'none';
-        this.progressBarElement.style.display = 'none';
-        this.statsTHREE.domElement.style.display = 'none';
-        this.toolboxBtn.style.display = 'none';
-        return;
+                });
+            } else {
+                console.log('No REST API defined in nature');
+                resolve(true);
+            }
+        });
     }
 
     VLabRESTInfo() {
@@ -515,6 +509,7 @@ export default class VLab {
     }
 
     loadScene(loaderMessage) {
+        this.setProgressBar();
         return new Promise((resolve, reject) => {
             let thisVLab = this;
             thisVLab.progressBarPrependText = (loaderMessage)? loaderMessage : "The world of VLab is loaded by ";
@@ -619,6 +614,7 @@ export default class VLab {
 
             requestAnimationFrame(this.render.bind(this));
         } else {
+
             setTimeout(this.render.bind(this), 250);
         }
     }

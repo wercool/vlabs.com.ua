@@ -27,8 +27,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
         document.addEventListener("keydown", this.onKeyDown.bind(this), false);
 
         super.preInitialize().then(() => {
-            super.initialize().then((result) => {
-                this.initialize(initObj);
+            super.initialize().then((success) => {
+                if (success) {
+                    this.initialize(initObj);
+                }
             });
         }).catch(error => {
             console.error(error.error);

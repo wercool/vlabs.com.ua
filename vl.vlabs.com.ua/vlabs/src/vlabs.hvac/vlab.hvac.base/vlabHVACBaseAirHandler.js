@@ -25,23 +25,24 @@ export default class VlabHVACBaseAirHandler extends VLab {
         document.addEventListener("keydown", this.onKeyDown.bind(this), false);
 
         super.preInitialize().then(() => {
-            super.initialize().then((result) => {
-                var textureLoader = new THREE.TextureLoader();
+            super.initialize().then((success) => {
+                if (success) {
+                    var textureLoader = new THREE.TextureLoader();
 
-                Promise.all([
-                    textureLoader.load('../vlabs.assets/envmaps/metal.jpg'),
-                    textureLoader.load('../vlabs.assets/effectmaps/lampHalo.png'),
-                ])
-                .then((result) => {
-                    this.envMapMetal = result[0];
-                    this.lampHalo = result[1];
+                    Promise.all([
+                        textureLoader.load('../vlabs.assets/envmaps/metal.jpg'),
+                        textureLoader.load('../vlabs.assets/effectmaps/lampHalo.png'),
+                    ])
+                    .then((result) => {
+                        this.envMapMetal = result[0];
+                        this.lampHalo = result[1];
 
-                    this.initialize(initObj);
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-
+                        this.initialize(initObj);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+                }
             });
         }).catch(error => {
             console.error(error.error);
