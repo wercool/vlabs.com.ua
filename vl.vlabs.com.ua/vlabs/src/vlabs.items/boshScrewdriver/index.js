@@ -26,6 +26,8 @@ initObj {
        this.initialize();
 
        this.prevTime = 0;
+
+       this.direction = 1; //unscrew
     }
 
     initialize() {
@@ -89,6 +91,8 @@ initObj {
                 });
                 console.log("BoshScrewdriver added to Inventory");
             } else {
+                this.model.userData["initObj"] = this.initObj;
+
                 this.context.vLabScene.add(this.model);
                 if (this.pos) {
                     this.model.position.copy(this.pos);
@@ -145,6 +149,11 @@ initObj {
             callback: this.onVLabRedererFrameEvent,
             instance: this
         };
+        this.context.webGLContainerEventsSubcribers.takenobjectapplication[this.name + "vLabSceneTakenObjectApplied"] = 
+        {
+            callback: this.onVLabSceneTakenObjectAppliedEvent,
+            instance: this
+        };
     }
 
     deleteVLabEventListeners() {
@@ -155,6 +164,7 @@ initObj {
         delete this.context.webGLContainerEventsSubcribers.touchend[this.name + "vLabSceneTouchEnd"]
         delete this.context.webGLContainerEventsSubcribers.mousemove[this.name + "vLabSceneMouseMove"];
         delete this.context.webGLContainerEventsSubcribers.renderframe[this.name + "vLabSceneRenderFrame"];
+        delete this.context.webGLContainerEventsSubcribers.takenobjectapplication[this.name + "vLabSceneTakenObjectApplied"];
         this.context.cursorPointerControlFromVLabItem = false;
     }
 
@@ -191,7 +201,7 @@ initObj {
             this.boschScrewdriverButtonPressSound.offset = 0;
             this.boschScrewdriverButtonPressSound.play();
             if (this.boschScrewdriverBitHolderStopTween) this.boschScrewdriverBitHolderStopTween.stop();
-            this.boschScrewdriverBitHolderSpeed = 0.6;
+            this.boschScrewdriverBitHolderSpeed = 0.6 * this.direction;
         }
     }
 
@@ -279,5 +289,10 @@ initObj {
         TWEEN.update(time);
 
         this.prevTime = time;
+    }
+
+    onVLabSceneTakenObjectAppliedEvent() {
+        console.log('onVLabSceneTakenObjectAppliedEvent');
+        this.model.scale.x = -1.0;
     }
 }

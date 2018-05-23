@@ -334,10 +334,6 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     }
 
-    test(value) {
-        console.log("TEST", value);
-    }
-
     frameCapBoltUnscrew(argsObj) {
         console.log("frameCapBoltUnscrew", argsObj);
 
@@ -345,7 +341,9 @@ export default class VlabHVACBaseHeatPump extends VLab {
         var appliedToBolt = this.vLabScene.getObjectByName(argsObj["arg"]);
         this.takeOffObject(true);
         screwDriver.position.copy(appliedToBolt.position.clone());
-        screwDriver.rotation.z = -Math.PI / 2;
+        screwDriver.position.x -= 0.015;
+        screwDriver.position.z += 0.038;
+        screwDriver.rotation.z = Math.PI / 2;
     }
 
     digitalMultimeterFluke17BToControlBoard() {

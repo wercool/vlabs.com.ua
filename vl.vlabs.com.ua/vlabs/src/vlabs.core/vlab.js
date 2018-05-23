@@ -72,7 +72,8 @@ export default class VLab {
             resetview: {},
             webglcontainerresized: {},
             zoommodein: {},
-            zoommodeout: {}
+            zoommodeout: {},
+            takenobjectapplication: {}
         };
 
         this.helpers = {
@@ -1019,7 +1020,7 @@ export default class VLab {
                 this.selectedObject = this.hoveredObject;
                 this.cMenu.hide();
                 this.selectionHelper = this.vLabScene.getObjectByName(this.selectedObject.name + "_SELECTION");
-                this.selectionHelper.material.color = new THREE.Color(0, 1, 1);
+                if (this.selectionHelper) this.selectionHelper.material.color = new THREE.Color(0, 1, 1);
 
                 if (this.hoveredResponsiveObject) {
                     this.hoveredResponsiveObject.material.emissive = new THREE.Color(0, 0, 0);
@@ -1030,7 +1031,7 @@ export default class VLab {
                     if (this.nature.objectMenus[this.selectedObject.name])
                     {
                         if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
-                            this.selectionHelper.material.color = new THREE.Color(0, 1, 0);
+                            if (this.selectionHelper) this.selectionHelper.material.color = new THREE.Color(0, 1, 0);
                         }
                     }
                 }
@@ -1523,9 +1524,9 @@ export default class VLab {
         this.selectedObject.traverse(function(node) {
             if (node.type === "Mesh") {
                 if (node.name !== self.selectedObject.name + "_SELECTION") {
-                    if (node.material.type === "MeshPhongMaterial") {
-                        node.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
-                    }
+                    // if (node.material.type === "MeshPhongMaterial") {
+                    //     node.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+                    // }
                     if (node.material.transparent) {
                         node.material.transparent = false;
                         node.material.opacity = 1.0;
@@ -1545,6 +1546,11 @@ export default class VLab {
         }
         this.vLabScene.add(this.selectedObject);
         this.resetAllSelections();
+
+        for (var takenObjectName in this.webGLContainerEventsSubcribers.takenobjectapplication) {
+            var subscriber = this.webGLContainerEventsSubcribers.takenobjectapplication[takenObjectName];
+            subscriber.callback.call(subscriber.instance, event);
+        }
     }
 
     takenToResponsiveArrowUpdate() {

@@ -48,7 +48,7 @@ initObj {
                     transparent: true,
                     opacity: 1.0,
                     rotation: 0.0,
-                    depthTest: true,
+                    depthTest: false,
                     depthWrite: true
                 });
 
@@ -395,7 +395,8 @@ initObj {
         var interactiveObjectsWithInteractiveSuppressors = this.context.interactiveObjects.concat(this.context.interactivesSuppressorsObjects).concat(this.accessableInteractiveELements);
 
         this.context.iteractionRaycaster.setFromCamera(this.context.mouseCoordsRaycaster, this.context.defaultCamera);
-        var interactionObjectIntersects = this.context.iteractionRaycaster.intersectObjects(interactiveObjectsWithInteractiveSuppressors);
+        // var interactionObjectIntersects = this.context.iteractionRaycaster.intersectObjects(interactiveObjectsWithInteractiveSuppressors);
+        var interactionObjectIntersects = this.context.iteractionRaycaster.intersectObjects(this.accessableInteractiveELements);
 
         if (interactionObjectIntersects.length > 0) {
             if (this.context.zoomMode) {
@@ -431,7 +432,8 @@ initObj {
             dashSize: 0.005,
             gapSize: 0.0025,
             transparent: true,
-            opacity: 0.5
+            opacity: 0.5,
+            depthTest: false
         });
         responsiveObj.mesh.userData['DigitalMultimeterFluke17B'].forEach((testPoint) => {
             var helperSprite = new THREE.Sprite(this.probeSpriteMaterial);
