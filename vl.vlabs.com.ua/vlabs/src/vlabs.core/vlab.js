@@ -304,7 +304,8 @@ export default class VLab {
             antialias: false,
             powerPreference: 'high-performance',
             precision: 'lowp',
-            alpha: false
+            alpha: false,
+            powerPreference: 'high-performance'
         });
 
         this.webGLRenderer.setClearColor(this.initObj.webGLRendererClearColor ? this.initObj.webGLRendererClearColor : 0x000000);

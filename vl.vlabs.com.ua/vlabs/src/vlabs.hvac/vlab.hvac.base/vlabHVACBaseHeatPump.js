@@ -75,11 +75,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
             // ZFightingMaterial.polygonOffsetUnits = 4.0;
             // ZFightingMaterial.needsUpdate = true;
 
-            this.serviceLoaction = new VLabPositioner({
+            this.serviceLocation = new VLabPositioner({
                 context: this,
                 active: false,
-                pos: new THREE.Vector3(1.0, 1.5, 0.0),
-                name: 'serviceLoaction',
+                pos: new THREE.Vector3(1.0, 1.4, 0.0),
+                name: 'serviceLocation',
                 scale: new THREE.Vector3(0.2, 0.2, 0.2),
                 target: new THREE.Vector3(0.0, 0.5, 0.0)
             });
@@ -204,7 +204,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             context: this,
             targetObjectName: "ACDisconnectClamp",
             minDistance: 0.25,
-            positionDeltas: new THREE.Vector3(0.0, -0.1, 0.05), 
+            positionDeltas: new THREE.Vector3(0.0, 0.2, 0.05), 
             scale: new THREE.Vector3(0.1, 0.1, 0.1),
             color: 0xfff495
         });
