@@ -312,7 +312,7 @@ export default class DetailedView {
 
             for (var itemName in this.items) {
                 if (this.items[itemName].onDetailedViewRenderFrameEvent) {
-                    this.items[itemName].onDetailedViewRenderFrameEvent.call(this.items[itemName], { clockDelta: this.clock.getDelta() });
+                    this.items[itemName].onDetailedViewRenderFrameEvent.call(this.items[itemName], { clockDelta: this.clock.getDelta(), curTime: time});
                 }
             }
 
