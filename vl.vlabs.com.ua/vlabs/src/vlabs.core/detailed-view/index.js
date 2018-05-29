@@ -158,11 +158,12 @@ export default class DetailedView {
         this.defaultCamera.add(this.defaultAudioListener);
 
         //Controls
-        this.controls = new OrbitControls(this.defaultCamera);
+        this.controls = new OrbitControls(this.defaultCamera, undefined, this.initObj.controls.initialPos);
         this.controls.minDistance = this.initObj.controls.minDistance ? this.initObj.controls.minDistance : 0.25;
         this.controls.maxDistance = this.initObj.controls.maxDistance ? this.initObj.controls.maxDistance : 1.0;
         this.controls.minPolarAngle = this.initObj.controls.minPolarAngle ? this.initObj.controls.minPolarAngle : 0.0;
         this.controls.maxPolarAngle = this.initObj.controls.maxPolarAngle ? this.initObj.controls.maxPolarAngle : Math.PI * 2;
+        this.controls.target = this.initObj.controls.target ? this.initObj.controls.target : new THREE.Vector3(0.0, 0.0, 0.0);
         this.controls.enablePan = true;
 
         // Materials

@@ -191,6 +191,9 @@ export default class ScrollCompressorZP25K5E {
             this.scrollCompressorZP25K5ExplodedViewSprite.position.z += 0.45;
             this.scrollCompressorZP25K5ExplodedViewSprite.mousePressHandler = function() {
                 if (this.scrollCompressorZP25K5ExplodedViewSprite.material.opacity == 0.45) {
+                    this.scrollCompressorZP25K5ExplodedViewSprite.visible = false;
+                    setTimeout(()=>{ this.scrollCompressorZP25K5ExplodedViewSprite.visible = true; }, 1000);
+
                     this.scrollCompressorZP25K5ExplodedViewSprite.material.opacity = 0.25;
                     this.scrollCompressorZP25K5EEnclosureLookSprite.visible = false;
                     this.scrollCompressorZP25K5EEnclosureCutView.visible = true;
@@ -200,9 +203,6 @@ export default class ScrollCompressorZP25K5E {
 
                     this.animationAction.timeScale = 25.0;
                     this.scrollCompressorSound.stop();
-
-                    this.model.getObjectByName('scrollCompressorZP25K5ERotorInsert').scale.x = 0.75;
-                    this.model.getObjectByName('scrollCompressorZP25K5ERotorInsert').scale.y = 0.75;
 
                     new TWEEN.Tween(this.model.getObjectByName('scrollCompressorZP25K5EEnclosureCutView').position)
                     .to({ y: this.assembledViewPartsPositions['scrollCompressorZP25K5EEnclosureCutView'].y - 0.2 }, 500)
@@ -304,9 +304,6 @@ export default class ScrollCompressorZP25K5E {
 
                     this.animationAction.timeScale = 100.0;
                     this.scrollCompressorSound.play();
-
-                    this.model.getObjectByName('scrollCompressorZP25K5ERotorInsert').scale.x = 1.0;
-                    this.model.getObjectByName('scrollCompressorZP25K5ERotorInsert').scale.y = 1.0;
                 }
             };
             this.model.add(this.scrollCompressorZP25K5ExplodedViewSprite);

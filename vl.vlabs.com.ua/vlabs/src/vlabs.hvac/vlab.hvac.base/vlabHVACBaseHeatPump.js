@@ -112,7 +112,6 @@ export default class VlabHVACBaseHeatPump extends VLab {
     onActivatedEvent() {
 
         //VLab Core Items
-
         this.vLabLocator.addLocation(this);
 
         this.inventory = new Inventory({
@@ -120,7 +119,6 @@ export default class VlabHVACBaseHeatPump extends VLab {
         });
 
         //Detailed views
-
         this.bryantB225B_reversingValveDetailedView = new DetailedView({
             context: this,
             targetObjectName: "bryantB225B_reversingValve",
@@ -157,13 +155,14 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 minDistance: 0.05,
                 maxDistance: 0.75,
                 minPolarAngle: 0,
-                maxPolarAngle: Math.PI * 2
+                maxPolarAngle: Math.PI * 2,
+                target: new THREE.Vector3(0.0, 0.1, 0.0),
+                initialPos: new THREE.Vector3(0.0, 0.35, 0.35)
             },
             defaultCameraInitialPosition: new THREE.Vector3(0.0, 0.15, 0.1)
         });
 
         //Zoom helpers
-
         this.frameCapBolt10ZoomHelper = new ZoomHelper({
             context: this,
             targetObjectName: "frameCapBolt10",
@@ -228,7 +227,6 @@ export default class VlabHVACBaseHeatPump extends VLab {
         });
 
         //VLab Items
-
         this.BoshScrewdriver = new BoshScrewdriver({
             context: this,
             pos: new THREE.Vector3(0.5, 0.2, 0.0),
