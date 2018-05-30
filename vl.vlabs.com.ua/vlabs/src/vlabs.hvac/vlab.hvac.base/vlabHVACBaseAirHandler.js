@@ -150,7 +150,6 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
     onActivatedEvent() {
         //VLab Core Items
-
         this.vLabLocator.addLocation(this);
 
         //Zoom helpers

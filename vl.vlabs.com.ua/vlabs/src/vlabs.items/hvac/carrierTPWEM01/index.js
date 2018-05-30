@@ -117,7 +117,10 @@ export default class CarrierTPWEM01 {
                 this.curState['fahrenheitOrCelsius'] = 'F';
                 this.curState['idealHomeTemperatureWinter'] = 20;
                 this.curState['idealHomeTemperatureSummer'] = 24;
-                this.screens['baseScreenTimer'] = undefined;
+                this.curState['baseScreenTimer'] = undefined;
+                this.curState['baseScreenSetupMode'] = 'heat';
+                this.curState['heatToTemperature'] = 20;
+                this.curState['coolToTemperature'] = 24;
 
                 this.addVLabEventListeners();
 
@@ -234,8 +237,8 @@ export default class CarrierTPWEM01 {
         this.screenCanvasContext.fillStyle = '#161616';
         this.screenCanvasContext.fillRect(0, 0, 512, 512);
 
-        if (this.screens['baseScreenTimer'] != undefined) {
-            clearTimeout(this.screens['baseScreenTimer']);
+        if (this.curState['baseScreenTimer'] != undefined) {
+            clearTimeout(this.curState['baseScreenTimer']);
         }
 
         if (this.curScreen) this.screens[this.curScreen].call(this, args);
@@ -269,11 +272,11 @@ export default class CarrierTPWEM01 {
         for (var i = 0; i < this.curScreenActiveElements.length; i++) {
             var activeElement = this.curScreenActiveElements[i];
 
-            this.screenCanvasContext.beginPath();
-            this.screenCanvasContext.lineWidth="4";
-            this.screenCanvasContext.strokeStyle="yellow";
-            this.screenCanvasContext.rect(activeElement.rect[0], activeElement.rect[1], activeElement.rect[2], activeElement.rect[3]);
-            this.screenCanvasContext.stroke();
+            // this.screenCanvasContext.beginPath();
+            // this.screenCanvasContext.lineWidth="4";
+            // this.screenCanvasContext.strokeStyle="yellow";
+            // this.screenCanvasContext.rect(activeElement.rect[0], activeElement.rect[1], activeElement.rect[2], activeElement.rect[3]);
+            // this.screenCanvasContext.stroke();
 
             if (this.intersectionIsInRect(activeElement)) {
                 activeElement.onTouch();
@@ -281,13 +284,13 @@ export default class CarrierTPWEM01 {
         }
     }
 
-    putTemperatureLabel(x, y, t, font) {
+    putTemperatureLabel(x, y, t, font, label) {
         this.screenCanvasContext.fillStyle = 'white';
         if (this.curState['fahrenheitOrCelsius'] == 'F') {
             t = t * 9/5 + 32;
         }
         this.screenCanvasContext.font = font ? font : '30px Arial';
-        this.screenCanvasContext.fillText(Math.round(t).toString() + '°' + this.curState['fahrenheitOrCelsius'], x, y);
+        this.screenCanvasContext.fillText(Math.round(t).toString() + '°' + (label ? this.curState['fahrenheitOrCelsius'] : ''), x, y);
     }
 
     backButton(prevScreenName, buttonText) {
@@ -1045,7 +1048,7 @@ export default class CarrierTPWEM01 {
         this.processInteractions();
     }
 
-    baseScreen() {
+    baseScreen(initObj) {
         var self = this;
         this.curScreenActiveElements = [];
 
@@ -1056,13 +1059,103 @@ export default class CarrierTPWEM01 {
 
         this.screenCanvasContext.font = 'bold 20px Arial';
         this.screenCanvasContext.fillText('Fan: Auto', 10, this.screenMapTopOffset + 20);
-        this.screenCanvasContext.fillText(aDays[date.getDay()] + ' ' + (date.getHours() > 12 ? date.getHours() - 12 : date.getHours())+':'+date.getMinutes()+':'+(date.getSeconds() < 10 ? '0'+date.getSeconds() : date.getSeconds())+' '+(date.getHours() >= 12 ? "PM" : "AM"), 185, this.screenMapTopOffset + 20);
+        this.screenCanvasContext.fillText(
+            aDays[date.getDay()] + ' ' +
+            ((date.getHours() > 12 ? date.getHours() - 12 : date.getHours()) < 10 ? '0'+(date.getHours() > 12 ? date.getHours() - 12 : date.getHours()) : (date.getHours() > 12 ? date.getHours() - 12 : date.getHours()))+':'+
+            (date.getMinutes() < 10 ? '0'+date.getMinutes() : date.getMinutes())+':'+
+            (date.getSeconds() < 10 ? '0'+date.getSeconds() : date.getSeconds())+' '+
+            (date.getHours() >= 12 ? "PM" : "AM"), 185, this.screenMapTopOffset + 20);
         this.screenCanvasContext.font = 'bold 20px Arial';
-        this.screenCanvasContext.fillText('Mode: Off', 410, this.screenMapTopOffset + 20);
+        this.screenCanvasContext.fillText('Mode: Auto', 390, this.screenMapTopOffset + 20);
 
-        this.putTemperatureLabel(170, this.screenMapTopOffset + 180, this.curState['roomTemperature'], '90px Arial');
+        this.putTemperatureLabel(170, this.screenMapTopOffset + 180, this.curState['roomTemperature'], '90px Arial', (initObj ? false : true));
         this.screenCanvasContext.font = '24px Arial';
         this.screenCanvasContext.fillText(this.curState['roomHumidity'].toString() + '%', 240, this.screenMapTopOffset + 240);
+
+        if (initObj) {
+            if (initObj.mode == 'setup') {
+
+                var heatToBG = this.screenAssetsCanvasContext.getImageData(676, 162, 180, 129);
+                var heatToButton = this.screenAssetsCanvasContext.getImageData(676, 291, 81, 56);
+
+                var coolToBG = this.screenAssetsCanvasContext.getImageData(676, 347, 180, 129);
+                var coolToButton = this.screenAssetsCanvasContext.getImageData(676, 105, 81, 56);
+
+                var upButton = this.screenAssetsCanvasContext.getImageData(825, 1, 78, 56);
+                var downButton = this.screenAssetsCanvasContext.getImageData(825, 57, 78, 56);
+
+                if (this.curState['baseScreenSetupMode'] == 'heat') {
+                    this.screenCanvasContext.putImageData(heatToBG, 311, this.screenMapTopOffset + 105);
+                } else {
+                    this.screenCanvasContext.putImageData(coolToBG, 311, this.screenMapTopOffset + 105);
+                }
+
+                this.screenCanvasContext.putImageData(coolToButton, 318, this.screenMapTopOffset + 110);
+                this.screenCanvasContext.putImageData(heatToButton, 318, this.screenMapTopOffset + 174);
+
+                this.screenCanvasContext.putImageData(upButton, 405, this.screenMapTopOffset + 110);
+                this.screenCanvasContext.putImageData(downButton, 405, this.screenMapTopOffset + 171);
+
+                this.screenCanvasContext.font = 'bold 14px Arial';
+                this.screenCanvasContext.fillText('COOL TO', 326, this.screenMapTopOffset + 128);
+                this.putTemperatureLabel(341, this.screenMapTopOffset + 154, this.curState['coolToTemperature'], 'bold 26px Arial', false);
+
+                this.screenCanvasContext.font = 'bold 14px Arial';
+                this.screenCanvasContext.fillText('HEAT TO', 326, this.screenMapTopOffset + 192);
+                this.putTemperatureLabel(341, this.screenMapTopOffset + 218, this.curState['heatToTemperature'], 'bold 26px Arial', false);
+
+                this.curScreenActiveElements.push({
+                    name: 'heatToButton',
+                    rect: [317, this.screenMapTopOffset + 174, 81, 56],
+                    onTouch: function() {
+                        self.curState['baseScreenSetupMode'] = 'heat';
+                        self.switchScreen('baseScreen', { mode: 'setup' });
+                    }
+                });
+
+                this.curScreenActiveElements.push({
+                    name: 'coolToButton',
+                    rect: [317, this.screenMapTopOffset + 110, 81, 56],
+                    onTouch: function() {
+                        self.curState['baseScreenSetupMode'] = 'cool';
+                        self.switchScreen('baseScreen', { mode: 'setup' });
+                    }
+                });
+
+                this.curScreenActiveElements.push({
+                    name: 'temperatureUpButton',
+                    rect: [405, this.screenMapTopOffset + 110, 79, 57],
+                    onTouch: function() {
+                        if (self.curState['baseScreenSetupMode'] == 'heat') {
+                            self.curState['heatToTemperature'] += 1;
+                        } else {
+                            self.curState['coolToTemperature'] += 1;
+                        }
+                        self.switchScreen('baseScreen', { mode: 'setup' });
+                    }
+                });
+                this.curScreenActiveElements.push({
+                    name: 'temperatureDownButton',
+                    rect: [405, this.screenMapTopOffset + 171, 79, 57],
+                    onTouch: function() {
+                        if (self.curState['baseScreenSetupMode'] == 'heat') {
+                            self.curState['heatToTemperature'] -= 1;
+                        } else {
+                            self.curState['coolToTemperature'] -= 1;
+                        }
+                        self.switchScreen('baseScreen', { mode: 'setup' });
+                    }
+                });
+            }
+        } else {
+            this.curScreenActiveElements.push({
+                name: 'baseScreenArealButton',
+                rect: [20, this.screenMapTopOffset + 30, 470, 260],
+                onTouch: function() {
+                    self.switchScreen('baseScreen', { mode: 'setup' });
+                }
+            });
+        }
 
         this.backButton('baseScreen');
         this.infoButton();
@@ -1071,8 +1164,8 @@ export default class CarrierTPWEM01 {
         this.processInteractions();
 
         var self = this;
-        this.screens['baseScreenTimer'] = setTimeout(() => {
-            self.switchScreen('baseScreen');
+        this.curState['baseScreenTimer'] = setTimeout(() => {
+            self.switchScreen('baseScreen', initObj);
         }, 1000);
     }
 

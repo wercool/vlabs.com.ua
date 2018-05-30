@@ -1,4 +1,5 @@
 import * as THREE                   from 'three';
+import * as TWEEN                   from 'tween.js';
 import VLab                         from '../../vlabs.core/vlab';
 
 import Inventory                    from '../../vlabs.core/inventory';
@@ -6,6 +7,7 @@ import DetailedView                 from '../../vlabs.core/detailed-view';
 import ZoomHelper                   from '../../vlabs.core/zoom-helper';
 import TransformControls            from '../../vlabs.core/three-transformcontrols/index';
 import VLabPositioner               from '../../vlabs.core/vlab-positioner';
+import VLabInteractor               from '../../vlabs.core/vlab-interactor';
 
 //VLab Items
 import BoshScrewdriver              from '../../vlabs.items/boshScrewdriver';
@@ -74,6 +76,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
             // ZFightingMaterial.polygonOffsetFactor = 1.0;
             // ZFightingMaterial.polygonOffsetUnits = 4.0;
             // ZFightingMaterial.needsUpdate = true;
+
+            this.vLabScene.getObjectByName("wire6Unplugged").visible = false;
+            this.vLabScene.getObjectByName("controlBoardOF2WireUnplugged").visible = false;
+            this.vLabScene.getObjectByName("wire10Unplugged").visible = false;
 
             this.serviceLocation = new VLabPositioner({
                 context: this,
@@ -167,7 +173,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             context: this,
             targetObjectName: "frameCapBolt10",
             minDistance: 0.35,
-            positionDeltas: new THREE.Vector3(-0.01, 0.01, -0.02), 
+            positionDeltas: new THREE.Vector3(-0.01, 0.01, -0.05), 
             scale: new THREE.Vector3(0.1, 0.1, 0.1),
             color: 0xfff495
         });
@@ -199,16 +205,16 @@ export default class VlabHVACBaseHeatPump extends VLab {
             color: 0xfff495
         });
 
-        this.ACDisconnectClampZoomHelper = new ZoomHelper({
+        this.ACDisconnectCaseZoomHelper = new ZoomHelper({
             context: this,
-            targetObjectName: "ACDisconnectClamp",
+            targetObjectName: "ACDisconnectCase",
             minDistance: 0.25,
-            positionDeltas: new THREE.Vector3(0.0, 0.2, 0.05), 
+            positionDeltas: new THREE.Vector3(-0.05, 0.15, 0.0), 
             scale: new THREE.Vector3(0.1, 0.1, 0.1),
             color: 0xfff495
         });
 
-        this.contactror_ZoomHelper = new ZoomHelper({
+        this.contactor_ZoomHelper = new ZoomHelper({
             context: this,
             targetObjectName: "contactror",
             minDistance: 0.25,
@@ -316,32 +322,219 @@ export default class VlabHVACBaseHeatPump extends VLab {
             });
         });
 
-        // Misc helpers
-        this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        this.heatPumpFrameCap_manipulationControl.setSize(0.5);
-        this.vLabScene.add(this.heatPumpFrameCap_manipulationControl);
-        this.heatPumpFrameCap_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameCap"));
+        /* VLab Interactors */
+        this.heatPumpFrameCapInteractor = new VLabInteractor({
+            context: this,
+            name: 'heatPumpFrameCapInteractor',
+            pos: new THREE.Vector3(0.0, 0.0, 0.0),
+            object: this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameCap'),
+            objectRelPos: new THREE.Vector3(0.35, 0.5, 0.0),
+            scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            icon: 'resources/scene-heat-pump/assets/screwdriver.png',
+            iconRotation: THREE.Math.degToRad(0.0),
+            action: this.heatPumpFrameCapTakeOutWithScrewdriver
+        });
 
-        this.heatPumpFrameServicePanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        this.heatPumpFrameServicePanel_manipulationControl.setSize(0.5);
-        this.vLabScene.add(this.heatPumpFrameServicePanel_manipulationControl);
-        this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameServicePanel"));
+        this.ACDisconnectDoorInteractor = new VLabInteractor({
+            context: this,
+            name: 'ACDisconnectDoorInteractor',
+            pos: new THREE.Vector3(0.0, 0.0, 0.0),
+            object: this.vLabScene.getObjectByName('ACDisconnectDoor'),
+            objectRelPos: new THREE.Vector3(0.0, 0.05, -0.15),
+            scale: new THREE.Vector3(0.05, 0.05, 0.05),
+            action: this.ACDisconnectDoorInteractorHandler
+        });
+
+        this.ACDisconnectClampInteractor = new VLabInteractor({
+            context: this,
+            name: 'ACDisconnectClampInteractor',
+            pos: new THREE.Vector3(0.0, 0.0, 0.0),
+            object: this.vLabScene.getObjectByName('ACDisconnectClamp'),
+            objectRelPos: new THREE.Vector3(0.0, 0.03, 0.0),
+            scale: new THREE.Vector3(0.025, 0.025, 0.025),
+            action: this.ACDisconnectClampInteractorHandler,
+            iconOpacity: 0.75,
+            deactivated: true
+        });
+
+        this.ACDisconnectClampReverseInteractor = new VLabInteractor({
+            context: this,
+            name: 'ACDisconnectClampReverseInteractor',
+            pos: new THREE.Vector3(0.0, 0.0, 0.0),
+            object: this.vLabScene.getObjectByName('ACDisconnectClamp'),
+            objectRelPos: new THREE.Vector3(0.0, -0.05, 0.0),
+            scale: new THREE.Vector3(0.025, 0.025, 0.025),
+            icon: 'resources/scene-heat-pump/assets/reverse.png',
+            iconRotation: THREE.Math.degToRad(0.0),
+            action: this.ACDisconnectClampReverseInteractorHandler,
+            deactivated: true
+        });
+
+        this.heatPumpFrameCapTakeOutInteractor = new VLabInteractor({
+            context: this,
+            name: 'heatPumpFrameCapTakeOutInteractor',
+            pos: new THREE.Vector3(0.0, 0.0, 0.0),
+            object: this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameCap'),
+            objectRelPos: new THREE.Vector3(0.0, 0.0, 0.1),
+            scale: new THREE.Vector3(0.1, 0.1, 0.1),
+            icon: 'resources/scene-heat-pump/assets/take-out.png',
+            iconRotation: THREE.Math.degToRad(0.0),
+            iconOpacity: 0.75,
+            action: this.heatPumpFrameCapTakeOutInteractorHandler,
+            deactivated: true
+        });
+
+        this.heatPumpFrameServicePanelTakeOutInteractor = new VLabInteractor({
+            context: this,
+            name: 'heatPumpFrameServicePanelTakeOutInteractor',
+            pos: new THREE.Vector3(0.0, 0.0, 0.0),
+            object: this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameServicePanel'),
+            objectRelPos: new THREE.Vector3(-0.15, 0.0, 0.2),
+            scale: new THREE.Vector3(0.1, 0.1, 0.1),
+            icon: 'resources/scene-heat-pump/assets/take-out.png',
+            iconRotation: THREE.Math.degToRad(0.0),
+            iconOpacity: 0.4,
+            action: this.heatPumpFrameServicePanelTakeOutInteractorHandler,
+            deactivated: true
+        });
+
+        // Misc helpers
+        // this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        // this.heatPumpFrameCap_manipulationControl.setSize(0.5);
+        // this.vLabScene.add(this.heatPumpFrameCap_manipulationControl);
+        // this.heatPumpFrameCap_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameCap"));
+
+        // this.heatPumpFrameServicePanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        // this.heatPumpFrameServicePanel_manipulationControl.setSize(0.5);
+        // this.vLabScene.add(this.heatPumpFrameServicePanel_manipulationControl);
+        // this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameServicePanel"));
     }
 
     onRedererFrameEvent(event) {
 
     }
 
-    frameCapBoltUnscrew(argsObj) {
-        console.log("frameCapBoltUnscrew", argsObj);
+    heatPumpFrameCapTakeOutWithScrewdriver() {
+        this.heatPumpFrameCapInteractor.deactivate();
+        this.inventory.activate();
+        this.inventory.setCurrentItem({ item: this.BoshScrewdriver.model });
+        setTimeout(() => {
+            this.inventory.takeItem();
+            setTimeout(() => {
+                this.frameCapBoltUnscrew();
+            }, 1000);
+        }, 1000)
+    }
 
-        var screwDriver = this.selectedObject;
-        var appliedToBolt = this.vLabScene.getObjectByName(argsObj["arg"]);
-        this.takeOffObject(true);
-        screwDriver.position.copy(appliedToBolt.position.clone());
-        screwDriver.position.x -= 0.015;
-        screwDriver.position.z += 0.038;
-        screwDriver.rotation.z = Math.PI / 2;
+    ACDisconnectDoorInteractorHandler() {
+        if (this.vLabScene.getObjectByName('ACDisconnectDoor').rotation.x != -Math.PI) {
+            new TWEEN.Tween(this.vLabScene.getObjectByName('ACDisconnectDoor').rotation)
+            .to({ x: -Math.PI }, 200)
+            .easing(TWEEN.Easing.Linear.None)
+            .onComplete(() => {
+                this.ACDisconnectClampInteractor.activate();
+            })
+            .start();
+        } else {
+            this.ACDisconnectClampInteractor.deactivate();
+            new TWEEN.Tween(this.vLabScene.getObjectByName('ACDisconnectDoor').rotation)
+            .to({ x: -Math.PI / 2 }, 200)
+            .easing(TWEEN.Easing.Linear.None)
+            .onComplete(() => {
+            })
+            .start();
+        }
+    }
+
+    ACDisconnectClampInteractorHandler() {
+        if (this.vLabScene.getObjectByName('ACDisconnectClamp').position.z != -0.5) {
+            this.ACDisconnectDoorInteractor.deactivate();
+            new TWEEN.Tween(this.vLabScene.getObjectByName('ACDisconnectClamp').position)
+            .to({ z: -0.5 }, 200)
+            .easing(TWEEN.Easing.Linear.None)
+            .onComplete(() => {
+                this.ACDisconnectClampReverseInteractor.activate();
+            })
+            .start();
+        } else {
+            this.ACDisconnectClampReverseInteractor.deactivate();
+            new TWEEN.Tween(this.vLabScene.getObjectByName('ACDisconnectClamp').position)
+            .to({ z: -0.747261 }, 200)
+            .easing(TWEEN.Easing.Linear.None)
+            .onComplete(() => {
+                this.ACDisconnectDoorInteractor.activate();
+            })
+            .start();
+        }
+    }
+
+    ACDisconnectClampReverseInteractorHandler() {
+        if(this.vLabScene.getObjectByName('ACDisconnectClamp').rotation.y == 0.0) {
+            new TWEEN.Tween(this.vLabScene.getObjectByName('ACDisconnectClamp').rotation)
+            .to({ y: Math.PI }, 300)
+            .easing(TWEEN.Easing.Linear.None)
+            .start();
+        } else {
+            new TWEEN.Tween(this.vLabScene.getObjectByName('ACDisconnectClamp').rotation)
+            .to({ y: 0.0 }, 300)
+            .easing(TWEEN.Easing.Linear.None)
+            .start();
+        }
+    }
+
+    heatPumpFrameCapTakeOutInteractorHandler() {
+        this.heatPumpFrameCapTakeOutInteractor.deactivate();
+        this.bryantB225B_heatPumpFrameCap = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameCap');
+
+        this.vLabScene.getObjectByName('wire6').visible = false;
+        this.vLabScene.getObjectByName('wire10').visible = false;
+        this.vLabScene.getObjectByName('controlBoardOF2Wire').visible = false;
+
+        new TWEEN.Tween(this.bryantB225B_heatPumpFrameCap.position)
+        .to({ y: 1.25 }, 300)
+        .easing(TWEEN.Easing.Linear.None)
+        .start()
+        .onComplete(() => {
+            new TWEEN.Tween(this.bryantB225B_heatPumpFrameCap.position)
+            .to({ z: 1.0 }, 300)
+            .easing(TWEEN.Easing.Linear.None)
+            .onComplete(() => {
+                this.vLabScene.getObjectByName('wire6Unplugged').visible = true;
+                this.vLabScene.getObjectByName('controlBoardOF2WireUnplugged').visible = true;
+                this.vLabScene.getObjectByName('wire10Unplugged').visible = true;
+            })
+            .start();
+            new TWEEN.Tween(this.bryantB225B_heatPumpFrameCap.rotation)
+            .to({ y: THREE.Math.degToRad(-100.0), z: -Math.PI / 2 }, 500)
+            .easing(TWEEN.Easing.Linear.None)
+            .start()
+            .onComplete(() => {
+                new TWEEN.Tween(this.bryantB225B_heatPumpFrameCap.position)
+                .to({ y: 0.433, x: -0.64 }, 350)
+                .easing(TWEEN.Easing.Linear.None)
+                .start()
+                .onComplete(() => {
+                    
+                });
+            });
+        });
+    }
+
+    heatPumpFrameServicePanelTakeOutInteractorHandler() {
+        this.heatPumpFrameServicePanelTakeOutInteractor.deactivate();
+        this.bryantB225B_heatPumpFrameServicePanel = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameServicePanel');
+        new TWEEN.Tween(this.bryantB225B_heatPumpFrameServicePanel.position)
+        .to({ x: 0.6 }, 350)
+        .easing(TWEEN.Easing.Linear.None)
+        .start()
+        new TWEEN.Tween(this.bryantB225B_heatPumpFrameServicePanel.rotation)
+        .to({ z: -Math.PI * 1.5 }, 350)
+        .easing(TWEEN.Easing.Linear.None)
+        .start();
+        new TWEEN.Tween(this.bryantB225B_heatPumpFrameServicePanel.position)
+        .to({ y: 0.005, z: -0.8 }, 350)
+        .easing(TWEEN.Easing.Linear.None)
+        .start();
     }
 
     digitalMultimeterFluke17BToControlBoard() {
@@ -349,5 +542,299 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.takeOffObject(true);
         this.setInteractiveObjects("digitalMultimeterFluke17B");
         this.digitalMultimeterFluke17B.activate();
+    }
+
+    frameCapBoltUnscrew(argsObj) {
+        this.selectedObject = this.BoshScrewdriver.model;
+        this.takeOffObject(true);
+
+        var delay = 250;
+
+        this.heatPumpFrameCapInteractor.deactivate();
+
+        var targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt10').position.clone();
+        this.BoshScrewdriver.model.position.copy(targetBoltPosition);
+        this.BoshScrewdriver.model.position.x = targetBoltPosition.x - 0.015;
+        this.BoshScrewdriver.model.position.z = targetBoltPosition.z + 0.038;
+        this.BoshScrewdriver.model.rotation.z = Math.PI / 2;
+        this.BoshScrewdriver.boschScrewdriverButtonPress();
+        setTimeout(() => {
+            this.vLabScene.getObjectByName('frameCapBolt10').visible = false;
+            this.BoshScrewdriver.boschScrewdriverButtonRelease();
+            new TWEEN.Tween(this.BoshScrewdriver.model.position)
+            .to({ z: targetBoltPosition.z + 0.1 }, delay / 2)
+            .easing(TWEEN.Easing.Linear.None)
+            .start();
+            setTimeout(() => {
+                targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt9').position.clone();
+                new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                .to({ x: targetBoltPosition.x - 0.015, y: targetBoltPosition.y, z: targetBoltPosition.z + 0.038 }, delay)
+                .easing(TWEEN.Easing.Linear.None)
+                .start()
+                .onComplete(() => {
+                    this.BoshScrewdriver.boschScrewdriverButtonPress();
+                    setTimeout(() => {
+                        this.vLabScene.getObjectByName('frameCapBolt9').visible = false;
+                        this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                        new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                        .to({ x:  targetBoltPosition.x - 0.15, z: targetBoltPosition.z + 0.15 }, delay / 2)
+                        .easing(TWEEN.Easing.Linear.None)
+                        .start();
+                        setTimeout(() => {
+                            targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt8').position.clone();
+                            new TWEEN.Tween(this.BoshScrewdriver.model.rotation)
+                            .to({ z: Math.PI }, delay)
+                            .easing(TWEEN.Easing.Linear.None)
+                            .start();
+                            new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                            .to({ x: targetBoltPosition.x - 0.038, y: targetBoltPosition.y, z: targetBoltPosition.z - 0.015 }, delay)
+                            .easing(TWEEN.Easing.Linear.None)
+                            .start()
+                            .onComplete(() => {
+                                this.BoshScrewdriver.boschScrewdriverButtonPress();
+                                setTimeout(() => {
+                                    this.vLabScene.getObjectByName('frameCapBolt8').visible = false;
+                                    this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                                    new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                    .to({ x:  targetBoltPosition.x - 0.05 }, delay / 2)
+                                    .easing(TWEEN.Easing.Linear.None)
+                                    .start();
+                                    setTimeout(() => {
+                                        targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt7').position.clone();
+                                        new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                        .to({ x: targetBoltPosition.x - 0.038, y: targetBoltPosition.y, z: targetBoltPosition.z - 0.015 }, delay)
+                                        .easing(TWEEN.Easing.Linear.None)
+                                        .start()
+                                        .onComplete(() => {
+                                            this.BoshScrewdriver.boschScrewdriverButtonPress();
+                                            setTimeout(() => {
+                                                this.vLabScene.getObjectByName('frameCapBolt7').visible = false;
+                                                this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                                                new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                .to({ x:  targetBoltPosition.x - 0.05 }, delay / 2)
+                                                .easing(TWEEN.Easing.Linear.None)
+                                                .start();
+                                                setTimeout(() => {
+                                                    targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt6').position.clone();
+                                                    new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                    .to({ x: targetBoltPosition.x - 0.038, y: targetBoltPosition.y, z: targetBoltPosition.z - 0.015 }, delay)
+                                                    .easing(TWEEN.Easing.Linear.None)
+                                                    .start()
+                                                    .onComplete(() => {
+                                                        this.BoshScrewdriver.boschScrewdriverButtonPress();
+                                                        setTimeout(() => {
+                                                            this.vLabScene.getObjectByName('frameCapBolt6').visible = false;
+                                                            this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                                                            new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                            .to({ x:  targetBoltPosition.x - 0.05 }, delay / 2)
+                                                            .easing(TWEEN.Easing.Linear.None)
+                                                            .start();
+                                                            setTimeout(() => {
+                                                                targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt5').position.clone();
+                                                                new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                .to({ x: targetBoltPosition.x - 0.038, y: targetBoltPosition.y, z: targetBoltPosition.z - 0.015 }, delay)
+                                                                .easing(TWEEN.Easing.Linear.None)
+                                                                .start()
+                                                                .onComplete(() => {
+                                                                    this.BoshScrewdriver.boschScrewdriverButtonPress();
+                                                                    setTimeout(() => {
+                                                                        this.vLabScene.getObjectByName('frameCapBolt5').visible = false;
+                                                                        this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                                                                        new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                        .to({ z:  targetBoltPosition.z - 0.15,  x:  targetBoltPosition.x - 0.1}, delay / 2)
+                                                                        .easing(TWEEN.Easing.Linear.None)
+                                                                        .start();
+                                                                        setTimeout(() => {
+                                                                            targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt4').position.clone();
+                                                                            new TWEEN.Tween(this.BoshScrewdriver.model.rotation)
+                                                                            .to({ z: Math.PI * 1.5 }, delay)
+                                                                            .easing(TWEEN.Easing.Linear.None)
+                                                                            .start();
+                                                                            new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                            .to({ x: targetBoltPosition.x + 0.015, y: targetBoltPosition.y, z: targetBoltPosition.z - 0.04 }, delay)
+                                                                            .easing(TWEEN.Easing.Linear.None)
+                                                                            .start()
+                                                                            .onComplete(() => {
+                                                                                this.BoshScrewdriver.boschScrewdriverButtonPress();
+                                                                                setTimeout(() => {
+                                                                                    this.vLabScene.getObjectByName('frameCapBolt4').visible = false;
+                                                                                    this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                                                                                    new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                    .to({ z:  targetBoltPosition.z - 0.15}, delay / 2)
+                                                                                    .easing(TWEEN.Easing.Linear.None)
+                                                                                    .start();
+                                                                                    setTimeout(() => {
+                                                                                        targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt3').position.clone();
+                                                                                        new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                        .to({ x: targetBoltPosition.x + 0.015, y: targetBoltPosition.y, z: targetBoltPosition.z - 0.04 }, delay)
+                                                                                        .easing(TWEEN.Easing.Linear.None)
+                                                                                        .start()
+                                                                                        .onComplete(() => {
+                                                                                            this.BoshScrewdriver.boschScrewdriverButtonPress();
+                                                                                            setTimeout(() => {
+                                                                                                this.vLabScene.getObjectByName('frameCapBolt3').visible = false;
+                                                                                                this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                                                                                                new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                .to({ z:  targetBoltPosition.z - 0.15}, delay / 2)
+                                                                                                .easing(TWEEN.Easing.Linear.None)
+                                                                                                .start();
+                                                                                                setTimeout(() => {
+                                                                                                    targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt2').position.clone();
+                                                                                                    new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                    .to({ x: targetBoltPosition.x + 0.015, y: targetBoltPosition.y, z: targetBoltPosition.z - 0.04 }, delay)
+                                                                                                    .easing(TWEEN.Easing.Linear.None)
+                                                                                                    .start()
+                                                                                                    .onComplete(() => {
+                                                                                                        this.BoshScrewdriver.boschScrewdriverButtonPress();
+                                                                                                        setTimeout(() => {
+                                                                                                            this.vLabScene.getObjectByName('frameCapBolt2').visible = false;
+                                                                                                            this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                                                                                                            new TWEEN.Tween(this.BoshScrewdriver.model.rotation)
+                                                                                                            .to({ z: Math.PI * 2.0 }, delay)
+                                                                                                            .easing(TWEEN.Easing.Linear.None)
+                                                                                                            .start();
+                                                                                                            new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                            .to({ z:  targetBoltPosition.z - 0.15, x:  targetBoltPosition.x + 0.3}, delay / 2)
+                                                                                                            .easing(TWEEN.Easing.Linear.None)
+                                                                                                            .start();
+                                                                                                            setTimeout(() => {
+                                                                                                                targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt1').position.clone();
+                                                                                                                new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                                .to({ x: targetBoltPosition.x + 0.04, y: targetBoltPosition.y, z: targetBoltPosition.z + 0.015 }, delay)
+                                                                                                                .easing(TWEEN.Easing.Linear.None)
+                                                                                                                .start()
+                                                                                                                .onComplete(() => {
+                                                                                                                    this.BoshScrewdriver.boschScrewdriverButtonPress();
+                                                                                                                    setTimeout(() => {
+                                                                                                                        this.vLabScene.getObjectByName('frameCapBolt1').visible = false;
+                                                                                                                        this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                                                                                                                        new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                                        .to({ x:  targetBoltPosition.x + 0.15}, delay / 2)
+                                                                                                                        .easing(TWEEN.Easing.Linear.None)
+                                                                                                                        .start();
+                                                                                                                        setTimeout(() => {
+                                                                                                                            targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt15').position.clone();
+                                                                                                                            new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                                            .to({ x: targetBoltPosition.x + 0.04, y: targetBoltPosition.y, z: targetBoltPosition.z + 0.015 }, delay)
+                                                                                                                            .easing(TWEEN.Easing.Linear.None)
+                                                                                                                            .start()
+                                                                                                                            .onComplete(() => {
+                                                                                                                                this.BoshScrewdriver.boschScrewdriverButtonPress();
+                                                                                                                                setTimeout(() => {
+                                                                                                                                    this.vLabScene.getObjectByName('frameCapBolt15').visible = false;
+                                                                                                                                    this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                                                                                                                                    new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                                                    .to({ x:  targetBoltPosition.x + 0.15}, delay / 2)
+                                                                                                                                    .easing(TWEEN.Easing.Linear.None)
+                                                                                                                                    .start();
+                                                                                                                                    setTimeout(() => {
+                                                                                                                                        targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt14').position.clone();
+                                                                                                                                        new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                                                        .to({ x: targetBoltPosition.x + 0.04, y: targetBoltPosition.y, z: targetBoltPosition.z + 0.015 }, delay)
+                                                                                                                                        .easing(TWEEN.Easing.Linear.None)
+                                                                                                                                        .start()
+                                                                                                                                        .onComplete(() => {
+                                                                                                                                            this.BoshScrewdriver.boschScrewdriverButtonPress();
+                                                                                                                                            setTimeout(() => {
+                                                                                                                                                this.vLabScene.getObjectByName('frameCapBolt14').visible = false;
+                                                                                                                                                this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                                                                                                                                                new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                                                                .to({ x:  targetBoltPosition.x + 0.15}, delay / 2)
+                                                                                                                                                .easing(TWEEN.Easing.Linear.None)
+                                                                                                                                                .start();
+                                                                                                                                                setTimeout(() => {
+                                                                                                                                                    targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt13').position.clone();
+                                                                                                                                                    new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                                                                    .to({ x: targetBoltPosition.x + 0.04, y: targetBoltPosition.y, z: targetBoltPosition.z + 0.015 }, delay)
+                                                                                                                                                    .easing(TWEEN.Easing.Linear.None)
+                                                                                                                                                    .start()
+                                                                                                                                                    .onComplete(() => {
+                                                                                                                                                        this.BoshScrewdriver.boschScrewdriverButtonPress();
+                                                                                                                                                        setTimeout(() => {
+                                                                                                                                                            this.vLabScene.getObjectByName('frameCapBolt13').visible = false;
+                                                                                                                                                            this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                                                                                                                                                            new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                                                                            .to({ x:  targetBoltPosition.x + 0.15}, delay / 2)
+                                                                                                                                                            .easing(TWEEN.Easing.Linear.None)
+                                                                                                                                                            .start();
+                                                                                                                                                            setTimeout(() => {
+                                                                                                                                                                targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt12').position.clone();
+                                                                                                                                                                new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                                                                                .to({ x: targetBoltPosition.x + 0.04, y: targetBoltPosition.y, z: targetBoltPosition.z + 0.015 }, delay)
+                                                                                                                                                                .easing(TWEEN.Easing.Linear.None)
+                                                                                                                                                                .start()
+                                                                                                                                                                .onComplete(() => {
+                                                                                                                                                                    this.BoshScrewdriver.boschScrewdriverButtonPress();
+                                                                                                                                                                    setTimeout(() => {
+                                                                                                                                                                        this.vLabScene.getObjectByName('frameCapBolt12').visible = false;
+                                                                                                                                                                        this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                                                                                                                                                                        new TWEEN.Tween(this.BoshScrewdriver.model.rotation)
+                                                                                                                                                                        .to({ z: Math.PI * 2.5 }, delay)
+                                                                                                                                                                        .easing(TWEEN.Easing.Linear.None)
+                                                                                                                                                                        .start();
+                                                                                                                                                                        new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                                                                                        .to({ x:  targetBoltPosition.x + 0.2, z:  targetBoltPosition.z + 0.2 }, delay / 2)
+                                                                                                                                                                        .easing(TWEEN.Easing.Linear.None)
+                                                                                                                                                                        .start();
+                                                                                                                                                                        setTimeout(() => {
+                                                                                                                                                                            targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt11').position.clone();
+                                                                                                                                                                            new TWEEN.Tween(this.BoshScrewdriver.model.position)
+                                                                                                                                                                            .to({ x: targetBoltPosition.x - 0.015, y: targetBoltPosition.y, z: targetBoltPosition.z + 0.038 }, delay)
+                                                                                                                                                                            .easing(TWEEN.Easing.Linear.None)
+                                                                                                                                                                            .start()
+                                                                                                                                                                            .onComplete(() => {
+                                                                                                                                                                                this.BoshScrewdriver.boschScrewdriverButtonPress();
+                                                                                                                                                                                setTimeout(() => {
+                                                                                                                                                                                    this.vLabScene.getObjectByName('frameCapBolt11').visible = false;
+                                                                                                                                                                                    this.BoshScrewdriver.boschScrewdriverButtonRelease();
+                                                                                                                                                                                    setTimeout(() => {
+                                                                                                                                                                                        this.selectedObject = this.BoshScrewdriver.model;
+                                                                                                                                                                                        this.takeObjectToInventory();
+                                                                                                                                                                                        this.heatPumpFrameCapTakeOutInteractor.activate();
+                                                                                                                                                                                        this.heatPumpFrameServicePanelTakeOutInteractor.activate();
+                                                                                                                                                                                    }, delay * 2);
+                                                                                                                                                                                }, delay);
+                                                                                                                                                                            });
+                                                                                                                                                                        }, delay);
+                                                                                                                                                                    }, delay);
+                                                                                                                                                                });
+                                                                                                                                                            }, delay);
+                                                                                                                                                        }, delay);
+                                                                                                                                                    });
+                                                                                                                                                }, delay);
+                                                                                                                                            }, delay);
+                                                                                                                                        });
+                                                                                                                                    }, delay);
+                                                                                                                                }, delay);
+                                                                                                                            });
+                                                                                                                        }, delay);
+                                                                                                                    }, delay);
+                                                                                                                });
+                                                                                                            }, delay);
+                                                                                                        }, delay);
+                                                                                                    });
+                                                                                                }, delay);
+                                                                                            }, delay);
+                                                                                        });
+                                                                                    }, delay);
+                                                                                }, delay);
+                                                                            });
+                                                                        }, delay);
+                                                                    }, delay);
+                                                                });
+                                                            }, delay);
+                                                        }, delay);
+                                                    });
+                                                }, delay);
+                                            }, delay);
+                                        });
+                                    }, delay);
+                                }, delay);
+                            });
+                        }, delay);
+                    }, delay);
+                });
+            }, delay);
+        }, delay);
     }
 }

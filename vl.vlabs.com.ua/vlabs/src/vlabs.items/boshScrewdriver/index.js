@@ -195,7 +195,7 @@ initObj {
     boschScrewdriverButtonPress() {
         if (!this.boschScrewdriverButtonPressed) {
             this.boschScrewdriverButtonPressed = true;
-            console.log("boschScrewdriverButtonPressed");
+            // console.log("boschScrewdriverButtonPressed");
             this.model.getObjectByName("boschScrewdriverButton").rotation.y = THREE.Math.degToRad(7);
             this.boschScrewdriverButtonPressSoundTime = 0;
             this.boschScrewdriverButtonPressSound.offset = 0;
@@ -207,7 +207,7 @@ initObj {
 
     boschScrewdriverButtonRelease() {
         if (this.boschScrewdriverButtonPressed) {
-            console.log("boschScrewdriverButtonReleased");
+            // console.log("boschScrewdriverButtonReleased");
             this.boschScrewdriverButtonPressed = false;
             this.boschScrewdriverButtonPressSound.stop();
             this.boschScrewdriverButtonPressSound.offset = 4.05;

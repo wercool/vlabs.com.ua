@@ -9,7 +9,7 @@ export default class VLabInteractor {
         var textureLoader = new THREE.TextureLoader();
 
         Promise.all([
-            textureLoader.load('../vlabs.assets/img/interactor.png'),
+            textureLoader.load(this.initObj.icon ? this.initObj.icon : '../vlabs.assets/img/interactor.png'),
         ])
         .then((result) => {
             this.handlerSpriteTexture = result[0];
@@ -27,8 +27,8 @@ export default class VLabInteractor {
             color: 0x54ff00,
             blending: THREE.AdditiveBlending,
             transparent: true,
-            opacity: 0.3,
-            rotation: 0.0,
+            opacity: this.initObj.iconOpacity ? this.initObj.iconOpacity : 0.3,
+            rotation: this.initObj.iconRotation ? this.initObj.iconRotation : 0.0,
             depthTest: true,
             depthWrite: true
         });
@@ -58,6 +58,11 @@ export default class VLabInteractor {
             callback: this.onVLabSceneTouchEnd,
             instance: this
         };
+
+        if (this.initObj.deactivated) {
+            this.deactivate();
+        }
+
         console.log("VLabInteractor initialized");
     }
 
