@@ -68,6 +68,16 @@ CREATE TABLE `helpclips` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `helpclip_subscriptions`;
+CREATE TABLE `helpclip_subscriptions` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) NOT NULL,
+  `helpclip_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 -- Groups
 DROP TABLE IF EXISTS `groups`;
 CREATE TABLE `groups` (

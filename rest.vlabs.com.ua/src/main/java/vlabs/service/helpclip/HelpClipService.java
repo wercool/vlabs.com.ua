@@ -1,5 +1,6 @@
-package vlabs.service;
+package vlabs.service.helpclip;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import vlabs.model.helpclip.HelpClip;
-import vlabs.repository.HelpClipRepository;
+import vlabs.repository.helpclip.HelpClipRepository;
 
 @Service
 public class HelpClipService {
@@ -25,6 +26,26 @@ public class HelpClipService {
     @PreAuthorize("hasRole('USER')")
     public List<HelpClip> findAll() throws AccessDeniedException {
         List<HelpClip> helpClips = helpClipRepository.findAll();
+        return helpClips;
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public List<HelpClip> findAllByIdList(List<Long> helpClipsIds) throws AccessDeniedException {
+        List<HelpClip> helpClips = new ArrayList<HelpClip>();
+        if (helpClipsIds.size() > 0) {
+            helpClips = helpClipRepository.findAllByIdList(helpClipsIds);
+        }
+        return helpClips;
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public List<HelpClip> findAllByNotIdList(List<Long> helpClipsIds) throws AccessDeniedException {
+        List<HelpClip> helpClips = new ArrayList<HelpClip>();
+        if (helpClipsIds.size() > 0) {
+            helpClips = helpClipRepository.findAllByNotIdList(helpClipsIds);
+        } else {
+            helpClips = helpClipRepository.findAll();
+        }
         return helpClips;
     }
 

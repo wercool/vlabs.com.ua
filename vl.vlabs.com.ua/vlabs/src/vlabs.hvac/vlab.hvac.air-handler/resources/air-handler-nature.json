@@ -1,0 +1,32 @@
+{
+    "VLabsREST": "<!--VLAB REST API URL-->",
+    "title": "HVAC Base VLab Air Handler",
+    "alias": "vlab.hvac.base.air-handler",
+    "HCAlias": "vlab.hvac.base",
+    "resolutionFactor": "1.0",
+    "sceneJSONFile": "./resources/scene-air-handler/vlab.hvac.base-air-handler.json",
+    "lang": "en",
+    "defaultSceneCameraName": "defaultCamera",
+    "cameraControls": {
+        "type": "orbit",
+        "target": {
+            "x": -1.0,
+            "y": 1.5,
+            "z": 1.0
+        },
+        "yPanDeltaUp": 0.5,
+        "yPanDeltaDown": 0.5,
+        "maxPolarAngle": 1.65,
+        "minPolarAngle": 0.75,
+        "minDistance": 0.1,
+        "maxDistance": 2.0
+    },
+    "showTHREEStats": true,
+    "bumpMaps": false,
+    "alphaMaps": true,
+    "advancedSelectionHelper": true,
+    "interactivesSuppressorsObjects": [
+        "airHandlerCabinet"
+    ],
+    "interactiveObjects": []
+}

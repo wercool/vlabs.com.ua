@@ -19,9 +19,9 @@ import vlabs.common.EmptyJsonResponse;
 import vlabs.model.eclass.EClass;
 import vlabs.model.eclass.EClassFormat;
 import vlabs.model.eclass.EClassStructure;
-import vlabs.service.EClassFormatService;
-import vlabs.service.EClassService;
-import vlabs.service.EClassStructureService;
+import vlabs.service.eclass.EClassFormatService;
+import vlabs.service.eclass.EClassService;
+import vlabs.service.eclass.EClassStructureService;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)

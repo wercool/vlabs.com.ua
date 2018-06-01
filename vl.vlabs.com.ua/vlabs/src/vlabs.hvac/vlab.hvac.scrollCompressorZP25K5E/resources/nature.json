@@ -1,0 +1,20 @@
+{
+    "INGORE_VLabsREST": "<!--VLAB REST API URL-->",
+    "title": "HelpClip Scroll Compressor ZP25K5E",
+    "alias": "vlab.hvac.scrollCompressorZP25K5E",
+    "version": "0.2.1",
+    "resolutionFactor": "1.0",
+    "lang": "en",
+    "cameraControls": {
+        "type": "orbit",
+        "minDistance": 0.1,
+        "maxDistance": 0.75,
+        "minPolarAngle": 0.0,
+        "maxPolarAngle": 3.14,
+        "enablePan": false,
+        "target": "new THREE.Vector3(0.0, 0.35, 0.0)"
+    },
+    "showTHREEStats": true,
+    "tooltips": {
+    }
+}

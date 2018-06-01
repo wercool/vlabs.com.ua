@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { HelpClipService, ToolbarLabelService } from '../../service';
-import { HelpClip, HelpClipItem } from '../../model';
+import { HelpClipService, ToolbarLabelService, UserService } from '../../service';
+import { HelpClip, HelpClipItem, HelpClipSubscription } from '../../model';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,6 +16,7 @@ export class HelpClipsMarketComponent implements OnInit {
   constructor(
     private router: Router,
     private toolbarLabelService: ToolbarLabelService,
+    private userService: UserService,
     private helpClipsService: HelpClipService
   ) { }
 
@@ -26,7 +27,7 @@ export class HelpClipsMarketComponent implements OnInit {
 
   private getAllHelpClips():void {
     this.helpClips = [];
-    this.helpClipsService.getAll()
+    this.helpClipsService.getNotSubscribed()
     .delay(250)
     .subscribe(result => {
       for (let helpClip of result) {
@@ -35,7 +36,6 @@ export class HelpClipsMarketComponent implements OnInit {
         helpClipItem.thumbnailPath = helpClipItem.path.replace('index.html', 'resources/thumbnail.jpg');
         this.helpClips.push(helpClipItem);
       }
-      this.helpClips = result;
       this.completed = true;
     },
     error => {
@@ -44,6 +44,21 @@ export class HelpClipsMarketComponent implements OnInit {
   }
 
   subscribe(helpClipId: number) {
-    console.log('helpClipId', helpClipId);
+    // console.log('helpClipId', helpClipId);
+    let helpClipSubscription: HelpClipSubscription = new HelpClipSubscription();
+    helpClipSubscription.userId = this.userService.currentUser.id;
+    helpClipSubscription.helpClipId = helpClipId;
+
+    this.completed = false;
+
+    this.helpClipsService.subscribe(helpClipSubscription)
+    .delay(250)
+    .subscribe(result => {
+      this.completed = true;
+      this.router.navigate(['/helpclips']);
+    },
+    error => {
+      this.completed = true;
+    });
   }
 }

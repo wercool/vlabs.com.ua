@@ -1,4 +1,4 @@
-import { HelpClip } from ".";
+import { HelpClip } from "./helpclip";
 
 export class HelpClipItem extends HelpClip {
     iconPath: string;

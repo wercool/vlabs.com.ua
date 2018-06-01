@@ -1,4 +1,4 @@
-package vlabs.service;
+package vlabs.service.eclass;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;

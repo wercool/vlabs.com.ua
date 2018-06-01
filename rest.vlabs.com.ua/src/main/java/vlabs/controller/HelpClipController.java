@@ -1,6 +1,8 @@
 package vlabs.controller;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -14,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vlabs.model.helpclip.HelpClip;
 import vlabs.model.helpclip.HelpClipInfo;
-import vlabs.service.HelpClipService;
+import vlabs.model.helpclip.HelpClipSubscription;
+import vlabs.service.helpclip.HelpClipService;
+import vlabs.service.helpclip.HelpClipSubscriptionService;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -22,6 +26,9 @@ public class HelpClipController
 {
     @Autowired
     private HelpClipService helpClipService;
+
+    @Autowired
+    private HelpClipSubscriptionService helpClipSubscriptionService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/helpclip/{helpClipId}")
     public HelpClip loadById(@PathVariable Long helpClipId) {
@@ -72,5 +79,30 @@ public class HelpClipController
         helpClipInfo.setGranted(true);
 
         return helpClipInfo;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/helpclip/subscribe")
+    public HelpClipSubscription setHelpClipSubscription(@RequestBody HelpClipSubscription helpClipSubscription) {
+        return helpClipSubscriptionService.addNew(helpClipSubscription);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/helpclip/not-subscribed")
+    public List<HelpClip> getNotSubscribedHelpClips() {
+        List<HelpClipSubscription> helpClipSubscriptions = helpClipSubscriptionService.findUserSubscriptions();
+        List<Long> subscribedHelpClipsIds = new ArrayList<Long>();
+        for (HelpClipSubscription helpClipSubscription : helpClipSubscriptions) {
+            subscribedHelpClipsIds.add(helpClipSubscription.getHelpClipId());
+        }
+        return helpClipService.findAllByNotIdList(subscribedHelpClipsIds);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/helpclip/subscribed")
+    public List<HelpClip> getSubscribedHelpClips() {
+        List<HelpClipSubscription> helpClipSubscriptions = helpClipSubscriptionService.findUserSubscriptions();
+        List<Long> subscribedHelpClipsIds = new ArrayList<Long>();
+        for (HelpClipSubscription helpClipSubscription : helpClipSubscriptions) {
+            subscribedHelpClipsIds.add(helpClipSubscription.getHelpClipId());
+        }
+        return helpClipService.findAllByIdList(subscribedHelpClipsIds);
     }
 }

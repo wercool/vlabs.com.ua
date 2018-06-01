@@ -1,4 +1,5 @@
 export * from './user';
-export * from './helpclip';
-export * from './helpclip.item';
+export * from './helpclip/helpclip';
+export * from './helpclip/helpclip.item';
+export * from './helpclip/helpclip.subscription';
 export * from './vlab';

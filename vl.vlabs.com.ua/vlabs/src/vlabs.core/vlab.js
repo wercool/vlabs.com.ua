@@ -106,6 +106,8 @@ export default class VLab {
         this.selectionHelper = undefined;
 
         this.takenObjects = {};
+
+        this.clock = new THREE.Clock();
     }
 
     getVesrion() {
@@ -611,6 +613,9 @@ export default class VLab {
 
             for (var renderFrameEventSubscriberName in this.webGLContainerEventsSubcribers.renderframe) {
                 var subscriber = this.webGLContainerEventsSubcribers.renderframe[renderFrameEventSubscriberName];
+                if (event === undefined) event = {};
+                event.clockDelta = this.clock.getDelta();
+                event.curTime = time;
                 subscriber.callback.call(subscriber.instance, event);
             }
 
@@ -823,20 +828,23 @@ export default class VLab {
                 if (cameraControlConfig.targetObjectName) {
                     this.defaultCameraControls.target = this.vLabScene.getObjectByName(cameraControlConfig.targetObjectName).position.clone();
                 }
-                if (this.nature.cameraControls.maxDistance) {
+                if (this.nature.cameraControls.maxDistance !== undefined) {
                     this.defaultCameraControls.maxDistance = this.nature.cameraControls.maxDistance;
                 }
-                if (this.nature.cameraControls.minDistance) {
+                if (this.nature.cameraControls.minDistance !== undefined) {
                     this.defaultCameraControls.minDistance = this.nature.cameraControls.minDistance;
                 }
-                if (this.nature.cameraControls.maxPolarAngle) {
+                if (this.nature.cameraControls.maxPolarAngle !== undefined) {
                     this.defaultCameraControls.maxPolarAngle = this.nature.cameraControls.maxPolarAngle;
                 }
-                if (this.nature.cameraControls.minPolarAngle) {
+                if (this.nature.cameraControls.minPolarAngle !== undefined) {
                     this.defaultCameraControls.minPolarAngle = this.nature.cameraControls.minPolarAngle;
                 }
-                if (this.nature.cameraControls.position0) {
+                if (this.nature.cameraControls.position0 !== undefined) {
                     this.defaultCameraControls.position0 = this.nature.cameraControls.position0;
+                }
+                if (this.nature.cameraControls.enablePan !== undefined) {
+                    this.defaultCameraControls.enablePan = this.nature.cameraControls.enablePan;
                 }
 
                 //override with cameraControlConfig from argument

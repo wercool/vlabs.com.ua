@@ -20,9 +20,11 @@ initObj {
 
         this.activated = false;
 
-        this.initObj.pos = this.initObj.pos ? this.initObj.pos : new THREE.Vector3(-0.065, -0.06, -0.11);
-        this.initObj.quaternion = new THREE.Vector4(0.4, 0.2, 1.75, -0.1);
-        this.initObj.scale = 0.075;
+        if (!this.initObj.standAloneMode) {
+            this.initObj.pos = this.initObj.pos ? this.initObj.pos : new THREE.Vector3(-0.065, -0.06, -0.11);
+            this.initObj.quaternion = new THREE.Vector4(0.4, 0.2, 1.75, -0.1);
+            this.initObj.scale = 0.075;
+        }
 
         this.interactiveElements = [];
         this.interactiveSuppressElements = [];
@@ -99,70 +101,72 @@ initObj {
 
             this.initialModelQuaternion = this.model.quaternion.clone();
 
-            this.context.nature.objectMenus[this.model.name] = {
-                "en": [{
-                        "title": "Pick",
-                        "icon": "fa fa-hand-rock",
-                        "click": "takeObject",
-                        "args": { 
-                            "resetscale": true,
-                            "resetquat": this.initialModelQuaternion,
-                            "callback": this.takenHandler
-                        }
-                    }, {
-                        "title": "To Inventory",
-                        "icon": "toolboxMenuIcon",
-                        "click": "takeObjectToInventory",
-                        "args": { 
-                            "resetscale": true,
-                            "resetquat": this.initialModelQuaternion,
-                            "callback": this.takenToInventory
-                        }
-                    }, {
-                    "title": "Info",
-                    "icon": ["fa fa-info"],
-                    "click": "showInfo",
-                    "args": {   "title": "Fluke 17B Digital Multimeter",
-                                "html": '<a href="http://www.fluke.com/fluke/inen/digital-multimeters/fluke-17b.htm?pid=75002#" style="color: #c2daff;" target="_blank"><h2>SEE MORE</h2></a>'}
-                    }, {
-                    "disabled": true
-                    }, {
-                    "disabled": true
-                    }, {
-                    "disabled": true
-                    }],
-                "ru": [{
-                        "title": "Взять",
-                        "icon": "fa fa-hand-rock",
-                        "click": "takeObject",
-                        "args": { 
-                            "resetscale": true,
-                            "resetquat": this.initialModelQuaternion,
-                            "callback": this.takenHandler
-                        }
-                    }, {
-                        "title": "В Инвенторию",
-                        "icon": "toolboxMenuIcon",
-                        "click": "takeObjectToInventory",
-                        "args": { 
-                            "resetscale": true,
-                            "resetquat": this.initialModelQuaternion,
-                            "callback": this.takenToInventory
-                        }
-                    }, {
-                    "title": "Info",
-                    "icon": ["fa fa-info"],
-                    "click": "showInfo",
-                    "args": {   "title": "Fluke 17B Цифровой Мультиметр",
-                    "html": '<a href="http://www.fluke.com/fluke/inen/digital-multimeters/fluke-17b.htm?pid=75002#" style="color: #c2daff;" target="_blank"><h2>Детальная информация</h2></a>'}
-                    }, {
-                    "disabled": true
-                    }, {
-                    "disabled": true
-                    }, {
-                    "disabled": true
-                    }],
-            };
+            if (this.context.nature.objectMenus) {
+                this.context.nature.objectMenus[this.model.name] = {
+                    "en": [{
+                            "title": "Pick",
+                            "icon": "fa fa-hand-rock",
+                            "click": "takeObject",
+                            "args": { 
+                                "resetscale": true,
+                                "resetquat": this.initialModelQuaternion,
+                                "callback": this.takenHandler
+                            }
+                        }, {
+                            "title": "To Inventory",
+                            "icon": "toolboxMenuIcon",
+                            "click": "takeObjectToInventory",
+                            "args": { 
+                                "resetscale": true,
+                                "resetquat": this.initialModelQuaternion,
+                                "callback": this.takenToInventory
+                            }
+                        }, {
+                        "title": "Info",
+                        "icon": ["fa fa-info"],
+                        "click": "showInfo",
+                        "args": {   "title": "Fluke 17B Digital Multimeter",
+                                    "html": '<a href="http://www.fluke.com/fluke/inen/digital-multimeters/fluke-17b.htm?pid=75002#" style="color: #c2daff;" target="_blank"><h2>SEE MORE</h2></a>'}
+                        }, {
+                        "disabled": true
+                        }, {
+                        "disabled": true
+                        }, {
+                        "disabled": true
+                        }],
+                    "ru": [{
+                            "title": "Взять",
+                            "icon": "fa fa-hand-rock",
+                            "click": "takeObject",
+                            "args": { 
+                                "resetscale": true,
+                                "resetquat": this.initialModelQuaternion,
+                                "callback": this.takenHandler
+                            }
+                        }, {
+                            "title": "В Инвенторию",
+                            "icon": "toolboxMenuIcon",
+                            "click": "takeObjectToInventory",
+                            "args": { 
+                                "resetscale": true,
+                                "resetquat": this.initialModelQuaternion,
+                                "callback": this.takenToInventory
+                            }
+                        }, {
+                        "title": "Info",
+                        "icon": ["fa fa-info"],
+                        "click": "showInfo",
+                        "args": {   "title": "Fluke 17B Цифровой Мультиметр",
+                        "html": '<a href="http://www.fluke.com/fluke/inen/digital-multimeters/fluke-17b.htm?pid=75002#" style="color: #c2daff;" target="_blank"><h2>Детальная информация</h2></a>'}
+                        }, {
+                        "disabled": true
+                        }, {
+                        "disabled": true
+                        }, {
+                        "disabled": true
+                        }],
+                };
+            }
 
 
             this.fluke17BCurrentState = {
@@ -287,7 +291,7 @@ initObj {
                 console.log("DigitalMultimeterFluke17B added to Inventory");
                 return;
             } else {
-                this.activate();
+                this.activate(true);
             }
 
         }).catch(error => {
@@ -305,7 +309,13 @@ initObj {
         if (this.initObj.scale) {
             this.model.scale.multiplyScalar(this.initObj.scale);
         }
-        this.context.defaultCamera.add(this.model);
+
+        if (this.initObj.standAloneMode) {
+            this.context.vLabScene.add(this.model);
+        } else {
+            this.context.defaultCamera.add(this.model);
+        }
+
         this.activated = true;
         this.onVLabSceneWebGLContainerResized();
     }
@@ -415,7 +425,7 @@ initObj {
     }
 
     onVLabRedererFrameEvent(event) {
-        this.animate();
+        if (this.activated) this.animate();
     }
 
     animate(time) {
@@ -625,7 +635,7 @@ initObj {
     }
 
     modelPressed() {
-        if (!this.activated) return;
+        if (!this.activated || this.initObj.standAloneMode) return;
         this.context.selectedObject = this.model;
         this.context.showObjectSpecificCircularMenu({'positionDeltas': { x: 0.0, y: -this.context.webGLContainer.clientHeight / 2 }});
         var self = this;

@@ -19,12 +19,14 @@ export default class ScrollCompressorZP25K5E {
 
        this.initialized = false;
 
-       this.initObj.detailedView.addVLabItem(this);
-       this.parent = this.initObj.detailedView;
+        this.assetsReady = false;
 
-       this.assetsReady = false;
-
-    //    this.initialize();
+       if (this.initObj.detailedView) {
+        this.initObj.detailedView.addVLabItem(this);
+        this.parent = this.initObj.detailedView;
+       } else {
+           return this.initialize();
+       }
     }
 
     initialize() {
@@ -66,6 +68,27 @@ export default class ScrollCompressorZP25K5E {
                 } else {
                     this.context.vLabScene.add(this.model);
                     this.parent = this.context;
+
+                    if (this.parent.scene.animations) {
+                        this.parent.scene.animations.push(scene.animations[0]);
+                    } else {
+                        this.parent.scene.animations = scene.animations;
+                    }
+                    this.animationClip = this.parent.scene.animations[0];
+                    this.animationAnimationMixer = new THREE.AnimationMixer(this.parent.scene);
+                    this.animationAction = this.animationAnimationMixer.clipAction(this.animationClip);
+                    this.animationAction.timeScale = 100.0;
+
+                    this.scrollCompressorSound = new THREE.Audio(this.parent.defaultAudioListener);
+                    var audioLoader = new THREE.AudioLoader();
+                    audioLoader.load('../vlabs.items/hvac/scrollCompressorZP25K5E/sounds/sound1.mp3', function(buffer) {
+                        self.scrollCompressorSound.setBuffer(buffer);
+                        self.scrollCompressorSound.setLoop(true);
+                        self.scrollCompressorSound.setVolume(0.05);
+                        self.scrollCompressorSound.play();
+                        self.animationAction.play();
+                        self.assetsReady = true;
+                    });
                 }
 
                 resolve(this);
@@ -73,7 +96,7 @@ export default class ScrollCompressorZP25K5E {
                 if (this.pos) {
                     this.model.position.copy(this.pos);
                 } else {
-                    console.error("Control Board CEBD430433is not set");
+                    console.error("ScrollCompressorZP25K5E not set");
                 }
 
             }).catch(error => {
@@ -310,6 +333,25 @@ export default class ScrollCompressorZP25K5E {
             this.scrollCompressorZP25K5ExplodedViewSprite.visible = true;
             this.accessableInteractiveELements.push(this.scrollCompressorZP25K5ExplodedViewSprite);
         });
+    }
+
+    addVLabEventListeners() {
+        //VLab events subscribers
+        this.context.webGLContainerEventsSubcribers.mouseup[this.name + "vLabSceneMouseUp"] = 
+        {
+            callback: this.onReleaseGesture,
+            instance: this
+        };
+        this.context.webGLContainerEventsSubcribers.touchend[this.name + "vLabSceneTouchEnd"] = 
+        {
+            callback: this.onReleaseGesture,
+            instance: this
+        };
+        this.context.webGLContainerEventsSubcribers.renderframe[this.name + "vLabSceneRenderFrame"] = 
+        {
+            callback: this.onDetailedViewRenderFrameEvent,
+            instance: this
+        };
     }
 
     onReleaseGesture() {

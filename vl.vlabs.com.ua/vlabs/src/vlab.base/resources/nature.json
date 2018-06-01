@@ -10,7 +10,8 @@
     "cameraControls": {
         "type": "orbit",
         "targetObjectName": "Cube",
-        "maxDistance": 5.0
+        "maxDistance": 5.0,
+        "enablePan": true
     },
     "showTHREEStats": true,
     "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001", "Suzanne"],

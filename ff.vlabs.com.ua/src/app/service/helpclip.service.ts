@@ -5,7 +5,7 @@ import { ApiService } from './api.service';
 import { HTTPStatusCodes } from '../shared/lib/http-status-codes'
 
 import { 
-   HelpClip
+   HelpClip, HelpClipSubscription
 } from '../model/index';
 
 @Injectable()
@@ -22,5 +22,14 @@ export class HelpClipService {
   }
   getAll() {
     return this.apiService.get(this.apiService.helpclipsURL);
+  }
+  subscribe(helpClipSubscription) {
+    return this.apiService.post(this.apiService.helpclipSubscribeURL, helpClipSubscription);
+  }
+  getNotSubscribed() {
+    return this.apiService.get(this.apiService.helpclipsNotSubscribedURL);
+  }
+  getSubscribed() {
+    return this.apiService.get(this.apiService.helpclipsSubscribedURL);
   }
 }

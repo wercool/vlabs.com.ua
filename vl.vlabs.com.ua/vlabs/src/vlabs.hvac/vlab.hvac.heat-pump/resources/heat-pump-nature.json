@@ -1,0 +1,64 @@
+{
+    "VLabsREST": "<!--VLAB REST API URL-->",
+    "title": "HVAC Base VLab Heat Pump",
+    "alias": "vlab.hvac.base.heat-pump",
+    "HCAlias": "vlab.hvac.base",
+    "resolutionFactor": "1.0",
+    "sceneJSONFile": "./resources/scene-heat-pump/vlab.hvac.base-heat-pump.json",
+    "lang": "en",
+    "defaultSceneCameraName": "defaultCamera",
+    "cameraControls": {
+        "allowedSpaceMapObjectName": "allowedSpacePlane",
+        "type": "orbit",
+        "target": {
+            "x": 0.5,
+            "y": 1.0,
+            "z": 0.0
+        },
+        "yPanDeltaUp": 0.5,
+        "yPanDeltaDown": 0.75,
+        "minPolarAngle": 0.25,
+        "maxPolarAngle": 1.35
+    },
+    "showTHREEStats": true,
+    "useShadows": false,
+    "shadows": {
+        "cast": ["bryantB225B_heatPumpFrameBottom", "bryantB225B_heatPumpFrontVentPanel", "bryantB225B_heatPumpFrame", "bryantB225B_heatPumpFrameCap", "bryantB225B_heatPumpFanGrid"],
+        "receive": ["houseWall", "ground"]
+    },
+    "bumpMaps": false,
+    "alphaMaps": true,
+    "advancedSelectionHelper": true,
+    "interactivesSuppressorsObjects": [
+        "bryantB225B_heatPumpFrontVentPanel", 
+        "bryantB225B_heatPumpLeftVentPanel",
+        "bryantB225B_heatPumpFrame",
+        "bryantB225B_heatPumpFanGrid",
+        "bryantB225B_heatPumpFrameCap",
+        "bryantB225B_heatPumpFrameServicePanel",
+        "bryantB225B_heatPumpFrameElectricalPanel",
+        "bryantB225B_heatPumpFrameServicePanel"
+    ],
+    "interactiveObjects": [],
+    "responsiveObjects": [
+        "frameCapBolt10",
+        "controlBoard"
+    ],
+    "tooltips": {
+        "frameCapBolt10": {
+            "en": "Heat Pump hull cap screw #10",
+            "timesToShow": 10
+        }
+    },
+    "objectMenus": {},
+    "interactions": {
+        "BoshScrewdriver|frameCapBolt10": {
+            "applyFn": "frameCapBoltUnscrew",
+            "applyFnArgs": {"arg": "frameCapBolt10"}
+        },
+        "digitalMultimeterFluke17B|controlBoard": {
+            "applyFn": "digitalMultimeterFluke17BToControlBoard",
+            "applyFnArgs": {}
+        }
+    }
+}
