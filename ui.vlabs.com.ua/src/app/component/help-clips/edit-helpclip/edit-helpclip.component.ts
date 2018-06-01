@@ -54,8 +54,8 @@ export class EditHelpClipComponent implements OnInit {
         this.completed = false;
         this.generalHelpClipFormGroup = this.formBuilder.group({
             title: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
-            alias: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(32)])],
-            path: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(1024)])],
+            alias: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(1024)])],
+            path: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(2048)])],
             shortdesc: ['', Validators.compose([Validators.maxLength(1024)])],
             description: ['', Validators.compose([Validators.maxLength(2048)])],
         });

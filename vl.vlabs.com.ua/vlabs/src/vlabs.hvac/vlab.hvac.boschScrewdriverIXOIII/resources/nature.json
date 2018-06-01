@@ -1,0 +1,19 @@
+{
+    "INGORE_VLabsREST": "<!--VLAB REST API URL-->",
+    "title": "HelpClip Bosch IXO III 3.6-Volt Multipurpose Screwdriver",
+    "alias": "vlab.hvac.boschScrewdriverIXOIII",
+    "version": "0.2.1",
+    "resolutionFactor": "1.0",
+    "lang": "en",
+    "cameraControls": {
+        "type": "orbit",
+        "minDistance": 0.1,
+        "maxDistance": 0.5,
+        "minPolarAngle": 0.0,
+        "maxPolarAngle": 3.14,
+        "enablePan": false
+    },
+    "showTHREEStats": true,
+    "tooltips": {
+    }
+}

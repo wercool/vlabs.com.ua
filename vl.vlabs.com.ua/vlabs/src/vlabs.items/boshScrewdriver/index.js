@@ -58,30 +58,31 @@ initObj {
             this.boschScrewdriverButtonPressSoundTime = 0;
 
 
-
-            this.context.nature.objectMenus[this.model.name] = {
-                "en": [{
-                    "title": "Pick",
-                    "icon": "fa fa-hand-rock",
-                    "click": "takeObject"
-                    },{
-                        "title": "To Inventory",
-                        "icon": "toolboxMenuIcon",
-                        "click": "takeObjectToInventory"
-                    }, {
-                    "title": "Info",
-                    "icon": ["fa fa-info"],
-                    "click": "showInfo",
-                    "args": {   "title": "Bosch IXO III 3.6-Volt Multipurpose Screwdriver",
-                                "html": '<div style="text-align: center; padding-top: 5pt;"><iframe width="90%" height="300" src="https://www.youtube.com/embed/VXADzvSTosc" frameborder="0" encrypted-media" allowfullscreen></iframe></div>'}
-                    }, {
-                    "disabled": true
-                    }, {
-                    "disabled": true
-                    }, {
-                    "disabled": true
-                    }],
-            };
+            if (this.context.nature.objectMenus) {
+                this.context.nature.objectMenus[this.model.name] = {
+                    "en": [{
+                        "title": "Pick",
+                        "icon": "fa fa-hand-rock",
+                        "click": "takeObject"
+                        },{
+                            "title": "To Inventory",
+                            "icon": "toolboxMenuIcon",
+                            "click": "takeObjectToInventory"
+                        }, {
+                        "title": "Info",
+                        "icon": ["fa fa-info"],
+                        "click": "showInfo",
+                        "args": {   "title": "Bosch IXO III 3.6-Volt Multipurpose Screwdriver",
+                                    "html": '<div style="text-align: center; padding-top: 5pt;"><iframe width="90%" height="300" src="https://www.youtube.com/embed/VXADzvSTosc" frameborder="0" encrypted-media" allowfullscreen></iframe></div>'}
+                        }, {
+                        "disabled": true
+                        }, {
+                        "disabled": true
+                        }, {
+                        "disabled": true
+                        }],
+                };
+            }
 
             if (this.initObj.inventory) {
                 this.initObj.inventory.addItem({

@@ -61,7 +61,7 @@ DROP TABLE IF EXISTS `helpclips`;
 CREATE TABLE `helpclips` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
-  `alias` varchar(255) DEFAULT NULL,
+  `alias` varchar(1024) DEFAULT NULL,
   `path` varchar(2048) DEFAULT NULL,
   `shortdesc` varchar(1024) DEFAULT NULL,
   `description` varchar(2048) DEFAULT NULL,
