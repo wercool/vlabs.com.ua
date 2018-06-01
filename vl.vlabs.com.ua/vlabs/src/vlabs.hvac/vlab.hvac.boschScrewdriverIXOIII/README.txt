@@ -1,0 +1,1 @@
+The IXO is more than just a pretty face--this small and handy tool can take on a wide range of everyday screw driving tasks around the home.

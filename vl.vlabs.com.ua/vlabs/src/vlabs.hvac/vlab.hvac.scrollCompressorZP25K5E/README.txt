@@ -1,0 +1,1 @@
+ZP25K5E-PFV-830 is a Copeland Scroll™ Compressor that is Single phase with a voltage of 208/230 VAC. The compressor is designed to work in units that are compatible with a BTU Output of 25,200 and use R-410a refrigerant.

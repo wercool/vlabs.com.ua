@@ -1,0 +1,1 @@
+The Bernzomatic TS8000BT High Intensity Torch Head is the hottest buring torch in the Bernzomatic line.
