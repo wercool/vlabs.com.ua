@@ -203,6 +203,81 @@ export default class VlabHVACBaseAirHandler extends VLab {
         this.lampHaloSprite4.position.copy(new THREE.Vector3(-2.55, 2.785, 1.0));
         this.vLabScene.add(this.lampHaloSprite4);
 
+
+        // Misc helpers
+        this.airHandlerCabinetUpperPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        this.airHandlerCabinetUpperPanel_manipulationControl.setSize(0.5);
+        this.vLabScene.add(this.airHandlerCabinetUpperPanel_manipulationControl);
+        this.airHandlerCabinetUpperPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetUpperPanel"));
+        setTimeout(()=>{ this.airHandlerCabinetUpperPanel_manipulationControl.update(); }, 500);
+
+        this.airHandlerCabinetBottomPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        this.airHandlerCabinetBottomPanel_manipulationControl.setSize(0.5);
+        this.vLabScene.add(this.airHandlerCabinetBottomPanel_manipulationControl);
+        this.airHandlerCabinetBottomPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetBottomPanel"));
+        setTimeout(()=>{ this.airHandlerCabinetBottomPanel_manipulationControl.update(); }, 500);
+
+
+        //Zoom helpers
+        this.evaporatorACoilZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "evaporatorACoil",
+            minDistance: 0.35,
+            positionDeltas: new THREE.Vector3(0.4, 0.15, 0.2), 
+            scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            color: 0xfff495
+        });
+
+        this.carrier332368TXVZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "carrier332368TXV",
+            minDistance: 0.1,
+            positionDeltas: new THREE.Vector3(0.0, 0.05, -0.05), 
+            scale: new THREE.Vector3(0.05, 0.05, 0.05),
+            color: 0xfff495,
+            opacity: 0.85
+        });
+
+        this.volatageTransformerHT01CN236ZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "volatageTransformerHT01CN236",
+            minDistance: 0.1,
+            positionDeltas: new THREE.Vector3(0.07, -0.05, 0.0), 
+            scale: new THREE.Vector3(0.1, 0.1, 0.1),
+            color: 0xfff495,
+            opacity: 0.85
+        });
+
+        this.controlBoardHK61EA005ZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "controlBoardHK61EA005",
+            minDistance: 0.05,
+            positionDeltas: new THREE.Vector3(0.0, 0.0, 0.0), 
+            scale: new THREE.Vector3(0.05, 0.05, 0.05),
+            color: 0xfff495,
+            opacity: 0.65
+        });
+
+        this.fanCoilElectricHeaterKFCEH0901N10InstallationPlateZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "fanCoilElectricHeaterKFCEH0901N10InstallationPlate",
+            minDistance: 0.05,
+            positionDeltas: new THREE.Vector3(0.0, 0.01, 0.0),
+            scale: new THREE.Vector3(0.05, 0.05, 0.05),
+            color: 0xfff495,
+            opacity: 0.65
+        });
+
+        this.blowerWheelHousingZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "blowerWheelHousing",
+            minDistance: 0.1,
+            positionDeltas: new THREE.Vector3(0.2, 0.0, 0.0),
+            scale: new THREE.Vector3(0.085, 0.085, 0.085),
+            color: 0xfff495,
+            opacity: 0.65
+        });
+
         this.initializeActions();
     }
 
