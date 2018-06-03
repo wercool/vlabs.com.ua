@@ -39,6 +39,7 @@ export default class VLab {
 
         this.initObj.naturePassphrase = '<!--VLAB NATURE PASSPHRASE-->';
         this.initObj.authRequired = '<!--VLAB AUTH REQUIRED-->';
+        this.initObj.prodMode = '<!--VLAB PROD MODE-->';
 
         this.name = this.initObj.name;
         this.initialized = false;
@@ -298,6 +299,7 @@ export default class VLab {
     }
 
     setWebGLRenderer() {
+        console.log('THREE.WebGLRenderer', THREE.REVISION);
         this.webGLContainer.style.display = 'none';
 
         window.onresize = this.resiezeWebGLContainer.bind(this);
@@ -312,9 +314,11 @@ export default class VLab {
 
         this.webGLRenderer.setClearColor(this.initObj.webGLRendererClearColor ? this.initObj.webGLRendererClearColor : 0x000000);
 
-        // // prevent logging
-        // this.webGLRenderer.context.getShaderInfoLog = function () { return '' };
-        // this.webGLRenderer.context.getProgramInfoLog = function () { return '' };
+        // prevent logging
+        if (this.initObj.prodMode === 'true') {
+            this.webGLRenderer.context.getShaderInfoLog = function () { return '' };
+            this.webGLRenderer.context.getProgramInfoLog = function () { return '' };
+        }
 
         this.webGLContainer.appendChild(this.webGLRenderer.domElement);
         this.webGLRenderer.domElement.addEventListener('contextmenu', function(event) {
@@ -613,7 +617,7 @@ export default class VLab {
 
             for (var renderFrameEventSubscriberName in this.webGLContainerEventsSubcribers.renderframe) {
                 var subscriber = this.webGLContainerEventsSubcribers.renderframe[renderFrameEventSubscriberName];
-                if (event === undefined) event = {};
+                var event = {};
                 event.clockDelta = this.clock.getDelta();
                 event.curTime = time;
                 subscriber.callback.call(subscriber.instance, event);
@@ -1362,7 +1366,7 @@ export default class VLab {
 
         for (var resetViewSubscriberName in this.webGLContainerEventsSubcribers.resetview) {
             var subscriber = this.webGLContainerEventsSubcribers.resetview[resetViewSubscriberName];
-            subscriber.callback.call(subscriber.instance, event);
+            subscriber.callback.call(subscriber.instance, {});
         }
 
         this.zoomViewArea.style.visibility = 'hidden';
@@ -1558,6 +1562,7 @@ export default class VLab {
 
         for (var takenObjectName in this.webGLContainerEventsSubcribers.takenobjectapplication) {
             var subscriber = this.webGLContainerEventsSubcribers.takenobjectapplication[takenObjectName];
+            var event = {};
             subscriber.callback.call(subscriber.instance, event);
         }
     }

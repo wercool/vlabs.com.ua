@@ -1,6 +1,6 @@
 {
   "name": "vlabs",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "VLabs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -43,7 +43,7 @@
     "progressbar.js": "^1.0.1",
     "request": "^2.85.0",
     "stats.js": "^0.17.0",
-    "three": "^0.92.0",
+    "three": "^0.93.0",
     "three-orbit-controls": "^82.1.0",
     "three-particle-fire": "0.0.0",
     "three-pointerlock": "0.0.2",

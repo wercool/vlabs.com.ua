@@ -33,6 +33,7 @@ gulp.task('build', ['vlab-nature-process'], function () {
     .pipe(replace('<!--VLAB NATURE PASSPHRASE-->', (!initObj.naturePlain) ? initObj.settings.VLabNaturePassPhrase : ''))
     .pipe(replace('<!--VLAB AUTH REQUIRED-->', process.argv.indexOf('--noauth') == -1 ? 'true' : 'false'))
     .pipe(replace('<!--VLAB COLLABORATOR HOST-->', initObj.settings.VLabsCollaboratorHost))
+    .pipe(replace('<!--VLAB PROD MODE-->', initObj.mode == 'prod' ? 'true' : 'false'))
     .pipe(gulpif(initObj.mode != 'prod', 
         sourcemaps.init({loadMaps: true})))
     .pipe(gulpif(initObj.mode != 'prod', 

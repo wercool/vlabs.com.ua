@@ -1116,7 +1116,7 @@ THREE.TransformControls = function ( camera, domElement ) {
 
     _dragging = false;
 
-    if ( event instanceof TouchEvent ) {
+    if ( window.TouchEvent && event instanceof TouchEvent ) {
 
       // Force "rollover"
 
