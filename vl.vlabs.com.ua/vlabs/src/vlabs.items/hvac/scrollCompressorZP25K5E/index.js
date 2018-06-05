@@ -333,6 +333,34 @@ export default class ScrollCompressorZP25K5E {
             this.scrollCompressorZP25K5ExplodedViewSprite.visible = true;
             this.accessableInteractiveELements.push(this.scrollCompressorZP25K5ExplodedViewSprite);
         });
+
+        /* Elements with tooltips */
+        this.scrollCompressorZP25K5EStator = this.model.parent.getObjectByName('scrollCompressorZP25K5EStator');
+        this.scrollCompressorZP25K5EStator.mousePressHandler = function() {
+            if (this.initObj.detailedView) {
+                this.initObj.detailedView.setSelectedObject(this.scrollCompressorZP25K5EStator);
+            }
+        };
+        this.scrollCompressorZP25K5EStator.userData['tooltip'] = '<div style="padding: 5px;"><h3>Induction motor stator</h3><img src="../vlabs.items/hvac/scrollCompressorZP25K5E/assets/stator.jpg"></div>';
+        this.accessableInteractiveELements.push(this.scrollCompressorZP25K5EStator);
+
+        this.scrollCompressorZP25K5ERotor = this.model.parent.getObjectByName('scrollCompressorZP25K5ERotor');
+        this.scrollCompressorZP25K5ERotor.mousePressHandler = function() {
+            if (this.initObj.detailedView) {
+                this.initObj.detailedView.setSelectedObject(this.scrollCompressorZP25K5ERotor);
+            }
+        };
+        this.scrollCompressorZP25K5ERotor.userData['tooltip'] = '<div style="padding: 5px;"><h3>Induction motor rotor</h3><img src="../vlabs.items/hvac/scrollCompressorZP25K5E/assets/rotor.gif"></div>';
+        this.accessableInteractiveELements.push(this.scrollCompressorZP25K5ERotor);
+
+        this.scrollCompressorZP25K5EMovingScroll = this.model.parent.getObjectByName('scrollCompressorZP25K5EMovingScroll');
+        this.scrollCompressorZP25K5EMovingScroll.mousePressHandler = function() {
+            if (this.initObj.detailedView) {
+                this.initObj.detailedView.setSelectedObject(this.scrollCompressorZP25K5EMovingScroll);
+            }
+        };
+        this.scrollCompressorZP25K5EMovingScroll.userData['tooltip'] = '<div style="padding: 5px;"><h3>Movable Scroll</h3></div>';
+        this.accessableInteractiveELements.push(this.scrollCompressorZP25K5EMovingScroll);
     }
 
     addVLabEventListeners() {
@@ -355,6 +383,9 @@ export default class ScrollCompressorZP25K5E {
     }
 
     onReleaseGesture() {
+        if (this.initObj.detailedView) {
+            this.initObj.detailedView.clearSelection();
+        }
         this.parent.iteractionRaycaster.setFromCamera(this.parent.mouseCoordsRaycaster, this.parent.defaultCamera);
         var interactionObjectIntersects = this.parent.iteractionRaycaster.intersectObjects(this.accessableInteractiveELements);
         if (interactionObjectIntersects.length > 0) {

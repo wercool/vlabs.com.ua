@@ -29,6 +29,7 @@
     "bumpMaps": false,
     "alphaMaps": true,
     "advancedSelectionHelper": true,
+    "detailedViewEffectComposer": true,
     "interactivesSuppressorsObjects": [
         "bryantB225B_heatPumpFrontVentPanel", 
         "bryantB225B_heatPumpLeftVentPanel",

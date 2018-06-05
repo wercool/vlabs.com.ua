@@ -18,6 +18,8 @@ initObj {
        this.context = initObj.context;
        this.pos = initObj.pos;
 
+       this.name = this.initObj.name;
+
        this.interactiveElements = [];
        this.interactiveSuppressElements = [];
 
@@ -292,8 +294,9 @@ initObj {
         this.prevTime = time;
     }
 
-    onVLabSceneTakenObjectAppliedEvent() {
-        console.log('onVLabSceneTakenObjectAppliedEvent');
-        this.model.scale.x = -1.0;
+    onVLabSceneTakenObjectAppliedEvent(event) {
+        if (event.takenObject.name == this.model.name) {
+            this.model.scale.x = -1.0;
+        }
     }
 }

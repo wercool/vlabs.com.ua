@@ -739,8 +739,6 @@ export default class VLab {
                 var object = this.vLabScene.getObjectByName(interactiveObjectName);
                 if (object) {
                     this.interactiveObjects.push(object);
-                } else {
-                    console.error('setInteractiveObjects: No Mesh found by Interactive Object name ' + interactiveObjectName);
                 }
             }
         }
@@ -1205,10 +1203,8 @@ export default class VLab {
               opacity: 0.75,
               alphaMap: selectionAlphaTexture,
               depthTest: false,
-              depthWrite: false
+              depthWrite: true
             });
-            sphereMat.depthTest = false;
-            sphereMat.depthWrite = false;
             var selectionHelper = new THREE.Mesh(sphereGeom, sphereMat);
             selectionHelper.position.copy(interactiveObject.geometry.boundingSphere.center.clone());
             interactiveObject.add(selectionHelper);
@@ -1418,21 +1414,21 @@ export default class VLab {
             if (this.selectedObject.takenRotation) {
                 this.selectedObject.takenRotation.stop();
             }
-            this.selectedObject.traverse(function(node) {
-                if (node.type === "Mesh") {
-                    if (node.name !== self.selectedObject.name + "_SELECTION") {
-                        if (node.material.type === "MeshPhongMaterial") {
-                            node.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
-                        }
-                        if (node.material.transparent) {
-                            node.material.transparent = false;
-                            node.material.opacity = 1.0;
-                        }
-                    } else {
-                        node.visible = false;
-                    }
-                }
-            });
+            // this.selectedObject.traverse(function(node) {
+            //     if (node.type === "Mesh") {
+            //         if (node.name !== self.selectedObject.name + "_SELECTION") {
+            //             if (node.material.type === "MeshPhongMaterial") {
+            //                 node.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+            //             }
+            //             if (node.material.transparent) {
+            //                 node.material.transparent = false;
+            //                 node.material.opacity = 1.0;
+            //             }
+            //         } else {
+            //             node.visible = false;
+            //         }
+            //     }
+            // });
 
             this.selectedObject.rotationX = 0.0;
             this.selectedObject.rotationY = 0.0;
@@ -1481,17 +1477,17 @@ export default class VLab {
             }
         }
 
-        this.selectedObject.traverse(function(node) {
-            if (node.type === "Mesh") {
-                // if (node.material.type === "MeshPhongMaterial") {
-                //     node.material.emissive = new THREE.Color(0.5, 0.5, 0.5);
-                // }
-                if (!node.material.transparent) {
-                    node.material.transparent = true;
-                    node.material.opacity = 0.85;
-                }
-            }
-        });
+        // this.selectedObject.traverse(function(node) {
+        //     if (node.type === "Mesh") {
+        //         // if (node.material.type === "MeshPhongMaterial") {
+        //         //     node.material.emissive = new THREE.Color(0.5, 0.5, 0.5);
+        //         // }
+        //         if (!node.material.transparent) {
+        //             node.material.transparent = true;
+        //             node.material.opacity = 0.85;
+        //         }
+        //     }
+        // });
         var cameraAspectOffset = 0.075 / this.defaultCamera.aspect;
         this.selectedObject.beforeTakenRotation = this.selectedObject.rotation.clone();
         this.selectedObject.rotation.x = -0.75;
@@ -1534,19 +1530,19 @@ export default class VLab {
         }
         var self = this;
         this.selectedObject.takenRotation.stop();
-        this.selectedObject.traverse(function(node) {
-            if (node.type === "Mesh") {
-                if (node.name !== self.selectedObject.name + "_SELECTION") {
-                    // if (node.material.type === "MeshPhongMaterial") {
-                    //     node.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
-                    // }
-                    if (node.material.transparent) {
-                        node.material.transparent = false;
-                        node.material.opacity = 1.0;
-                    }
-                }
-            }
-        });
+        // this.selectedObject.traverse(function(node) {
+        //     if (node.type === "Mesh") {
+        //         if (node.name !== self.selectedObject.name + "_SELECTION") {
+        //             // if (node.material.type === "MeshPhongMaterial") {
+        //             //     node.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+        //             // }
+        //             if (node.material.transparent) {
+        //                 node.material.transparent = false;
+        //                 node.material.opacity = 1.0;
+        //             }
+        //         }
+        //     }
+        // });
         this.defaultCamera.remove(this.selectedObject);
         this.takenObjects[this.selectedObject.name] = undefined;
         delete this.takenObjects[this.selectedObject.name];
@@ -1557,12 +1553,14 @@ export default class VLab {
         } else {
             this.selectedObject.rotation.set(0.0, 0.0, 0.0);
         }
+        var takenObject = this.selectedObject;
         this.vLabScene.add(this.selectedObject);
         this.resetAllSelections();
 
         for (var takenObjectName in this.webGLContainerEventsSubcribers.takenobjectapplication) {
             var subscriber = this.webGLContainerEventsSubcribers.takenobjectapplication[takenObjectName];
             var event = {};
+            event.takenObject = takenObject;
             subscriber.callback.call(subscriber.instance, event);
         }
     }

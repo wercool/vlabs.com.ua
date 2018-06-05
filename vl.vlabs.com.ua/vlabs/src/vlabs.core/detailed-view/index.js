@@ -1,6 +1,7 @@
 import * as THREE               from 'three';
 import * as TWEEN               from 'tween.js';
 import * as DOMUtils            from '../../vlabs.core/utils/dom.utils.js';
+import { EffectComposer, OutlinePass, RenderPass } from "postprocessing";
 
 var OrbitControls           = require('../../vlabs.core/three-orbit-controls/index')(THREE);
 
@@ -62,6 +63,11 @@ export default class DetailedView {
         this.closeBtn.addEventListener("mousedown", this.close.bind(this), false);
         this.closeBtn.addEventListener("touchend", this.close.bind(this), false);
 
+        this.tooltipPlacer = document.createElement('div');
+        this.tooltipPlacer.id = this.initObj.targetObjectName + 'DetailedViewTooltip';
+        this.tooltipPlacer.className = 'tooltip';
+        this.container.appendChild(this.tooltipPlacer);
+
         var handlerSpriteMaterial = new THREE.SpriteMaterial({
             map: this.handlerSpriteTexture,
             color: 0x00ff00,
@@ -116,7 +122,9 @@ export default class DetailedView {
         this.webGLRenderer = new THREE.WebGLRenderer({
             antialias: false,
             powerPreference: 'high-performance',
-            precision: 'lowp'
+            precision: 'lowp',
+            alpha: false,
+            powerPreference: 'high-performance'
         });
 
         this.webGLContainer.addEventListener("mousemove", this.onMouseMove.bind(this), false);
@@ -265,6 +273,16 @@ export default class DetailedView {
             }
         }
 
+        /* EffectComposer */
+        if (this.context.nature.detailedViewEffectComposer) {
+            this.resiezeWebGLContainer();
+            this.effectComposer = new EffectComposer(this.webGLRenderer);
+
+            this.renderPass = new RenderPass(this.scene, this.defaultCamera);
+            this.renderPass.renderToScreen = true;
+            this.effectComposer.addPass(this.renderPass);
+        }
+
         this.paused = false;
         this.resiezeWebGLContainer();
         this.render();
@@ -307,9 +325,13 @@ export default class DetailedView {
         if (!this.paused) {
             this.webGLRenderer.clear();
 
-            this.controls.update();
+            if (this.context.nature.detailedViewEffectComposer && this.effectComposer) {
+                this.effectComposer.render();
+            } else {
+                this.webGLRenderer.render(this.scene, this.defaultCamera);
+            }
 
-            this.webGLRenderer.render(this.scene, this.defaultCamera);
+            this.controls.update();
 
             for (var itemName in this.items) {
                 if (this.items[itemName].onDetailedViewRenderFrameEvent) {
@@ -379,4 +401,64 @@ export default class DetailedView {
             }
         }
     }
+
+    setSelectedObject(object) {
+        if (this.context.nature.detailedViewEffectComposer && this.effectComposer) {
+            this.renderPass.renderToScreen = false;
+
+            this.outlinePass = new OutlinePass(this.scene, this.defaultCamera, {
+                edgeStrength: 3.0
+            });
+            this.outlinePass.outlineBlendMaterial.uniforms.hiddenEdgeColor.value.setHex(0xedff5b);
+            this.outlinePass.renderToScreen = true;
+            this.effectComposer.addPass(this.outlinePass);
+            this.outlinePass.selectObject(object);
+        }
+        if (object.userData['tooltip'] !== undefined) {
+            var screenPos = this.toScreenPosition(object);
+            this.tooltipPlacer.innerHTML = object.userData['tooltip'];
+            this.tooltipPlacer.style.left = screenPos.x + 100 + 'px';
+            this.tooltipPlacer.style.top = screenPos.y - 100 + 'px';
+            this.tooltipPlacer.style.display = 'block';
+        }
+    }
+
+    clearSelection() {
+        if (this.context.nature.detailedViewEffectComposer && this.effectComposer) {
+            if (this.outlinePass) {
+                this.outlinePass.clearSelection();
+                this.outlinePass.renderToScreen = false;
+                this.effectComposer.removePass(this.outlinePass);
+                this.renderPass.renderToScreen = true;
+                this.outlinePass = undefined;
+            }
+        }
+        this.tooltipHide();
+    }
+
+    tooltipHide() {
+        this.tooltipPlacer.innerText = "";
+        this.tooltipPlacer.style.left = '0px';
+        this.tooltipPlacer.style.top = '0px';
+        this.tooltipPlacer.style.display = 'none';
+    }
+
+    toScreenPosition(obj) {
+        var vector = new THREE.Vector3();
+
+        var widthHalf = 0.5 * this.webGLContainer.clientWidth;
+        var heightHalf = 0.5 * this.webGLContainer.clientHeight;
+
+        obj.updateMatrixWorld();
+        vector.setFromMatrixPosition(obj.matrixWorld);
+        vector.project(this.defaultCamera);
+
+        vector.x = (vector.x * widthHalf) + widthHalf;
+        vector.y = -(vector.y * heightHalf) + heightHalf;
+
+        return {
+            x: vector.x,
+            y: vector.y
+        };
+    };
 }

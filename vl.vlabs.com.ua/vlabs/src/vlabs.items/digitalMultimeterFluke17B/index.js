@@ -18,6 +18,8 @@ initObj {
         this.initObj = initObj;
         this.context = initObj.context;
 
+        this.name = this.initObj.name;
+
         this.activated = false;
 
         if (!this.initObj.standAloneMode) {
@@ -307,7 +309,7 @@ initObj {
             this.model.quaternion.copy(this.initObj.quaternion);
         }
         if (this.initObj.scale) {
-            this.model.scale.multiplyScalar(this.initObj.scale);
+            this.model.scale.set(this.initObj.scale, this.initObj.scale, this.initObj.scale);
         }
 
         if (this.initObj.standAloneMode) {

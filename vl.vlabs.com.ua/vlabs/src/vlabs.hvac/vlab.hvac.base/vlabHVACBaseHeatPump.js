@@ -288,6 +288,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             context: this,
             inventory: this.inventory,
             interactive: true,
+            name: 'digitalMultimeterFluke17B',
             pos: new THREE.Vector3(-0.072, -0.07, -0.11)
         }).then((instance) => {
             this.digitalMultimeterFluke17B = instance;

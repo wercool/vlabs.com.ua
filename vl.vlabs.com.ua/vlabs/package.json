@@ -50,6 +50,7 @@
     "three-transformcontrols": "^0.78.1",
     "tween.js": "^16.6.0",
     "webfontloader": "^1.6.28",
-    "webgl-detect": "0.0.1"
+    "webgl-detect": "0.0.1",
+    "postprocessing": "^4.6.0"
   }
 }
