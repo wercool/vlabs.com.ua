@@ -17,6 +17,7 @@ import ReversingValveEF17BZ251      from '../../vlabs.items/hvac/reversingValveE
 import ControlBoardCEBD430433       from '../../vlabs.items/hvac/controlBoardCEBD430433';
 import ScrollCompressorZP25K5E      from '../../vlabs.items/hvac/scrollCompressorZP25K5E';
 import DigitalMultimeterFluke17B    from '../../vlabs.items/digitalMultimeterFluke17B';
+import TrueRMSMultimeterHS36        from '../../vlabs.items/trueRMSMultimeterHS36';
 
 export default class VlabHVACBaseHeatPump extends VLab {
     constructor(initObj = {}) {
@@ -323,6 +324,45 @@ export default class VlabHVACBaseHeatPump extends VLab {
             });
         });
 
+        new TrueRMSMultimeterHS36({
+            context: this,
+            inventory: this.inventory,
+            interactive: true,
+            name: 'trueRMSMultimeterHS36',
+            pos: new THREE.Vector3(0.0, 0.0, 0.0)
+        }).then((instance) => {
+            this.trueRMSMultimeterHS36 = instance;
+            this.trueRMSMultimeterHS36.addResponsiveObject({
+                mesh: this.vLabScene.getObjectByName('controlBoard'),
+                testPoints: [
+                    {
+                        name: 'relayT9AV5022ContactCOM',
+                        target: new THREE.Vector3(0.0352108, 0.02511, 0.0296565),
+                        orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(30.0)),
+                        spritePosDeltas: new THREE.Vector3(-0.03, 0.05, 0.05),
+                        spriteScale: 0.05,
+                        spriteRotation: 0.0
+                    },
+                    {
+                        name: 'relayT9AV5022ContactNC',
+                        target: new THREE.Vector3(0.0550126, 0.0309874, 0.0296565),
+                        orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(-60.0)),
+                        spritePosDeltas: new THREE.Vector3(0.05, -0.05, 0.05),
+                        spriteScale: 0.05,
+                        spriteRotation: THREE.Math.degToRad(270.0)
+                    },
+                    {
+                        name: 'relayT9AV5022ContactNO',
+                        target: new THREE.Vector3(0.055229, 0.0400362, 0.0296565),
+                        orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, 0.0),
+                        spritePosDeltas: new THREE.Vector3(0.05, 0.05, 0.05),
+                        spriteScale: 0.05,
+                        spriteRotation: THREE.Math.degToRad(300.0)
+                    },
+                ]
+            });
+        });
+
         /* VLab Interactors */
         this.heatPumpFrameCapInteractor = new VLabInteractor({
             context: this,
@@ -545,11 +585,22 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.digitalMultimeterFluke17B.activate();
     }
 
+    trueRMSMultimeterHS36ToControlBoard() {
+        console.log('trueRMSMultimeterHS36ToControlBoard');
+        this.takeOffObject(true);
+        this.setInteractiveObjects("trueRMSMultimeterHS36");
+        this.trueRMSMultimeterHS36.activate({
+            pos: new THREE.Vector3(0.233, 0.65, -0.429),
+            rot: new THREE.Vector3(0.0, THREE.Math.degToRad(110.0), 0.0)
+        });
+        this.trueRMSMultimeterHS36.model.getObjectByName('trueRMSMultimeterHS36Clamp').rotation.x = THREE.Math.degToRad(-180.0);
+    }
+
     frameCapBoltUnscrew(argsObj) {
         this.selectedObject = this.BoshScrewdriver.model;
         this.takeOffObject(true);
 
-        var delay = 250;
+        var delay = 50;
 
         this.heatPumpFrameCapInteractor.deactivate();
 

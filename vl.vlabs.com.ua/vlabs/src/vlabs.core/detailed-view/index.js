@@ -66,6 +66,7 @@ export default class DetailedView {
         this.tooltipPlacer = document.createElement('div');
         this.tooltipPlacer.id = this.initObj.targetObjectName + 'DetailedViewTooltip';
         this.tooltipPlacer.className = 'tooltip';
+        this.tooltipPlacer.style.display = 'none';
         this.container.appendChild(this.tooltipPlacer);
 
         var handlerSpriteMaterial = new THREE.SpriteMaterial({
@@ -317,6 +318,8 @@ export default class DetailedView {
                 this.items[itemName].onClose.call(this.items[itemName], {  });
             }
         }
+
+        this.clearSelection();
 
         console.log(this.initObj.targetObjectName + " Detailed View closed");
     }

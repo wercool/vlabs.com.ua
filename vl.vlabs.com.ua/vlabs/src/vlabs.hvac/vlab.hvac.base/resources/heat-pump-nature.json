@@ -60,6 +60,10 @@
         "digitalMultimeterFluke17B|controlBoard": {
             "applyFn": "digitalMultimeterFluke17BToControlBoard",
             "applyFnArgs": {}
+        },
+        "trueRMSMultimeterHS36|controlBoard": {
+            "applyFn": "trueRMSMultimeterHS36ToControlBoard",
+            "applyFnArgs": {}
         }
     }
 }
