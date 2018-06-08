@@ -8,45 +8,94 @@ export default class ExtrudedPath {
         this.context = this.initObj.context;
         this.name = this.initObj.name;
 
-        this.material = new THREE.MeshLambertMaterial( { color: this.initObj.color ? this.initObj.color : 0xffffff } );
+        this.parent = this.initObj.addToObject ? this.initObj.addToObject : this.context.vLabScene;
+
+        this.material = new THREE.MeshLambertMaterial({
+            color: (this.initObj.color !== undefined) ? this.initObj.color : 0xffffff,
+            depthTest: (this.initObj.depthTest !== undefined) ? this.initObj.depthTest : true
+        });
     }
 
     setPath(pathObj) {
         this.path = new THREE.CatmullRomCurve3(pathObj.path);
-        this.geometry = new THREE.TubeGeometry(this.path, 20, 0.002, 6, false);
+        this.geometry = new THREE.TubeGeometry(this.path, 30, 0.0018, 6, false);
 
         if (this.mesh === undefined) {
             this.mesh = new THREE.Mesh(this.geometry, this.material);
             this.mesh.name = this.name + 'Mesh';
-            this.context.vLabScene.add(this.mesh);
+            this.parent.add(this.mesh);
         } else {
             this.mesh.geometry = this.geometry;
             this.mesh.geometry.verticesNeedUpdate = true;
         }
+    }
 
-        if (pathObj.devMode && this.devSphere === undefined) {
+    devPath(devPathObj){
+        var self = this;
+        this.waypoints = [];
 
-            var geometry = new THREE.SphereBufferGeometry(0.0025, 10, 10 );
-            var material = new THREE.MeshBasicMaterial( {color: 0x0000ff} );
-            this.devSphere = new THREE.Mesh( geometry, material );
-            this.context.vLabScene.add( this.devSphere );
+        var geometry = new THREE.SphereBufferGeometry(0.004, 10, 10);
+        var material = new THREE.MeshLambertMaterial({
+            color: 0x0000ff
+        });
 
-            this.devSphere.position.copy(pathObj.path[0]);
+        //start pos
+        var waypoint = new THREE.Mesh(geometry, material);
+        waypoint.position.copy(devPathObj.startPos);
+        this.waypoints.push(waypoint);
+        this.parent.add(waypoint);
 
-            this.manipulationControl = new TransformControls(this.context.defaultCamera, this.context.webGLRenderer.domElement);
-            this.manipulationControl.setSize(0.5);
-            this.manipulationControl.attach(this.devSphere);
-            this.context.vLabScene.add(this.manipulationControl);
-
-            document.addEventListener("keydown", (event)=>{
-                switch (event.keyCode) {
-                    case 13: // Enter
-                        console.log(this.name);
-                        console.log('position (m): ' + this.devSphere.position.x.toFixed(3) + ', ' + this.devSphere.position.y.toFixed(3) + ', ' + this.devSphere.position.z.toFixed(3));
-                    break;
-
-                }
-            }, false);
+        var wpPos = devPathObj.startPos.clone();
+        for (var i = 0; i < devPathObj.waypointsNum; i++) {
+            var waypoint = new THREE.Mesh(geometry, material);
+            wpPos.y += 0.05;
+            waypoint.position.copy(wpPos);
+            this.waypoints.push(waypoint);
         }
+
+        //end pos
+        waypoint = new THREE.Mesh(geometry, material);
+        waypoint.position.copy(devPathObj.endPos);
+        this.waypoints.push(waypoint);
+        this.parent.add(waypoint);
+
+        for (var i = 1; i < this.waypoints.length - 1; i++) {
+            this.parent.add(this.waypoints[i]);
+            var manipulationControl = new TransformControls(this.context.defaultCamera, this.context.webGLRenderer.domElement);
+            manipulationControl.setSize(0.5);
+            manipulationControl.attach(this.waypoints[i]);
+            this.parent.add(manipulationControl);
+            manipulationControl.addEventListener("change", function(){
+                var pathFromWP = [];
+                for (var i = 0; i < self.waypoints.length; i++) {
+                    pathFromWP.push(self.waypoints[i].position.clone());
+                }
+                self.setPath({path: pathFromWP});
+            });
+        }
+
+        var pathFromWP = [];
+        for (var i = 0; i < this.waypoints.length; i++) {
+            pathFromWP.push(this.waypoints[i].position.clone());
+        }
+        this.setPath({path: pathFromWP});
+
+        document.addEventListener("keydown", (event)=>{
+            switch (event.keyCode) {
+                case 13: // Enter
+                    console.log(this.name + ' path: ');
+                    var pathLength = 0.0;
+                    var pathStringified = '';
+                    for (var i = 0; i < this.waypoints.length; i++) {
+                        pathStringified += 'new THREE.Vector3(' + this.waypoints[i].position.x.toFixed(3) + ', ' +  this.waypoints[i].position.y.toFixed(3) + ', ' +  this.waypoints[i].position.z.toFixed(3) + '),\n';
+                        if (i > 0) {
+                            pathLength += this.waypoints[i - 1].position.distanceTo(this.waypoints[i].position);
+                        }
+                    }
+                    console.log('Length: ' + pathLength.toFixed(3));
+                    console.log(pathStringified);
+                break;
+            }
+        }, false);
     }
 }

@@ -24,8 +24,6 @@ initObj {
 
         this.initObj.standAloneMode = true;
 
-        this.clock = new THREE.Clock();
-
         this.interactiveElements = [];
         this.interactiveSuppressElements = [];
         this.accessableInteractiveELements = [];
@@ -48,7 +46,7 @@ initObj {
                     transparent: true,
                     opacity: 1.0,
                     rotation: 0.0,
-                    depthTest: false,
+                    depthTest: true,
                     depthWrite: true
                 });
 
@@ -159,6 +157,19 @@ initObj {
                 };
 
 
+                this.probes = {
+                    redProbe:               this.model.getObjectByName('trueRMSMultimeterHS36ProbeRed'),
+                    redPlug:                this.model.getObjectByName('trueRMSMultimeterHS36ProbeRedMale'),
+                    redNeedle:              this.model.getObjectByName('trueRMSMultimeterHS36ProbeRedNeedle'),
+                    blackProbe:             this.model.getObjectByName('trueRMSMultimeterHS36ProbeBlack'),
+                    blackPlug:              this.model.getObjectByName('trueRMSMultimeterHS36ProbeBlackMale'),
+                    blackNeedle:            this.model.getObjectByName('trueRMSMultimeterHS36ProbeBlackNeedle'),
+                    defaultRedWire:         this.model.getObjectByName('trueRMSMultimeterHS36RedWire'),
+                    defaultBlackWire:       this.model.getObjectByName('trueRMSMultimeterHS36BlackWire'),
+                    redNeedleInitialPos:    this.model.getObjectByName('trueRMSMultimeterHS36ProbeRedNeedle').position.clone(),
+                    blackNeedleInitialPos:  this.model.getObjectByName('trueRMSMultimeterHS36ProbeBlackNeedle').position.clone(),
+                };
+
                 // Sounds
                 this.trueRMSMultimeterHS36SwitchSound = new THREE.Audio(this.context.defaultAudioListener);
 
@@ -170,6 +181,11 @@ initObj {
 
                 this.model.mousePressHandler = this.modelPressed;
                 this.interactiveElements.push(this.model);
+
+                this.probes.redProbe.mousePressHandler = this.probePressed;
+                this.interactiveElements.push(this.probes.redProbe);
+                this.probes.blackProbe.mousePressHandler = this.probePressed;
+                this.interactiveElements.push(this.probes.blackProbe);
 
                 this.trueRMSMultimeterHS36Screen = this.model.getObjectByName('trueRMSMultimeterHS36Screen');
                 this.screenMaterial = this.trueRMSMultimeterHS36Screen.material;
@@ -234,12 +250,6 @@ initObj {
                 this.accessableInteractiveELements = this.interactiveElements.concat(this.interactiveSuppressElements);
                 this.addVLabEventListeners();
 
-                this.trueRMSMultimeterHS36RedProbeWire = new ExtrudedPath({
-                    name: 'trueRMSMultimeterHS36RedProbeWire',
-                    context: this.context,
-                    color: 0xff0000
-                });
-
                 if (this.initObj.inventory) {
                     this.initObj.inventory.addItem({
                         item: this.model,
@@ -248,8 +258,10 @@ initObj {
                     });
                     console.log("TrueRMSMultimeterHS36 added to Inventory");
                 } else {
-                    this.activate(true);
+                    this.activate();
                 }
+
+                this.initProbes();
 
 
                 if (this.initObj.devMode) {
@@ -310,6 +322,9 @@ initObj {
             this.context.defaultCamera.add(this.model);
         }
 
+        this.probes.defaultRedWire.visible = false;
+        this.probes.defaultBlackWire.visible = false;
+
         this.activated = true;
     }
 
@@ -323,16 +338,6 @@ initObj {
         this.context.webGLContainerEventsSubcribers.touchend[this.name + "vLabSceneTouchEnd"] = 
         {
             callback: this.onVLabSceneTouchEnd,
-            instance: this
-        };
-        this.context.webGLContainerEventsSubcribers.renderframe[this.name + "vLabSceneRenderFrame"] = 
-        {
-            callback: this.onVLabRedererFrameEvent,
-            instance: this
-        };
-        this.context.webGLContainerEventsSubcribers.resetview[this.name + "vLabSceneResetView"] = 
-        {
-            callback: this.reset,
             instance: this
         };
     }
@@ -359,28 +364,19 @@ initObj {
         // var interactionObjectIntersects = this.context.iteractionRaycaster.intersectObjects(this.accessableInteractiveELements);
 
         if (interactionObjectIntersects.length > 0) {
-            // if (this.context.zoomMode) {
-            //     if (interactionObjectIntersects[0].object.userData['DigitalMultimeterFluke17B']) {
-            //         this.showTestPointsHelpers(interactionObjectIntersects[0].object);
-            //     }
-            // }
+            if (this.context.zoomMode) {
+                if (interactionObjectIntersects[0].object.userData['TrueRMSMultimeterHS36']) {
+                    this.showTestPointsHelpers(interactionObjectIntersects[0].object);
+                }
+            }
             if (interactionObjectIntersects[0].object.name.indexOf('trueRMSMultimeterHS36') > -1) {
                 if (interactionObjectIntersects[0].object.mousePressHandler) {
                     interactionObjectIntersects[0].object.mousePressHandler.call(this, interactionObjectIntersects[0].object);
                 }
             }
         } else {
-            // this.probePressed();
+            this.probePressed();
         }
-    }
-
-    onVLabRedererFrameEvent(event) {
-        if (this.activated) this.animate();
-    }
-
-    animate(time) {
-        // TWEEN.update(time);
-        this.prevTime = this.clock.getDelta();
     }
 
     takenToInventory() {
@@ -413,7 +409,7 @@ initObj {
             gapSize: 0.0025,
             transparent: true,
             opacity: 0.5,
-            depthTest: false
+            depthTest: true
         });
         responsiveObj.mesh.userData['TrueRMSMultimeterHS36'].forEach((testPoint) => {
             var helperSprite = new THREE.Sprite(this.probeSpriteMaterial);
@@ -429,13 +425,13 @@ initObj {
             helperSprite.mousePressHandler = function(helperSprite) {
                 if (!this.activated) return;
                 if (!this.preselectedProbe) return;
-                this.preselectedProbe.visible = false;
-                this.preselectedProbe.parent.visible = false;
-                this.preselectedProbe.userData['plug'].position.copy(helperSprite.userData['testPoint'].target)
-                this.preselectedProbe.userData['plug'].rotation.set(helperSprite.userData['testPoint'].orientation.x, helperSprite.userData['testPoint'].orientation.y, helperSprite.userData['testPoint'].orientation.z);
-                helperSprite.parent.remove(this.preselectedProbe.userData['plug']);
-                helperSprite.parent.add(this.preselectedProbe.userData['plug']);
-                this.preselectedProbe.userData['plug'].visible = true;
+                // this.preselectedProbe.visible = false;
+                // this.preselectedProbe.parent.visible = false;
+                // this.preselectedProbe.userData['plug'].position.copy(helperSprite.userData['testPoint'].target)
+                // this.preselectedProbe.userData['plug'].rotation.set(helperSprite.userData['testPoint'].orientation.x, helperSprite.userData['testPoint'].orientation.y, helperSprite.userData['testPoint'].orientation.z);
+                // helperSprite.parent.remove(this.preselectedProbe.userData['plug']);
+                // helperSprite.parent.add(this.preselectedProbe.userData['plug']);
+                // this.preselectedProbe.userData['plug'].visible = true;
                 this.probePressed();
             };
 
@@ -460,7 +456,53 @@ initObj {
         this.accessableInteractiveELements = this.interactiveElements.concat(this.interactiveSuppressElements);
     }
 
+    initProbes() {
+        this.trueRMSMultimeterHS36RedProbeWire = new ExtrudedPath({
+            name: 'trueRMSMultimeterHS36RedProbeWire',
+            context: this.context,
+            color: 0xff0000
+        });
+        this.trueRMSMultimeterHS36BlackProbeWire = new ExtrudedPath({
+            name: 'trueRMSMultimeterHS36BlackProbeWire',
+            context: this.context,
+            color: 0x202020
+        });
+    }
+
+    setProbes(setupProbesObj = {}) {
+        if (setupProbesObj.initialLocation) {
+            this.probes.redNeedle.position.add(setupProbesObj.initialLocation.redNeedleShift);
+            this.probes.blackNeedle.position.add(setupProbesObj.initialLocation.blackNeedleShift);
+        }
+
+        if (setupProbesObj.probeWiresPathes) {
+            if (setupProbesObj.probeWiresPathes.redWire) {
+                this.trueRMSMultimeterHS36RedProbeWire.setPath({ path: setupProbesObj.probeWiresPathes.redWire });
+            }
+            if (setupProbesObj.probeWiresPathes.blackWire) {
+                this.trueRMSMultimeterHS36BlackProbeWire.setPath({ path: setupProbesObj.probeWiresPathes.blackWire });
+            }
+        }
+
+        if (setupProbesObj.devMode) {
+            this.trueRMSMultimeterHS36RedProbeWire.devPath({
+                startPos: this.getWorldPosition(this.probes.redPlug),
+                endPos: this.getWorldPosition(this.probes.redProbe),
+                waypointsNum: 4
+            });
+            this.trueRMSMultimeterHS36BlackProbeWire.devPath({
+                startPos: this.getWorldPosition(this.probes.blackPlug),
+                endPos: this.getWorldPosition(this.probes.blackProbe),
+                waypointsNum: 4
+            });
+        }
+    }
+
     resetProbes() {
+        this.probes.redNeedle.position.copy(this.probes.redNeedleInitialPos);
+        this.probes.blackNeedle.position.copy(this.probes.blackNeedleInitialPos);
+        this.probes.defaultRedWire.visible = true;
+        this.probes.defaultBlackWire.visible = true;
     }
 
     modelPressed() {
@@ -536,5 +578,61 @@ initObj {
 
         this.screenMaterial.map = new THREE.Texture(this.screenCanvas);
         this.screenMaterial.map.needsUpdate = true;
+    }
+
+    showTestPointsHelpers(object) {
+        object.userData['TrueRMSMultimeterHS36'].forEach((testPoint) => {
+            testPoint.helperSprite.visible = true;
+            testPoint.spriteLine.visible = true;
+
+            testPoint.helperSprite.material.opacity = 1.0;
+            testPoint.spriteLine.material.opacity = 0.75;
+
+            if (testPoint.helperSprite.tween) testPoint.helperSprite.tween.stop();
+
+            testPoint.helperSprite.tween = new TWEEN.Tween(testPoint.helperSprite.material)
+            .to({ opacity: 0.0 }, 5000)
+            .easing(TWEEN.Easing.Linear.None)
+            .onUpdate(() => {
+                testPoint.spriteLine.material.opacity = testPoint.helperSprite.material.opacity * 0.75;
+            })
+            .onComplete(() => {
+                testPoint.helperSprite.visible = false;
+                testPoint.spriteLine.visible = false;
+            })
+            .start();
+
+        });
+    }
+
+    probePressed(preselectedProbe) {
+        if (this.preselectedProbe || preselectedProbe === undefined) { 
+            if (!this.preselectedProbe) return;
+            this.preselectedProbe.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+            this.trueRMSMultimeterHS36RedProbeWire.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+            this.trueRMSMultimeterHS36BlackProbeWire.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+            if (preselectedProbe === undefined) {
+                this.preselectedProbe = undefined;
+                return;
+            }
+        }
+        this.preselectedProbe = preselectedProbe;
+        preselectedProbe.material.emissive = new THREE.Color(0.75, 0.75, 0.75);
+        if (preselectedProbe.name.indexOf('Red') > -1) {
+            this.trueRMSMultimeterHS36RedProbeWire.material.emissive = new THREE.Color(0.75, 0.75,0.75);
+        }
+        if (preselectedProbe.name.indexOf('Black') > -1) {
+            this.trueRMSMultimeterHS36BlackProbeWire.material.emissive = new THREE.Color(0.75, 0.75, 0.75);
+        }
+    }
+
+    getWorldPosition(obj) {
+        var worldPosition = new THREE.Vector3();
+
+        this.context.vLabScene.updateMatrixWorld();
+        obj.updateMatrixWorld();
+        worldPosition.setFromMatrixPosition(obj.matrixWorld);
+
+        return worldPosition;
     }
 }

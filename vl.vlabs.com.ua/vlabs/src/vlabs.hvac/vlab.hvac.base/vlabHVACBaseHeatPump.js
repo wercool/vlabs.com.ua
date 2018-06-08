@@ -594,6 +594,31 @@ export default class VlabHVACBaseHeatPump extends VLab {
             pos: new THREE.Vector3(0.233, 0.65, -0.429),
             rot: new THREE.Vector3(0.0, THREE.Math.degToRad(110.0), 0.0)
         });
+        this.trueRMSMultimeterHS36.setProbes({
+            initialLocation: {
+                blackNeedleShift: new THREE.Vector3(0.025, 0.0, 0.0),
+                redNeedleShift: new THREE.Vector3(0.125, 0.0, 0.0)
+            },
+            probeWiresPathes: {
+                redWire: [
+                    new THREE.Vector3(0.260, 0.658, -0.428),
+                    new THREE.Vector3(0.280, 0.659, -0.440),
+                    new THREE.Vector3(0.189, 0.617, -0.486),
+                    new THREE.Vector3(0.162, 0.360, -0.508),
+                    new THREE.Vector3(0.198, 0.393, -0.488),
+                    new THREE.Vector3(0.214, 0.487, -0.480),
+                ],
+                blackWire: [
+                    new THREE.Vector3(0.253, 0.658, -0.447),
+                    new THREE.Vector3(0.278, 0.662, -0.459),
+                    new THREE.Vector3(0.189, 0.578, -0.502),
+                    new THREE.Vector3(0.118, 0.352, -0.527),
+                    new THREE.Vector3(0.197, 0.435, -0.522),
+                    new THREE.Vector3(0.200, 0.487, -0.518),
+                ]
+            },
+            devMode: false
+        });
         this.trueRMSMultimeterHS36.model.getObjectByName('trueRMSMultimeterHS36Clamp').rotation.x = THREE.Math.degToRad(-180.0);
     }
 

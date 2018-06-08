@@ -93,19 +93,6 @@ class VlabBase extends VLab {
             }).then((instance) => {
                 this.trueRMSMultimeterHS36 = instance;
 
-                this.trueRMSMultimeterHS36.trueRMSMultimeterHS36RedProbeWire.setPath({
-                    path: [
-                        new THREE.Vector3().copy(this.trueRMSMultimeterHS36.model.position),
-                        new THREE.Vector3(-0.121, 0.765, 0.302),
-                        new THREE.Vector3(-0.090, 0.807, 0.206),
-                        new THREE.Vector3(-0.011, 0.844, 0.167),
-                        new THREE.Vector3(0.037, 0.873, 0.271),
-                        new THREE.Vector3(0.053, 0.840, 0.304),
-                        new THREE.Vector3().copy(this.vLabScene.getObjectByName('controlBoard').position),
-                    ],
-                    devMode: true
-                });
-
                 this.trueRMSMultimeterHS36.addResponsiveObject({
                     mesh: this.vLabScene.getObjectByName('controlBoard'),
                     testPoints: [
@@ -137,16 +124,16 @@ class VlabBase extends VLab {
                 });
             });
 
-            this.controlBoardZoomHelper = new ZoomHelper({
-                context: this,
-                targetObjectName: "controlBoard",
-                minDistance: 0.0,
-                positionDeltas: new THREE.Vector3(0.0, -0.1, 0.075), 
-                scale: new THREE.Vector3(0.1, 0.1, 0.1),
-                minPolarAngle: -Math.PI * 2,
-                maxPolarAngle: Math.PI * 2,
-                color: 0xfff495
-            });
+            // this.controlBoardZoomHelper = new ZoomHelper({
+            //     context: this,
+            //     targetObjectName: "controlBoard",
+            //     minDistance: 0.0,
+            //     positionDeltas: new THREE.Vector3(0.0, -0.1, 0.075), 
+            //     scale: new THREE.Vector3(0.1, 0.1, 0.1),
+            //     minPolarAngle: -Math.PI * 2,
+            //     maxPolarAngle: Math.PI * 2,
+            //     color: 0xfff495
+            // });
 
 
             this.flowAlongWire1 = new FlowAlongTube({
