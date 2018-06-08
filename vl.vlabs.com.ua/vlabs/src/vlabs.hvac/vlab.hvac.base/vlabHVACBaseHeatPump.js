@@ -332,6 +332,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             pos: new THREE.Vector3(0.0, 0.0, 0.0)
         }).then((instance) => {
             this.trueRMSMultimeterHS36 = instance;
+
             this.trueRMSMultimeterHS36.addResponsiveObject({
                 mesh: this.vLabScene.getObjectByName('controlBoard'),
                 testPoints: [

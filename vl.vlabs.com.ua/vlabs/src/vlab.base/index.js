@@ -11,6 +11,7 @@ import DetailedView         from '../vlabs.core/detailed-view';
 
 import BernzomaticTS8000Torch       from '../vlabs.items/bernzomaticTS8000Torch';
 import DigitalMultimeterFluke17B    from '../vlabs.items/digitalMultimeterFluke17B';
+import TrueRMSMultimeterHS36        from '../vlabs.items/trueRMSMultimeterHS36';
 
 import FlowAlongTube            from '../vlabs.items/flow-along-tube';
 
@@ -81,12 +82,69 @@ class VlabBase extends VLab {
                 });
             });
 
+            new TrueRMSMultimeterHS36({
+                context: this,
+                inventory: undefined,
+                interactive: true,
+                name: 'trueRMSMultimeterHS36',
+                pos: new THREE.Vector3(-0.135, 0.765, 0.364),
+                rotation: new THREE.Vector3(THREE.Math.degToRad(-90.0), 0.0, 0.0),
+                devMode: false
+            }).then((instance) => {
+                this.trueRMSMultimeterHS36 = instance;
+
+                this.trueRMSMultimeterHS36.trueRMSMultimeterHS36RedProbeWire.setPath({
+                    path: [
+                        new THREE.Vector3().copy(this.trueRMSMultimeterHS36.model.position),
+                        new THREE.Vector3(-0.121, 0.765, 0.302),
+                        new THREE.Vector3(-0.090, 0.807, 0.206),
+                        new THREE.Vector3(-0.011, 0.844, 0.167),
+                        new THREE.Vector3(0.037, 0.873, 0.271),
+                        new THREE.Vector3(0.053, 0.840, 0.304),
+                        new THREE.Vector3().copy(this.vLabScene.getObjectByName('controlBoard').position),
+                    ],
+                    devMode: true
+                });
+
+                this.trueRMSMultimeterHS36.addResponsiveObject({
+                    mesh: this.vLabScene.getObjectByName('controlBoard'),
+                    testPoints: [
+                        {
+                            name: 'relayT9AV5022ContactCOM',
+                            target: new THREE.Vector3(0.0352108, 0.02511, 0.0296565),
+                            orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(30.0)),
+                            spritePosDeltas: new THREE.Vector3(-0.03, 0.05, 0.05),
+                            spriteScale: 0.05,
+                            spriteRotation: 0.0
+                        },
+                        {
+                            name: 'relayT9AV5022ContactNC',
+                            target: new THREE.Vector3(0.0550126, 0.0309874, 0.0296565),
+                            orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(-60.0)),
+                            spritePosDeltas: new THREE.Vector3(0.05, -0.05, 0.05),
+                            spriteScale: 0.05,
+                            spriteRotation: THREE.Math.degToRad(270.0)
+                        },
+                        {
+                            name: 'relayT9AV5022ContactNO',
+                            target: new THREE.Vector3(0.055229, 0.0400362, 0.0296565),
+                            orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, 0.0),
+                            spritePosDeltas: new THREE.Vector3(0.05, 0.05, 0.05),
+                            spriteScale: 0.05,
+                            spriteRotation: THREE.Math.degToRad(300.0)
+                        },
+                    ]
+                });
+            });
+
             this.controlBoardZoomHelper = new ZoomHelper({
                 context: this,
                 targetObjectName: "controlBoard",
                 minDistance: 0.0,
                 positionDeltas: new THREE.Vector3(0.0, -0.1, 0.075), 
                 scale: new THREE.Vector3(0.1, 0.1, 0.1),
+                minPolarAngle: -Math.PI * 2,
+                maxPolarAngle: Math.PI * 2,
                 color: 0xfff495
             });
 
