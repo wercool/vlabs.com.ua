@@ -80,6 +80,7 @@ export default class Inventory {
         this.defaultCameraControls.maxPolarAngle = Math.PI;
         this.defaultCameraControls.minPolarAngle = 0.0;
         this.defaultCameraControls.autoRotate = true;
+        this.defaultCameraControls.autoRotateSpeed = 1.0;
 
         var light0 = new THREE.AmbientLight(0xffffff, 0.35);
         this.scene.add(light0);
@@ -124,6 +125,39 @@ export default class Inventory {
     }
 
     activate() {
+
+        if (this.context.selectedObject) {
+            var takeToInventoryArg = undefined;
+            if (this.context.nature.objectMenus[this.context.selectedObject.name]) {
+                for (var menuItem of this.context.nature.objectMenus[this.context.selectedObject.name]['en']) {
+                    if (menuItem.icon === 'toolboxMenuIcon') {
+                        takeToInventoryArg = menuItem.args;
+                        break;
+                    }
+                }
+            }
+            var selectionSphere = this.context.vLabScene.getObjectByName(this.context.selectedObject.name + "_SELECTION");
+            if (selectionSphere) {
+                selectionSphere.visible = false;
+                selectionSphere.material.color = new THREE.Color(1, 1, 0);
+            }
+
+            this.context.defaultCamera.remove(this.context.selectedObject);
+            this.context.takenObjects[this.context.selectedObject.name] = undefined;
+            delete this.context.takenObjects[this.context.selectedObject.name];
+            this.context.selectedObject.scale.set(1.0, 1.0, 1.0);
+            if (this.context.selectedObject.beforeTakenRotation) {
+                this.context.selectedObject.rotation.copy(this.context.selectedObject.beforeTakenRotation);
+            } else {
+                this.context.selectedObject.rotation.set(0.0, 0.0, 0.0);
+            }
+
+            this.context.takeObjectToInventory(takeToInventoryArg);
+            this.context.rearrangeTakenObjects();
+            this.context.resetAllSelections();
+            return;
+        }
+
         this.context.paused = true;
 
         this.context.fullscreenButton.style.display = 'none';
@@ -260,7 +294,7 @@ export default class Inventory {
     setPrevItem() {
         this.currentItemIdx--;
         var itemsKeys = Object.keys(this.items);
-        console.log(itemsKeys[this.currentItemIdx]);
+        // console.log(itemsKeys[this.currentItemIdx]);
         var prevItemObj = this.items[itemsKeys[this.currentItemIdx]];
         this.setCurrentItem(prevItemObj);
     }

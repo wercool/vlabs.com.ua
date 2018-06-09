@@ -28,6 +28,7 @@ export default class ExtrudedPath {
             this.mesh.geometry = this.geometry;
             this.mesh.geometry.verticesNeedUpdate = true;
         }
+        this.mesh.visible = true;
     }
 
     devPath(devPathObj){
@@ -41,6 +42,8 @@ export default class ExtrudedPath {
 
         //start pos
         var waypoint = new THREE.Mesh(geometry, material);
+        waypoint.name = this.name + 'WPStart';
+        this.parent.remove(this.parent.getObjectByName(waypoint.name));
         waypoint.position.copy(devPathObj.startPos);
         this.waypoints.push(waypoint);
         this.parent.add(waypoint);
@@ -48,6 +51,8 @@ export default class ExtrudedPath {
         var wpPos = devPathObj.startPos.clone();
         for (var i = 0; i < devPathObj.waypointsNum; i++) {
             var waypoint = new THREE.Mesh(geometry, material);
+            waypoint.name = this.name + 'WP' + i;
+            this.parent.remove(this.parent.getObjectByName(waypoint.name));
             wpPos.y += 0.05;
             waypoint.position.copy(wpPos);
             this.waypoints.push(waypoint);
@@ -55,6 +60,8 @@ export default class ExtrudedPath {
 
         //end pos
         waypoint = new THREE.Mesh(geometry, material);
+        waypoint.name = this.name + 'WPEnd';
+        this.parent.remove(this.parent.getObjectByName(waypoint.name));
         waypoint.position.copy(devPathObj.endPos);
         this.waypoints.push(waypoint);
         this.parent.add(waypoint);
@@ -62,10 +69,13 @@ export default class ExtrudedPath {
         for (var i = 1; i < this.waypoints.length - 1; i++) {
             this.parent.add(this.waypoints[i]);
             var manipulationControl = new TransformControls(this.context.defaultCamera, this.context.webGLRenderer.domElement);
+            manipulationControl.name = this.name + 'WPCtrl' + i;
+            this.parent.remove(this.parent.getObjectByName(manipulationControl.name));
             manipulationControl.setSize(0.5);
             manipulationControl.attach(this.waypoints[i]);
             this.parent.add(manipulationControl);
             manipulationControl.addEventListener("change", function(){
+                if (!self.waypoints) return;
                 var pathFromWP = [];
                 for (var i = 0; i < self.waypoints.length; i++) {
                     pathFromWP.push(self.waypoints[i].position.clone());
@@ -80,22 +90,36 @@ export default class ExtrudedPath {
         }
         this.setPath({path: pathFromWP});
 
-        document.addEventListener("keydown", (event)=>{
-            switch (event.keyCode) {
-                case 13: // Enter
-                    console.log(this.name + ' path: ');
-                    var pathLength = 0.0;
-                    var pathStringified = '';
-                    for (var i = 0; i < this.waypoints.length; i++) {
-                        pathStringified += 'new THREE.Vector3(' + this.waypoints[i].position.x.toFixed(3) + ', ' +  this.waypoints[i].position.y.toFixed(3) + ', ' +  this.waypoints[i].position.z.toFixed(3) + '),\n';
-                        if (i > 0) {
-                            pathLength += this.waypoints[i - 1].position.distanceTo(this.waypoints[i].position);
-                        }
+        if (this.printDevInfoSet === undefined) {
+            this.printDevInfoSet = true;
+            document.addEventListener("keydown", this.prindtDevInfo.bind(this), false);
+        }
+    }
+
+    prindtDevInfo(event) {
+        switch (event.keyCode) {
+            case 13: // Enter
+                console.log(this.name + ' path: ');
+                var pathLength = 0.0;
+                var pathStringified = '';
+                for (var i = 0; i < this.waypoints.length; i++) {
+                    pathStringified += 'new THREE.Vector3(' + this.waypoints[i].position.x.toFixed(3) + ', ' +  this.waypoints[i].position.y.toFixed(3) + ', ' +  this.waypoints[i].position.z.toFixed(3) + '),\n';
+                    if (i > 0) {
+                        pathLength += this.waypoints[i - 1].position.distanceTo(this.waypoints[i].position);
                     }
-                    console.log('Length: ' + pathLength.toFixed(3));
-                    console.log(pathStringified);
-                break;
-            }
-        }, false);
+                }
+                console.log('Length: ' + pathLength.toFixed(3));
+                console.log(pathStringified);
+            break;
+        }
+    }
+
+    clearDev() {
+        if (!this.waypoints) return;
+        for (var i = 0; i < this.waypoints.length; i++) {
+            this.parent.remove(this.waypoints[i]);
+            this.parent.remove(this.parent.getObjectByName(this.name + 'WPCtrl' + i));
+        }
+        this.waypoints = undefined;
     }
 }

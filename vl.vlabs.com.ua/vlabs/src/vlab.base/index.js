@@ -93,47 +93,86 @@ class VlabBase extends VLab {
             }).then((instance) => {
                 this.trueRMSMultimeterHS36 = instance;
 
+                this.trueRMSMultimeterHS36.setProbes({
+                    initialLocation: {
+                        blackNeedleShift: new THREE.Vector3(0.0, 0.0, 0.0),
+                        redNeedleShift: new THREE.Vector3(0.0, 0.0, 0.0)
+                    },
+                    probeWiresPathes: {
+                        redWire: [
+                            new THREE.Vector3(-0.145, 0.790, 0.356),
+                            new THREE.Vector3(-0.147, 0.815, 0.356),
+                            new THREE.Vector3(-0.180, 0.778, 0.532),
+                            new THREE.Vector3(-0.186, 0.769, 0.651),
+                            new THREE.Vector3(-0.214, 0.768, 0.594),
+                            new THREE.Vector3(-0.205, 0.764, 0.527),
+                        ],
+                        blackWire: [
+                            new THREE.Vector3(-0.125, 0.790, 0.356),
+                            new THREE.Vector3(-0.123, 0.817, 0.356),
+                            new THREE.Vector3(-0.093, 0.769, 0.597),
+                            new THREE.Vector3(-0.082, 0.771, 0.643),
+                            new THREE.Vector3(-0.064, 0.783, 0.596),
+                            new THREE.Vector3(-0.065, 0.764, 0.527),
+                        ]
+                    },
+                    devMode: false
+                });
+
+
                 this.trueRMSMultimeterHS36.addResponsiveObject({
                     mesh: this.vLabScene.getObjectByName('controlBoard'),
                     testPoints: [
                         {
                             name: 'relayT9AV5022ContactCOM',
                             target: new THREE.Vector3(0.0352108, 0.02511, 0.0296565),
-                            orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(30.0)),
+                            orientation: new THREE.Vector3(THREE.Math.degToRad(-90.0), 0.0, THREE.Math.degToRad(-60.0)),
                             spritePosDeltas: new THREE.Vector3(-0.03, 0.05, 0.05),
                             spriteScale: 0.05,
-                            spriteRotation: 0.0
+                            spriteRotation: 0.0,
+                            probeWiresPathes: {
+                                blackWire: [
+                                    new THREE.Vector3(-0.125, 0.790, 0.356),
+                                    new THREE.Vector3(-0.125, 0.817, 0.356),
+                                    new THREE.Vector3(-0.163, 0.758, 0.168),
+                                    new THREE.Vector3(-0.208, 0.755, 0.184),
+                                    new THREE.Vector3(-0.135, 0.875, 0.341),
+                                    new THREE.Vector3(-0.107, 0.866, 0.341),
+                                ]
+                            }
                         },
                         {
                             name: 'relayT9AV5022ContactNC',
                             target: new THREE.Vector3(0.0550126, 0.0309874, 0.0296565),
-                            orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(-60.0)),
+                            orientation: new THREE.Vector3(THREE.Math.degToRad(-45.0), 0.0, THREE.Math.degToRad(0.0)),
                             spritePosDeltas: new THREE.Vector3(0.05, -0.05, 0.05),
                             spriteScale: 0.05,
-                            spriteRotation: THREE.Math.degToRad(270.0)
+                            spriteRotation: THREE.Math.degToRad(270.0),
+                            probesDevMode: true,
                         },
                         {
                             name: 'relayT9AV5022ContactNO',
                             target: new THREE.Vector3(0.055229, 0.0400362, 0.0296565),
-                            orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, 0.0),
+                            orientation: new THREE.Vector3(THREE.Math.degToRad(-135.0), 0.0, THREE.Math.degToRad(0.0)),
                             spritePosDeltas: new THREE.Vector3(0.05, 0.05, 0.05),
                             spriteScale: 0.05,
-                            spriteRotation: THREE.Math.degToRad(300.0)
+                            spriteRotation: THREE.Math.degToRad(300.0),
+                            probesDevMode: true,
                         },
                     ]
                 });
             });
 
-            // this.controlBoardZoomHelper = new ZoomHelper({
-            //     context: this,
-            //     targetObjectName: "controlBoard",
-            //     minDistance: 0.0,
-            //     positionDeltas: new THREE.Vector3(0.0, -0.1, 0.075), 
-            //     scale: new THREE.Vector3(0.1, 0.1, 0.1),
-            //     minPolarAngle: -Math.PI * 2,
-            //     maxPolarAngle: Math.PI * 2,
-            //     color: 0xfff495
-            // });
+            this.controlBoardZoomHelper = new ZoomHelper({
+                context: this,
+                targetObjectName: "controlBoard",
+                minDistance: 0.0,
+                positionDeltas: new THREE.Vector3(0.0, -0.1, 0.075), 
+                scale: new THREE.Vector3(0.1, 0.1, 0.1),
+                minPolarAngle: -Math.PI * 2,
+                maxPolarAngle: Math.PI * 2,
+                color: 0xfff495
+            });
 
 
             this.flowAlongWire1 = new FlowAlongTube({

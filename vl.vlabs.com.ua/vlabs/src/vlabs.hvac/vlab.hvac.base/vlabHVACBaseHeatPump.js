@@ -248,7 +248,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             pos: new THREE.Vector3(1.0, 0.2, 0.0),
             name: "ClampMeterUEIDL479",
             manipulation: false,
-            interactive: false,
+            interactive: true,
             inventory: this.inventory
         });
 
@@ -257,7 +257,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             pos: new THREE.Vector3(1.0, 0.2, 0.0),
             name: "FatMaxScrewdriver",
             manipulation: false,
-            interactive: false,
+            interactive: true,
             inventory: this.inventory
         });
 

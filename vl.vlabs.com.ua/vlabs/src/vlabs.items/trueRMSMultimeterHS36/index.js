@@ -168,7 +168,12 @@ initObj {
                     defaultBlackWire:       this.model.getObjectByName('trueRMSMultimeterHS36BlackWire'),
                     redNeedleInitialPos:    this.model.getObjectByName('trueRMSMultimeterHS36ProbeRedNeedle').position.clone(),
                     blackNeedleInitialPos:  this.model.getObjectByName('trueRMSMultimeterHS36ProbeBlackNeedle').position.clone(),
+                    initialRedProbe:        {},
+                    initialBlackProbe:      {},
                 };
+
+                this.probes.redProbe.userData['needle'] = this.probes.redNeedle;
+                this.probes.blackProbe.userData['needle'] = this.probes.blackNeedle;
 
                 // Sounds
                 this.trueRMSMultimeterHS36SwitchSound = new THREE.Audio(this.context.defaultAudioListener);
@@ -364,10 +369,8 @@ initObj {
         // var interactionObjectIntersects = this.context.iteractionRaycaster.intersectObjects(this.accessableInteractiveELements);
 
         if (interactionObjectIntersects.length > 0) {
-            if (this.context.zoomMode) {
-                if (interactionObjectIntersects[0].object.userData['TrueRMSMultimeterHS36']) {
-                    this.showTestPointsHelpers(interactionObjectIntersects[0].object);
-                }
+            if (interactionObjectIntersects[0].object.userData['TrueRMSMultimeterHS36']) {
+                this.showTestPointsHelpers(interactionObjectIntersects[0].object);
             }
             if (interactionObjectIntersects[0].object.name.indexOf('trueRMSMultimeterHS36') > -1) {
                 if (interactionObjectIntersects[0].object.mousePressHandler) {
@@ -425,13 +428,18 @@ initObj {
             helperSprite.mousePressHandler = function(helperSprite) {
                 if (!this.activated) return;
                 if (!this.preselectedProbe) return;
-                // this.preselectedProbe.visible = false;
-                // this.preselectedProbe.parent.visible = false;
-                // this.preselectedProbe.userData['plug'].position.copy(helperSprite.userData['testPoint'].target)
-                // this.preselectedProbe.userData['plug'].rotation.set(helperSprite.userData['testPoint'].orientation.x, helperSprite.userData['testPoint'].orientation.y, helperSprite.userData['testPoint'].orientation.z);
-                // helperSprite.parent.remove(this.preselectedProbe.userData['plug']);
-                // helperSprite.parent.add(this.preselectedProbe.userData['plug']);
-                // this.preselectedProbe.userData['plug'].visible = true;
+                if (this.probes.redNeedle.position.equals(helperSprite.userData['testPoint'].target) || this.probes.blackNeedle.position.equals(helperSprite.userData['testPoint'].target)) return;
+                console.log(helperSprite.name);
+                this.preselectedProbe.userData['needle'].position.copy(helperSprite.userData['testPoint'].target)
+                this.preselectedProbe.userData['needle'].rotation.set(helperSprite.userData['testPoint'].orientation.x, helperSprite.userData['testPoint'].orientation.y, helperSprite.userData['testPoint'].orientation.z);
+                this.model.remove(this.preselectedProbe.userData['needle']);
+                helperSprite.parent.remove(this.preselectedProbe.userData['needle']);
+                helperSprite.parent.add(this.preselectedProbe.userData['needle']);
+                this.preselectedProbe.userData['needle'].userData['probeAttachedTo'] = helperSprite.parent;
+                this.setProbes({
+                    probeWiresPathes: helperSprite.userData['testPoint'].probeWiresPathes,
+                    probeSelected: this.preselectedProbe
+                });
                 this.probePressed();
             };
 
@@ -473,23 +481,76 @@ initObj {
         if (setupProbesObj.initialLocation) {
             this.probes.redNeedle.position.add(setupProbesObj.initialLocation.redNeedleShift);
             this.probes.blackNeedle.position.add(setupProbesObj.initialLocation.blackNeedleShift);
+
+            this.probes['initialRedProbe']['needlePosition'] = this.probes.redNeedle.position.clone();
+            this.probes['initialRedProbe']['needleRotation'] = this.probes.redNeedle.rotation.clone();
+            this.probes['initialRedProbe']['wirePath'] = setupProbesObj.probeWiresPathes.redWire;
+
+            this.probes['initialBlackProbe']['needlePosition'] = this.probes.blackNeedle.position.clone();
+            this.probes['initialBlackProbe']['needleRotation'] = this.probes.blackNeedle.rotation.clone();
+            this.probes['initialBlackProbe']['wirePath'] = setupProbesObj.probeWiresPathes.blackWire;
         }
+
+        if (setupProbesObj.resetInitialProbeState) {
+            if (!setupProbesObj.resetInitialProbeState.probe.userData['probeAttachedTo']) return;
+            setupProbesObj.resetInitialProbeState.probe.userData['probeAttachedTo'].remove(setupProbesObj.resetInitialProbeState.probe);
+            this.model.add(setupProbesObj.resetInitialProbeState.probe);
+            setupProbesObj.resetInitialProbeState.probe.userData['probeAttachedTo'] = undefined;
+            setupProbesObj['probeSelected'] = undefined;
+            setupProbesObj['probeWiresPathes'] = {};
+            if (setupProbesObj.resetInitialProbeState.red) {
+                this.probes.redNeedle.position.copy(this.probes['initialRedProbe']['needlePosition']);
+                this.probes.redNeedle.rotation.copy(this.probes['initialRedProbe']['needleRotation']);
+                setupProbesObj['probeWiresPathes']['redWire'] = this.probes['initialRedProbe']['wirePath'];
+            }
+            if (setupProbesObj.resetInitialProbeState.black) {
+                this.probes.blackNeedle.position.copy(this.probes['initialBlackProbe']['needlePosition']);
+                this.probes.blackNeedle.rotation.copy(this.probes['initialBlackProbe']['needleRotation']);
+                setupProbesObj['probeWiresPathes']['blackWire'] = this.probes['initialBlackProbe']['wirePath'];
+            }
+        }
+
+        var redWirePath = false;
+        var blackWirePath = false;
+
+        var redWirePathDevMode = false;
+        var blackWirePathDevMode = false;
 
         if (setupProbesObj.probeWiresPathes) {
-            if (setupProbesObj.probeWiresPathes.redWire) {
-                this.trueRMSMultimeterHS36RedProbeWire.setPath({ path: setupProbesObj.probeWiresPathes.redWire });
+            if (setupProbesObj.probeSelected === undefined) {
+                redWirePath = (setupProbesObj.probeWiresPathes.redWire !== undefined);
+                blackWirePath = (setupProbesObj.probeWiresPathes.blackWire !== undefined);
+            } else {
+                redWirePath = (setupProbesObj.probeSelected.name.indexOf('Red') > -1) && (setupProbesObj.probeWiresPathes.redWire !== undefined)
+                blackWirePath = (setupProbesObj.probeSelected.name.indexOf('Black') > -1) && (setupProbesObj.probeWiresPathes.blackWire !== undefined)
+
+                redWirePathDevMode = (setupProbesObj.probeSelected.name.indexOf('Red') > -1) && (setupProbesObj.probeWiresPathes.redWire === undefined);
+                blackWirePathDevMode = (setupProbesObj.probeSelected.name.indexOf('Black') > -1) && (setupProbesObj.probeWiresPathes.blackWire === undefined);
             }
-            if (setupProbesObj.probeWiresPathes.blackWire) {
-                this.trueRMSMultimeterHS36BlackProbeWire.setPath({ path: setupProbesObj.probeWiresPathes.blackWire });
+        } else {
+            if (setupProbesObj.probeSelected !== undefined) {
+                redWirePathDevMode = (setupProbesObj.probeSelected.name.indexOf('Red') > -1);
+                blackWirePathDevMode = (setupProbesObj.probeSelected.name.indexOf('Black') > -1);
             }
         }
 
-        if (setupProbesObj.devMode) {
+        if (redWirePath) {
+            this.trueRMSMultimeterHS36RedProbeWire.clearDev();
+            this.trueRMSMultimeterHS36RedProbeWire.setPath({ path: setupProbesObj.probeWiresPathes.redWire });
+        }
+        if (blackWirePath) {
+            this.trueRMSMultimeterHS36BlackProbeWire.clearDev();
+            this.trueRMSMultimeterHS36BlackProbeWire.setPath({ path: setupProbesObj.probeWiresPathes.blackWire });
+        }
+
+        if (setupProbesObj.devMode || redWirePathDevMode) {
             this.trueRMSMultimeterHS36RedProbeWire.devPath({
                 startPos: this.getWorldPosition(this.probes.redPlug),
                 endPos: this.getWorldPosition(this.probes.redProbe),
                 waypointsNum: 4
             });
+        }
+        if (setupProbesObj.devMode || blackWirePathDevMode) {
             this.trueRMSMultimeterHS36BlackProbeWire.devPath({
                 startPos: this.getWorldPosition(this.probes.blackPlug),
                 endPos: this.getWorldPosition(this.probes.blackProbe),
@@ -499,6 +560,29 @@ initObj {
     }
 
     resetProbes() {
+        this.probePressed();
+        this.setProbes({
+            resetInitialProbeState: {
+                red: true,
+                black: false,
+                probe: this.probes.redProbe.userData['needle']
+            }
+        });
+        this.setProbes({
+            resetInitialProbeState: {
+                red: false,
+                black: true,
+                probe: this.probes.blackProbe.userData['needle']
+            }
+        });
+
+        if (this.trueRMSMultimeterHS36RedProbeWire.mesh) {
+            this.trueRMSMultimeterHS36RedProbeWire.mesh.visible = false;
+        }
+        if (this.trueRMSMultimeterHS36BlackProbeWire.mesh) {
+            this.trueRMSMultimeterHS36BlackProbeWire.mesh.visible = false;
+        }
+
         this.probes.redNeedle.position.copy(this.probes.redNeedleInitialPos);
         this.probes.blackNeedle.position.copy(this.probes.blackNeedleInitialPos);
         this.probes.defaultRedWire.visible = true;
@@ -615,6 +699,16 @@ initObj {
                 this.preselectedProbe = undefined;
                 return;
             }
+        }
+        if (this.preselectedProbe === preselectedProbe) {
+            this.setProbes({
+                resetInitialProbeState: {
+                    red: (preselectedProbe.name.indexOf('Red') > -1),
+                    black: (preselectedProbe.name.indexOf('Black') > -1),
+                    probe: preselectedProbe.userData['needle']
+                }
+            });
+            this.probePressed();
         }
         this.preselectedProbe = preselectedProbe;
         preselectedProbe.material.emissive = new THREE.Color(0.75, 0.75, 0.75);

@@ -56,6 +56,7 @@ initObj {
             var audioLoader = new THREE.AudioLoader();
             audioLoader.load('../vlabs.items/boshScrewdriver/sounds/sound1.mp3', function(buffer) {
                 self.boschScrewdriverButtonPressSound.setBuffer(buffer);
+                self.boschScrewdriverButtonPressSound.setVolume(0.3);
             });
             this.boschScrewdriverButtonPressSoundTime = 0;
 
