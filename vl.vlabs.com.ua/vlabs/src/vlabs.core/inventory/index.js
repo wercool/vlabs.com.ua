@@ -384,6 +384,7 @@ export default class Inventory {
         var itemsKeys = Object.keys(this.items);
         if (this.items[itemsKeys[this.currentItemIdx]].vLabItem) {
             if (this.items[itemsKeys[this.currentItemIdx]].vLabItem.inventoryMouseUpHandler) {
+                var event = {};
                 this.items[itemsKeys[this.currentItemIdx]].vLabItem.inventoryMouseUpHandler(event);
             }
         }
