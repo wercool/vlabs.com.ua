@@ -203,9 +203,12 @@ export default class Inventory {
         if (!this.paused) {
             this.webGLRenderer.clear();
 
+            this.webGLRenderer.render(this.scene, this.defaultCamera);
+
             this.defaultCameraControls.update();
 
             var itemsKeys = Object.keys(this.items);
+
             if (itemsKeys.length > 0) {
                 if (this.items[itemsKeys[this.currentItemIdx]].vLabItem) {
                     if (this.items[itemsKeys[this.currentItemIdx]].vLabItem.redererInventoryFrameEventHandler) {
@@ -214,7 +217,6 @@ export default class Inventory {
                 }
             }
 
-            this.webGLRenderer.render(this.scene, this.defaultCamera);
             requestAnimationFrame(this.render.bind(this));
         } else {
             setTimeout(this.render.bind(this), 500);
@@ -222,7 +224,7 @@ export default class Inventory {
     }
 
     close() {
-        this.paused = false;
+        this.paused = true;
         this.container.style.display = 'none';
         this.context.overlayContainer.style.display = 'none';
 

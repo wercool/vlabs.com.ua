@@ -239,7 +239,7 @@ html, body {
     background-image: url('../img/closeInventory.png');
     background-repeat: no-repeat;
     background-size: contain;
-    right: 16px;
+    left: 16px;
     top: 16px;
     cursor: pointer;
     z-index: 2e12;
@@ -306,7 +306,7 @@ html, body {
     background-image: url('../img/closeInventory.png');
     background-repeat: no-repeat;
     background-size: contain;
-    right: 16px;
+    left: 16px;
     top: 16px;
     cursor: pointer;
     z-index: 2e12;
