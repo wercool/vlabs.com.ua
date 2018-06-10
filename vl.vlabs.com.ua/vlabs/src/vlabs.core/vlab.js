@@ -1321,6 +1321,8 @@ export default class VLab {
     }
 
     toggleFullscreen() {
+        this.paused = true;
+        setTimeout(() => { this.paused = false; }, 750);
         var element = document.body;
         var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
         if (!fullscreenElement) {
