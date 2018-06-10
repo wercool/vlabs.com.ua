@@ -9,14 +9,14 @@ html, body {
     overflow: hidden;
     height: 100%;
     width: 100%;
-    background-color: black;
+    background-color: #032d2e;
     font-family: 'Roboto Condensed', sans-serif;
 }
 
 #loader {
     position: absolute;
-    border: 12px solid #f3f3f3; /* Light grey */
-    border-top: 12px solid #3498db; /* Blue */
+    border: 12px solid #e8ffff;
+    border-top: 12px solid #087d81;
     border-radius: 50%;
     width: 60px;
     height: 60px;
@@ -32,13 +32,13 @@ html, body {
 }
 
 .vLabConatiner {
-    background-color: black;
+    background-color: #032d2e;
     width: 100%;
     height: 100%;
 }
 
 .webGLContainer {
-    background-color: black;
+    background-color: #032d2e;
     float: left;
     width: 100%;
     height: 100%;
@@ -46,7 +46,7 @@ html, body {
 
 .overlayContainer {
     position: relative;
-    background-color:rgba(15, 15, 15, 0.85);
+    background-color:rgba(0, 46, 49, 0.85);
     top: 0;
     left: 0;
     width: 100%;
@@ -55,9 +55,9 @@ html, body {
 }
 
 .progressBar {
-    left: 25%;
+    left: 10%;
     top: 50%;
-    width: 45%;
+    width: 80%;
     height: 20px;
 }
 
@@ -148,18 +148,18 @@ html, body {
 /* Inventory */
 .inventoryContainer {
     position: fixed;
-    width: 92vw;
-    height: 93%;
-    background-color: #0a283dc0;
+    top: 10px;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    background-color: #011e25e1;
     display: none;
     z-index: 2e9;
-    margin-top: 2vh;
-    margin-left: 2vw;
-    border-radius: 20pt;
+    border-radius: 5px;
     -moz-box-shadow: 0 0 10px #ccc;
     -webkit-box-shadow: 0 0 10px #ccc;
     box-shadow: 0 0 10px #ccc;
-    padding: 10pt;
+    padding: 7px;
     -webkit-user-select: none;  /* Chrome all / Safari all */
     -moz-user-select: none;     /* Firefox all */
     -ms-user-select: none;      /* IE 10+ */
@@ -180,56 +180,85 @@ html, body {
 
 .inventoryNextItemButton {
     position: fixed;
-    height: 48px;
-    width: 48px;
+    width: 10vmin;
+    height: 10vmin;
+    max-width: 48px;
+    max-height: 48px;
     background-image: url('../img/next.png');
     background-repeat: no-repeat;
-    left: calc(85%);
-    top: 30%;
+    background-size: contain;
+    right: 16px;
+    top: 25vh;
     cursor: pointer;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+    -webkit-tap-highlight-color: transparent;
 }
 
 .inventoryPrevItemButton {
     position: fixed;
-    height: 48px;
-    width: 48px;
+    width: 10vmin;
+    height: 10vmin;
+    max-width: 48px;
+    max-height: 48px;
     background-image: url('../img/prev.png');
     background-repeat: no-repeat;
-    left: calc(15% - 48px);
-    top: 30%;
+    background-size: contain;
+    left: 16px;
+    top: 25vh;
     cursor: pointer;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+    -webkit-tap-highlight-color: transparent;
 }
 
 .inventoryTakeButton {
     position: fixed;
-    left: calc(50% - 17pt);
-    top: 48vh;
+    left: calc(50% - 17px);
+    top: calc(50vh - 24px);
     cursor: pointer;
     color: rgba(255, 255, 255, 0.63);
     font-size: 34pt;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+    -webkit-tap-highlight-color: transparent;
 }
 
 .inventoryCloseButton {
     position: fixed;
-    height: 48px;
-    width: 48px;
+    width: 10vmin;
+    height: 10vmin;
+    max-width: 48px;
+    max-height: 48px;
     background-image: url('../img/closeInventory.png');
     background-repeat: no-repeat;
-    left: calc(2vw + 24px);
-    top: calc(2vh + 24px);
+    background-size: contain;
+    right: 16px;
+    top: 16px;
     cursor: pointer;
     z-index: 2e12;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+    -webkit-tap-highlight-color: transparent;
 }
 
 .inventoryInfoBox {
-    width: calc(100% - 10pt);
-    height: calc(100% - 50vh - 20pt);
-    margin-top: 10pt;
-    border-radius: 5pt;
+    width: calc(100% - 10px);
+    height: calc(100% - 50vh - 20px);
+    margin-top: 10px;
+    border-radius: 5px;
     -moz-box-shadow: 0 0 5px #ccc;
     -webkit-box-shadow: 0 0 5px #ccc;
     box-shadow: 0 0 5px #ccc;
-    padding: 5pt;
+    padding: 5px;
     overflow: auto;
 }
 
@@ -250,17 +279,18 @@ html, body {
 /* Detailed View */
 .detailedViewContainer {
     position: fixed;
-    width: 92vw;
-    height: 93%;
-    background-color: #0a283dc0;
+    top: 10px;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    background-color: #011e25e1;
+    display: none;
     z-index: 2e9;
-    margin-top: 2vh;
-    margin-left: 2vw;
-    border-radius: 15pt;
+    border-radius: 5px;
     -moz-box-shadow: 0 0 10px #ccc;
     -webkit-box-shadow: 0 0 10px #ccc;
     box-shadow: 0 0 10px #ccc;
-    padding: 10pt;
+    padding: 7px;
     -webkit-user-select: none;  /* Chrome all / Safari all */
     -moz-user-select: none;     /* Firefox all */
     -ms-user-select: none;      /* IE 10+ */
@@ -269,14 +299,22 @@ html, body {
 
 .detailedViewCloseButton {
     position: fixed;
-    height: 48px;
-    width: 48px;
+    width: 10vmin;
+    height: 10vmin;
+    max-width: 48px;
+    max-height: 48px;
     background-image: url('../img/closeInventory.png');
     background-repeat: no-repeat;
-    left: calc(2vw + 24px);
-    top: calc(2vh + 24px);
+    background-size: contain;
+    right: 16px;
+    top: 16px;
     cursor: pointer;
     z-index: 2e12;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+    -webkit-tap-highlight-color: transparent;
 }
 
 .detailedViewWebGLContainer {

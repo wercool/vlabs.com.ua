@@ -360,13 +360,13 @@ export default class VLab {
             strokeWidth: 4,
             easing: 'easeInOut',
             duration: 50,
-            color: '#657da1',
+            color: '#79aca7',
             trailColor: '#eee',
             trailWidth: 0.25,
             svgStyle: { width: '100%', height: '100%' },
             text: {
                 style: {
-                    color: '#999',
+                    color: '#cffdff',
                     position: 'absolute',
                     right: '0',
                     top: '40px',
@@ -376,8 +376,8 @@ export default class VLab {
                 },
                 autoStyleContainer: true
             },
-            from: {color: '#FFEA82'},
-            to: {color: '#ED6A5A'},
+            from: {color: '#B2EBF2'},
+            to: {color: '#006064'},
             step: (state, bar) => {
                 if (bar.value() < 1)
                 {

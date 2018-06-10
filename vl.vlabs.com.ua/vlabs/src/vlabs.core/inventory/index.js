@@ -55,7 +55,7 @@ export default class Inventory {
             powerPreference: 'high-performance',
             precision: 'lowp'
         });
-        this.webGLRenderer.setClearColor(0x214761);
+        this.webGLRenderer.setClearColor(0x394e4f);
 
         this.webGLContainer.addEventListener("mousemove", this.onMouseMove.bind(this), false);
         this.webGLContainer.addEventListener("mousedown", this.onMouseDown.bind(this), false);
