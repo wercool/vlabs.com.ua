@@ -11,6 +11,7 @@ import VLabInteractor               from '../../vlabs.core/vlab-interactor';
 
 //VLab Items
 import CarrierTPWEM01              from '../../vlabs.items/hvac/carrierTPWEM01';
+import FlowAlongTube               from '../../vlabs.items/flow-along-tube';
 
 export default class VlabHVACBaseAirHandler extends VLab {
     constructor(initObj = {}) {
@@ -288,6 +289,33 @@ export default class VlabHVACBaseAirHandler extends VLab {
     /* VlabHVACBaseAirHandler Actions */
     initializeActions() {
         this.nishDoorClosed = true;
+
+        //R on controlBoardHK61EA005
+        this.controlBoardHK61EA005RWire = new FlowAlongTube({
+            context: this,
+            tube: this.vLabScene.getObjectByName('controlBoardHK61EA005RWire'),
+            color: 0xff0000,
+            scale: new THREE.Vector3(0.025, 0.025, 0.025),
+            cSectionVertices: 4,
+            speed: 2.0,
+            reversed: false,
+            prestartDelay: 1350
+        });
+        //R on carrierTPWEM01ToAirHandlerCable
+        this.carrierTPWEM01ToAirHandlerCable = new FlowAlongTube({
+            context: this,
+            tube: this.vLabScene.getObjectByName('carrierTPWEM01ToAirHandlerCable'),
+            color: 0xff0000,
+            scale: new THREE.Vector3(0.025, 0.025, 0.025),
+            cSectionVertices: 4,
+            speed: 1.0,
+            reversed: false
+        });
+
+        setTimeout(() => {
+            this.carrierTPWEM01ToAirHandlerCable.start();
+            this.controlBoardHK61EA005RWire.start();
+        }, 1000);
     }
 
     nishDoorOpenOrClose(caller) {

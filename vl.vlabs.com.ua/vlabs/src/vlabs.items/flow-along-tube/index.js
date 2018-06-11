@@ -109,7 +109,7 @@ export default class FlowAlongTube {
 
     animate() {
         if (!this.sprite.visible) return;
-        if (this.curCSectionCenterId >= this.cSectionsNum - 1) {
+        if (this.curCSectionCenterId >= this.cSectionsNum - 2) {
             this.curCSectionCenterId = 0;
             this.sprite.position.copy(this.cSectionCenters[0]);
         }
@@ -120,7 +120,15 @@ export default class FlowAlongTube {
               z: this.cSectionCenters[this.curCSectionCenterId].z }, this.speed)
         .easing(TWEEN.Easing.Linear.None)
         .onComplete(() => {
-            this.animate();
+            if (this.initObj.prestartDelay && this.curCSectionCenterId === 1) {
+                this.sprite.visible = false;
+                setTimeout(() => {
+                    this.sprite.visible = true;
+                    this.animate();
+                }, this.initObj.prestartDelay);
+            } else {
+                this.animate();
+            }
         })
         .start();
     }
