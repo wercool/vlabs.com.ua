@@ -95,7 +95,7 @@ class VlabBase extends VLab {
 
                 this.trueRMSMultimeterHS36.setProbes({
                     initialLocation: {
-                        blackNeedleShift: new THREE.Vector3(0.0, 0.0, 0.0),
+                        blackNeedleShift: new THREE.Vector3(-0.015, 0.0, 0.0),
                         redNeedleShift: new THREE.Vector3(0.0, 0.0, 0.0)
                     },
                     probeWiresPathes: {
@@ -110,10 +110,10 @@ class VlabBase extends VLab {
                         blackWire: [
                             new THREE.Vector3(-0.125, 0.790, 0.356),
                             new THREE.Vector3(-0.123, 0.817, 0.356),
-                            new THREE.Vector3(-0.093, 0.769, 0.597),
+                            new THREE.Vector3(-0.1, 0.769, 0.597),
                             new THREE.Vector3(-0.082, 0.771, 0.643),
                             new THREE.Vector3(-0.064, 0.783, 0.596),
-                            new THREE.Vector3(-0.065, 0.764, 0.527),
+                            new THREE.Vector3(-0.08, 0.764, 0.527),
                         ]
                     },
                     devMode: false
@@ -126,10 +126,11 @@ class VlabBase extends VLab {
                         {
                             name: 'relayT9AV5022ContactCOM',
                             target: new THREE.Vector3(0.0352108, 0.02511, 0.0296565),
-                            orientation: new THREE.Vector3(THREE.Math.degToRad(-90.0), 0.0, THREE.Math.degToRad(-60.0)),
                             spritePosDeltas: new THREE.Vector3(-0.03, 0.05, 0.05),
                             spriteScale: 0.05,
                             spriteRotation: 0.0,
+                            redProbeOrientation: new THREE.Vector3(THREE.Math.degToRad(-90.0), 0.0, THREE.Math.degToRad(-60.0)),
+                            blackProbeOrientation: new THREE.Vector3(THREE.Math.degToRad(-90.0), 0.0, THREE.Math.degToRad(-60.0)),
                             probeWiresPathes: {
                                 blackWire: [
                                     new THREE.Vector3(-0.125, 0.790, 0.356),
@@ -138,26 +139,38 @@ class VlabBase extends VLab {
                                     new THREE.Vector3(-0.208, 0.755, 0.184),
                                     new THREE.Vector3(-0.135, 0.875, 0.341),
                                     new THREE.Vector3(-0.107, 0.866, 0.341),
+                                ],
+                                redWire: [
+                                    new THREE.Vector3(-0.145, 0.790, 0.356),
+                                    new THREE.Vector3(-0.146, 0.813, 0.339),
+                                    new THREE.Vector3(-0.185, 0.762, 0.179),
+                                    new THREE.Vector3(-0.126, 0.759, 0.142),
+                                    new THREE.Vector3(-0.123, 0.860, 0.322),
+                                    new THREE.Vector3(-0.107, 0.866, 0.341),
                                 ]
                             }
                         },
                         {
                             name: 'relayT9AV5022ContactNC',
                             target: new THREE.Vector3(0.0550126, 0.0309874, 0.0296565),
-                            orientation: new THREE.Vector3(THREE.Math.degToRad(-45.0), 0.0, THREE.Math.degToRad(0.0)),
                             spritePosDeltas: new THREE.Vector3(0.05, -0.05, 0.05),
                             spriteScale: 0.05,
                             spriteRotation: THREE.Math.degToRad(270.0),
-                            probesDevMode: true,
+                            redProbeOrientation: new THREE.Vector3(THREE.Math.degToRad(-90.0), 0.0, THREE.Math.degToRad(-60.0)),
+                            blackProbeOrientation: new THREE.Vector3(THREE.Math.degToRad(-90.0), 0.0, THREE.Math.degToRad(-60.0)),
+                            probeWiresPathes: {
+                            }
                         },
                         {
                             name: 'relayT9AV5022ContactNO',
                             target: new THREE.Vector3(0.055229, 0.0400362, 0.0296565),
-                            orientation: new THREE.Vector3(THREE.Math.degToRad(-135.0), 0.0, THREE.Math.degToRad(0.0)),
                             spritePosDeltas: new THREE.Vector3(0.05, 0.05, 0.05),
                             spriteScale: 0.05,
                             spriteRotation: THREE.Math.degToRad(300.0),
-                            probesDevMode: true,
+                            redProbeOrientation: new THREE.Vector3(THREE.Math.degToRad(-90.0), 0.0, THREE.Math.degToRad(-60.0)),
+                            blackProbeOrientation: new THREE.Vector3(THREE.Math.degToRad(-90.0), 0.0, THREE.Math.degToRad(-60.0)),
+                            probeWiresPathes: {
+                            }
                         },
                     ]
                 });

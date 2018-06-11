@@ -339,26 +339,83 @@ export default class VlabHVACBaseHeatPump extends VLab {
                     {
                         name: 'relayT9AV5022ContactCOM',
                         target: new THREE.Vector3(0.0352108, 0.02511, 0.0296565),
-                        orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(30.0)),
                         spritePosDeltas: new THREE.Vector3(-0.03, 0.05, 0.05),
                         spriteScale: 0.05,
-                        spriteRotation: 0.0
+                        spriteRotation: 0.0,
+                        redProbeOrientation: new THREE.Vector3(1.89180, 0.13956, -2.22175),
+                        blackProbeOrientation: new THREE.Vector3(1.85011, 0.21216, -1.98470),
+                        probeWiresPathes: {
+                            redWire: [
+                                new THREE.Vector3(0.260, 0.658, -0.428),
+                                new THREE.Vector3(0.291, 0.649, -0.437),
+                                new THREE.Vector3(0.302, 0.481, -0.428),
+                                new THREE.Vector3(0.425, 0.468, -0.350),
+                                new THREE.Vector3(0.494, 0.636, -0.310),
+                                new THREE.Vector3(0.478, 0.656, -0.313),
+                            ],
+                            blackWire: [
+                                new THREE.Vector3(0.253, 0.658, -0.447),
+                                new THREE.Vector3(0.301, 0.667, -0.449),
+                                new THREE.Vector3(0.341, 0.400, -0.397),
+                                new THREE.Vector3(0.415, 0.417, -0.333),
+                                new THREE.Vector3(0.486, 0.629, -0.270),
+                                new THREE.Vector3(0.466, 0.656, -0.276),
+                            ],
+                        }
                     },
                     {
                         name: 'relayT9AV5022ContactNC',
                         target: new THREE.Vector3(0.0550126, 0.0309874, 0.0296565),
-                        orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(-60.0)),
                         spritePosDeltas: new THREE.Vector3(0.05, -0.05, 0.05),
                         spriteScale: 0.05,
-                        spriteRotation: THREE.Math.degToRad(270.0)
+                        spriteRotation: THREE.Math.degToRad(270.0),
+                        redProbeOrientation: new THREE.Vector3(-0.77981, 0.32654, -0.76251),
+                        blackProbeOrientation: new THREE.Vector3(-1.15475, -0.83648, 1.19748),
+                        probeWiresPathes: {
+                            redWire: [
+                                new THREE.Vector3(0.260, 0.658, -0.428),
+                                new THREE.Vector3(0.287, 0.671, -0.436),
+                                new THREE.Vector3(0.355, 0.393, -0.416),
+                                new THREE.Vector3(0.445, 0.438, -0.380),
+                                new THREE.Vector3(0.483, 0.638, -0.356),
+                                new THREE.Vector3(0.464, 0.652, -0.357),
+                            ],
+                            blackWire: [
+                                new THREE.Vector3(0.253, 0.658, -0.447),
+                                new THREE.Vector3(0.297, 0.666, -0.458),
+                                new THREE.Vector3(0.296, 0.539, -0.474),
+                                new THREE.Vector3(0.353, 0.499, -0.519),
+                                new THREE.Vector3(0.325, 0.807, -0.521),
+                                new THREE.Vector3(0.310, 0.790, -0.501),
+                            ],
+                        }
                     },
                     {
                         name: 'relayT9AV5022ContactNO',
                         target: new THREE.Vector3(0.055229, 0.0400362, 0.0296565),
-                        orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, 0.0),
                         spritePosDeltas: new THREE.Vector3(0.05, 0.05, 0.05),
                         spriteScale: 0.05,
-                        spriteRotation: THREE.Math.degToRad(300.0)
+                        spriteRotation: THREE.Math.degToRad(300.0),
+                        redProbeOrientation: new THREE.Vector3(-2.94301, -0.02719, 0.25372),
+                        blackProbeOrientation: new THREE.Vector3(-2.24677, 0.37240, 0.02343),
+                        probeWiresPathes: {
+                            redWire: [
+                                new THREE.Vector3(0.260, 0.658, -0.428),
+                                new THREE.Vector3(0.293, 0.666, -0.434),
+                                new THREE.Vector3(0.323, 0.571, -0.428),
+                                new THREE.Vector3(0.365, 0.606, -0.428),
+                                new THREE.Vector3(0.306, 0.905, -0.422),
+                                new THREE.Vector3(0.303, 0.876, -0.408),
+                            ],
+                            blackWire: [
+                                new THREE.Vector3(0.253, 0.658, -0.447),
+                                new THREE.Vector3(0.289, 0.662, -0.456),
+                                new THREE.Vector3(0.339, 0.502, -0.471),
+                                new THREE.Vector3(0.388, 0.543, -0.487),
+                                new THREE.Vector3(0.417, 0.831, -0.476),
+                                new THREE.Vector3(0.400, 0.821, -0.450),
+                            ],
+                        }
                     },
                 ]
             });

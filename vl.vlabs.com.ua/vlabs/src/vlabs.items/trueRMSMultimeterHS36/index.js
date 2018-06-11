@@ -431,7 +431,22 @@ initObj {
                 if (this.probes.redNeedle.position.equals(helperSprite.userData['testPoint'].target) || this.probes.blackNeedle.position.equals(helperSprite.userData['testPoint'].target)) return;
                 console.log(helperSprite.name);
                 this.preselectedProbe.userData['needle'].position.copy(helperSprite.userData['testPoint'].target)
-                this.preselectedProbe.userData['needle'].rotation.set(helperSprite.userData['testPoint'].orientation.x, helperSprite.userData['testPoint'].orientation.y, helperSprite.userData['testPoint'].orientation.z);
+                if(this.preselectedProbe.userData['needle'].name.indexOf('Red') > -1) {
+                    if (helperSprite.userData['testPoint'].redProbeOrientation) {
+                        this.preselectedProbe.userData['needle'].rotation.set(helperSprite.userData['testPoint'].redProbeOrientation.x, helperSprite.userData['testPoint'].redProbeOrientation.y, helperSprite.userData['testPoint'].redProbeOrientation.z);
+                    } else 
+                    {
+                        console.error('Red Probe Orientation is not set');
+                        this.preselectedProbe.userData['needle'].rotation.set(0.0, 0.0, 0.0);
+                    }
+                } else {
+                    if (helperSprite.userData['testPoint'].blackProbeOrientation) {
+                        this.preselectedProbe.userData['needle'].rotation.set(helperSprite.userData['testPoint'].blackProbeOrientation.x, helperSprite.userData['testPoint'].blackProbeOrientation.y, helperSprite.userData['testPoint'].blackProbeOrientation.z);
+                    } else  {
+                        console.error('Black Probe Orientation is not set');
+                        this.preselectedProbe.userData['needle'].rotation.set(0.0, 0.0, 0.0);
+                    }
+                }
                 this.model.remove(this.preselectedProbe.userData['needle']);
                 helperSprite.parent.remove(this.preselectedProbe.userData['needle']);
                 helperSprite.parent.add(this.preselectedProbe.userData['needle']);
@@ -549,6 +564,40 @@ initObj {
                 endPos: this.getWorldPosition(this.probes.redProbe),
                 waypointsNum: 4
             });
+
+            if (this.redNeedle_manipulationControl === undefined) {
+                this.redNeedle_manipulationControl = new TransformControls(this.context.defaultCamera, this.context.webGLRenderer.domElement);
+                this.redNeedle_manipulationControl.setSize(0.5);
+                this.context.vLabScene.add(this.redNeedle_manipulationControl);
+                this.redNeedle_manipulationControl.attach(this.probes.redNeedle);
+                this.redNeedle_manipulationControl.setRotationSnap(THREE.Math.degToRad(1.0));
+                this.redNeedle_manipulationControl.setMode('rotate');
+
+                document.addEventListener("keydown", (event)=>{
+                    switch (event.keyCode) {
+                        case 77: // m
+                            if (this.redNeedle_manipulationControl.getMode() === 'translate') {
+                                this.redNeedle_manipulationControl.setMode('rotate');
+                            } else {
+                                this.redNeedle_manipulationControl.setMode('translate');
+                            }
+                        break;
+                        case 13: // Enter
+                            if (event.ctrlKey) {
+                                this.trueRMSMultimeterHS36RedProbeWire.devPath({
+                                    startPos: this.getWorldPosition(this.probes.redPlug),
+                                    endPos: this.getWorldPosition(this.probes.redProbe),
+                                    waypointsNum: 4
+                                });
+                            }
+                            console.log('TrueRMSMultimeterHS36 Red Probe Needle');
+                            console.log('position (m): ' + this.probes.redNeedle.position.x.toFixed(3) + ', ' + this.probes.redNeedle.position.y.toFixed(3) + ', ' + this.probes.redNeedle.position.z.toFixed(3));
+                            console.log('rotation (d): ' + this.probes.redNeedle.rotation.x.toFixed(5) + ', ' + this.probes.redNeedle.rotation.y.toFixed(5) + ', ' + this.probes.redNeedle.rotation.z.toFixed(5));
+                        break;
+
+                    }
+                }, false);
+            }
         }
         if (setupProbesObj.devMode || blackWirePathDevMode) {
             this.trueRMSMultimeterHS36BlackProbeWire.devPath({
@@ -556,6 +605,40 @@ initObj {
                 endPos: this.getWorldPosition(this.probes.blackProbe),
                 waypointsNum: 4
             });
+
+            if (this.blackNeedle_manipulationControl === undefined) {
+                this.blackNeedle_manipulationControl = new TransformControls(this.context.defaultCamera, this.context.webGLRenderer.domElement);
+                this.blackNeedle_manipulationControl.setSize(0.5);
+                this.context.vLabScene.add(this.blackNeedle_manipulationControl);
+                this.blackNeedle_manipulationControl.attach(this.probes.blackNeedle);
+                this.blackNeedle_manipulationControl.setRotationSnap(THREE.Math.degToRad(1.0));
+                this.blackNeedle_manipulationControl.setMode('rotate');
+
+                document.addEventListener("keydown", (event)=>{
+                    switch (event.keyCode) {
+                        case 77: // m
+                            if (this.blackNeedle_manipulationControl.getMode() === 'translate') {
+                                this.blackNeedle_manipulationControl.setMode('rotate');
+                            } else {
+                                this.blackNeedle_manipulationControl.setMode('translate');
+                            }
+                        break;
+                        case 13: // Enter
+                            if (event.ctrlKey) {
+                                this.trueRMSMultimeterHS36BlackProbeWire.devPath({
+                                    startPos: this.getWorldPosition(this.probes.blackPlug),
+                                    endPos: this.getWorldPosition(this.probes.blackProbe),
+                                    waypointsNum: 4
+                                });
+                            }
+                            console.log('TrueRMSMultimeterHS36 Black Probe Needle');
+                            console.log('position (m): ' + this.probes.blackNeedle.position.x.toFixed(3) + ', ' + this.probes.blackNeedle.position.y.toFixed(3) + ', ' + this.probes.blackNeedle.position.z.toFixed(3));
+                            console.log('rotation (d): ' + this.probes.blackNeedle.rotation.x.toFixed(5) + ', ' + this.probes.blackNeedle.rotation.y.toFixed(5) + ', ' + this.probes.blackNeedle.rotation.z.toFixed(5));
+                        break;
+
+                    }
+                }, false);
+            }
         }
     }
 
