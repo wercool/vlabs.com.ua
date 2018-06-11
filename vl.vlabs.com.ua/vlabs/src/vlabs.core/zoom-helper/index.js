@@ -178,6 +178,10 @@ export default class ZoomHelper {
     }
 
     reset() {
+        if (this.context.defaultCameraControls.backState === undefined) {
+            this.context.defaultCameraControls.reset();
+            return;
+        }
         var prevTarget = this.context.defaultCameraControls.backState.target;
 
         this.context.defaultCameraControls.enabled = false;

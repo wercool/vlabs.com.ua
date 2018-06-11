@@ -7,6 +7,8 @@ export default class FlowAlongTube {
         this.context = this.initObj.context;
         this.tube = this.initObj.tube;
 
+        this.chainTo = undefined;
+
         this.speed = this.initObj.speed ? 100 / this.initObj.speed : 100;
         this.curCSectionCenterId = 0;
 
@@ -112,6 +114,11 @@ export default class FlowAlongTube {
         if (this.curCSectionCenterId >= this.cSectionsNum - 2) {
             this.curCSectionCenterId = 0;
             this.sprite.position.copy(this.cSectionCenters[0]);
+            if (this.chainTo) {
+                this.sprite.visible = false;
+                this.chainTo.start();
+                return;
+            }
         }
         this.curCSectionCenterId++;
         this.animationTween = new TWEEN.Tween(this.sprite.position)
