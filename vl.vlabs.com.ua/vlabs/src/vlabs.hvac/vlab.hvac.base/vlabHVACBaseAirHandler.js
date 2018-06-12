@@ -12,6 +12,7 @@ import VLabInteractor               from '../../vlabs.core/vlab-interactor';
 //VLab Items
 import CarrierTPWEM01              from '../../vlabs.items/hvac/carrierTPWEM01';
 import FlowAlongTube               from '../../vlabs.items/flow-along-tube';
+import DirectionalFlow             from '../../vlabs.items/directional-flow';
 
 export default class VlabHVACBaseAirHandler extends VLab {
     constructor(initObj = {}) {
@@ -318,6 +319,26 @@ export default class VlabHVACBaseAirHandler extends VLab {
             this.controlBoardHK61EA005RWire.chainTo = this.carrierTPWEM01ToAirHandlerCable;
             this.carrierTPWEM01ToAirHandlerCable.start();
         }, 1000);
+
+
+        this.directionalFlow = new DirectionalFlow({
+            context: this,
+            name: 'directionalFlow',
+            tubes: [
+                {
+                    tube: this.vLabScene.getObjectByName('HeatPumpToAirHandlerCable'),
+                    cSectionVertices: 4,
+                    reversed: true
+                },
+            ],
+            color: 0x00ff00,
+            scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            animationDelay: 100,
+            tooltip: '~24V to Heat Pump Contactor'
+        });
+        setTimeout(() => {
+            this.directionalFlow.start();
+        }, 100);
     }
 
     nishDoorOpenOrClose(caller) {

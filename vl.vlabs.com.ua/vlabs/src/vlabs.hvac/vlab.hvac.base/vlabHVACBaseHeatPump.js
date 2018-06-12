@@ -18,6 +18,7 @@ import ControlBoardCEBD430433       from '../../vlabs.items/hvac/controlBoardCEB
 import ScrollCompressorZP25K5E      from '../../vlabs.items/hvac/scrollCompressorZP25K5E';
 import DigitalMultimeterFluke17B    from '../../vlabs.items/digitalMultimeterFluke17B';
 import TrueRMSMultimeterHS36        from '../../vlabs.items/trueRMSMultimeterHS36';
+import DirectionalFlow              from '../../vlabs.items/directional-flow';
 
 export default class VlabHVACBaseHeatPump extends VLab {
     constructor(initObj = {}) {
@@ -496,6 +497,26 @@ export default class VlabHVACBaseHeatPump extends VLab {
             action: this.heatPumpFrameServicePanelTakeOutInteractorHandler,
             deactivated: true
         });
+
+        this.powerInLineCurrentFlow = new DirectionalFlow({
+            context: this,
+            name: 'powerInLineCurrentFlow',
+            tubes: [
+                {
+                    tube: this.vLabScene.getObjectByName('powerInLinePath'),
+                    cSectionVertices: 4,
+                    reversed: false,
+                    reference: true
+                },
+            ],
+            color: 0x00ff00,
+            scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            animationDelay: 100,
+            tooltip: '~110V Power'
+        });
+        setTimeout(() => {
+            this.powerInLineCurrentFlow.start();
+        }, 1000);
 
         // Misc helpers
         // this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);

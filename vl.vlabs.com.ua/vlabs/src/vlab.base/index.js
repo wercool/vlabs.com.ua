@@ -14,6 +14,7 @@ import DigitalMultimeterFluke17B    from '../vlabs.items/digitalMultimeterFluke1
 import TrueRMSMultimeterHS36        from '../vlabs.items/trueRMSMultimeterHS36';
 
 import FlowAlongTube            from '../vlabs.items/flow-along-tube';
+import DirectionalFlow          from '../vlabs.items/directional-flow';
 
 class VlabBase extends VLab {
     constructor(initObj = {}) {
@@ -212,17 +213,29 @@ class VlabBase extends VLab {
                 this.flowAlongWire1.start();
             }, 1000);
 
-            // this.flowAlongWire3 = new FlowAlongTube({
-            //     context: this,
-            //     tube: this.vLabScene.getObjectByName('wire3'),
-            //     color: undefined,
-            //     scale: new THREE.Vector3(0.15, 0.15, 0.15),
-            //     cSectionVertices: 8,
-            //     speed: 0.5
-            // });
-            // setTimeout(() => {
-            //     this.flowAlongWire3.start();
-            // }, 1000);
+            this.directionalFlow = new DirectionalFlow({
+                context: this,
+                name: 'directionalFlow',
+                tubes: [
+                    {
+                        tube: this.vLabScene.getObjectByName('wire3'),
+                        cSectionVertices: 8,
+                        reversed: false
+                    },
+                    {
+                        tube: this.vLabScene.getObjectByName('wire4'),
+                        cSectionVertices: 8,
+                        reversed: false
+                    },
+                ],
+                color: undefined,
+                scale: new THREE.Vector3(0.15, 0.15, 0.15),
+                animationDelay: 100,
+                tooltip: '~24V'
+            });
+            setTimeout(() => {
+                this.directionalFlow.start();
+            }, 1000);
 
             // this.flowAlongWire4 = new FlowAlongTube({
             //     context: this,
