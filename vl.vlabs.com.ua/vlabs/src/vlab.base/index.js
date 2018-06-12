@@ -187,6 +187,15 @@ class VlabBase extends VLab {
                 color: 0xfff495
             });
 
+            this.flowAlongWire2 = new FlowAlongTube({
+                context: this,
+                tube: this.vLabScene.getObjectByName('wire2'),
+                color: undefined,
+                scale: new THREE.Vector3(0.25, 0.25, 0.25),
+                cSectionVertices: 12,
+                speed: 5.0,
+                reversed: true
+            });
 
             this.flowAlongWire1 = new FlowAlongTube({
                 context: this,
@@ -195,48 +204,37 @@ class VlabBase extends VLab {
                 scale: new THREE.Vector3(0.25, 0.25, 0.25),
                 cSectionVertices: 8,
                 speed: 5.0,
-                reversed: true
+                reversed: true,
+                spritesNum: 30
             });
             setTimeout(() => {
+                this.flowAlongWire1.chainTo = this.flowAlongWire2;
                 this.flowAlongWire1.start();
             }, 1000);
 
-            this.flowAlongWire2 = new FlowAlongTube({
-                context: this,
-                tube: this.vLabScene.getObjectByName('wire2'),
-                color: undefined,
-                scale: new THREE.Vector3(0.25, 0.25, 0.25),
-                cSectionVertices: 12,
-                speed: 10.0,
-                reversed: true
-            });
-            setTimeout(() => {
-                this.flowAlongWire2.start();
-            }, 1000);
+            // this.flowAlongWire3 = new FlowAlongTube({
+            //     context: this,
+            //     tube: this.vLabScene.getObjectByName('wire3'),
+            //     color: undefined,
+            //     scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            //     cSectionVertices: 8,
+            //     speed: 0.5
+            // });
+            // setTimeout(() => {
+            //     this.flowAlongWire3.start();
+            // }, 1000);
 
-            this.flowAlongWire3 = new FlowAlongTube({
-                context: this,
-                tube: this.vLabScene.getObjectByName('wire3'),
-                color: undefined,
-                scale: new THREE.Vector3(0.15, 0.15, 0.15),
-                cSectionVertices: 8,
-                speed: 0.5
-            });
-            setTimeout(() => {
-                this.flowAlongWire3.start();
-            }, 1000);
-
-            this.flowAlongWire4 = new FlowAlongTube({
-                context: this,
-                tube: this.vLabScene.getObjectByName('wire4'),
-                color: undefined,
-                scale: new THREE.Vector3(0.15, 0.15, 0.15),
-                cSectionVertices: 8,
-                speed: 0.5
-            });
-            setTimeout(() => {
-                this.flowAlongWire4.start();
-            }, 1000);
+            // this.flowAlongWire4 = new FlowAlongTube({
+            //     context: this,
+            //     tube: this.vLabScene.getObjectByName('wire4'),
+            //     color: undefined,
+            //     scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            //     cSectionVertices: 8,
+            //     speed: 0.5
+            // });
+            // setTimeout(() => {
+            //     this.flowAlongWire4.start();
+            // }, 1000);
 
 
 

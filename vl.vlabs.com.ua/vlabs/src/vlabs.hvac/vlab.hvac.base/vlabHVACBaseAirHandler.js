@@ -299,7 +299,6 @@ export default class VlabHVACBaseAirHandler extends VLab {
             cSectionVertices: 4,
             speed: 2.0,
             reversed: false,
-            prestartDelay: 0,
         });
         //R on carrierTPWEM01ToAirHandlerCable
         this.carrierTPWEM01ToAirHandlerCable = new FlowAlongTube({
@@ -308,16 +307,16 @@ export default class VlabHVACBaseAirHandler extends VLab {
             color: 0xff0000,
             scale: new THREE.Vector3(0.025, 0.025, 0.025),
             cSectionVertices: 4,
-            speed: 0.5,
+            speed: 1.0,
             reversed: false,
-            prestartDelay: 0,
+            spritesNum: 20
         });
 
         setTimeout(() => {
             this.carrierTPWEM01ToAirHandlerCable.chainTo = this.controlBoardHK61EA005RWire;
             this.controlBoardHK61EA005RWire.chainTo = this.carrierTPWEM01ToAirHandlerCable;
             this.carrierTPWEM01ToAirHandlerCable.start();
-        }, 5000);
+        }, 1000);
     }
 
     nishDoorOpenOrClose(caller) {

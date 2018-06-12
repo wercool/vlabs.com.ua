@@ -7,10 +7,11 @@ export default class FlowAlongTube {
         this.context = this.initObj.context;
         this.tube = this.initObj.tube;
 
+        this.sprites = [];
+
         this.chainTo = undefined;
 
         this.speed = this.initObj.speed ? 100 / this.initObj.speed : 100;
-        this.curCSectionCenterId = 0;
 
         var textureLoader = new THREE.TextureLoader();
 
@@ -36,14 +37,20 @@ export default class FlowAlongTube {
             depthWrite: false
         });
 
-        this.sprite = new THREE.Sprite(this.spriteMaterial);
-        this.sprite.name = "flowAlongTube_" + this.tube.name;
-        this.sprite.scale.copy(this.initObj.scale ? this.initObj.scale : new THREE.Vector3(0.1, 0.1, 0.1));
-        this.sprite.position.x = 0.0;
-        this.sprite.position.y = 0.0;
-        this.sprite.position.z = 0.0;
-        this.sprite.visible = true;
-        this.tube.add(this.sprite);
+        this.initObj.spritesNum = this.initObj.spritesNum !== undefined ? this.initObj.spritesNum : 1;
+        for (var i = 0; i < this.initObj.spritesNum; i++) {
+            var sprite = new THREE.Sprite(this.spriteMaterial);
+            sprite.name = "flowAlongTube_" + this.tube.name + "Sprite" + i;
+            sprite.scale.copy(this.initObj.scale ? this.initObj.scale : new THREE.Vector3(0.1, 0.1, 0.1));
+            sprite.position.x = 0.0;
+            sprite.position.y = 0.0;
+            sprite.position.z = 0.0;
+            sprite.visible = false;
+            this.tube.add(sprite);
+
+            sprite.userData['curCSectionCenterId'] = 0;
+            this.sprites.push(sprite);
+        }
 
         this.verticesTuples = [];
         this.tube.updateMatrixWorld();
@@ -95,47 +102,69 @@ export default class FlowAlongTube {
         // this.tube.add(line);
         // this.tube.material.wireframe = true;
 
-        this.sprite.position.copy(this.cSectionCenters[0]);
-        this.sprite.visible = false;
+        this.setPosition(this.cSectionCenters[0]);
+        this.setVisibility(false);
+    }
+
+    setPosition(position, idx) {
+        if (idx !== undefined) {
+            this.sprites[idx].position.copy(position);
+        } else {
+            for (var i = 0; i < this.sprites.length; i++) {
+                this.sprites[i].position.copy(position);
+            }
+        }
+    }
+
+    setVisibility(visibility, idx) {
+        if (idx !== undefined) {
+            this.sprites[idx].visible = visibility;
+        } else {
+            for (var i = 0; i < this.sprites.length; i++) {
+                this.sprites[i].visible = visibility;
+            }
+        }
     }
 
     start() {
-        this.sprite.visible = true;
-        this.animate();
+        if (this.started) return;
+        for (var i = 0; i < this.sprites.length; i++) {
+            setTimeout((i) => {
+                this.setVisibility(true, i);
+                this.animate(i);
+            }, this.speed * i, i);
+        }
+        this.started = true;
     }
 
     stop() {
-        this.animationTween.stop();
-        this.sprite.visible = false;
-    }
-
-    animate() {
-        if (!this.sprite.visible) return;
-        if (this.curCSectionCenterId >= this.cSectionsNum - 2) {
-            this.curCSectionCenterId = 0;
-            this.sprite.position.copy(this.cSectionCenters[0]);
-            if (this.chainTo) {
-                this.sprite.visible = false;
-                this.chainTo.start();
-                return;
+        for (var i = 0; i < this.sprites.length; i++) {
+            if (this.sprites[i].userData['animationTween']) {
+                this.sprites[i].userData['animationTween'].stop();
             }
         }
-        this.curCSectionCenterId++;
-        this.animationTween = new TWEEN.Tween(this.sprite.position)
-        .to({ x: this.cSectionCenters[this.curCSectionCenterId].x, 
-              y: this.cSectionCenters[this.curCSectionCenterId].y, 
-              z: this.cSectionCenters[this.curCSectionCenterId].z }, this.speed)
+        this.setVisibility(false);
+        this.started = false;
+    }
+
+    animate(idx) {
+        var sprite = this.sprites[idx];
+        if (!sprite.visible) return;
+        if (sprite.userData['curCSectionCenterId'] >= this.cSectionsNum - 2) {
+            sprite.userData['curCSectionCenterId'] = 0;
+            this.setPosition(this.cSectionCenters[0], idx);
+            if (this.chainTo && idx == 0) {
+                this.chainTo.start();
+            }
+        }
+        sprite.userData['curCSectionCenterId']++;
+        sprite.userData['animationTween'] = new TWEEN.Tween(sprite.position)
+        .to({ x: this.cSectionCenters[sprite.userData['curCSectionCenterId']].x, 
+              y: this.cSectionCenters[sprite.userData['curCSectionCenterId']].y, 
+              z: this.cSectionCenters[sprite.userData['curCSectionCenterId']].z }, this.speed)
         .easing(TWEEN.Easing.Linear.None)
         .onComplete(() => {
-            if (this.initObj.prestartDelay && this.curCSectionCenterId === 1) {
-                this.sprite.visible = false;
-                setTimeout(() => {
-                    this.sprite.visible = true;
-                    this.animate();
-                }, this.initObj.prestartDelay);
-            } else {
-                this.animate();
-            }
+            this.animate(idx);
         })
         .start();
     }
