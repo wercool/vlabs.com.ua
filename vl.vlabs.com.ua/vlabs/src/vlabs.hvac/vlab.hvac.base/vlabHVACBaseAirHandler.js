@@ -174,7 +174,8 @@ export default class VlabHVACBaseAirHandler extends VLab {
             context: this,
             pos: this.vLabScene.getObjectByName('carrierTPWEM01WallMount').position,
             rot: this.vLabScene.getObjectByName('carrierTPWEM01WallMount').rotation,
-            name: 'carrierTPWEM01'
+            name: 'carrierTPWEM01',
+            initialScreen: 'baseScreen'
         });
 
         /* Lamp setup */

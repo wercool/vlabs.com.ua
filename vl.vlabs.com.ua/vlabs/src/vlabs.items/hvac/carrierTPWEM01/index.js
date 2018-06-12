@@ -121,6 +121,8 @@ export default class CarrierTPWEM01 {
                 this.curState['baseScreenSetupMode'] = 'heat';
                 this.curState['heatToTemperature'] = 20;
                 this.curState['coolToTemperature'] = 24;
+                this.curState['fanMode'] = 'Auto';
+                this.curState['mainMode'] = 'Auto';
 
                 this.addVLabEventListeners();
 
@@ -136,6 +138,11 @@ export default class CarrierTPWEM01 {
                     document.body.appendChild(self.screenAssetsCanvas);
                     self.screenAssetsCanvasContext = self.screenAssetsCanvas.getContext('2d');
                     self.screenAssetsCanvasContext.drawImage(this, 0, 0);
+
+                    if (self.initObj.initialScreen) {
+                        self.initial = false;
+                        self.switchScreen(self.initObj.initialScreen);
+                    }
                 };
 
                 resolve(this);
@@ -218,13 +225,15 @@ export default class CarrierTPWEM01 {
 
         if (interactionObjectIntersects.length > 0) {
 
-            if (this.initial) {
-                this.initial = false;
-                this.switchScreen('welcomeScreen');
-            }
+            if (interactionObjectIntersects[0].object == this.screenMesh) {
+                if (this.initial) {
+                    this.initial = false;
+                    this.switchScreen('welcomeScreen');
+                }
 
-            this.screenMapIntersectionUV = interactionObjectIntersects[0].uv;
-            this.processInteractions();
+                this.screenMapIntersectionUV = interactionObjectIntersects[0].uv;
+                this.processInteractions();
+            }
         }
     }
 
@@ -1058,7 +1067,7 @@ export default class CarrierTPWEM01 {
         var aDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
         this.screenCanvasContext.font = 'bold 20px Arial';
-        this.screenCanvasContext.fillText('Fan: Auto', 10, this.screenMapTopOffset + 20);
+        this.screenCanvasContext.fillText('Fan: ' + this.curState['fanMode'], 10, this.screenMapTopOffset + 20);
         this.screenCanvasContext.fillText(
             aDays[date.getDay()] + ' ' +
             ((date.getHours() > 12 ? date.getHours() - 12 : date.getHours()) < 10 ? '0'+(date.getHours() > 12 ? date.getHours() - 12 : date.getHours()) : (date.getHours() > 12 ? date.getHours() - 12 : date.getHours()))+':'+
@@ -1066,7 +1075,7 @@ export default class CarrierTPWEM01 {
             (date.getSeconds() < 10 ? '0'+date.getSeconds() : date.getSeconds())+' '+
             (date.getHours() >= 12 ? "PM" : "AM"), 185, this.screenMapTopOffset + 20);
         this.screenCanvasContext.font = 'bold 20px Arial';
-        this.screenCanvasContext.fillText('Mode: Auto', 390, this.screenMapTopOffset + 20);
+        this.screenCanvasContext.fillText('Mode: ' + this.curState['mainMode'], 390, this.screenMapTopOffset + 20);
 
         this.putTemperatureLabel(170, this.screenMapTopOffset + 180, this.curState['roomTemperature'], '90px Arial', (initObj ? false : true));
         this.screenCanvasContext.font = '24px Arial';
@@ -1147,15 +1156,154 @@ export default class CarrierTPWEM01 {
                     }
                 });
             }
+
+            if (initObj.mode == 'fanMotorMode') {
+                this.screenCanvasContext.fillStyle = '#b7e0ff';
+                this.screenCanvasContext.fillRect(0, this.screenMapTopOffset, 120, 30);
+                
+                this.screenCanvasContext.beginPath();
+
+                this.screenCanvasContext.moveTo(0, this.screenMapTopOffset + 30);
+                this.screenCanvasContext.lineTo(120, this.screenMapTopOffset + 30);
+                this.screenCanvasContext.moveTo(120, this.screenMapTopOffset);
+                this.screenCanvasContext.lineTo(120, this.screenMapTopOffset + 30);
+
+                this.screenCanvasContext.moveTo(0, this.screenMapTopOffset + 60);
+                this.screenCanvasContext.lineTo(120, this.screenMapTopOffset + 60);
+                this.screenCanvasContext.moveTo(120, this.screenMapTopOffset + 60);
+                this.screenCanvasContext.lineTo(120, this.screenMapTopOffset + 30);
+
+                this.screenCanvasContext.lineWidth = 2;
+                this.screenCanvasContext.strokeStyle = '#927eb6';
+                this.screenCanvasContext.stroke();
+
+                this.screenCanvasContext.fillStyle = '#ffffff';
+                this.screenCanvasContext.font = 'bold 20px Arial';
+                this.screenCanvasContext.fillText('Fan: ' + this.curState['fanMode'], 10, this.screenMapTopOffset + 20);
+                this.screenCanvasContext.fillText((this.curState['fanMode'] == 'Auto' ? 'On' : 'Auto'), (this.curState['fanMode'] == 'Auto' ? 45 : 40), this.screenMapTopOffset + 50);
+
+                this.curScreenActiveElements.push({
+                    name: 'fanMotorModeOption1',
+                    rect: [0, this.screenMapTopOffset + 30, 120, 30],
+                    onTouch: function() {
+                        self.curState['fanMode'] = self.curState['fanMode'] == 'Auto' ? 'On' : 'Auto';
+                        self.switchScreen('baseScreen');
+                    }
+                });
+            }
+
+            if (initObj.mode == 'mainMode') {
+                this.screenCanvasContext.fillStyle = '#b7e0ff';
+                this.screenCanvasContext.fillRect(380, this.screenMapTopOffset, 150, 30);
+
+                this.screenCanvasContext.beginPath();
+
+                this.screenCanvasContext.moveTo(380, this.screenMapTopOffset + 30);
+                this.screenCanvasContext.lineTo(530, this.screenMapTopOffset + 30);
+
+                this.screenCanvasContext.moveTo(380, this.screenMapTopOffset + 60);
+                this.screenCanvasContext.lineTo(530, this.screenMapTopOffset + 60);
+
+                this.screenCanvasContext.moveTo(380, this.screenMapTopOffset + 90);
+                this.screenCanvasContext.lineTo(530, this.screenMapTopOffset + 90);
+
+                this.screenCanvasContext.moveTo(380, this.screenMapTopOffset + 120);
+                this.screenCanvasContext.lineTo(530, this.screenMapTopOffset + 120);
+
+                this.screenCanvasContext.moveTo(380, this.screenMapTopOffset + 150);
+                this.screenCanvasContext.lineTo(530, this.screenMapTopOffset + 150);
+
+                this.screenCanvasContext.moveTo(380, this.screenMapTopOffset + 150);
+                this.screenCanvasContext.lineTo(380, this.screenMapTopOffset);
+
+                this.screenCanvasContext.moveTo(530, this.screenMapTopOffset + 150);
+                this.screenCanvasContext.lineTo(530, this.screenMapTopOffset);
+
+                this.screenCanvasContext.lineWidth = 2;
+                this.screenCanvasContext.strokeStyle = '#927eb6';
+                this.screenCanvasContext.stroke();
+
+                this.screenCanvasContext.fillStyle = '#ffffff';
+                this.screenCanvasContext.font = 'bold 20px Arial';
+                this.screenCanvasContext.fillText('Mode: ' + this.curState['mainMode'], 390, this.screenMapTopOffset + 20);
+
+                this.screenCanvasContext.fillText('Heat', 430, this.screenMapTopOffset + 50);
+                this.curScreenActiveElements.push({
+                    name: 'mainModeHeat',
+                    rect: [430, this.screenMapTopOffset + 30, 150, 30],
+                    onTouch: function() {
+                        self.curState['mainMode'] = 'Heat';
+                        self.switchScreen('baseScreen');
+                    }
+                });
+                this.screenCanvasContext.fillText('Cool', 430, this.screenMapTopOffset + 80);
+                this.curScreenActiveElements.push({
+                    name: 'mainModeHeat',
+                    rect: [430, this.screenMapTopOffset + 60, 150, 30],
+                    onTouch: function() {
+                        self.curState['mainMode'] = 'Cool';
+                        self.switchScreen('baseScreen');
+                    }
+                });
+                this.screenCanvasContext.fillText('Auto', 430, this.screenMapTopOffset + 110);
+                this.curScreenActiveElements.push({
+                    name: 'mainModeHeat',
+                    rect: [430, this.screenMapTopOffset + 90, 150, 30],
+                    onTouch: function() {
+                        self.curState['mainMode'] = 'Auto';
+                        self.switchScreen('baseScreen');
+                    }
+                });
+                this.screenCanvasContext.fillText('Off', 435, this.screenMapTopOffset + 140);
+                this.curScreenActiveElements.push({
+                    name: 'mainModeHeat',
+                    rect: [430, this.screenMapTopOffset + 120, 150, 30],
+                    onTouch: function() {
+                        self.curState['mainMode'] = 'Off';
+                        self.switchScreen('baseScreen');
+                    }
+                });
+            }
+
+            if (this.baseScreenResetTimer === undefined) {
+                this.baseScreenResetTimer = setTimeout(() => {
+                    self.baseScreenResetTimer = undefined;
+                    self.switchScreen('baseScreen');
+                }, 10000);
+            }
         } else {
             this.curScreenActiveElements.push({
                 name: 'baseScreenArealButton',
-                rect: [20, this.screenMapTopOffset + 30, 470, 260],
+                rect: [20, this.screenMapTopOffset + 40, 470, 260],
                 onTouch: function() {
                     self.switchScreen('baseScreen', { mode: 'setup' });
                 }
             });
         }
+
+        this.curScreenActiveElements.push({
+            name: 'fanMotorMode',
+            rect: [10, this.screenMapTopOffset, 120, 30],
+            onTouch: function() {
+                if (initObj && initObj.mode == 'fanMotorMode') {
+                    self.switchScreen('baseScreen');
+                } else {
+                    self.switchScreen('baseScreen', { mode: 'fanMotorMode' });
+                }
+            }
+        });
+
+        this.curScreenActiveElements.push({
+            name: 'mainMode',
+            rect: [390, this.screenMapTopOffset, 120, 30],
+            onTouch: function() {
+                if (initObj && initObj.mode == 'mainMode') {
+                    self.switchScreen('baseScreen');
+                } else {
+                    self.switchScreen('baseScreen', { mode: 'mainMode' });
+                }
+            }
+        });
 
         this.backButton('baseScreen');
         this.infoButton();
