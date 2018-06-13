@@ -21,3 +21,7 @@ mysql -uvlabs -p < init-data.sql
 
 -----------------
 VLabs server by default is running on 8090 port (`server.port` in application.properties)
+
+-----------------
+1) copy collaborator-repository-server.js to ~/vlabs.com.ua/collaborators/projects
+2) nodejs ./collaborator-repository-server.js
