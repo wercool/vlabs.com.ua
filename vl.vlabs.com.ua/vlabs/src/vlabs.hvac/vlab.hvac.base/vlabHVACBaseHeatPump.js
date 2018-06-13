@@ -19,6 +19,7 @@ import ScrollCompressorZP25K5E      from '../../vlabs.items/hvac/scrollCompresso
 import DigitalMultimeterFluke17B    from '../../vlabs.items/digitalMultimeterFluke17B';
 import TrueRMSMultimeterHS36        from '../../vlabs.items/trueRMSMultimeterHS36';
 import DirectionalFlow              from '../../vlabs.items/directional-flow';
+import GasFlow                      from '../../vlabs.items/gas-flow';
 
 export default class VlabHVACBaseHeatPump extends VLab {
     constructor(initObj = {}) {
@@ -517,6 +518,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
         setTimeout(() => {
             this.powerInLineCurrentFlow.start();
         }, 1000);
+
+        this.gasFlow = new GasFlow({
+            context: this,
+            name: 'gasFlow1'
+        });
 
         // Misc helpers
         // this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
