@@ -13,8 +13,9 @@ import BernzomaticTS8000Torch       from '../vlabs.items/bernzomaticTS8000Torch'
 import DigitalMultimeterFluke17B    from '../vlabs.items/digitalMultimeterFluke17B';
 import TrueRMSMultimeterHS36        from '../vlabs.items/trueRMSMultimeterHS36';
 
-import FlowAlongTube            from '../vlabs.items/flow-along-tube';
-import DirectionalFlow          from '../vlabs.items/directional-flow';
+import FlowAlongTube                from '../vlabs.items/flow-along-tube';
+import DirectionalFlow              from '../vlabs.items/directional-flow';
+import DirectionalFlowWith3DArrow   from '../vlabs.items/directionalFlowWith3DArrow';
 
 class VlabBase extends VLab {
     constructor(initObj = {}) {
@@ -188,54 +189,54 @@ class VlabBase extends VLab {
                 color: 0xfff495
             });
 
-            this.flowAlongWire2 = new FlowAlongTube({
-                context: this,
-                tube: this.vLabScene.getObjectByName('wire2'),
-                color: undefined,
-                scale: new THREE.Vector3(0.25, 0.25, 0.25),
-                cSectionVertices: 12,
-                speed: 5.0,
-                reversed: true
-            });
+            // this.flowAlongWire2 = new FlowAlongTube({
+            //     context: this,
+            //     tube: this.vLabScene.getObjectByName('wire2'),
+            //     color: undefined,
+            //     scale: new THREE.Vector3(0.25, 0.25, 0.25),
+            //     cSectionVertices: 12,
+            //     speed: 5.0,
+            //     reversed: true
+            // });
 
-            this.flowAlongWire1 = new FlowAlongTube({
-                context: this,
-                tube: this.vLabScene.getObjectByName('wire1'),
-                color: undefined,
-                scale: new THREE.Vector3(0.25, 0.25, 0.25),
-                cSectionVertices: 8,
-                speed: 5.0,
-                reversed: true,
-                spritesNum: 30
-            });
-            setTimeout(() => {
-                this.flowAlongWire1.chainTo = this.flowAlongWire2;
-                this.flowAlongWire1.start();
-            }, 1000);
+            // this.flowAlongWire1 = new FlowAlongTube({
+            //     context: this,
+            //     tube: this.vLabScene.getObjectByName('wire1'),
+            //     color: undefined,
+            //     scale: new THREE.Vector3(0.25, 0.25, 0.25),
+            //     cSectionVertices: 8,
+            //     speed: 5.0,
+            //     reversed: true,
+            //     spritesNum: 30
+            // });
+            // setTimeout(() => {
+            //     this.flowAlongWire1.chainTo = this.flowAlongWire2;
+            //     this.flowAlongWire1.start();
+            // }, 1000);
 
-            this.directionalFlow = new DirectionalFlow({
-                context: this,
-                name: 'directionalFlow',
-                tubes: [
-                    {
-                        tube: this.vLabScene.getObjectByName('wire3'),
-                        cSectionVertices: 8,
-                        reversed: false
-                    },
-                    {
-                        tube: this.vLabScene.getObjectByName('wire4'),
-                        cSectionVertices: 8,
-                        reversed: false
-                    },
-                ],
-                color: undefined,
-                scale: new THREE.Vector3(0.15, 0.15, 0.15),
-                animationDelay: 100,
-                tooltip: '~24V'
-            });
-            setTimeout(() => {
-                this.directionalFlow.start();
-            }, 1000);
+            // this.directionalFlow = new DirectionalFlow({
+            //     context: this,
+            //     name: 'directionalFlow',
+            //     tubes: [
+            //         {
+            //             tube: this.vLabScene.getObjectByName('wire3'),
+            //             cSectionVertices: 8,
+            //             reversed: false
+            //         },
+            //         {
+            //             tube: this.vLabScene.getObjectByName('wire4'),
+            //             cSectionVertices: 8,
+            //             reversed: false
+            //         },
+            //     ],
+            //     color: undefined,
+            //     scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            //     animationDelay: 100,
+            //     tooltip: '~24V'
+            // });
+            // setTimeout(() => {
+            //     this.directionalFlow.start();
+            // }, 1000);
 
             // this.flowAlongWire4 = new FlowAlongTube({
             //     context: this,
@@ -249,6 +250,19 @@ class VlabBase extends VLab {
             //     this.flowAlongWire4.start();
             // }, 1000);
 
+
+            this.directionalFlowWith3DArrow = new DirectionalFlowWith3DArrow({
+                context: this,
+                name: 'wire1DirectionalFlowWith3DArrow',
+                refPath: this.vLabScene.getObjectByName('wire1RefPath'),
+                cSectionVertices: 4,
+                reversed: true,
+                speed: 250,
+                scale: 1.0
+            });
+            setTimeout(() => {
+                this.directionalFlowWith3DArrow.start();
+            }, 1000);
 
 
             this.SuzanneZoomHelper = new ZoomHelper({

@@ -20,6 +20,7 @@ import DigitalMultimeterFluke17B    from '../../vlabs.items/digitalMultimeterFlu
 import TrueRMSMultimeterHS36        from '../../vlabs.items/trueRMSMultimeterHS36';
 import DirectionalFlow              from '../../vlabs.items/directional-flow';
 import GasFlow                      from '../../vlabs.items/gas-flow';
+import DirectionalFlowWith3DArrow   from '../../vlabs.items/directionalFlowWith3DArrow';
 
 export default class VlabHVACBaseHeatPump extends VLab {
     constructor(initObj = {}) {
@@ -119,6 +120,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     onActivatedEvent() {
+
+        this.showOverlayMessage('<div style="position: absolute; top: 30%; left: calc(50% - 50px); width: 100px; text-align: center; color: white; font-size: 18px; padding: 20px; border-radius: 10px; box-shadow: 1px 1px 10px #cffdff80;">Initializing...</div>');
 
         //VLab Core Items
         this.vLabLocator.addLocation(this);
@@ -525,8 +528,21 @@ export default class VlabHVACBaseHeatPump extends VLab {
             gasFlowHelperMesh: this.vLabScene.getObjectByName('refrigerantFlowHelper'),
             confrontMaterials: [ this.vLabScene.getObjectByName('bryantB225B_heatPumpFanGrid').material ]
         });
-        this.gasFlow.start();
-        setTimeout(() => { this.gasFlow.stop(); }, 60000);
+
+        this.gasFlows1 = [];
+        for (var i = 0; i < 3; i++) {
+            var gasFlow1 = new DirectionalFlowWith3DArrow({
+                    context: this,
+                    name: 'heatPumpGazFlow1',
+                    refPath: this.vLabScene.getObjectByName('heatPumpGazFlow1'),
+                    cSectionVertices: 4,
+                    reversed: true,
+                    speed: 50,
+                    scale: 0.25,
+                });
+            this.gasFlows1.push(gasFlow1);
+        }
+        this.strartGasFlowAnimations();
 
         // Misc helpers
         // this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
@@ -542,6 +558,13 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     onRedererFrameEvent(event) {
 
+    }
+
+    strartGasFlowAnimations() {
+        for (var i = 0; i < 3; i++) {
+            var startDelay = 10000 + 15000 * i;
+            this.gasFlows1[i].start(startDelay);
+        }
     }
 
     heatPumpFrameCapTakeOutWithScrewdriver() {
@@ -644,7 +667,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 .easing(TWEEN.Easing.Linear.None)
                 .start()
                 .onComplete(() => {
-                    
+
+                    this.gasFlow.start();
+                    setTimeout(() => { this.gasFlow.stop(); }, 20000);
+
                 });
             });
         });

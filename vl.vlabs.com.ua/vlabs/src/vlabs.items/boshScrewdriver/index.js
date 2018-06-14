@@ -76,7 +76,7 @@ initObj {
                         "icon": ["fa fa-info"],
                         "click": "showInfo",
                         "args": {   "title": "Bosch IXO III 3.6-Volt Multipurpose Screwdriver",
-                                    "html": '<div style="text-align: center; padding-top: 5pt;"><iframe width="90%" height="300" src="https://www.youtube.com/embed/VXADzvSTosc" frameborder="0" encrypted-media" allowfullscreen></iframe></div>'}
+                                    "html": '<ul style="color:#ffffff;"><li>Magnetic bit holder</li><li>Integrated LED light for illuminating the work area, even in dark places</li><li>Soft rubber grip</li><li>Fuel gauge and forward-reverse light</li><li>No memory effect: the battery can be charged regardless of the charging state at any time, without damaging the cells</li></ul>'}
                         }, {
                         "disabled": true
                         }, {

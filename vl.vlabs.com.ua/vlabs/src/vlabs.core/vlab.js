@@ -205,6 +205,12 @@ export default class VLab {
         console.log(error);
     }
 
+    showOverlayMessage(message) {
+        this.overlayContainer.style.display = 'block';
+        this.modalMessage.style.display = 'block';
+        this.modalMessage.innerHTML = message;
+    }
+
     preInitialize() {
         this.buildHTML();
         return new Promise((resolve, reject) => {
@@ -446,6 +452,9 @@ export default class VLab {
                 if (object.userData.matrixAutoUpdate === "false") {
                     object.matrixAutoUpdate = false;
                     object.updateMatrix();
+                }
+                if (object.userData.initiallyInvisible === "true") {
+                    object.visible = false;
                 }
                 object.castShadow = false;
                 object.receiveShadow = false;
