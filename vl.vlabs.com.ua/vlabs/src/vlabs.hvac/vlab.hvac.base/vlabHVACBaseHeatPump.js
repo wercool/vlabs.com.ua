@@ -521,8 +521,12 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
         this.gasFlow = new GasFlow({
             context: this,
-            name: 'gasFlow1'
+            name: 'refrigerantFlow',
+            gasFlowHelperMesh: this.vLabScene.getObjectByName('refrigerantFlowHelper'),
+            confrontMaterials: [ this.vLabScene.getObjectByName('bryantB225B_heatPumpFanGrid').material ]
         });
+        this.gasFlow.start();
+        setTimeout(() => { this.gasFlow.stop(); }, 60000);
 
         // Misc helpers
         // this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
