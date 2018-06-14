@@ -35,6 +35,7 @@ export default class GasFlow {
         }
 
         this.gasFlowHelperMesh.visible = true;
+        this.gasFlowHelperMesh.renderOrder = 100;
 
         this.flowAnimation = new TWEEN.Tween(this.gasFlowHelperMesh.material.map)
         .to({ rotation: 0.015 }, 200)
@@ -54,5 +55,6 @@ export default class GasFlow {
                 delete this.initObj.confrontMaterials[i].userData['GasFlowConfrontMaterialAlphaTest'];
             }
         }
+        this.gasFlowHelperMesh.renderOrder = 0;
     }
 }
