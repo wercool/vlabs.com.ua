@@ -151,6 +151,9 @@ export default class VlabHVACBaseAirHandler extends VLab {
     }
 
     onActivatedEvent() {
+
+        this.showOverlayMessage('<div style="position: absolute; top: 30%; left: calc(50% - 50px); width: 100px; text-align: center; color: white; font-size: 18px; padding: 20px; border-radius: 10px; box-shadow: 1px 1px 10px #cffdff80;">Initializing...</div>');
+
         //VLab Core Items
         this.vLabLocator.addLocation(this);
 
