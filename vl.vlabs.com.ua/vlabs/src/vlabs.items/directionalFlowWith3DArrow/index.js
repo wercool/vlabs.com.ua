@@ -176,8 +176,18 @@ export default class DirectionalFlowWith3DArrow {
                 .easing(TWEEN.Easing.Linear.None)
                 .start();
 
+                var passedPathPercent = this.curWPIdx / (this.waypoints.length - 2);
+
+                var xOffset = passedPathPercent;
+
+                if (this.initObj.addXOffset) {
+                    if (passedPathPercent > this.initObj.addXOffset.offestPath) {
+                        xOffset += this.initObj.addXOffset.offsetPos;
+                    }
+                }
+
                 new TWEEN.Tween(this.material.map.offset)
-                .to({ x: (1.0 * (this.curWPIdx / (this.waypoints.length - 2))) }, this.speed)
+                .to({ x: xOffset }, this.speed)
                 .easing(TWEEN.Easing.Linear.None)
                 .start();
 

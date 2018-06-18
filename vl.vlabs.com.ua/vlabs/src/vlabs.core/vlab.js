@@ -74,7 +74,9 @@ export default class VLab {
             webglcontainerresized: {},
             zoommodein: {},
             zoommodeout: {},
-            takenobjectapplication: {}
+            takenobjectapplication: {},
+            stopandhide: {},
+            resumeandshow: {}
         };
 
         this.helpers = {
@@ -187,12 +189,20 @@ export default class VLab {
     }
 
     stopAndHide() {
+        for (var stopandhideSubscriberName in this.webGLContainerEventsSubcribers.stopandhide) {
+            var subscriber = this.webGLContainerEventsSubcribers.stopandhide[stopandhideSubscriberName];
+            subscriber.callback.call(subscriber.instance, event);
+        }
         this.paused = true;
         this.statsTHREE.domElement.style.display = 'none';
         this.container.style.display = 'none';
     }
 
     resumeAndShow() {
+        for (var resumeandshowSubscriberName in this.webGLContainerEventsSubcribers.resumeandshow) {
+            var subscriber = this.webGLContainerEventsSubcribers.resumeandshow[resumeandshowSubscriberName];
+            subscriber.callback.call(subscriber.instance, event);
+        }
         this.paused = false;
         this.container.style.display = 'block';
         this.statsTHREE.domElement.style.display = 'block';

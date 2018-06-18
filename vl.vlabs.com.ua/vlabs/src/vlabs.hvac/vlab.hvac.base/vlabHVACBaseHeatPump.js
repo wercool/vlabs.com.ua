@@ -48,6 +48,18 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.initObj = initObj;
         this.vLabLocator = this.initObj.vLabLocator;
 
+        //VLab events subscribers
+        this.webGLContainerEventsSubcribers.stopandhide["HVACHeatPumpLocationvLabStopAndHide"] = 
+        {
+            callback: this.onVLabStopAndHide,
+            instance: this
+        };
+        this.webGLContainerEventsSubcribers.resumeandshow["HVACHeatPumpLocationvLabResumeAndShow"] = 
+        {
+            callback: this.onVLabResumeAndShow,
+            instance: this
+        };
+
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
 
@@ -117,9 +129,31 @@ export default class VlabHVACBaseHeatPump extends VLab {
     onSceneCompleteEvent(event) {
         super.activate();
         super.switchCameraControls(this.nature.cameraControls);
+
+        this.fanMotorBladeShaft = this.vLabScene.getObjectByName('bryantB225B-heatPumpFanBlade');
     }
 
     onActivatedEvent() {
+
+        var self = this;
+        // Sounds
+        this.fanMotorSoundReady = false;
+        this.fanMotorSound = new THREE.Audio(this.defaultAudioListener);
+        new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/fan-motor-sound.mp3', function(buffer) {
+            self.fanMotorSound.setBuffer(buffer);
+            self.fanMotorSound.setVolume(0.5);
+            self.fanMotorSound.setLoop(true);
+            self.fanMotorSoundReady  = true;
+        });
+
+        this.scrollCompressorSoundReady = false;
+        this.scrollCompressorSound = new THREE.Audio(this.defaultAudioListener);
+        new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/scroll-compressor-sound.mp3', function(buffer) {
+            self.scrollCompressorSound.setBuffer(buffer);
+            self.scrollCompressorSound.setVolume(0.75);
+            self.scrollCompressorSound.setLoop(true);
+            self.scrollCompressorSoundReady  = true;
+        });
 
         this.showOverlayMessage('<div style="position: absolute; top: 30%; left: calc(50% - 50px); width: 100px; text-align: center; color: white; font-size: 18px; padding: 20px; border-radius: 10px; box-shadow: 1px 1px 10px #cffdff80;">Initializing...</div>');
 
@@ -539,10 +573,17 @@ export default class VlabHVACBaseHeatPump extends VLab {
                     reversed: true,
                     speed: 50,
                     scale: 0.25,
+                    addXOffset: {
+                        offsetPos: -0.04,
+                        offestPath: 0.5
+                    }
                 });
             this.gasFlows1.push(gasFlow1);
         }
         this.strartGasFlowAnimations();
+
+        this.startFanMotor();
+        this.startScrollCompressor();
 
         // Misc helpers
         // this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
@@ -557,7 +598,56 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     onRedererFrameEvent(event) {
+        if (this.fanMotorStarted === true) {
+            this.fanMotorBladeShaft.rotateZ(0.5);
+            // this.fanMotorBladeShaft.rotateZ(this.fanMotorSpeed);
+            // if (this.fanMotorSpeed < 0.5) {
+            //     this.fanMotorSpeed += 0.005;
+            // }
+        }
+    }
 
+    onVLabStopAndHide() {
+        this.stopFanMotor();
+        this.stopScrollCompressor();
+    }
+
+    onVLabResumeAndShow() {
+        this.startFanMotor(true);
+        this.startScrollCompressor();
+    }
+
+    startFanMotor(resumeMotor) {
+        if (this.fanMotorSoundReady !== true) {
+            setTimeout(() => {
+                this.startFanMotor();
+            }, 500);
+            return;
+        }
+        if (resumeMotor !== true) this.fanMotorSpeed = 0.0;
+        this.fanMotorStarted = true;
+        this.fanMotorSound.play();
+    }
+
+    stopFanMotor(stopMotor) {
+        this.fanMotorStarted = false;
+        this.fanMotorSound.stop();
+    }
+
+    startScrollCompressor() {
+        if (this.scrollCompressorSoundReady !== true) {
+            setTimeout(() => {
+                this.startScrollCompressor();
+            }, 500);
+            return;
+        }
+        this.scrollCompressorStarted = true;
+        this.scrollCompressorSound.play();
+    }
+
+    stopScrollCompressor() {
+        this.scrollCompressorStarted = true;
+        this.scrollCompressorSound.stop();
     }
 
     strartGasFlowAnimations() {
@@ -636,6 +726,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     heatPumpFrameCapTakeOutInteractorHandler() {
+        this.stopFanMotor();
+        this.stopScrollCompressor();
         this.heatPumpFrameCapTakeOutInteractor.deactivate();
         this.bryantB225B_heatPumpFrameCap = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameCap');
 
