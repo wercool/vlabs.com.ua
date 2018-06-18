@@ -167,6 +167,7 @@ export default class VLab {
         this.zoomViewArea = document.createElement('div');
         this.zoomViewArea.id = this.initObj.name + 'ZoomViewArea';
         this.zoomViewArea.className = 'zoomViewArea';
+        this.zoomViewArea.opacity = 0.0;
 
         this.webGLContainer.appendChild(this.zoomViewArea);
         this.webGLContainer.appendChild(this.backFromViewButton);

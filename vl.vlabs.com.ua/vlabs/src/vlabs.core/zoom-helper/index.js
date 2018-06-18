@@ -134,6 +134,8 @@ export default class ZoomHelper {
         this.context.defaultCameraControls.enablePan = false;
         this.context.defaultCameraControls.minDistance = this.initObj.minDistance;
 
+        this.context.zoomViewArea.style.display = 'block';
+
         var orbitTargetPos = (this.initObj.targetObjectIsAnOrbitTarget === true) ? this.context.getWorldPosition(this.targetObject).clone() : zoomTarget;
         if (this.initObj.orbitTargetPositionDeltas !== undefined) {
             orbitTargetPos.add(this.initObj.orbitTargetPositionDeltas);
@@ -145,12 +147,16 @@ export default class ZoomHelper {
             this.context.defaultCameraControls.update();
             this.context.tooltipHide();
         })
-        .onComplete(() => { 
+        .onComplete(() => {
             new TWEEN.Tween(this.context.defaultCameraControls)
             .to({ maxDistance: this.initObj.maxDistance ? this.initObj.maxDistance : 0.25 }, 750)
             .easing(TWEEN.Easing.Cubic.InOut)
             .onUpdate(() => { 
                 this.context.defaultCameraControls.update();
+                if (this.context.zoomViewArea.opacity < 1.0) {
+                    this.context.zoomViewArea.style.opacity = this.context.zoomViewArea.opacity;
+                    this.context.zoomViewArea.opacity += 0.1; 
+                }
             })
             .onComplete(() => {
                 this.context.backFromViewButton.style.display = 'block';
@@ -169,10 +175,9 @@ export default class ZoomHelper {
                     this.context.defaultCameraControls.maxPolarAngle =  this.initObj.maxPolarAngle;
 
                 this.context.zoomHelperMode = true;
-                })
+                this.context.zoomViewArea.style.opacity = 1.0;
+            })
             .start();
-            this.context.zoomViewArea.style.display = 'block';
-            this.context.zoomViewArea.style.opacity = 1.0;
             })
         .start();
     }
@@ -219,6 +224,7 @@ export default class ZoomHelper {
                 })
             .start();
             this.context.zoomModeHandler(false);
+            this.context.zoomViewArea.opacity = 0.0;
             this.context.zoomViewArea.style.opacity = 0.0;
         })
         .start();
