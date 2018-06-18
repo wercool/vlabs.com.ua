@@ -128,6 +128,8 @@ html, body {
 .zoomViewArea {
     width: 100%;
     height: 100%;
+    left: 0;
+    top: 0;
     position: fixed;
     background: url("../img/zoom-view-area.png") no-repeat center center fixed;
     -webkit-background-size: cover; /* For WebKit*/
@@ -140,7 +142,7 @@ html, body {
     -ms-user-select: none;      /* IE 10+ */
     user-select: none;          /* Likely future */
     opacity: 0;
-    visibility: hidden;
+    /* visibility: hidden; */
     transition: visibility 0s, opacity 0.4s linear;
     animation-direction: alternate;
 }

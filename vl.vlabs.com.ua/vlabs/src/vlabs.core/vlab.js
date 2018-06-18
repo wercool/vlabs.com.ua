@@ -1376,7 +1376,7 @@ export default class VLab {
             subscriber.callback.call(subscriber.instance, {});
         }
 
-        this.zoomViewArea.style.visibility = 'hidden';
+        this.zoomViewArea.style.display = 'none';
         this.zoomViewArea.style.opacity = 0.0;
     }
 

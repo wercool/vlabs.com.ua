@@ -171,7 +171,7 @@ export default class ZoomHelper {
                 this.context.zoomHelperMode = true;
                 })
             .start();
-            this.context.zoomViewArea.style.visibility = 'visible';
+            this.context.zoomViewArea.style.display = 'block';
             this.context.zoomViewArea.style.opacity = 1.0;
             })
         .start();
@@ -213,7 +213,7 @@ export default class ZoomHelper {
             .onComplete(() => {
                     this.onVLabSceneResetView();
                     this.context.zoomHelperMode = false;
-                    this.context.zoomViewArea.style.visibility = 'hidden';
+                    this.context.zoomViewArea.style.display = 'none';
                     this.context.zoomMode = false;
                     this.context.defaultCameraControls.resetState();
                 })
