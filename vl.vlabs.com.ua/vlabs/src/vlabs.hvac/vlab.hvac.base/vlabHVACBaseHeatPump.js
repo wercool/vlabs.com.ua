@@ -141,7 +141,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.fanMotorSound = new THREE.Audio(this.defaultAudioListener);
         new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/fan-motor-sound.mp3', function(buffer) {
             self.fanMotorSound.setBuffer(buffer);
-            self.fanMotorSound.setVolume(0.5);
+            self.fanMotorSound.setVolume(0.25);
             self.fanMotorSound.setLoop(true);
             self.fanMotorSoundReady  = true;
         });
@@ -150,7 +150,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.scrollCompressorSound = new THREE.Audio(this.defaultAudioListener);
         new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/scroll-compressor-sound.mp3', function(buffer) {
             self.scrollCompressorSound.setBuffer(buffer);
-            self.scrollCompressorSound.setVolume(0.75);
+            self.scrollCompressorSound.setVolume(0.35);
             self.scrollCompressorSound.setLoop(true);
             self.scrollCompressorSoundReady  = true;
         });
@@ -595,6 +595,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
         // this.heatPumpFrameServicePanel_manipulationControl.setSize(0.5);
         // this.vLabScene.add(this.heatPumpFrameServicePanel_manipulationControl);
         // this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameServicePanel"));
+
+        this.ambientAirFlow1 = this.vLabScene.getObjectByName('ambientAirFlow1');
+        this.ambientAirFlow1.material.alphaTest = 0.1;
+        this.ambientAirFlow1.material.needsUpdate = true;
+        this.ambientAirFlow1Throttling = 0;
     }
 
     onRedererFrameEvent(event) {
@@ -605,6 +610,16 @@ export default class VlabHVACBaseHeatPump extends VLab {
             //     this.fanMotorSpeed += 0.005;
             // }
         }
+        if (this.ambientAirFlow1Throttling > 2)
+        {
+            this.ambientAirFlow1Throttling = 0;
+            this.ambientAirFlow1.material.map.offset.y -= 0.038;
+            if (this.ambientAirFlow1.material.map.offset.y < -0.494) {
+                this.ambientAirFlow1.material.map.offset.y = -0.038;
+            }
+            this.ambientAirFlow1.material.needsUpdate = true;
+        }
+        this.ambientAirFlow1Throttling++;
     }
 
     onVLabStopAndHide() {

@@ -163,7 +163,7 @@ export default class ScrollCompressorZP25K5E {
                     this.scrollCompressorZP25K5EEnclosureCutView.visible = true;
                     this.scrollCompressorZP25K5EEnclosure.visible = false;
                     this.scrollCompressorZP25K5EEnclosureLookSprite.material.opacity = 0.1;
-                    this.scrollCompressorSound.setVolume(1.0);
+                    this.scrollCompressorSound.setVolume(0.5);
                 } else {
                     this.scrollCompressorZP25K5EEnclosureCutView.visible = false;
                     this.scrollCompressorZP25K5EEnclosure.visible = true;
