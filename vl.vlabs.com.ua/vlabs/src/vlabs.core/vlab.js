@@ -330,6 +330,7 @@ export default class VLab {
         });
 
         this.webGLRenderer.setClearColor(this.initObj.webGLRendererClearColor ? this.initObj.webGLRendererClearColor : 0x000000);
+        this.webGLRenderer.setPixelRatio(1.0);
 
         // prevent logging
         if (this.initObj.prodMode === 'true') {
@@ -631,8 +632,6 @@ export default class VLab {
 
             TWEEN.update(time);
 
-            this.takenToResponsiveArrowUpdate();
-
             dispatchEvent(this.redererFrameEvent);
 
             for (var renderFrameEventSubscriberName in this.webGLContainerEventsSubcribers.renderframe) {
@@ -704,6 +703,8 @@ export default class VLab {
     }
 
     onTouchStart(event) {
+        this.touchDevice = true;
+        this.touching = true;
         event.preventDefault();
         this.mouseCoords.set(event.touches[0].clientX, event.touches[0].clientY);
         this.mouseCoordsRaycaster.set((event.touches[0].clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.touches[0].clientY / this.webGLContainer.clientHeight) * 2);
@@ -715,6 +716,7 @@ export default class VLab {
     }
 
     onTouchEnd(event) {
+        this.touching = false;
         event.preventDefault();
         this.executeActions(true);
         this.toggleSelectedObject(true);
@@ -904,6 +906,12 @@ export default class VLab {
 
     updateCameraControlsCheckIntersections() {
 
+        if (this.touchDevice === true) {
+            if (this.touching !== true) {
+                return;
+            }
+        }
+
         var interactionObjectIntersects = [];
 
         var interactiveObjectsWithInteractiveSuppressors = this.interactiveObjects.concat(this.interactivesSuppressorsObjects);
@@ -1042,6 +1050,10 @@ export default class VLab {
             }
 
             this.defaultCameraControls.active = false;
+        }
+
+        if (this.touchDevice === true) {
+            this.takenToResponsiveArrowUpdate();
         }
     }
 
