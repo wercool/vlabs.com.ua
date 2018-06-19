@@ -149,6 +149,7 @@ gulp.task('watch', ['build'], function () {
     gulp.watch(['./src/' + initObj.vlabDir + '/**/*.js',
                 './src/' + initObj.vlabDir + '/**/*.json',
                 './src/' + initObj.vlabDir + '/**/*.html',
+                './src/' + initObj.vlabDir + '/**/*.appcache',
                 './src/vlabs.core/**/*.*',
                 './src/vlabs.items/**/*.*',
                 './src/vlabs.assets/**/*.*'
