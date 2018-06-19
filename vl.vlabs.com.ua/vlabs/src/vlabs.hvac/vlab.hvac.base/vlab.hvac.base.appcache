@@ -4,9 +4,8 @@ CACHE MANIFEST
 
 CACHE:
 # global cache
-https://fonts.googleapis.com/css?family=Roboto+Condensed
-
-
+/vlabs.assets/fonts/roboto-condensed-v16-cyrillic_latin-regular.woff2
+/vlabs.assets/fonts/roboto-condensed-v16-cyrillic_latin-regular.woff2
 /vlabs.assets/css/styles.css
 /vlabs.assets/css/circular-menu.css
 /vlabs.assets/css/fontawesome/css/fontawesome-all.min.css
