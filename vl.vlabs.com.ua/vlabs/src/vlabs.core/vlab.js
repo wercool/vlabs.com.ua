@@ -191,6 +191,7 @@ export default class VLab {
     stopAndHide() {
         for (var stopandhideSubscriberName in this.webGLContainerEventsSubcribers.stopandhide) {
             var subscriber = this.webGLContainerEventsSubcribers.stopandhide[stopandhideSubscriberName];
+            var event = {};
             subscriber.callback.call(subscriber.instance, event);
         }
         this.paused = true;
@@ -201,6 +202,7 @@ export default class VLab {
     resumeAndShow() {
         for (var resumeandshowSubscriberName in this.webGLContainerEventsSubcribers.resumeandshow) {
             var subscriber = this.webGLContainerEventsSubcribers.resumeandshow[resumeandshowSubscriberName];
+            var event = {};
             subscriber.callback.call(subscriber.instance, event);
         }
         this.paused = false;
