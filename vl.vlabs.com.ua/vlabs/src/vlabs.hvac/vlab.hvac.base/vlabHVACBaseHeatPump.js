@@ -602,6 +602,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.ambientAirFlow1.material.alphaTest = 0.1;
         this.ambientAirFlow1.material.needsUpdate = true;
         this.ambientAirFlow1Throttling = 0;
+
+        setTimeout(() => {
+            this.ambientAirFlow1.visible = false;
+        }, 15000);
     }
 
     onRedererFrameEvent(event) {
