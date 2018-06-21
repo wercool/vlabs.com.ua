@@ -550,7 +550,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             color: 0x00ff00,
             scale: new THREE.Vector3(0.15, 0.15, 0.15),
             animationDelay: 100,
-            tooltip: '~110V Power'
+            tooltip: '~230V Power'
         });
         setTimeout(() => {
             this.powerInLineCurrentFlow.start();
