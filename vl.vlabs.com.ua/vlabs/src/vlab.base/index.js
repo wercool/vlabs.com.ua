@@ -17,6 +17,8 @@ import FlowAlongTube                from '../vlabs.items/flow-along-tube';
 import DirectionalFlow              from '../vlabs.items/directional-flow';
 import DirectionalFlowWith3DArrow   from '../vlabs.items/directionalFlowWith3DArrow';
 
+require('../vlabs.core/three-decal-geometry')(THREE);
+
 class VlabBase extends VLab {
     constructor(initObj = {}) {
         super(initObj);
@@ -413,10 +415,131 @@ class VlabBase extends VLab {
         this.testFunciton = (() => {
             console.log('testFunction');
         });
+
+        this.addDecalPlacementHelper('Suzanne');
     }
 
     onRedererFrameEvent(event) {
+        this.checkIntersectionForDecalPlacement();
     }
+
+
+
+
+
+
+
+
+    addDecalPlacementHelper(meshName) {
+        this.decalPlacementHelper = new THREE.Mesh(new THREE.BoxBufferGeometry(0.1, 0.1, 0.1), new THREE.MeshNormalMaterial());
+        this.decalPlacementHelper.visible = false;
+        this.vLabScene.add(this.decalPlacementHelper);
+
+        var geometry = new THREE.BufferGeometry();
+        geometry.setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+        this.decalPlacementHelperLine = new THREE.Line(geometry, new THREE.LineBasicMaterial({ linewidth: 4 }));
+        this.vLabScene.add(this.decalPlacementHelperLine);
+
+        this.decalPlacementHelperRaycaster = new THREE.Raycaster();
+        this.decalPlacementHelperIntersection = {
+            intersects: false,
+            point: new THREE.Vector3(),
+            normal: new THREE.Vector3()
+        };
+
+        var textureLoader = new THREE.TextureLoader();
+        Promise.all([
+            textureLoader.load('resources/maps/frost.png'),
+            textureLoader.load('resources/maps/frost-normal.png'),
+            textureLoader.load('resources/maps/frost-displacement.png'),
+        ])
+        .then((result) => {
+            this.decalMaterial = new THREE.MeshPhongMaterial({
+                map: result[0],
+                normalMap: result[1],
+                normalScale: new THREE.Vector2(1.0, 1.0),
+                displacementMap: result[2],
+                displacementScale: 0.001,
+                transparent: true,
+                depthTest: true,
+                depthWrite: false,
+                polygonOffset: true,
+                polygonOffsetFactor: -4,
+                // wireframe: true,
+                shininess: 25
+            });
+        });
+
+        this.decalTargetMesh = this.vLabScene.getObjectByName(meshName);
+
+        this.decalTargetSrcMesh = new THREE.Mesh(new THREE.Geometry().fromBufferGeometry(this.decalTargetMesh.geometry));
+        this.decalTargetSrcMesh.position.copy(this.decalTargetMesh.position);
+        this.decalTargetSrcMesh.rotation.copy(this.decalTargetMesh.rotation);
+        this.decalTargetSrcMesh.visible = false;
+        this.vLabScene.add(this.decalTargetSrcMesh);
+
+
+        this.webGLContainerEventsSubcribers.mouseup["decalPlacementHelpberVLabSceneMouseUp"] = 
+        {
+            callback: this.decalPlacementHelpberVLabSceneMouseUp,
+            instance: this
+        };
+    }
+
+    checkIntersectionForDecalPlacement() {
+        if (this.decalPlacementHelperRaycaster) {
+            this.decalPlacementHelperRaycaster.setFromCamera(this.mouseCoordsRaycaster, this.defaultCamera);
+
+            var intersects = this.decalPlacementHelperRaycaster.intersectObjects([ this.decalTargetMesh ]);
+
+            if (intersects.length > 0) {
+                var p = intersects[0].point;
+                this.decalPlacementHelper.position.copy(p);
+                this.decalPlacementHelperIntersection.point.copy(p);
+                this.decalPlacementHelperIntersection.normal.copy(intersects[0].face.normal);
+
+                var n = intersects[0].face.normal.clone();
+                n.transformDirection(this.decalTargetMesh.matrixWorld);
+                n.multiplyScalar(0.15);
+                n.add(intersects[0].point);
+                this.decalPlacementHelper.lookAt(n);
+                var positions = this.decalPlacementHelperLine.geometry.attributes.position;
+                positions.setXYZ(0, p.x, p.y, p.z);
+                positions.setXYZ(1, n.x, n.y, n.z);
+                positions.needsUpdate = true;
+
+                this.decalPlacementHelperIntersection.intersects = true;
+            } else {
+                this.decalPlacementHelperIntersection.intersects = false;
+            }
+        }
+    }
+
+    decalPlacementHelpberVLabSceneMouseUp() {
+        if (this.decalPlacementHelperIntersection.intersects === true) {
+            var position = new THREE.Vector3();
+            var orientation = new THREE.Euler();
+            orientation.z = Math.random() * 2 * Math.PI;
+
+            position.copy(this.decalPlacementHelperIntersection.point);
+            orientation.copy(this.decalPlacementHelper.rotation);
+
+            var decalMesh = new THREE.Mesh(new THREE.DecalGeometry(this.decalTargetSrcMesh, position, orientation, new THREE.Vector3(0.3, 0.3, 0.3)), this.decalMaterial);
+            this.vLabScene.add(decalMesh);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     test(value) {
         console.log("TEST", value);

@@ -14,7 +14,7 @@
         "enablePan": true
     },
     "showTHREEStats": true,
-    "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001", "Suzanne"],
+    "interactiveObjects": ["Sphere", "CubeInteractive", "Sphere001", "Sphere001.001", "~Suzanne"],
     "advancedSelectionHelper": false,
     "responsiveObjects": ["Cube", "CubeResponosive", "controlBoard"],
     "tooltips": {
