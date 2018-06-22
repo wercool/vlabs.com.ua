@@ -95,7 +95,9 @@ public class AuthenticationController
         if (!userExists) {
             String passwd = PasswordGenerator.generatePassword(5, PasswordGenerator.ALPHA_CAPS + PasswordGenerator.NUMERIC);
             String message = "HelpClips temporary password:\n" + passwd;
-            simpleEmailService.sendEmail(message, usernameEmail, "HelpClips temporary password");
+
+//            TODO: DO NOT SEND EMAIL IN DEV MODE
+//            simpleEmailService.sendEmail(message, usernameEmail, "HelpClips temporary password");
 
             User newlyRegisteredUser = new User();
             newlyRegisteredUser.setUsername(usernameEmail);
