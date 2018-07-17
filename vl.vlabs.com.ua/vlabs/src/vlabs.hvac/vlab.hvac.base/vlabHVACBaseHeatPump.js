@@ -597,8 +597,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
         // this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameServicePanel"));
 
         this.ambientAirFlow1 = this.vLabScene.getObjectByName('ambientAirFlow1');
-        this.ambientAirFlow1.material.opacity = 0.5;
-        this.ambientAirFlow1.material.color = new THREE.Color(2.5, 1.0, 2.5);
+        this.ambientAirFlow1.material.opacity = 0.25;
+        // this.ambientAirFlow1.material.color = new THREE.Color(2.5, 1.0, 2.5);
         this.ambientAirFlow1.material.alphaTest = 0.1;
         this.ambientAirFlow1.material.needsUpdate = true;
         this.ambientAirFlow1Throttling = 0;

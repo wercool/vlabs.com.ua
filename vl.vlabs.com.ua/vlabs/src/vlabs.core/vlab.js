@@ -1054,7 +1054,7 @@ export default class VLab {
             this.defaultCameraControls.active = false;
         }
 
-        if (this.touchDevice === true) {
+        if (this.touchDevice !== true) {
             this.takenToResponsiveArrowUpdate();
         }
     }

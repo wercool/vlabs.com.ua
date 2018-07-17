@@ -1077,6 +1077,16 @@ export default class CarrierTPWEM01 {
         this.screenCanvasContext.font = 'bold 20px Arial';
         this.screenCanvasContext.fillText('Mode: ' + this.curState['mainMode'], 390, this.screenMapTopOffset + 20);
 
+        if (this.curState['mainMode'] == 'Cool') {
+            this.screenCanvasContext.font = '24px Arial';
+            this.screenCanvasContext.fillText('Cool Set Point: ', 160, this.screenMapTopOffset + 80);
+            this.putTemperatureLabel(330, this.screenMapTopOffset + 80, this.curState['coolToTemperature'], '24px Arial', (initObj ? false : true));
+        } else if (this.curState['mainMode'] == 'Heat') {
+            this.screenCanvasContext.font = '24px Arial';
+            this.screenCanvasContext.fillText('Heat Set Point: ', 160, this.screenMapTopOffset + 80);
+            this.putTemperatureLabel(330, this.screenMapTopOffset + 80, this.curState['heatToTemperature'], '24px Arial', (initObj ? false : true));
+        }
+
         this.putTemperatureLabel(170, this.screenMapTopOffset + 180, this.curState['roomTemperature'], '90px Arial', (initObj ? false : true));
         this.screenCanvasContext.font = '24px Arial';
         this.screenCanvasContext.fillText(this.curState['roomHumidity'].toString() + '%', 240, this.screenMapTopOffset + 240);
@@ -1305,9 +1315,9 @@ export default class CarrierTPWEM01 {
             }
         });
 
-        this.backButton('baseScreen');
+        // this.backButton('baseScreen');
         this.infoButton();
-        this.nextButton('menuScreen', 'Menu', 80);
+        // this.nextButton('menuScreen', 'Menu', 80);
 
         this.processInteractions();
 
