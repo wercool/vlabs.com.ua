@@ -24,6 +24,7 @@ class HVACVLabBase {
                     "HVACBaseHeatPump": {
                         pos: new THREE.Vector3(1.6, 0.5, 1.5),
                         scale: new THREE.Vector3(0.5, 0.5, 0.5),
+                        visible: true
                     }
                 }
             }
@@ -45,9 +46,10 @@ class HVACVLabBase {
             vLabLocator: this.vLabLocator
         };
 
-        this.locations["HVACBaseHeatPump"]      = new this.locationInitObjs["HVACBaseHeatPump"].class(this.locationInitObjs["HVACBaseHeatPump"]);
-        this.locations["HVACBaseAirHandler"]    = undefined;
-// this.locations["HVACBaseAirHandler"] = new this.locationInitObjs["HVACBaseAirHandler"].class(this.locationInitObjs["HVACBaseAirHandler"]);
+        // this.locations["HVACBaseHeatPump"]      = new this.locationInitObjs["HVACBaseHeatPump"].class(this.locationInitObjs["HVACBaseHeatPump"]);
+        this.locations["HVACBaseHeatPump"]      = undefined;//new this.locationInitObjs["HVACBaseHeatPump"].class(this.locationInitObjs["HVACBaseHeatPump"]);
+        // this.locations["HVACBaseAirHandler"]    = undefined;
+        this.locations["HVACBaseAirHandler"] = new this.locationInitObjs["HVACBaseAirHandler"].class(this.locationInitObjs["HVACBaseAirHandler"]);
     }
 }
 

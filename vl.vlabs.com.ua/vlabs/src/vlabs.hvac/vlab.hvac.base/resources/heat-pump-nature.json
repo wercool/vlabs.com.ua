@@ -15,6 +15,7 @@
             "y": 1.0,
             "z": 0.0
         },
+        "enablePan": false,
         "yPanDeltaUp": 0.5,
         "yPanDeltaDown": 0.75,
         "minPolarAngle": 0.25,

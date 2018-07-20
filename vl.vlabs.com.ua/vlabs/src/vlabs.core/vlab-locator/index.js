@@ -79,6 +79,8 @@ export default class VLabLocator {
                     callback: this.onVLabSceneTouchEnd,
                     instance: this
                 };
+
+                handlerSprite.visible = transientLocation.visible;
             }
         }
 

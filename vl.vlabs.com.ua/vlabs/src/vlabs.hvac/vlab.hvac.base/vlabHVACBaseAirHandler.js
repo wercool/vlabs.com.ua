@@ -116,7 +116,21 @@ export default class VlabHVACBaseAirHandler extends VLab {
                 object: this.vLabScene.getObjectByName('nishDoorHandle'),
                 objectRelPos: new THREE.Vector3(0.05, 0.01, -0.02),
                 scale: new THREE.Vector3(0.15, 0.15, 0.15),
+                // depthTest: false,
                 action: this.nishDoorOpenOrClose
+            });
+
+            this.carrierTPWEM01InfoInteractor = new VLabInteractor({
+                context: this,
+                name: 'carrierTPWEM01InfoInteractor',
+                icon: '../vlabs.assets/img/info.png',
+                pos: new THREE.Vector3(0.0, 0.0, 0.0),
+                object: this.vLabScene.getObjectByName('carrierTPWEM01WallMount'),
+                objectRelPos: new THREE.Vector3(0.0, 0.03, 0.085),
+                scale: new THREE.Vector3(0.025, 0.025, 0.025),
+                // depthTest: false,
+                action: this.carrierTPWEM01InfoInteractorCallback,
+                visible: false
             });
 
             console.log(this.name + " initialized");
@@ -170,7 +184,8 @@ export default class VlabHVACBaseAirHandler extends VLab {
             positionDeltas: new THREE.Vector3(0.0, 0.1, 0.1), 
             scale: new THREE.Vector3(0.15, 0.15, 0.15),
             color: 0xfff495,
-            opacity: 0.5
+            opacity: 0.5,
+            zoomCompleteCallback: this.carrierTPWEM01WallMountZoomHelperCallBack
         });
 
         //VLab Items
@@ -211,28 +226,28 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
 
         // Misc helpers
-        this.airHandlerCabinetUpperPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        this.airHandlerCabinetUpperPanel_manipulationControl.setSize(0.5);
-        this.vLabScene.add(this.airHandlerCabinetUpperPanel_manipulationControl);
-        this.airHandlerCabinetUpperPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetUpperPanel"));
-        setTimeout(()=>{ this.airHandlerCabinetUpperPanel_manipulationControl.update(); }, 500);
+        // this.airHandlerCabinetUpperPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        // this.airHandlerCabinetUpperPanel_manipulationControl.setSize(0.5);
+        // this.vLabScene.add(this.airHandlerCabinetUpperPanel_manipulationControl);
+        // this.airHandlerCabinetUpperPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetUpperPanel"));
+        // setTimeout(()=>{ this.airHandlerCabinetUpperPanel_manipulationControl.update(); }, 500);
 
-        this.airHandlerCabinetBottomPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        this.airHandlerCabinetBottomPanel_manipulationControl.setSize(0.5);
-        this.vLabScene.add(this.airHandlerCabinetBottomPanel_manipulationControl);
-        this.airHandlerCabinetBottomPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetBottomPanel"));
-        setTimeout(()=>{ this.airHandlerCabinetBottomPanel_manipulationControl.update(); }, 500);
+        // this.airHandlerCabinetBottomPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        // this.airHandlerCabinetBottomPanel_manipulationControl.setSize(0.5);
+        // this.vLabScene.add(this.airHandlerCabinetBottomPanel_manipulationControl);
+        // this.airHandlerCabinetBottomPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetBottomPanel"));
+        // setTimeout(()=>{ this.airHandlerCabinetBottomPanel_manipulationControl.update(); }, 500);
 
 
         //Zoom helpers
-        this.evaporatorACoilZoomHelper = new ZoomHelper({
-            context: this,
-            targetObjectName: "evaporatorACoil",
-            minDistance: 0.35,
-            positionDeltas: new THREE.Vector3(0.4, 0.15, 0.2), 
-            scale: new THREE.Vector3(0.15, 0.15, 0.15),
-            color: 0xfff495
-        });
+        // this.evaporatorACoilZoomHelper = new ZoomHelper({
+        //     context: this,
+        //     targetObjectName: "evaporatorACoil",
+        //     minDistance: 0.35,
+        //     positionDeltas: new THREE.Vector3(0.4, 0.15, 0.2), 
+        //     scale: new THREE.Vector3(0.15, 0.15, 0.15),
+        //     color: 0xfff495
+        // });
 
         this.carrier332368TXVZoomHelper = new ZoomHelper({
             context: this,
@@ -295,53 +310,53 @@ export default class VlabHVACBaseAirHandler extends VLab {
     initializeActions() {
         this.nishDoorClosed = true;
 
-        //R on controlBoardHK61EA005
-        this.controlBoardHK61EA005RWire = new FlowAlongTube({
-            context: this,
-            tube: this.vLabScene.getObjectByName('controlBoardHK61EA005RWire'),
-            color: 0xff0000,
-            scale: new THREE.Vector3(0.025, 0.025, 0.025),
-            cSectionVertices: 4,
-            speed: 2.0,
-            reversed: false,
-        });
-        //R on carrierTPWEM01ToAirHandlerCable
-        this.carrierTPWEM01ToAirHandlerCable = new FlowAlongTube({
-            context: this,
-            tube: this.vLabScene.getObjectByName('carrierTPWEM01ToAirHandlerCable'),
-            color: 0xff0000,
-            scale: new THREE.Vector3(0.025, 0.025, 0.025),
-            cSectionVertices: 4,
-            speed: 1.0,
-            reversed: false,
-            spritesNum: 20
-        });
+        // //R on controlBoardHK61EA005
+        // this.controlBoardHK61EA005RWire = new FlowAlongTube({
+        //     context: this,
+        //     tube: this.vLabScene.getObjectByName('controlBoardHK61EA005RWire'),
+        //     color: 0xff0000,
+        //     scale: new THREE.Vector3(0.025, 0.025, 0.025),
+        //     cSectionVertices: 4,
+        //     speed: 2.0,
+        //     reversed: false,
+        // });
+        // //R on carrierTPWEM01ToAirHandlerCable
+        // this.carrierTPWEM01ToAirHandlerCable = new FlowAlongTube({
+        //     context: this,
+        //     tube: this.vLabScene.getObjectByName('carrierTPWEM01ToAirHandlerCable'),
+        //     color: 0xff0000,
+        //     scale: new THREE.Vector3(0.025, 0.025, 0.025),
+        //     cSectionVertices: 4,
+        //     speed: 1.0,
+        //     reversed: false,
+        //     spritesNum: 20
+        // });
 
-        setTimeout(() => {
-            this.carrierTPWEM01ToAirHandlerCable.chainTo = this.controlBoardHK61EA005RWire;
-            this.controlBoardHK61EA005RWire.chainTo = this.carrierTPWEM01ToAirHandlerCable;
-            this.carrierTPWEM01ToAirHandlerCable.start();
-        }, 1000);
+        // setTimeout(() => {
+        //     this.carrierTPWEM01ToAirHandlerCable.chainTo = this.controlBoardHK61EA005RWire;
+        //     this.controlBoardHK61EA005RWire.chainTo = this.carrierTPWEM01ToAirHandlerCable;
+        //     this.carrierTPWEM01ToAirHandlerCable.start();
+        // }, 1000);
 
 
-        this.directionalFlow = new DirectionalFlow({
-            context: this,
-            name: 'directionalFlow',
-            tubes: [
-                {
-                    tube: this.vLabScene.getObjectByName('HeatPumpToAirHandlerCable'),
-                    cSectionVertices: 4,
-                    reversed: true
-                },
-            ],
-            color: 0x00ff00,
-            scale: new THREE.Vector3(0.15, 0.15, 0.15),
-            animationDelay: 100,
-            tooltip: '~24V to Heat Pump Contactor'
-        });
-        setTimeout(() => {
-            this.directionalFlow.start();
-        }, 100);
+        // this.directionalFlow = new DirectionalFlow({
+        //     context: this,
+        //     name: 'directionalFlow',
+        //     tubes: [
+        //         {
+        //             tube: this.vLabScene.getObjectByName('HeatPumpToAirHandlerCable'),
+        //             cSectionVertices: 4,
+        //             reversed: true
+        //         },
+        //     ],
+        //     color: 0x00ff00,
+        //     scale: new THREE.Vector3(0.15, 0.15, 0.15),
+        //     animationDelay: 100,
+        //     tooltip: '~24V to Heat Pump Contactor'
+        // });
+        // setTimeout(() => {
+        //     this.directionalFlow.start();
+        // }, 100);
     }
 
     nishDoorOpenOrClose(caller) {
@@ -354,5 +369,13 @@ export default class VlabHVACBaseAirHandler extends VLab {
             this.nishDoorClosed = !this.nishDoorClosed;
         })
         .start();
+    }
+
+    carrierTPWEM01WallMountZoomHelperCallBack() {
+        this.carrierTPWEM01InfoInteractor.activate();
+    }
+
+    carrierTPWEM01InfoInteractorCallback() {
+        console.log('carrierTPWEM01InfoInteractorCallback');
     }
 }

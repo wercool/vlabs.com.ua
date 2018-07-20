@@ -29,13 +29,17 @@ export default class VLabInteractor {
             transparent: true,
             opacity: this.initObj.iconOpacity ? this.initObj.iconOpacity : 0.3,
             rotation: this.initObj.iconRotation ? this.initObj.iconRotation : 0.0,
-            depthTest: true,
-            depthWrite: true
+            depthTest: this.initObj.depthTest !== undefined ? this.initObj.depthTest : true,
+            depthWrite: this.initObj.depthWrite !== undefined ? this.initObj.depthWrite : true,
         });
 
         this.handlerSprite = new THREE.Sprite(this.handlerSpriteMaterial);
         this.handlerSprite.name = this.initObj.name + "VLabInteractorSprite";
         this.handlerSprite.scale.copy(this.initObj.scale ? this.initObj.scale : new THREE.Vector3(1.0, 1.0, 1.0));
+
+        if (this.initObj.visible !== undefined) {
+            this.handlerSprite.visible = this.initObj.visible;
+        }
 
         if (this.initObj.object) {
             this.initObj.object.add(this.handlerSprite);

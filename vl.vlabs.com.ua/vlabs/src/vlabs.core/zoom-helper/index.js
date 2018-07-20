@@ -124,6 +124,7 @@ export default class ZoomHelper {
                 maxAzimuthAngle: this.context.defaultCameraControls.maxAzimuthAngle,
                 minPolarAngle: this.context.defaultCameraControls.minPolarAngle,
                 maxPolarAngle: this.context.defaultCameraControls.maxPolarAngle,
+                enablePan: this.context.defaultCameraControls.enablePan,
             };
         }
 
@@ -176,6 +177,10 @@ export default class ZoomHelper {
 
                 this.context.zoomHelperMode = true;
                 this.context.zoomViewArea.style.opacity = 1.0;
+
+                if (this.initObj.zoomCompleteCallback !== undefined) {
+                    this.initObj.zoomCompleteCallback.call(this.context, {});
+                }
             })
             .start();
             })
@@ -196,6 +201,7 @@ export default class ZoomHelper {
         this.context.defaultCameraControls.maxAzimuthAngle = this.context.defaultCameraControls.backState.maxAzimuthAngle;
         this.context.defaultCameraControls.minPolarAngle =  this.context.defaultCameraControls.backState.minPolarAngle;
         this.context.defaultCameraControls.maxPolarAngle = this.context.defaultCameraControls.backState.maxPolarAngle;
+        this.context.defaultCameraControls.enablePan = this.context.defaultCameraControls.backState.enablePan;
 
         new TWEEN.Tween(this.context.defaultCameraControls)
         .to({ minDistance: this.context.defaultCameraControls.backState.minDistance }, 250)

@@ -1079,11 +1079,11 @@ export default class CarrierTPWEM01 {
 
         if (this.curState['mainMode'] == 'Cool') {
             this.screenCanvasContext.font = '24px Arial';
-            this.screenCanvasContext.fillText('Cool Set Point: ', 160, this.screenMapTopOffset + 80);
+            this.screenCanvasContext.fillText('Cool Setpoint: ', 160, this.screenMapTopOffset + 80);
             this.putTemperatureLabel(330, this.screenMapTopOffset + 80, this.curState['coolToTemperature'], '24px Arial', (initObj ? false : true));
         } else if (this.curState['mainMode'] == 'Heat') {
             this.screenCanvasContext.font = '24px Arial';
-            this.screenCanvasContext.fillText('Heat Set Point: ', 160, this.screenMapTopOffset + 80);
+            this.screenCanvasContext.fillText('Heat Setpoint: ', 160, this.screenMapTopOffset + 80);
             this.putTemperatureLabel(330, this.screenMapTopOffset + 80, this.curState['heatToTemperature'], '24px Arial', (initObj ? false : true));
         }
 

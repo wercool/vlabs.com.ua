@@ -461,27 +461,27 @@ export default class VlabHVACBaseHeatPump extends VLab {
         });
 
         /* VLab Interactors */
-        this.heatPumpFrameCapInteractor = new VLabInteractor({
-            context: this,
-            name: 'heatPumpFrameCapInteractor',
-            pos: new THREE.Vector3(0.0, 0.0, 0.0),
-            object: this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameCap'),
-            objectRelPos: new THREE.Vector3(0.35, 0.5, 0.0),
-            scale: new THREE.Vector3(0.15, 0.15, 0.15),
-            icon: 'resources/scene-heat-pump/assets/screwdriver.png',
-            iconRotation: THREE.Math.degToRad(0.0),
-            action: this.heatPumpFrameCapTakeOutWithScrewdriver
-        });
+        // this.heatPumpFrameCapInteractor = new VLabInteractor({
+        //     context: this,
+        //     name: 'heatPumpFrameCapInteractor',
+        //     pos: new THREE.Vector3(0.0, 0.0, 0.0),
+        //     object: this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameCap'),
+        //     objectRelPos: new THREE.Vector3(0.35, 0.5, 0.0),
+        //     scale: new THREE.Vector3(0.15, 0.15, 0.15),
+        //     icon: 'resources/scene-heat-pump/assets/screwdriver.png',
+        //     iconRotation: THREE.Math.degToRad(0.0),
+        //     action: this.heatPumpFrameCapTakeOutWithScrewdriver
+        // });
 
-        this.ACDisconnectDoorInteractor = new VLabInteractor({
-            context: this,
-            name: 'ACDisconnectDoorInteractor',
-            pos: new THREE.Vector3(0.0, 0.0, 0.0),
-            object: this.vLabScene.getObjectByName('ACDisconnectDoor'),
-            objectRelPos: new THREE.Vector3(0.0, 0.05, -0.15),
-            scale: new THREE.Vector3(0.05, 0.05, 0.05),
-            action: this.ACDisconnectDoorInteractorHandler
-        });
+        // this.ACDisconnectDoorInteractor = new VLabInteractor({
+        //     context: this,
+        //     name: 'ACDisconnectDoorInteractor',
+        //     pos: new THREE.Vector3(0.0, 0.0, 0.0),
+        //     object: this.vLabScene.getObjectByName('ACDisconnectDoor'),
+        //     objectRelPos: new THREE.Vector3(0.0, 0.05, -0.15),
+        //     scale: new THREE.Vector3(0.05, 0.05, 0.05),
+        //     action: this.ACDisconnectDoorInteractorHandler
+        // });
 
         this.ACDisconnectClampInteractor = new VLabInteractor({
             context: this,
@@ -552,9 +552,9 @@ export default class VlabHVACBaseHeatPump extends VLab {
             animationDelay: 100,
             tooltip: '~230V Power'
         });
-        setTimeout(() => {
-            this.powerInLineCurrentFlow.start();
-        }, 1000);
+        // setTimeout(() => {
+        //     this.powerInLineCurrentFlow.start();
+        // }, 1000);
 
         this.gasFlow = new GasFlow({
             context: this,
@@ -580,10 +580,23 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 });
             this.gasFlows1.push(gasFlow1);
         }
-        this.strartGasFlowAnimations();
+        // this.strartGasFlowAnimations();
 
-        this.startFanMotor();
-        this.startScrollCompressor();
+        // this.startFanMotor();
+        // this.startScrollCompressor();
+
+        ////// Ambient Air Flow
+        this.ambientAirFlow1 = this.vLabScene.getObjectByName('ambientAirFlow1');
+        this.ambientAirFlow1.material.opacity = 0.25;
+        this.ambientAirFlow1.material.color = new THREE.Color(2.5, 1.0, 2.5);
+        this.ambientAirFlow1.material.alphaTest = 0.1;
+        this.ambientAirFlow1.material.needsUpdate = true;
+        this.ambientAirFlow1Throttling = 0;
+        this.ambientAirFlow1.visible = false;
+
+        // setTimeout(() => {
+        //     this.ambientAirFlow1.visible = false;
+        // }, 15000);
 
         // Misc helpers
         // this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
@@ -596,16 +609,6 @@ export default class VlabHVACBaseHeatPump extends VLab {
         // this.vLabScene.add(this.heatPumpFrameServicePanel_manipulationControl);
         // this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameServicePanel"));
 
-        this.ambientAirFlow1 = this.vLabScene.getObjectByName('ambientAirFlow1');
-        this.ambientAirFlow1.material.opacity = 0.25;
-        // this.ambientAirFlow1.material.color = new THREE.Color(2.5, 1.0, 2.5);
-        this.ambientAirFlow1.material.alphaTest = 0.1;
-        this.ambientAirFlow1.material.needsUpdate = true;
-        this.ambientAirFlow1Throttling = 0;
-
-        setTimeout(() => {
-            this.ambientAirFlow1.visible = false;
-        }, 15000);
     }
 
     onRedererFrameEvent(event) {
@@ -629,13 +632,13 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     onVLabStopAndHide() {
-        this.stopFanMotor();
-        this.stopScrollCompressor();
+        // this.stopFanMotor();
+        // this.stopScrollCompressor();
     }
 
     onVLabResumeAndShow() {
-        this.startFanMotor(true);
-        this.startScrollCompressor();
+        // this.startFanMotor(true);
+        // this.startScrollCompressor();
     }
 
     startFanMotor(resumeMotor) {
