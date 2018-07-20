@@ -237,8 +237,8 @@ export default class ZoomHelper {
     }
 
     onVLabSceneResetView() {
-        this.context.defaultCameraControls.enableZoom = true;
-        this.context.defaultCameraControls.enablePan = true;
+        // this.context.defaultCameraControls.enableZoom = true;
+        // this.context.defaultCameraControls.enablePan = true;
         this.context.defaultCameraControls.backState = undefined;
         this.context.backFromViewButton.removeEventListener("mouseup", this.reset);
         this.context.backFromViewButton.removeEventListener("touchend", this.reset);
