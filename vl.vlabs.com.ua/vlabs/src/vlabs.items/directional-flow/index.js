@@ -18,6 +18,7 @@ export default class DirectionalFlow {
         this.tooltipPlacer.id = this.initObj.name + 'Tooltip';
         this.tooltipPlacer.className = 'tooltip';
         this.context.container.appendChild(this.tooltipPlacer);
+        this.tooltipPlacer.style.display = 'none';
 
         for (var t = 0; t < this.tubes.length; t++) {
             var tube = this.tubes[t].tube;

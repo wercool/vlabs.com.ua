@@ -120,18 +120,18 @@ export default class VlabHVACBaseAirHandler extends VLab {
                 action: this.nishDoorOpenOrClose
             });
 
-            this.carrierTPWEM01InfoInteractor = new VLabInteractor({
-                context: this,
-                name: 'carrierTPWEM01InfoInteractor',
-                icon: '../vlabs.assets/img/info.png',
-                pos: new THREE.Vector3(0.0, 0.0, 0.0),
-                object: this.vLabScene.getObjectByName('carrierTPWEM01WallMount'),
-                objectRelPos: new THREE.Vector3(0.0, 0.03, 0.085),
-                scale: new THREE.Vector3(0.025, 0.025, 0.025),
-                // depthTest: false,
-                action: this.carrierTPWEM01InfoInteractorCallback,
-                visible: false
-            });
+            // this.carrierTPWEM01InfoInteractor = new VLabInteractor({
+            //     context: this,
+            //     name: 'carrierTPWEM01InfoInteractor',
+            //     icon: '../vlabs.assets/img/info.png',
+            //     pos: new THREE.Vector3(0.0, 0.0, 0.0),
+            //     object: this.vLabScene.getObjectByName('carrierTPWEM01WallMount'),
+            //     objectRelPos: new THREE.Vector3(0.0, 0.03, 0.085),
+            //     scale: new THREE.Vector3(0.025, 0.025, 0.025),
+            //     // depthTest: false,
+            //     action: this.carrierTPWEM01InfoInteractorCallback,
+            //     visible: false
+            // });
 
             console.log(this.name + " initialized");
         }).catch(error => {
@@ -185,7 +185,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
             scale: new THREE.Vector3(0.15, 0.15, 0.15),
             color: 0xfff495,
             opacity: 0.5,
-            zoomCompleteCallback: this.carrierTPWEM01WallMountZoomHelperCallBack
+            // zoomCompleteCallback: this.carrierTPWEM01WallMountZoomHelperCallBack
         });
 
         //VLab Items
@@ -371,11 +371,11 @@ export default class VlabHVACBaseAirHandler extends VLab {
         .start();
     }
 
-    carrierTPWEM01WallMountZoomHelperCallBack() {
-        this.carrierTPWEM01InfoInteractor.activate();
-    }
+    // carrierTPWEM01WallMountZoomHelperCallBack() {
+    //     this.carrierTPWEM01InfoInteractor.activate();
+    // }
 
-    carrierTPWEM01InfoInteractorCallback() {
-        console.log('carrierTPWEM01InfoInteractorCallback');
-    }
+    // carrierTPWEM01InfoInteractorCallback() {
+    //     console.log('carrierTPWEM01InfoInteractorCallback');
+    // }
 }

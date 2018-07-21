@@ -3,10 +3,13 @@ import * as THREE                   from 'three';
 import VlabHVACBaseHeatPump         from './vlabHVACBaseHeatPump';
 import VlabHVACBaseAirHandler       from './vlabHVACBaseAirHandler';
 import VLabLocator                  from '../../vlabs.core/vlab-locator';
+import Tablet                       from '../../vlabs.core/tablet';
 
 class HVACVLabBase {
     constructor(initObj = {}) {
         console.log(initObj.name);
+
+        this.name = initObj.name;
 
         this.locationInitObjs = {};
         this.locations = {};
@@ -50,6 +53,22 @@ class HVACVLabBase {
         this.locations["HVACBaseHeatPump"]      = undefined;//new this.locationInitObjs["HVACBaseHeatPump"].class(this.locationInitObjs["HVACBaseHeatPump"]);
         // this.locations["HVACBaseAirHandler"]    = undefined;
         this.locations["HVACBaseAirHandler"] = new this.locationInitObjs["HVACBaseAirHandler"].class(this.locationInitObjs["HVACBaseAirHandler"]);
+
+        this.tablet = new Tablet({
+            context: this,
+            vLabLocator: this.vLabLocator,
+            content: {
+                header: 'HelpClip Assistant',
+                tabs: {
+                    'normalModeDemo': {
+                        title: 'Normal mode'
+                    },
+                    'shortToGroundDemo': {
+                        title: 'Short to ground'
+                    }
+                }
+            }
+        });
     }
 }
 

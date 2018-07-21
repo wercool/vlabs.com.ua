@@ -340,3 +340,99 @@ html, body {
     -ms-user-select: none;      /* IE 10+ */
     user-select: none;          /* Likely future */
 }
+
+/* Tablet */
+.tabletButton {
+    position: absolute;
+    cursor: pointer;
+    width: 20vmin;
+    height: 25vmin;
+    max-width: 80px;
+    max-height: 113px;
+    left: 0px;
+    top: 50px;
+    background-image: url("../img/tablet.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.tabletViewContainer {
+    position: fixed;
+    top: 8px;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    background-color: #0e2d35ec;
+    display: none;
+    z-index: 20000;
+    border-radius: 10px;
+    -moz-box-shadow: 0 0 4px #ccc;
+    -webkit-box-shadow: 0 0 4px #ccc;
+    box-shadow: 0 0 4px #ccc;
+    padding: 7px;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+}
+
+.tabletViewCloseButton {
+    position: fixed;
+    width: 10vmin;
+    height: 10vmin;
+    max-width: 36px;
+    max-height: 36px;
+    background-image: url('../img/closeInventory.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    left: 16px;
+    top: 16px;
+    cursor: pointer;
+    z-index: 20010;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tabletViewContentContainer {
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    width: 100%;
+    height: 100%;
+    padding: 1%;
+}
+
+.tabletViewContentTabsButton {
+    height: 24px;
+    width: 130px;
+    font-size: 12pt;
+    color: #d4d4d4;
+    background-color: transparent;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.tabletViewContentTabsButtons {
+    width: 100%;
+    border: none;
+    color: white;
+    padding: 10px 24px;
+    cursor: pointer;
+    float: left;
+}
+
+.tabletViewContentTabsButtons button:not(:last-child) {
+    border-right: solid 2px #d4d4d4;
+}
+
+/* Clear floats (clearfix hack) */
+.tabletViewContentTabsButtons:after {
+    content: "";
+    clear: both;
+    display: table;
+}
