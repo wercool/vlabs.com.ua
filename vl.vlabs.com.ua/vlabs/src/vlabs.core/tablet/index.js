@@ -148,12 +148,12 @@ export default class Tablet {
                     tabContentHTML += '<td style="font-size: 24px; vertical-align: top;">';
                     tabContentHTML += (i + 1) + '.';
                     tabContentHTML += '</td>';
-                    tabContentHTML += '<td>';
+                    tabContentHTML += '<td style="max-width: 70vw;">';
                     tabContentHTML += '<span style="font-size: 24px; vertical-align: top;">' + this.initObj.content.tabs[tabId].items[i].shortDesc + '</span>';
                     tabContentHTML += '</br>';
                     tabContentHTML += '<span style="font-size: 16px; vertical-align: top;">' + this.initObj.content.tabs[tabId].items[i].detailDesc + '</span>';
                     tabContentHTML += '</td>';
-                    tabContentHTML += '<td vertical-align: top;">';
+                    tabContentHTML += '<td style="vertical-align: top;">';
                     tabContentHTML += this.initObj.content.tabs[tabId].items[i].completed ? '<img src="../vlabs.assets/img/completed.png"/>' : '<img src="../vlabs.assets/img/incompleted.png"/>';
                     tabContentHTML += '</td>';
                 tabContentHTML += '</tr>';

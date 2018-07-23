@@ -464,7 +464,7 @@ html, body {
 
 .tabletViewTabPrev {
     position: absolute;
-    top: 65px;
+    top: 62px;
     left: 10px;
     width: 10vmin;
     height: 10vmin;
@@ -479,7 +479,7 @@ html, body {
 
 .tabletViewTabNext {
     position: absolute;
-    top: 65px;
+    top: 62px;
     right: 10px;
     width: 10vmin;
     height: 10vmin;
@@ -494,9 +494,9 @@ html, body {
 
 .tabletViewItemsContentContainer {
     width: 100%;
-    height: auto;
+    height: calc(100% - 120px);
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: auto;
     white-space: nowrap;
     -webkit-user-select: none;  /* Chrome all / Safari all */
     -moz-user-select: none;     /* Firefox all */

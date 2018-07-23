@@ -65,8 +65,10 @@ class HVACVLabBase {
                         items: [
                             {
                                 shortDesc: 'Approach the thermostat',
-                                detailDesc: '<ul>\
-                                                <li>Click <img src="resources/assistant/img/step1_1.png" style="vertical-align: middle;"></li>\
+                                detailDesc: '<ul style="padding-left: 20px;">\
+                                                <li>Thermostat is located inside the apartment <img src="resources/assistant/img/step1_0.png" style="vertical-align: middle;"></li>\
+                                                <li>Click <img src="resources/assistant/img/step1_1.png" style="vertical-align: middle;"> (yellow curved arrow)</li>\
+                                                <li>Click <img src="resources/assistant/img/step1_2.png" style="vertical-align: middle;"> (magnifying glass)</li>\
                                             </ul>',
                                 completed: false,
                                 callback: undefined
