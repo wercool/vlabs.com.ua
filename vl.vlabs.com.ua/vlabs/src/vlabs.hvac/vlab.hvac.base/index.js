@@ -59,14 +59,39 @@ class HVACVLabBase {
             vLabLocator: this.vLabLocator,
             content: {
                 header: 'HelpClip Assistant',
-                tabs: {
-                    'normalModeDemo': {
-                        title: 'Normal mode'
+                tabs: [
+                    {
+                        title: 'Normal operation demo',
+                        items: [
+                            {
+                                shortDesc: 'Approach the thermostat',
+                                detailDesc: '<ul>\
+                                                <li>Click <img src="resources/assistant/img/step1_1.png" style="vertical-align: middle;"></li>\
+                                            </ul>',
+                                completed: false,
+                                callback: undefined
+                            },
+                            {
+                                shortDesc: 'Approach the thermostat__1',
+                                detailDesc: '',
+                                completed: false,
+                                callback: undefined
+                            },
+                            {
+                                shortDesc: 'Approach the thermostat__2',
+                                detailDesc: '',
+                                completed: false,
+                                callback: undefined
+                            }
+                        ]
                     },
-                    'shortToGroundDemo': {
-                        title: 'Short to ground'
+                    {
+                        title: 'Short to ground demo'
+                    },
+                    {
+                        title: 'Free mode'
                     }
-                }
+                ]
             }
         });
     }

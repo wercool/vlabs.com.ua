@@ -562,6 +562,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
             gasFlowHelperMesh: this.vLabScene.getObjectByName('refrigerantFlowHelper'),
             confrontMaterials: [ this.vLabScene.getObjectByName('bryantB225B_heatPumpFanGrid').material ]
         });
+        var self = this;
+        setTimeout(()=>{
+            self.gasFlow.start();
+        }, 60000);
 
         this.gasFlows1 = [];
         for (var i = 0; i < 3; i++) {
@@ -580,7 +584,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 });
             this.gasFlows1.push(gasFlow1);
         }
-        // this.strartGasFlowAnimations();
+        this.strartGasFlowAnimations();
 
         // this.startFanMotor();
         // this.startScrollCompressor();
@@ -593,21 +597,18 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.ambientAirFlow1.material.needsUpdate = true;
         this.ambientAirFlow1Throttling = 0;
         this.ambientAirFlow1.visible = false;
-
-        // setTimeout(() => {
-        //     this.ambientAirFlow1.visible = false;
-        // }, 15000);
+this.ambientAirFlow1.visible = true;
 
         // Misc helpers
-        // this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        // this.heatPumpFrameCap_manipulationControl.setSize(0.5);
-        // this.vLabScene.add(this.heatPumpFrameCap_manipulationControl);
-        // this.heatPumpFrameCap_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameCap"));
+        this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        this.heatPumpFrameCap_manipulationControl.setSize(0.5);
+        this.vLabScene.add(this.heatPumpFrameCap_manipulationControl);
+        this.heatPumpFrameCap_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameCap"));
 
-        // this.heatPumpFrameServicePanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        // this.heatPumpFrameServicePanel_manipulationControl.setSize(0.5);
-        // this.vLabScene.add(this.heatPumpFrameServicePanel_manipulationControl);
-        // this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameServicePanel"));
+        this.heatPumpFrameServicePanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        this.heatPumpFrameServicePanel_manipulationControl.setSize(0.5);
+        this.vLabScene.add(this.heatPumpFrameServicePanel_manipulationControl);
+        this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameServicePanel"));
 
     }
 
