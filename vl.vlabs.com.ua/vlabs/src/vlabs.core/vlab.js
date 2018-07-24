@@ -543,7 +543,7 @@ export default class VLab {
         this.setProgressBar();
         return new Promise((resolve, reject) => {
             let thisVLab = this;
-            thisVLab.progressBarPrependText = (loaderMessage)? loaderMessage : "The world of VLab is loaded by ";
+            thisVLab.progressBarPrependText = (loaderMessage)? loaderMessage : "The world of HelpClip is loaded by ";
             if (this.nature.sceneJSONFile) {
                 let loader = new THREE.ObjectLoader();
                 if (thisVLab.initObj.crossOrigin) loader.setCrossOrigin(thisVLab.initObj.crossOrigin);

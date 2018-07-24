@@ -240,14 +240,14 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
 
         //Zoom helpers
-        // this.evaporatorACoilZoomHelper = new ZoomHelper({
-        //     context: this,
-        //     targetObjectName: "evaporatorACoil",
-        //     minDistance: 0.35,
-        //     positionDeltas: new THREE.Vector3(0.4, 0.15, 0.2), 
-        //     scale: new THREE.Vector3(0.15, 0.15, 0.15),
-        //     color: 0xfff495
-        // });
+        this.evaporatorACoilZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "evaporatorACoil",
+            minDistance: 0.35,
+            positionDeltas: new THREE.Vector3(0.2, 0.15, 0.2), 
+            scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            color: 0xfff495
+        });
 
         this.carrier332368TXVZoomHelper = new ZoomHelper({
             context: this,
