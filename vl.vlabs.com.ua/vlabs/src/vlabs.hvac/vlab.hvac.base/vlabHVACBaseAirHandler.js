@@ -185,7 +185,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
             scale: new THREE.Vector3(0.15, 0.15, 0.15),
             color: 0xfff495,
             opacity: 0.5,
-            // zoomCompleteCallback: this.carrierTPWEM01WallMountZoomHelperCallBack
+            zoomCompleteCallback: this.carrierTPWEM01WallMountZoomHelperCallBack
         });
 
         //VLab Items
@@ -226,17 +226,17 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
 
         // Misc helpers
-        // this.airHandlerCabinetUpperPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        // this.airHandlerCabinetUpperPanel_manipulationControl.setSize(0.5);
-        // this.vLabScene.add(this.airHandlerCabinetUpperPanel_manipulationControl);
-        // this.airHandlerCabinetUpperPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetUpperPanel"));
-        // setTimeout(()=>{ this.airHandlerCabinetUpperPanel_manipulationControl.update(); }, 500);
+        this.airHandlerCabinetUpperPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        this.airHandlerCabinetUpperPanel_manipulationControl.setSize(0.5);
+        this.vLabScene.add(this.airHandlerCabinetUpperPanel_manipulationControl);
+        this.airHandlerCabinetUpperPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetUpperPanel"));
+        setTimeout(()=>{ this.airHandlerCabinetUpperPanel_manipulationControl.update(); }, 500);
 
-        // this.airHandlerCabinetBottomPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        // this.airHandlerCabinetBottomPanel_manipulationControl.setSize(0.5);
-        // this.vLabScene.add(this.airHandlerCabinetBottomPanel_manipulationControl);
-        // this.airHandlerCabinetBottomPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetBottomPanel"));
-        // setTimeout(()=>{ this.airHandlerCabinetBottomPanel_manipulationControl.update(); }, 500);
+        this.airHandlerCabinetBottomPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        this.airHandlerCabinetBottomPanel_manipulationControl.setSize(0.5);
+        this.vLabScene.add(this.airHandlerCabinetBottomPanel_manipulationControl);
+        this.airHandlerCabinetBottomPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetBottomPanel"));
+        setTimeout(()=>{ this.airHandlerCabinetBottomPanel_manipulationControl.update(); }, 500);
 
 
         //Zoom helpers
@@ -299,11 +299,32 @@ export default class VlabHVACBaseAirHandler extends VLab {
             opacity: 0.65
         });
 
+        ////// Ambient Air Flow
+        this.airFlow = this.vLabScene.getObjectByName('airFlow');
+        this.airFlow.material.opacity = 0.75;
+        // this.airFlow.material.color = new THREE.Color(2.5, 1.0, 2.5);
+        this.airFlow.material.alphaTest = 0.1;
+        this.airFlow.material.needsUpdate = true;
+        this.airFlowThrottling = 0;
+        this.airFlow.visible = false;
+this.airFlow.visible = true;
+
         this.initializeActions();
     }
 
     onRedererFrameEvent(event) {
-
+        if (this.airFlow.visible) {
+            if (this.airFlowThrottling > 2)
+            {
+                this.airFlowThrottling = 0;
+                this.airFlow.material.map.offset.y -= 0.038;
+                if (this.airFlow.material.map.offset.y < -0.494) {
+                    this.airFlow.material.map.offset.y = -0.038;
+                }
+                this.airFlow.material.needsUpdate = true;
+            }
+            this.airFlowThrottling++;
+        }
     }
 
     /* VlabHVACBaseAirHandler Actions */
@@ -339,23 +360,55 @@ export default class VlabHVACBaseAirHandler extends VLab {
         // }, 1000);
 
 
-        // this.directionalFlow = new DirectionalFlow({
-        //     context: this,
-        //     name: 'directionalFlow',
-        //     tubes: [
-        //         {
-        //             tube: this.vLabScene.getObjectByName('HeatPumpToAirHandlerCable'),
-        //             cSectionVertices: 4,
-        //             reversed: true
-        //         },
-        //     ],
-        //     color: 0x00ff00,
-        //     scale: new THREE.Vector3(0.15, 0.15, 0.15),
-        //     animationDelay: 100,
-        //     tooltip: '~24V to Heat Pump Contactor'
-        // });
+        this.ctrlVFromThermostatToAirHandler = new DirectionalFlow({
+            context: this,
+            name: 'directionalFlow',
+            tubes: [
+                {
+                    tube: this.vLabScene.getObjectByName('carrierTPWEM01ToAirHandlerCable'),
+                    cSectionVertices: 4,
+                    reversed: false
+                },
+            ],
+            color: 0x00ff00,
+            scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            animationDelay: 400,
+            tooltip: 'Control voltage to Air Handler Control Board'
+        });
+
+        this.ctrlVoltageFromAirHandlerToHeatPump = new DirectionalFlow({
+            context: this,
+            name: 'directionalFlow',
+            tubes: [
+                {
+                    tube: this.vLabScene.getObjectByName('HeatPumpToAirHandlerCable'),
+                    cSectionVertices: 4,
+                    reversed: false
+                },
+            ],
+            color: 0x00ff00,
+            scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            animationDelay: 250,
+            tooltip: 'Control voltage to Heat Pump Control Board'
+        });
+
+        this.power110VFromQuickDisconnect = new DirectionalFlow({
+            context: this,
+            name: 'directionalFlow',
+            tubes: [
+                {
+                    tube: this.vLabScene.getObjectByName('quickDisconnectPowerLine'),
+                    cSectionVertices: 4,
+                    reversed: true
+                },
+            ],
+            color: 0xff0000,
+            scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            animationDelay: 150,
+            tooltip: '<span style="color: red; font-size: 24px;">⚡</span> ~110V Power'
+        });
         // setTimeout(() => {
-        //     this.directionalFlow.start();
+        //     this.ctrlVoltageFromAirHandlerToHeatPump.start();
         // }, 100);
     }
 
@@ -367,15 +420,80 @@ export default class VlabHVACBaseAirHandler extends VLab {
         .onComplete(() => {
             caller.vLabInteractor.activate();
             this.nishDoorClosed = !this.nishDoorClosed;
+
+            if (!this.nishDoorClosed) {
+                //Normal mode demo
+                if (this.vLabLocator.context.tablet.currentActiveTabId == 0) {
+                    //Approach the thermostat completed
+                    if (this.vLabLocator.context.tablet.initObj.content.tabs[0].items[2].completed === false) {
+                        if (this.vLabLocator.context.tablet.initObj.content.tabs[0].items[0].completed && this.vLabLocator.context.tablet.initObj.content.tabs[0].items[1].completed) {
+                            this.ctrlVoltageFromAirHandlerToHeatPump.start();
+                            this.ctrlVFromThermostatToAirHandler.start();
+                            this.power110VFromQuickDisconnect.start();
+                            var self = this;
+                            this.contolVoltagesAcknowledgmentStepTimeout = setTimeout(()=>{
+                                self.vLabLocator.context.tablet.initObj.content.tabs[0].items[2].completed = true;
+                                self.vLabLocator.context.tablet.stepCompletedAnimation();
+                                self.playSound('resources/assistant/snd/step3.mp3');
+                                self.contolVoltagesAcknowledgmentStepTimeout = undefined;
+                            }, 6000);
+                        }
+                    }
+                }
+            } else {
+                if (this.contolVoltagesAcknowledgmentStepTimeout !== undefined) {
+                    clearTimeout(this.contolVoltagesAcknowledgmentStepTimeout);
+                }
+                this.ctrlVoltageFromAirHandlerToHeatPump.stop();
+                this.ctrlVFromThermostatToAirHandler.stop();
+                this.power110VFromQuickDisconnect.stop();
+            }
+
         })
         .start();
     }
 
-    // carrierTPWEM01WallMountZoomHelperCallBack() {
-    //     this.carrierTPWEM01InfoInteractor.activate();
-    // }
+    carrierTPWEM01WallMountZoomHelperCallBack() {
+        // this.carrierTPWEM01InfoInteractor.activate();
+
+        //Normal mode demo
+        if (this.vLabLocator.context.tablet.currentActiveTabId == 0) {
+            //Approach the thermostat completed
+            if (this.vLabLocator.context.tablet.initObj.content.tabs[0].items[0].completed === false) {
+                this.vLabLocator.context.tablet.initObj.content.tabs[0].items[0].completed = true;
+                this.vLabLocator.context.tablet.stepCompletedAnimation();
+                this.playSound('resources/assistant/snd/step1.mp3');
+                this.checkThermostatIsSetToCool();
+            }
+        }
+    }
 
     // carrierTPWEM01InfoInteractorCallback() {
     //     console.log('carrierTPWEM01InfoInteractorCallback');
     // }
+
+    playSound(snd) {
+        let audio = new Audio(snd);
+        audio.play();
+    }
+
+    checkThermostatIsSetToCool() {
+        var roomTemperature = this.carrierTPWEM01.getTemperature({
+            tempId: 'roomTemperature',
+            format: 'F'
+        });
+        var coolToTemperature = this.carrierTPWEM01.getTemperature({
+            tempId: 'coolToTemperature',
+            format: 'F'
+        })
+        if (Math.round(roomTemperature - coolToTemperature) == 4 && this.carrierTPWEM01.curState['mainMode'] == 'Cool') {
+            if (this.vLabLocator.context.tablet.initObj.content.tabs[0].items[1].completed === false) {
+                this.vLabLocator.context.tablet.initObj.content.tabs[0].items[1].completed = true;
+                this.vLabLocator.context.tablet.stepCompletedAnimation();
+                this.playSound('resources/assistant/snd/step2.mp3');
+            }
+        } else {
+            setTimeout(this.checkThermostatIsSetToCool.bind(this), 2000);
+        }
+    }
 }

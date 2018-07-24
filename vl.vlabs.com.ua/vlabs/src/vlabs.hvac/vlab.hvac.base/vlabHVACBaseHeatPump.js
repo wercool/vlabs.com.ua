@@ -565,7 +565,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         var self = this;
         setTimeout(()=>{
             self.gasFlow.start();
-        }, 60000);
+        }, 120000);
 
         this.gasFlows1 = [];
         for (var i = 0; i < 3; i++) {
@@ -620,16 +620,18 @@ this.ambientAirFlow1.visible = true;
             //     this.fanMotorSpeed += 0.005;
             // }
         }
-        if (this.ambientAirFlow1Throttling > 2)
-        {
-            this.ambientAirFlow1Throttling = 0;
-            this.ambientAirFlow1.material.map.offset.y -= 0.038;
-            if (this.ambientAirFlow1.material.map.offset.y < -0.494) {
-                this.ambientAirFlow1.material.map.offset.y = -0.038;
+        if (this.ambientAirFlow1.visible) {
+            if (this.ambientAirFlow1Throttling > 2)
+            {
+                this.ambientAirFlow1Throttling = 0;
+                this.ambientAirFlow1.material.map.offset.y -= 0.038;
+                if (this.ambientAirFlow1.material.map.offset.y < -0.494) {
+                    this.ambientAirFlow1.material.map.offset.y = -0.038;
+                }
+                this.ambientAirFlow1.material.needsUpdate = true;
             }
-            this.ambientAirFlow1.material.needsUpdate = true;
+            this.ambientAirFlow1Throttling++;
         }
-        this.ambientAirFlow1Throttling++;
     }
 
     onVLabStopAndHide() {
@@ -683,7 +685,7 @@ this.ambientAirFlow1.visible = true;
     }
 
     heatPumpFrameCapTakeOutWithScrewdriver() {
-        this.heatPumpFrameCapInteractor.deactivate();
+        // this.heatPumpFrameCapInteractor.deactivate();
         this.inventory.activate();
         this.inventory.setCurrentItem({ item: this.BoshScrewdriver.model });
         setTimeout(() => {
@@ -751,8 +753,8 @@ this.ambientAirFlow1.visible = true;
     }
 
     heatPumpFrameCapTakeOutInteractorHandler() {
-        this.stopFanMotor();
-        this.stopScrollCompressor();
+        // this.stopFanMotor();
+        // this.stopScrollCompressor();
         this.heatPumpFrameCapTakeOutInteractor.deactivate();
         this.bryantB225B_heatPumpFrameCap = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameCap');
 
@@ -859,7 +861,7 @@ this.ambientAirFlow1.visible = true;
 
         var delay = 50;
 
-        this.heatPumpFrameCapInteractor.deactivate();
+        // this.heatPumpFrameCapInteractor.deactivate();
 
         var targetBoltPosition = this.vLabScene.getObjectByName('frameCapBolt10').position.clone();
         this.BoshScrewdriver.model.position.copy(targetBoltPosition);

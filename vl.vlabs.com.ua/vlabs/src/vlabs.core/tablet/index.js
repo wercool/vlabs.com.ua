@@ -19,6 +19,11 @@ export default class Tablet {
         this.tabletButton.addEventListener("mousedown", this.activate.bind(this), false);
         this.tabletButton.addEventListener("touchstart", this.activate.bind(this), false);
         document.body.appendChild(this.tabletButton);
+        this.tabletButtonCompleted = document.createElement('div');
+        this.tabletButtonCompleted.id = this.context.name + 'TabletButtonCompleted';
+        this.tabletButtonCompleted.className = 'tabletButtonCompleted';
+        this.tabletButtonCompleted.classList.add("hidden");
+        this.tabletButton.appendChild(this.tabletButtonCompleted);
 
         this.container = document.createElement('div');
         this.container.id = this.context.name + 'TabletViewContainer';
@@ -100,6 +105,8 @@ export default class Tablet {
                 this.tabsNextButton.style.display = 'block';
             }
         }
+
+        this.setActiveTab(this.currentActiveTabId);
     }
 
     close() {
@@ -145,11 +152,11 @@ export default class Tablet {
             var tabContentHTML = '<table style="width: 100%; border: none; color: white;">';
             for (var i = 0; i < this.initObj.content.tabs[tabId].items.length; i++) {
                 tabContentHTML += '<tr>';
-                    tabContentHTML += '<td style="font-size: 24px; vertical-align: top;">';
+                    tabContentHTML += '<td style="font-size: 24px; vertical-align: top; ' + (this.initObj.content.tabs[tabId].items[i].completed ? 'color: #44ff00;' : '') + '">';
                     tabContentHTML += (i + 1) + '.';
                     tabContentHTML += '</td>';
                     tabContentHTML += '<td style="max-width: 70vw;">';
-                    tabContentHTML += '<span style="font-size: 24px; vertical-align: top;">' + this.initObj.content.tabs[tabId].items[i].shortDesc + '</span>';
+                    tabContentHTML += '<span style="font-size: 24px; vertical-align: top; ' + (this.initObj.content.tabs[tabId].items[i].completed ? 'color: #44ff00;' : '') + '">' + this.initObj.content.tabs[tabId].items[i].shortDesc + '</span>';
                     tabContentHTML += '</br>';
                     tabContentHTML += '<span style="font-size: 16px; vertical-align: top;">' + this.initObj.content.tabs[tabId].items[i].detailDesc + '</span>';
                     tabContentHTML += '</td>';
@@ -162,6 +169,18 @@ export default class Tablet {
 
             this.itemsContentContainer.innerHTML = tabContentHTML;
         }
+
+        this.currentActiveTabId = tabId;
+    }
+
+    stepCompletedAnimation(){
+        this.tabletButtonCompleted.classList.remove("hidden");
+        this.tabletButtonCompleted.classList.add("visible");
+        var self = this;
+        setTimeout(()=>{
+            self.tabletButtonCompleted.classList.remove("visible");
+            self.tabletButtonCompleted.classList.add("hidden");
+        }, 4000);
     }
 
 }

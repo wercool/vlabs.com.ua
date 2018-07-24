@@ -70,20 +70,33 @@ class HVACVLabBase {
                                                 <li>Click <img src="resources/assistant/img/step1_1.png" style="vertical-align: middle;"> (yellow curved arrow)</li>\
                                                 <li>Click <img src="resources/assistant/img/step1_2.png" style="vertical-align: middle;"> (magnifying glass)</li>\
                                             </ul>',
-                                completed: false,
-                                callback: undefined
+                                completed: false
                             },
                             {
-                                shortDesc: 'Approach the thermostat__1',
-                                detailDesc: '',
-                                completed: false,
-                                callback: undefined
+                                shortDesc: 'Set up COOL MODE',
+                                detailDesc: '<ul style="padding-left: 20px;">\
+                                                <li>Set mode to Cool <img src="resources/assistant/img/step2_1.png" style="vertical-align: middle;"></li>\
+                                                <li>Tap / click the thermostat screen <img src="resources/assistant/img/step2_2.png" style="vertical-align: middle;"></li>\
+                                                <li>Select COOL TO <img src="resources/assistant/img/step2_3.png" style="vertical-align: middle;"></li>\
+                                                <li>Set COOL TO temperature to 3° below shown indoor temperature <img src="resources/assistant/img/step2_4.png" style="vertical-align: middle;"></li>\
+                                            </ul>',
+                                completed: false
                             },
                             {
-                                shortDesc: 'Approach the thermostat__2',
-                                detailDesc: '',
-                                completed: false,
-                                callback: undefined
+                                shortDesc: 'Acknowledge yourself that: \
+                                            <p>1) Control voltage is applied to Heat Pump Control Board from the Air Handler Control Board.</p>\
+                                            <p>2) Control voltage is applied to Air Handler Control Board from the Thermostat.</p>',
+                                detailDesc: '<ul style="padding-left: 20px;">\
+                                                <li>Exit Zoom Mode <img src="resources/assistant/img/step3_1.png" style="vertical-align: middle;"> (click / tap the icon)</li>\
+                                                <li>Turn left <img src="resources/assistant/img/step3_2.png" style="vertical-align: middle;"> (press left mouse button / tap and drag left)</li>\
+                                                <li>Click <img src="resources/assistant/img/step3_3.png" style="vertical-align: middle;"> (location in front of the nish door where Air Handler is installed)</li>\
+                                                <li>Click left mouse button / tap the middle of the screen and drag to the bottom until door sill is visible <img src="resources/assistant/img/step3_4.png" style="vertical-align: middle;"></li>\
+                                                <li>Open the nish door by clicking <img src="resources/assistant/img/step3_5.png" style="vertical-align: middle;"></li>\
+                                                <li>Acknowledge applied control voltages <img src="resources/assistant/img/step3_6.png" style="vertical-align: middle;"></li>\
+                                                <li>Be careful, high voltage is applied to the Air Handler <img src="resources/assistant/img/step3_7.png" style="vertical-align: middle;"></li>\
+                                                <li>Close the nish door, be nice. <img src="resources/assistant/img/step3_8.png" style="vertical-align: middle;"></li>\
+                                            </ul>',
+                                completed: false
                             }
                         ]
                     },

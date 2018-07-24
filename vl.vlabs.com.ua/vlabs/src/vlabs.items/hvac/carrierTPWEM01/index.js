@@ -302,6 +302,14 @@ export default class CarrierTPWEM01 {
         this.screenCanvasContext.fillText(Math.round(t).toString() + '°' + (label ? this.curState['fahrenheitOrCelsius'] : ''), x, y);
     }
 
+    getTemperature(prefObj) {
+        var temperature = this.curState[prefObj.tempId]
+        if (prefObj.format == 'F') {
+            temperature = temperature * 9/5 + 32;
+        }
+        return temperature;
+    }
+
     backButton(prevScreenName, buttonText) {
         var self = this;
         this.screenCanvasContext.fillStyle = 'white';

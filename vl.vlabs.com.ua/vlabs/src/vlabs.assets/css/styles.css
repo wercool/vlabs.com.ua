@@ -356,6 +356,25 @@ html, body {
     background-size: contain;
 }
 
+.tabletButtonCompleted {
+    width: 32px;
+    height: 32px;
+    background-image: url("../img/completed.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+.tabletButtonCompleted.visible {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 1.5s linear;
+}
+
+.tabletButtonCompleted.hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 1.5s, opacity 1.5s linear;
+}
+
 .tabletViewContainer {
     position: fixed;
     top: 8px;
@@ -494,7 +513,7 @@ html, body {
 
 .tabletViewItemsContentContainer {
     width: 100%;
-    height: calc(100% - 120px);
+    height: calc(100% - 140px);
     overflow-x: hidden;
     overflow-y: auto;
     white-space: nowrap;
