@@ -1,6 +1,7 @@
 import * as THREE               from 'three';
-import * as TWEEN           from 'tween.js';
-import * as DOMUtils            from '../../vlabs.core/utils/dom.utils.js';
+import * as TWEEN               from 'tween.js';
+// import * as DOMUtils            from '../../vlabs.core/utils/dom.utils.js';
+import * as StringUtils         from '../../vlabs.core/utils/string.utils.js';
 
 export default class ZoomHelper {
 
@@ -48,7 +49,7 @@ export default class ZoomHelper {
         });
 
         this.handlerSprite = new THREE.Sprite(handlerSpriteMaterial);
-        this.handlerSprite.name = this.initObj.targetObjectName + "ZoomHelperSprite" + (Date.now() / 1000).toString();
+        this.handlerSprite.name = this.initObj.targetObjectName + "ZoomHelperSprite_" + StringUtils.getRandomString(8);
         this.handlerSprite.scale.copy(this.initObj.scale ? this.initObj.scale : new THREE.Vector3(1.0, 1.0, 1.0));
         this.handlerSprite.position.x += this.initObj.positionDeltas ? this.initObj.positionDeltas.x : 0.0;
         this.handlerSprite.position.y += this.initObj.positionDeltas ? this.initObj.positionDeltas.y : 0.0;
