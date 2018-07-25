@@ -269,7 +269,19 @@ export default class VlabHVACBaseHeatPump extends VLab {
             minDistance: 0.25,
             positionDeltas: new THREE.Vector3(0.0, 0.0, 0.05), 
             scale: new THREE.Vector3(0.085, 0.085, 0.085),
-            color: 0xfff495
+            color: 0xfff495,
+            zoomCompleteCallback: this.showControlBoardZoomHelperCloseUp
+        });
+
+        this.controlBoard_ZoomHelper_CloseUp = new ZoomHelper({
+            context: this,
+            targetObjectName: "controlBoard",
+            minDistance: 0.05,
+            positionDeltas: new THREE.Vector3(0.0, 0.0, 0.01), 
+            scale: new THREE.Vector3(0.045, 0.045, 0.045),
+            color: 0xfff495,
+            visible: false,
+            hideOnExit: true
         });
 
         //VLab Items
@@ -853,6 +865,10 @@ this.ambientAirFlow1.visible = true;
             devMode: false
         });
         this.trueRMSMultimeterHS36.model.getObjectByName('trueRMSMultimeterHS36Clamp').rotation.x = THREE.Math.degToRad(-180.0);
+    }
+
+    showControlBoardZoomHelperCloseUp() {
+        this.controlBoard_ZoomHelper_CloseUp.show();
     }
 
     frameCapBoltUnscrew(argsObj) {

@@ -48,7 +48,7 @@ export default class ZoomHelper {
         });
 
         this.handlerSprite = new THREE.Sprite(handlerSpriteMaterial);
-        this.handlerSprite.name = this.initObj.targetObjectName + "ZoomHelperSprite";
+        this.handlerSprite.name = this.initObj.targetObjectName + "ZoomHelperSprite" + (Date.now() / 1000).toString();
         this.handlerSprite.scale.copy(this.initObj.scale ? this.initObj.scale : new THREE.Vector3(1.0, 1.0, 1.0));
         this.handlerSprite.position.x += this.initObj.positionDeltas ? this.initObj.positionDeltas.x : 0.0;
         this.handlerSprite.position.y += this.initObj.positionDeltas ? this.initObj.positionDeltas.y : 0.0;
@@ -59,6 +59,8 @@ export default class ZoomHelper {
         } else {
             this.targetObject = this.context.vLabScene.getObjectByName(this.initObj.targetObjectName);
         }
+
+        this.handlerSprite.visible = (this.initObj.visible !== undefined) ? this.initObj.visible : true;
 
         this.targetObject.add(this.handlerSprite);
 
@@ -93,7 +95,7 @@ export default class ZoomHelper {
     }
 
     interactionEvent() {
-        if (this.context.defaultCameraControls.type !== 'orbit' || this.context.paused) {
+        if (this.context.defaultCameraControls.type !== 'orbit' || this.context.paused || !this.handlerSprite.visible) {
             return;
         }
         this.context.helpersRaycaster.setFromCamera(this.context.mouseCoordsRaycaster, this.context.defaultCamera);
@@ -227,6 +229,9 @@ export default class ZoomHelper {
                     this.context.zoomViewArea.style.display = 'none';
                     this.context.zoomMode = false;
                     this.context.defaultCameraControls.resetState();
+                    if (this.initObj.hideOnExit === true) {
+                        this.hide();
+                    }
                 })
             .start();
             this.context.zoomModeHandler(false);
@@ -250,4 +255,11 @@ export default class ZoomHelper {
         this.context.zoomHelperMode = false;
     }
 
+    hide() {
+        this.handlerSprite.visible = false;
+    }
+
+    show() {
+        this.handlerSprite.visible = true;
+    }
 }

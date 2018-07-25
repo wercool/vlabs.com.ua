@@ -34,10 +34,12 @@ export default class VlabHVACBaseAirHandler extends VLab {
                     Promise.all([
                         textureLoader.load('../vlabs.assets/envmaps/metal.jpg'),
                         textureLoader.load('../vlabs.assets/effectmaps/lampHalo.png'),
+                        textureLoader.load('./resources/scene-air-handler/textures/airHandlerCabinetBottomPanelAlphaMap.png'),
                     ])
                     .then((result) => {
                         this.envMapMetal = result[0];
                         this.lampHalo = result[1];
+                        this.airHandlerCabinetBottomPanelAlphaMap = result[2];
 
                         this.initialize(initObj);
                     })
@@ -132,6 +134,9 @@ export default class VlabHVACBaseAirHandler extends VLab {
             //     action: this.carrierTPWEM01InfoInteractorCallback,
             //     visible: false
             // });
+
+
+this.airHandlerCabinetPanelsLookThrough();
 
             console.log(this.name + " initialized");
         }).catch(error => {
@@ -495,5 +500,11 @@ this.airFlow.visible = true;
         } else {
             setTimeout(this.checkThermostatIsSetToCool.bind(this), 2000);
         }
+    }
+
+    airHandlerCabinetPanelsLookThrough() {
+        var airHandlerCabinetBottomPanel = this.vLabScene.getObjectByName("airHandlerCabinetBottomPanel");
+        airHandlerCabinetBottomPanel.material.alphaMap = this.airHandlerCabinetBottomPanelAlphaMap;
+        airHandlerCabinetBottomPanel.material.transparent = true;
     }
 }
