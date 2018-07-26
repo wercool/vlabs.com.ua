@@ -15,9 +15,9 @@ sudo npm cache clean -f
 sudo npm install -g n
 sudo n stable
 2.3) Update npm
-npm install npm@latest -g
+sudo npm install npm@latest -g
 2.4) Gulp install https://gulpjs.com/
-npm install gulp-cli -g
+sudo npm install gulp-cli -g
 npm install gulp -D
 gulp --help
 gulp -v
@@ -28,3 +28,13 @@ npm install
 
 4) Build VLab
 gulp --vlab vlabs.hvac/vlab.hvac.base --mode dev --noauth
+
+5) Install vscode
+Download from https://code.visualstudio.com/
+sudo dpkg -i code.....
+If 
+[dpkg: dependency problems prevent configuration of code:
+ code depends on libgconf-2-4; however:
+  Package libgconf-2-4 is not installed.]
+
+sudo apt --fix-broken install
