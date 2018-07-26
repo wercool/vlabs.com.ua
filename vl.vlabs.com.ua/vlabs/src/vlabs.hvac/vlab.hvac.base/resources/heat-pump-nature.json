@@ -19,7 +19,8 @@
         "yPanDeltaUp": 0.5,
         "yPanDeltaDown": 0.75,
         "minPolarAngle": 0.25,
-        "maxPolarAngle": 1.35
+        "maxPolarAngle": 1.35,
+        "minClip": 0.01
     },
     "showTHREEStats": true,
     "useShadows": false,

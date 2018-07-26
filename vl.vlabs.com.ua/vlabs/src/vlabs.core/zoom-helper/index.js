@@ -23,12 +23,14 @@ export default class ZoomHelper {
         this.context = this.initObj.context;
 
         var textureLoader = new THREE.TextureLoader();
-        return Promise.all([
+        Promise.all([
             textureLoader.load('../vlabs.assets/img/magnifier.png'),
         ])
         .then((result) => {
             this.handlerSpriteTexture = result[0];
             this.initialize();
+
+            return this;
         })
         .catch(error => {
             console.error(error);
@@ -66,17 +68,17 @@ export default class ZoomHelper {
         this.targetObject.add(this.handlerSprite);
 
         //VLab events subscribers
-        this.context.webGLContainerEventsSubcribers.mouseup["ZoomHelper" + this.initObj.targetObjectName + "vLabSceneMouseUp"] = 
+        this.context.webGLContainerEventsSubcribers.mouseup["ZoomHelper" + this.handlerSprite.name + "vLabSceneMouseUp"] = 
         {
             callback: this.onVLabSceneMouseUp,
             instance: this
         };
-        this.context.webGLContainerEventsSubcribers.touchend["ZoomHelper" + this.initObj.targetObjectName + "vLabSceneTouchEnd"] = 
+        this.context.webGLContainerEventsSubcribers.touchend["ZoomHelper" + this.handlerSprite.name + "vLabSceneTouchEnd"] = 
         {
             callback: this.onVLabSceneTouchEnd,
             instance: this
         };
-        this.context.webGLContainerEventsSubcribers.resetview["ZoomHelper" + this.initObj.targetObjectName + "vLabSceneResetView"] = 
+        this.context.webGLContainerEventsSubcribers.resetview["ZoomHelper" + this.handlerSprite.name + "vLabSceneResetView"] = 
         {
             callback: this.onVLabSceneResetView,
             instance: this
@@ -107,6 +109,7 @@ export default class ZoomHelper {
         var intersects = this.context.helpersRaycaster.intersectObjects(intersectObjects);
 
         if (intersects.length > 0) {
+            // console.log(intersects[0].object.name, this.handlerSprite.name);
             if (intersects[0].object.name == this.handlerSprite.name) {
                 this.activate();
             }
@@ -190,7 +193,8 @@ export default class ZoomHelper {
         .start();
     }
 
-    reset() {
+    reset(event) {
+        if (event !== undefined) event.stopPropagation();
         if (this.context.defaultCameraControls.backState === undefined) {
             this.context.defaultCameraControls.reset();
             return;
@@ -217,6 +221,7 @@ export default class ZoomHelper {
             .to({ x: prevTarget.x, y: prevTarget.y, z: prevTarget.z }, 500)
             .easing(TWEEN.Easing.Cubic.InOut)
             .start();
+
             var prevPosition = this.context.defaultCameraControls.backState.position.clone();
             new TWEEN.Tween(this.context.defaultCameraControls.object.position)
             .to({ x: prevPosition.x, y: prevPosition.y, z: prevPosition.z }, 500)
@@ -233,11 +238,11 @@ export default class ZoomHelper {
                     if (this.initObj.hideOnExit === true) {
                         this.hide();
                     }
+                    this.context.zoomModeHandler(false);
+                    this.context.zoomViewArea.opacity = 0.0;
+                    this.context.zoomViewArea.style.opacity = 0.0;
                 })
             .start();
-            this.context.zoomModeHandler(false);
-            this.context.zoomViewArea.opacity = 0.0;
-            this.context.zoomViewArea.style.opacity = 0.0;
         })
         .start();
     }
