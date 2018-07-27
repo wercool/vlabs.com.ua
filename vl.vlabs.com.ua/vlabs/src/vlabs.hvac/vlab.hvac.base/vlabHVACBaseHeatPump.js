@@ -21,6 +21,7 @@ import TrueRMSMultimeterHS36        from '../../vlabs.items/trueRMSMultimeterHS3
 import DirectionalFlow              from '../../vlabs.items/directional-flow';
 import GasFlow                      from '../../vlabs.items/gas-flow';
 import DirectionalFlowWith3DArrow   from '../../vlabs.items/directionalFlowWith3DArrow';
+import ElectricArc                  from '../../vlabs.items/electric-arc';
 
 export default class VlabHVACBaseHeatPump extends VLab {
     constructor(initObj = {}) {
@@ -35,6 +36,19 @@ export default class VlabHVACBaseHeatPump extends VLab {
         super.preInitialize().then(() => {
             super.initialize().then((success) => {
                 if (success) {
+                    // var textureLoader = new THREE.TextureLoader();
+
+                    // Promise.all([
+                    //     textureLoader.load('./resources/scene-heat-pump/textures/spark-arc.png'),
+                    // ])
+                    // .then((result) => {
+                    //     this.sparkArkTexture = result[0];
+
+                    //     this.initialize(initObj);
+                    // })
+                    // .catch(error => {
+                    //     console.error(error);
+                    // });
                     this.initialize(initObj);
                 }
             });
@@ -612,6 +626,24 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.ambientAirFlow1Throttling = 0;
         this.ambientAirFlow1.visible = false;
 this.ambientAirFlow1.visible = true;
+
+        this.contactorElectricArcEffect = new ElectricArc({
+            context: this,
+            color: 0xffffff,
+            parentObj: this.vLabScene.getObjectByName("contactorTraverse"),
+            relPos: new THREE.Vector3(0.01, 0.0, 0.0),
+            scale: 0.02,
+            opacity: 1.0,
+            lightning: {
+                intensity: 1.0,
+                distance: 0.25,
+                decay: 3.0,
+                relPos: new THREE.Vector3(0.01, 0.0, 0.075),
+                // target: this.vLabScene.getObjectByName("contactror"),
+            }
+        });
+this.contactorElectricArcEffect.start();
+
 
         // Misc helpers
         this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);

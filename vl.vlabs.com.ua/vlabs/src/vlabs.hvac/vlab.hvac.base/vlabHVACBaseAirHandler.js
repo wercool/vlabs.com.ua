@@ -324,7 +324,7 @@ this.airFlow.visible = true;
 
         ////// Ceeling Air Vent Flow
         this.ceelingAirVentFlow = this.vLabScene.getObjectByName('ceelingAirVentAirFlow');
-        this.ceelingAirVentFlow.material.opacity = 0.5;
+        this.ceelingAirVentFlow.material.opacity = 0.25;
         // this.airFlow.material.color = new THREE.Color(2.5, 1.0, 2.5);
 // this.ceelingAirVentFlow.material.map = this.ventAirFlowHeat;
         this.ceelingAirVentFlow.material.alphaTest = 0.1;
