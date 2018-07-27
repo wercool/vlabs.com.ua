@@ -357,13 +357,37 @@ html, body {
 }
 
 .tabletButtonPointer {
-    width: 48px;
-    height: 48px;
-    background-image: url("../img/left-arrow-green.gif");
+    width: 96px;
+    height: 64px;
+    background-image: url("../img/left-arrow-neon.png");
     background-repeat: no-repeat;
-    background-size: contain;
-    margin-left: 50px;
-    opacity: 0.75;
+    margin-left: 42px;
+
+    animation-name: bounceTabletButtonPointer;
+    animation-timing-function: ease-in-out;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+
+    /* For Chrome & Safari */
+   -webkit-animation-name: bounceTabletButtonPointer;
+   -webkit-animation-timing-function: ease-in-out;
+   -webkit-animation-duration: 2s;
+   -webkit-animation-iteration-count: infinite;
+}
+
+@keyframes bounceTabletButtonPointer {
+    from {
+        background-position: left;
+        opacity: 1.0;
+    }
+    50% {
+        background-position: right;
+        opacity: 0.0;
+    }
+    to {
+        background-position: left;
+        opacity: 1.0;
+    }
 }
 
 .tabletButtonCompleted {
