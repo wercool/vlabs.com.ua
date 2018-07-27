@@ -24,6 +24,11 @@ export default class Tablet {
         this.tabletButtonCompleted.className = 'tabletButtonCompleted';
         this.tabletButtonCompleted.classList.add("hidden");
         this.tabletButton.appendChild(this.tabletButtonCompleted);
+        this.tabletButtonPointer = document.createElement('div');
+        this.tabletButtonPointer.id = this.context.name + 'tabletButtonPointer';
+        this.tabletButtonPointer.className = 'tabletButtonPointer';
+        this.tabletButton.appendChild(this.tabletButtonPointer);
+
 
         this.container = document.createElement('div');
         this.container.id = this.context.name + 'TabletViewContainer';
@@ -91,6 +96,7 @@ export default class Tablet {
     }
 
     activate() {
+        this.tabletButtonPointer.style.display = 'none';
         this.container.style.display = 'block';
         this.tabletButton.style.display = 'none';
         if (this.vLabLocator.currentLocationVLab.statsTHREE) this.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.display = 'none';
@@ -180,6 +186,7 @@ export default class Tablet {
         setTimeout(()=>{
             self.tabletButtonCompleted.classList.remove("visible");
             self.tabletButtonCompleted.classList.add("hidden");
+            self.tabletButtonPointer.style.display = 'block';
         }, 4000);
     }
 

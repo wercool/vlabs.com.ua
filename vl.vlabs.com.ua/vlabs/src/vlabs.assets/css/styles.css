@@ -356,6 +356,16 @@ html, body {
     background-size: contain;
 }
 
+.tabletButtonPointer {
+    width: 48px;
+    height: 48px;
+    background-image: url("../img/left-arrow-green.gif");
+    background-repeat: no-repeat;
+    background-size: contain;
+    margin-left: 50px;
+    opacity: 0.75;
+}
+
 .tabletButtonCompleted {
     width: 32px;
     height: 32px;
