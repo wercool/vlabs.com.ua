@@ -35,11 +35,15 @@ export default class VlabHVACBaseAirHandler extends VLab {
                         textureLoader.load('../vlabs.assets/envmaps/metal.jpg'),
                         textureLoader.load('../vlabs.assets/effectmaps/lampHalo.png'),
                         textureLoader.load('./resources/scene-air-handler/textures/airHandlerCabinetBottomPanelAlphaMap.png'),
+                        textureLoader.load('./resources/scene-air-handler/textures/ductAlphaMap.png'),
+                        textureLoader.load('./resources/scene-air-handler/textures/ductBoxAlphaMap.png'),
                     ])
                     .then((result) => {
                         this.envMapMetal = result[0];
                         this.lampHalo = result[1];
                         this.airHandlerCabinetBottomPanelAlphaMap = result[2];
+                        this.ductAlphaMap = result[3];
+                        this.ductBoxAlphaMap = result[4];
 
                         this.initialize(initObj);
                     })
@@ -137,6 +141,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
 
 this.airHandlerCabinetPanelsLookThrough();
+this.airHandlerDuctLookThrough();
 
             console.log(this.name + " initialized");
         }).catch(error => {
@@ -506,5 +511,14 @@ this.airFlow.visible = true;
         var airHandlerCabinetBottomPanel = this.vLabScene.getObjectByName("airHandlerCabinetBottomPanel");
         airHandlerCabinetBottomPanel.material.alphaMap = this.airHandlerCabinetBottomPanelAlphaMap;
         airHandlerCabinetBottomPanel.material.transparent = true;
+    }
+    airHandlerDuctLookThrough() {
+        var airHandlerDuct = this.vLabScene.getObjectByName("duct");
+        airHandlerDuct.material.alphaMap = this.ductAlphaMap;
+        airHandlerDuct.material.transparent = true;
+
+        var airHandlerDuctBox = this.vLabScene.getObjectByName("ductBox");
+        airHandlerDuctBox.material.alphaMap = this.ductBoxAlphaMap;
+        airHandlerDuctBox.material.transparent = true;
     }
 }
