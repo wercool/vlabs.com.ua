@@ -37,6 +37,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
                         textureLoader.load('./resources/scene-air-handler/textures/airHandlerCabinetBottomPanelAlphaMap.png'),
                         textureLoader.load('./resources/scene-air-handler/textures/ductAlphaMap.png'),
                         textureLoader.load('./resources/scene-air-handler/textures/ductBoxAlphaMap.png'),
+                        textureLoader.load('./resources/scene-air-handler/textures/ceelingAirVentAirFlowHeat.png'),
                     ])
                     .then((result) => {
                         this.envMapMetal = result[0];
@@ -44,6 +45,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
                         this.airHandlerCabinetBottomPanelAlphaMap = result[2];
                         this.ductAlphaMap = result[3];
                         this.ductBoxAlphaMap = result[4];
+                        this.ventAirFlowHeat = result[5];
 
                         this.initialize(initObj);
                     })
@@ -319,6 +321,18 @@ this.airHandlerDuctLookThrough();
         this.airFlow.visible = false;
 this.airFlow.visible = true;
 
+
+        ////// Ceeling Air Vent Flow
+        this.ceelingAirVentFlow = this.vLabScene.getObjectByName('ceelingAirVentAirFlow');
+        this.ceelingAirVentFlow.material.opacity = 0.5;
+        // this.airFlow.material.color = new THREE.Color(2.5, 1.0, 2.5);
+// this.ceelingAirVentFlow.material.map = this.ventAirFlowHeat;
+        this.ceelingAirVentFlow.material.alphaTest = 0.1;
+        this.ceelingAirVentFlow.material.needsUpdate = true;
+        this.ceelingAirVentFlowThrottling = 0;
+        this.ceelingAirVentFlow.visible = false;
+this.ceelingAirVentFlow.visible = true;
+
         this.initializeActions();
     }
 
@@ -334,6 +348,18 @@ this.airFlow.visible = true;
                 this.airFlow.material.needsUpdate = true;
             }
             this.airFlowThrottling++;
+        }
+        if (this.ceelingAirVentFlow.visible) {
+            if (this.ceelingAirVentFlowThrottling > 6)
+            {
+                this.ceelingAirVentFlowThrottling = 0;
+                this.ceelingAirVentFlow.material.map.offset.y -= 0.038;
+                if (this.ceelingAirVentFlow.material.map.offset.y < -0.494) {
+                    this.ceelingAirVentFlow.material.map.offset.y = -0.038;
+                }
+                this.ceelingAirVentFlow.material.needsUpdate = true;
+            }
+            this.ceelingAirVentFlowThrottling++;
         }
     }
 
