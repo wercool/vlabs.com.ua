@@ -27,7 +27,10 @@
     "alphaMaps": true,
     "advancedSelectionHelper": true,
     "interactivesSuppressorsObjects": [
-        "airHandlerCabinet"
+        "interior",
+        "airHandlerCabinet",
+        "airHandlerCabinetUpperPanel",
+        "airHandlerCabinetBottomPanel"
     ],
     "interactiveObjects": []
 }
