@@ -36,20 +36,26 @@ export default class VlabHVACBaseHeatPump extends VLab {
         super.preInitialize().then(() => {
             super.initialize().then((success) => {
                 if (success) {
-                    // var textureLoader = new THREE.TextureLoader();
+                    var textureLoader = new THREE.TextureLoader();
 
-                    // Promise.all([
-                    //     textureLoader.load('./resources/scene-heat-pump/textures/spark-arc.png'),
-                    // ])
-                    // .then((result) => {
-                    //     this.sparkArkTexture = result[0];
+                    Promise.all([
+                        textureLoader.load('./resources/scene-heat-pump/textures/bryantB225B_heatPumpCompressorAlphaMap.png'),
+                        textureLoader.load('./resources/scene-heat-pump/textures/compressolOilDisplacement.jpg'),
+                        textureLoader.load('./resources/scene-heat-pump/textures/scrollCompressorZP25K5EStatorDamagedMaterial.jpg'),
+                        textureLoader.load('./resources/scene-heat-pump/textures/statorWindingSpark.png'),
+                    ])
+                    .then((result) => {
+                        this.heatPumpCompressorAlphaMap = result[0];
+                        this.heatPumpCompressorOilDisplacementMap = result[1];
+                        this.heatPumpCompressorDamagedWindings = result[2];
+                        this.statorWindingSparkTexture = result[3];
 
-                    //     this.initialize(initObj);
-                    // })
-                    // .catch(error => {
-                    //     console.error(error);
-                    // });
-                    this.initialize(initObj);
+                        this.initialize(initObj);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+                    // this.initialize(initObj);
                 }
             });
         }).catch(error => {
@@ -110,6 +116,57 @@ export default class VlabHVACBaseHeatPump extends VLab {
             this.vLabScene.getObjectByName("wire6Unplugged").visible = false;
             this.vLabScene.getObjectByName("controlBoardOF2WireUnplugged").visible = false;
             this.vLabScene.getObjectByName("wire10Unplugged").visible = false;
+
+            // Scroll compressor LookThrough mode assets
+            this.heatPumpCompressorOil = this.vLabScene.getObjectByName("heatPumpCompressorOil");
+            this.heatPumpCompressorOil.material.side = THREE.FrontSide;
+            this.heatPumpCompressorOil.material.displacementMap = this.heatPumpCompressorOilDisplacementMap;
+            this.heatPumpCompressorOil.material.displacementScale = 0.0001;
+            this.heatPumpCompressorOil.material.needsUpdate = true;
+            this.heatPumpCompressorOil.visible = false;
+            this.heatPumpCompressorOilDisplacementTween = new TWEEN.Tween(this.heatPumpCompressorOil.material)
+            .to({ displacementBias: Math.random() / 2000 * (Math.random() > 0.5 ? 0.5 : -2.0) }, 200)
+            .easing(TWEEN.Easing.Linear.None)
+            .onUpdate(()=>{
+                this.heatPumpCompressorOil.material.displacementBias += Math.random() / 10000;
+            })
+            .onComplete(()=>{
+                if (this.heatPumpCompressorOil.visible === true) {
+                    this.heatPumpCompressorOilDisplacementTween.to({ displacementBias: Math.random() / 2000 * (Math.random() > 0.5 ? 0.5 : -2.0) }, 200);
+                    this.heatPumpCompressorOilDisplacementTween.start();
+                }
+            });
+            this.heatPumpCompressorOilCrap = this.vLabScene.getObjectByName("heatPumpCompressorOilCrap");
+            this.heatPumpCompressorOilDrops = this.vLabScene.getObjectByName("heatPumpCompressorOilDrops");
+
+            this.scrollCompressorZP25K5EStator = this.vLabScene.getObjectByName("scrollCompressorZP25K5EStator");
+            this.scrollCompressorZP25K5EStator.material.map = this.heatPumpCompressorDamagedWindings;
+            this.scrollCompressorZP25K5EStator.material.needsUpdate = true;
+            this.scrollCompressorZP25K5EStatorDamagedWires = this.vLabScene.getObjectByName("scrollCompressorZP25K5EStatorDamagedWires");
+            this.scrollCompressorZP25K5EStatorDamagedWires.visible = true;
+
+
+
+
+
+        // this.scrollCompressorZP25K5EStatorDamagedSparkSpriteMaterial = new THREE.SpriteMaterial({
+        //     map: this.statorWindingSparkTexture,
+        //     // color: this.initObj.color !== undefined ? this.initObj.color : 0x54ff00,
+        //     blending: THREE.AdditiveBlending,
+        //     transparent: true,
+        //     opacity: 0.85,
+        //     alphaTest: 0.2
+        // });
+
+        // this.scrollCompressorZP25K5EStatorDamagedSparkSprite = new THREE.Sprite(this.scrollCompressorZP25K5EStatorDamagedSparkSpriteMaterial);
+        // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.name = 'scrollCompressorZP25K5EStatorDamagedSparkSprite';
+        // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.scale.set(0.05, 0.05, 0.05);
+        // this.scrollCompressorZP25K5EStatorDamagedWires.add(this.scrollCompressorZP25K5EStatorDamagedSparkSprite);
+
+
+
+
+
 
             this.serviceLocation = new VLabPositioner({
                 context: this,
@@ -250,6 +307,19 @@ export default class VlabHVACBaseHeatPump extends VLab {
             positionDeltas: new THREE.Vector3(-0.05, 0.0, 0.05), 
             scale: new THREE.Vector3(0.1, 0.1, 0.1),
             color: 0xfff495
+        });
+
+        this.bryantB225B_heatPumpCompressorZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "bryantB225B_heatPumpCompressor",
+            minDistance: 0.1,
+            maxDistance: 0.15,
+            positionDeltas: new THREE.Vector3(-0.1, 0.1, 0.1), 
+            scale: new THREE.Vector3(0.2, 0.2, 0.2),
+            orbitTargetPositionDeltas: new THREE.Vector3(0.0, 0.0, 0.0), 
+            color: 0xfff495,
+            visible: true,
+            zoomCompleteCallback: this.heatPumpCompressorLookThrough
         });
 
         this.bryantB225BReversingValveZoomHelper = new ZoomHelper({
@@ -576,6 +646,21 @@ export default class VlabHVACBaseHeatPump extends VLab {
             deactivated: true
         });
 
+        this.heatPumpCompressorLookThroughInteractor = new VLabInteractor({
+            context: this,
+            name: 'heatPumpCompressorLookThroughInteractor',
+            pos: new THREE.Vector3(0.0, 0.0, 0.0),
+            object: this.vLabScene.getObjectByName('bryantB225B_heatPumpCompressor'),
+            objectRelPos: new THREE.Vector3(-0.07, 0.07, 0.12),
+            scale: new THREE.Vector3(0.03, 0.03, 0.03),
+            // depthTest: false,
+            icon: '../vlabs.assets/img/look-through.png',
+            action: this.heatPumpCompressorLookThroughInteractorHandler,
+            visible: false,
+            color: 0xffffff,
+            iconOpacity: 0.5
+        });
+
         this.powerInLineCurrentFlow = new DirectionalFlow({
             context: this,
             name: 'powerInLineCurrentFlow',
@@ -689,6 +774,14 @@ this.ambientAirFlow1.visible = true;
                 this.ambientAirFlow1.material.needsUpdate = true;
             }
             this.ambientAirFlow1Throttling++;
+        }
+        if (this.heatPumpCompressorOil.visible === true) {
+            this.heatPumpCompressorOil.material.map.rotation += Math.random() / 150;
+            this.heatPumpCompressorOil.material.map.needsUpdate = true;
+            this.heatPumpCompressorOil.material.needsUpdate = true;
+            this.heatPumpCompressorOilCrap.rotateZ(0.01);
+            this.heatPumpCompressorOilDrops.material.map.offset.y += 0.004;
+            this.heatPumpCompressorOilDrops.material.needsUpdate = true;
         }
     }
 
@@ -925,6 +1018,33 @@ this.ambientAirFlow1.visible = true;
     contactorOff() {
         this.contactorOffSound.play();
         this.contactorElectricArcEffect.start();
+    }
+
+    heatPumpCompressorLookThrough() {
+        this.heatPumpCompressorLookThroughInteractor.activate();
+    }
+
+    heatPumpCompressorLookThroughInteractorHandler() {
+        var heatPumpCompressor = this.vLabScene.getObjectByName("bryantB225B_heatPumpCompressor");
+        if (!heatPumpCompressor.material.alphaMap) {
+            heatPumpCompressor.material.alphaMap = this.heatPumpCompressorAlphaMap;
+            heatPumpCompressor.material.side = THREE.DoubleSide;
+            heatPumpCompressor.material.alphaTest = 0.5;
+            heatPumpCompressor.material.transparent = true;
+            this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.opacity = 0.1;
+            this.heatPumpCompressorOil.visible = true;
+            this.heatPumpCompressorOilDisplacementTween.start();
+        } else {
+            heatPumpCompressor.material.alphaMap = undefined;
+            heatPumpCompressor.material.transparent = false;
+            heatPumpCompressor.material.side = THREE.FrontSide;
+            heatPumpCompressor.material.alphaTest = 0.0;
+            this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.opacity = 0.5;
+            this.heatPumpCompressorOil.visible = false;
+            this.heatPumpCompressorOilDisplacementTween.stop();
+        }
+        heatPumpCompressor.material.needsUpdate = true;
+        this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.needsUpdate = true;
     }
 
     frameCapBoltUnscrew(argsObj) {

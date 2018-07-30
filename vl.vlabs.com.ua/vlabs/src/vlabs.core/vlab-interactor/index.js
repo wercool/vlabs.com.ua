@@ -24,7 +24,7 @@ export default class VLabInteractor {
     initialize() {
         this.handlerSpriteMaterial = new THREE.SpriteMaterial({
             map: this.handlerSpriteTexture,
-            color: 0x54ff00,
+            color: this.initObj.color !== undefined ? this.initObj.color : 0x54ff00,
             blending: THREE.AdditiveBlending,
             transparent: true,
             opacity: this.initObj.iconOpacity ? this.initObj.iconOpacity : 0.3,
