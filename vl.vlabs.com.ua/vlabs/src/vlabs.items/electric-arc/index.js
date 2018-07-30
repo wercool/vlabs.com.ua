@@ -73,40 +73,50 @@ export default class ElectricArc {
             this.effectSprite.scale.set(this.initObj.scale, this.initObj.scale, 1);
         }
 
-        // Sounds
-        var audioLoader = new THREE.AudioLoader();
-        audioLoader.load('../vlabs.items/electric-arc/sounds/arcSnd1.mp3', function(buffer) {
-            self.arcSound = new THREE.Audio(self.context.defaultAudioListener);
-            self.arcSound.setBuffer(buffer);
-            self.arcSound.setVolume(0.25);
-            self.arcSound.setLoop(true);
-        });
-    }
-
-    start() {
-        if (this.effectSprite == undefined || this.arcSound == undefined) {
-            setTimeout(this.start.bind(this), 250);
-            return;
-        }
         //VLab events subscribers
         this.context.webGLContainerEventsSubcribers.renderframe["ElectricArcEffect" + this.initObj.name + "vLabSceneRenderFrame"] = 
         {
             callback: this.onRedererFrameEvent,
             instance: this
         };
+
+        // Sounds
+        var audioLoader = new THREE.AudioLoader();
+        audioLoader.load('../vlabs.items/electric-arc/sounds/arcSnd1.mp3', function(buffer) {
+            self.arcSound = new THREE.Audio(self.context.defaultAudioListener);
+            self.arcSound.setBuffer(buffer);
+            self.arcSound.setVolume(0.25);
+        });
+    }
+
+    start() {
+        if (this.effectSprite === undefined || this.arcSound === undefined) {
+            setTimeout(this.start.bind(this), 250);
+            return;
+        }
+        this.clock.getDelta();
         this.effectSprite.visible = true;
         this.effectLight.visible = true;
-        this.arcSound.play();
+        this.time = 0.0;
+        this.active = true;
     }
 
     stop() {
         this.effectSprite.visible = false;
         this.effectLight.visible = false;
-        delete this.context.webGLContainerEventsSubcribers.renderframe["ElectricArcEffect" + this.initObj.name + "vLabSceneRenderFrame"];
-        this.arcSound.stop();
+        // delete this.context.webGLContainerEventsSubcribers.renderframe["ElectricArcEffect" + this.initObj.name + "vLabSceneRenderFrame"];
+        if (this.arcSound != undefined) {
+            if (this.arcSound.isPlaying) this.arcSound.stop();
+        }
+        this.active = false;
+        this.time = 0;
     }
 
     onRedererFrameEvent(event) {
+        if (!this.active) return;
+        if (this.arcSound != undefined) {
+            if (!this.arcSound.isPlaying) this.arcSound.play();
+        }
         this.effectSprite.material.rotation = Math.random();
         this.effectSprite.material.color.add(new THREE.Color(Math.random(), 0.0, Math.random() * 10));
         this.effectSprite.userData['resetCnt'] += 1;
@@ -120,10 +130,9 @@ export default class ElectricArc {
         }
         this.effectLight.intensity += 5;
         this.effectLight.color = this.effectSprite.material.color;
-        // if (this.arcSound.isPlaying) {
-        //     this.arcSound.stop();
-        // } else {
-        //     this.arcSound.play();
-        // }
+        this.time += this.clock.getDelta();
+        if (this.time > this.initObj.duration) {
+            this.stop();
+        }
     }
 }

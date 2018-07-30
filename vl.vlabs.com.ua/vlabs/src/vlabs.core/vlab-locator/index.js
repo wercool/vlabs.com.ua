@@ -123,5 +123,8 @@ export default class VLabLocator {
             this.currentLocationVLab = this.context.locations[transientLocationName];
             this.currentLocationVLab.resumeAndShow();
         }
+        if (this.initObj.locationChanged) {
+            this.initObj.locationChanged.call(this.context, transientLocationName);
+        }
     }
 }

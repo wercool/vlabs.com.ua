@@ -14,6 +14,14 @@ class HVACVLabBase {
         this.locationInitObjs = {};
         this.locations = {};
 
+        this.ambientSound = new Audio('./resources/sounds/ambient.mp3');
+        this.ambientSound.volume = 0.1;
+        this.ambientSound.addEventListener('ended', function() {
+            this.currentTime = 0;
+            this.play();
+        }, false);
+        this.ambientSound.play();
+
         this.vLabLocator = new VLabLocator({
             context: this,
             transientLocationsMap: {
@@ -30,7 +38,8 @@ class HVACVLabBase {
                         visible: true
                     }
                 }
-            }
+            },
+            locationChanged: this.locationChanged
         });
 
         this.locationInitObjs["HVACBaseHeatPump"] = {
@@ -109,6 +118,15 @@ class HVACVLabBase {
                 ]
             }
         });
+    }
+
+    locationChanged(transientLocationName) {
+        if(transientLocationName == 'HVACBaseHeatPump') {
+            this.ambientSound.volume = 0.5;
+        }
+        if(transientLocationName == 'HVACBaseAirHandler') {
+            this.ambientSound.volume = 0.1;
+        }
     }
 }
 

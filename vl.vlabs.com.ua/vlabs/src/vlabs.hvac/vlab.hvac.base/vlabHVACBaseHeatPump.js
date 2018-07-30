@@ -169,6 +169,17 @@ export default class VlabHVACBaseHeatPump extends VLab {
             self.scrollCompressorSoundReady  = true;
         });
 
+        this.contactorOnSound = new THREE.Audio(this.defaultAudioListener);
+        new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/contactorOn.mp3', function(buffer) {
+            self.contactorOnSound.setBuffer(buffer);
+            self.contactorOnSound.setVolume(0.4);
+        });
+        this.contactorOffSound = new THREE.Audio(this.defaultAudioListener);
+        new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/contactorOff.mp3', function(buffer) {
+            self.contactorOffSound.setBuffer(buffer);
+            self.contactorOffSound.setVolume(0.25);
+        });
+
         this.showOverlayMessage('<div style="position: absolute; top: 30%; left: calc(50% - 50px); width: 100px; text-align: center; color: white; font-size: 18px; padding: 20px; border-radius: 10px; box-shadow: 1px 1px 10px #cffdff80;">Initializing...</div>');
 
         //VLab Core Items
@@ -274,7 +285,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
             minDistance: 0.25,
             positionDeltas: new THREE.Vector3(0.0, 0.0, 0.1), 
             scale: new THREE.Vector3(0.075, 0.075, 0.075),
-            color: 0xfff495
+            color: 0xfff495,
+            zoomCompleteCallback: this.contactorOff
         });
 
         this.controlBoard_ZoomHelper = new ZoomHelper({
@@ -634,6 +646,7 @@ this.ambientAirFlow1.visible = true;
             relPos: new THREE.Vector3(0.01, 0.0, 0.0),
             scale: 0.02,
             opacity: 1.0,
+            duration: 0.1,
             lightning: {
                 intensity: 1.0,
                 distance: 0.25,
@@ -642,7 +655,6 @@ this.ambientAirFlow1.visible = true;
                 // target: this.vLabScene.getObjectByName("contactror"),
             }
         });
-this.contactorElectricArcEffect.start();
 
 
         // Misc helpers
@@ -683,6 +695,7 @@ this.contactorElectricArcEffect.start();
     onVLabStopAndHide() {
         // this.stopFanMotor();
         // this.stopScrollCompressor();
+        this.contactorElectricArcEffect.stop();
     }
 
     onVLabResumeAndShow() {
@@ -903,6 +916,15 @@ this.contactorElectricArcEffect.start();
 
     showControlBoardZoomHelperCloseUp() {
         this.controlBoard_ZoomHelper_CloseUp.show();
+    }
+
+    contactorOn() {
+        this.contactorOnSound.play();
+    }
+
+    contactorOff() {
+        this.contactorOffSound.play();
+        this.contactorElectricArcEffect.start();
     }
 
     frameCapBoltUnscrew(argsObj) {
