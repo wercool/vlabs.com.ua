@@ -42,21 +42,21 @@ export default class VlabHVACBaseHeatPump extends VLab {
                         textureLoader.load('./resources/scene-heat-pump/textures/bryantB225B_heatPumpCompressorAlphaMap.png'),
                         textureLoader.load('./resources/scene-heat-pump/textures/compressolOilDisplacement.jpg'),
                         textureLoader.load('./resources/scene-heat-pump/textures/scrollCompressorZP25K5EStatorDamagedMaterial.jpg'),
-                        textureLoader.load('./resources/scene-heat-pump/textures/statorShortToGround/spark1.png'),
-                        textureLoader.load('./resources/scene-heat-pump/textures/statorShortToGround/spark2.png'),
-                        textureLoader.load('./resources/scene-heat-pump/textures/statorShortToGround/spark3.png'),
-                        textureLoader.load('./resources/scene-heat-pump/textures/statorShortToGround/spark4.png'),
+                        // textureLoader.load('./resources/scene-heat-pump/textures/statorShortToGround/spark1.png'),
+                        // textureLoader.load('./resources/scene-heat-pump/textures/statorShortToGround/spark2.png'),
+                        // textureLoader.load('./resources/scene-heat-pump/textures/statorShortToGround/spark3.png'),
+                        // textureLoader.load('./resources/scene-heat-pump/textures/statorShortToGround/spark4.png'),
                     ])
                     .then((result) => {
                         this.heatPumpCompressorAlphaMap = result[0];
                         this.heatPumpCompressorOilDisplacementMap = result[1];
                         this.heatPumpCompressorDamagedWindings = result[2];
-                        this.statorWindingSparkTexture = [];
-                        this.statorWindingSparkTexture[0] = result[3];
-                        this.statorWindingSparkTexture[1] = result[4];
-                        this.statorWindingSparkTexture[2] = result[5];
-                        this.statorWindingSparkTexture[3] = result[6];
-                        this.statorWindingSparkTextureCnt = 0;
+                        // this.statorWindingSparkTexture = [];
+                        // this.statorWindingSparkTexture[0] = result[3];
+                        // this.statorWindingSparkTexture[1] = result[4];
+                        // this.statorWindingSparkTexture[2] = result[5];
+                        // this.statorWindingSparkTexture[3] = result[6];
+                        // this.statorWindingSparkTextureCnt = 0;
 
                         this.initialize(initObj);
                     })
@@ -153,23 +153,33 @@ export default class VlabHVACBaseHeatPump extends VLab {
             this.scrollCompressorZP25K5EStatorDamagedWires = this.vLabScene.getObjectByName("scrollCompressorZP25K5EStatorDamagedWires");
             this.scrollCompressorZP25K5EStatorDamagedWires.visible = false;
 
-            this.scrollCompressorZP25K5EStatorDamagedSparkSpriteMaterial = new THREE.SpriteMaterial({
-                map: this.statorWindingSparkTexture[0],
-                // color: this.initObj.color !== undefined ? this.initObj.color : 0x54ff00,
-                blending: THREE.AdditiveBlending,
-                transparent: true,
-                opacity: 0.85,
-                depthTest: false,
-                // alphaTest: 0.2
-            });
+            this.scrollCompressorZP25K5EStatorDamagedWiresSpark = this.vLabScene.getObjectByName("scrollCompressorZP25K5EStatorDamagedWiresSpark");
+            this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = false;
 
-            this.scrollCompressorZP25K5EStatorDamagedSparkSprite = new THREE.Sprite(this.scrollCompressorZP25K5EStatorDamagedSparkSpriteMaterial);
-            this.scrollCompressorZP25K5EStatorDamagedSparkSprite.name = 'scrollCompressorZP25K5EStatorDamagedSparkSprite';
-            this.scrollCompressorZP25K5EStatorDamagedSparkSprite.scale.set(0.2, 0.2, 0.2);
-            this.scrollCompressorZP25K5EStatorDamagedWires.add(this.scrollCompressorZP25K5EStatorDamagedSparkSprite);
-            this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = false;
+            // this.scrollCompressorZP25K5EStatorDamagedSparkSpriteMaterial = new THREE.SpriteMaterial({
+            //     map: this.statorWindingSparkTexture[0],
+            //     // color: this.initObj.color !== undefined ? this.initObj.color : 0x54ff00,
+            //     blending: THREE.AdditiveBlending,
+            //     transparent: true,
+            //     opacity: 0.85,
+            //     depthTest: false,
+            //     // alphaTest: 0.5,
+            // });
+
+            // this.scrollCompressorZP25K5EStatorDamagedSparkSprite = new THREE.Sprite(this.scrollCompressorZP25K5EStatorDamagedSparkSpriteMaterial);
+            // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.name = 'scrollCompressorZP25K5EStatorDamagedSparkSprite';
+            // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.scale.set(0.1, 0.1, 0.1);
+            // this.scrollCompressorZP25K5EStatorDamagedWires.add(this.scrollCompressorZP25K5EStatorDamagedSparkSprite);
+            // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = false;
             this.scrollCompressorZP25K5EStatorDamagedSparkThrottling = 0;
 
+
+            this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight = new THREE.PointLight(0xffffff);
+            this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight.intensity = 1.0;
+            this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight.distance = 0.04;
+            this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight.decay = 2.0;
+            this.scrollCompressorZP25K5EStatorDamagedWiresSpark.add(this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight);
+            this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight.visible = false;
 
 
 
@@ -241,6 +251,12 @@ export default class VlabHVACBaseHeatPump extends VLab {
         new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/contactorOff.mp3', function(buffer) {
             self.contactorOffSound.setBuffer(buffer);
             self.contactorOffSound.setVolume(0.25);
+        });
+
+        this.scrollCompressorShortToGroundSparkSound = new THREE.Audio(this.defaultAudioListener);
+        new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/scrollCompressorShortToGroundSparkSound.mp3', function(buffer) {
+            self.scrollCompressorShortToGroundSparkSound.setBuffer(buffer);
+            self.scrollCompressorShortToGroundSparkSound.setVolume(0.25);
         });
 
         this.showOverlayMessage('<div style="position: absolute; top: 30%; left: calc(50% - 50px); width: 100px; text-align: center; color: white; font-size: 18px; padding: 20px; border-radius: 10px; box-shadow: 1px 1px 10px #cffdff80;">Initializing...</div>');
@@ -790,12 +806,34 @@ this.ambientAirFlow1.visible = true;
             this.heatPumpCompressorOilDrops.material.needsUpdate = true;
 
             if (this.scrollCompressorZP25K5EStatorDamagedSparkThrottling > 0 && this.scrollCompressorZP25K5EStatorDamagedSparkThrottling < 60) {
-                this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = true;
-                this.scrollCompressorZP25K5EStatorDamagedSparkSpriteMaterial.map = this.statorWindingSparkTexture[this.statorWindingSparkTextureCnt++];
-                this.scrollCompressorZP25K5EStatorDamagedSparkSpriteMaterial.needsUpdate = true;
-                if (this.statorWindingSparkTextureCnt > 3) this.statorWindingSparkTextureCnt = 0;
+                if (!this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible) {
+                    this.scrollCompressorShortToGroundSparkSound.offset = Math.random() * 1.5;
+                    this.scrollCompressorShortToGroundSparkSound.play();
+                    this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight.visible = true;
+                }
+
+                this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight.intensity = Math.floor(Math.random() * 15);
+                let blue = Math.random();
+                this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight.color = new THREE.Color(Math.random() / 5, 0.0, blue > 0.5 ? blue : 0.5);
+
+                this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = true;
+                this.scrollCompressorZP25K5EStatorDamagedWiresSpark.rotateX(Math.random());
+                this.scrollCompressorZP25K5EStatorDamagedWiresSpark.rotateY(Math.random());
+                this.scrollCompressorZP25K5EStatorDamagedWiresSpark.rotateZ(Math.random());
+                this.scrollCompressorZP25K5EStatorDamagedWiresSpark.scale.set(Math.random(), Math.random(), Math.random());
+            //     this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = true;
+            //     this.scrollCompressorZP25K5EStatorDamagedSparkSpriteMaterial.map = this.statorWindingSparkTexture[this.statorWindingSparkTextureCnt++];
+            //     this.scrollCompressorZP25K5EStatorDamagedSparkSpriteMaterial.needsUpdate = true;
+            //     if (this.statorWindingSparkTextureCnt > 3) this.statorWindingSparkTextureCnt = 0;
             } else {
-                this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = false;
+                if (this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible) {
+                    this.scrollCompressorShortToGroundSparkSound.stop();
+                }
+                this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = false;
+                this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight.visible = false;
+                this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight.intensity = 1.0;
+                this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight.color = new THREE.Color(0xffffff);
+            //     this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = false;
                 if (this.scrollCompressorZP25K5EStatorDamagedSparkThrottling > 120 + Math.random() * 100) this.scrollCompressorZP25K5EStatorDamagedSparkThrottling = 0;
             }
             this.scrollCompressorZP25K5EStatorDamagedSparkThrottling++;
@@ -1053,7 +1091,9 @@ this.ambientAirFlow1.visible = true;
             this.heatPumpCompressorOilDisplacementTween.start();
 
 this.scrollCompressorZP25K5EStatorDamagedWires.visible = true;
-this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = true;
+// this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = true;
+this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = true;
+this.scrollCompressorShortToGroundSparkSound.play();
         } else {
             heatPumpCompressor.material.alphaMap = undefined;
             heatPumpCompressor.material.transparent = false;
@@ -1063,7 +1103,9 @@ this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = true;
             this.heatPumpCompressorOil.visible = false;
             this.heatPumpCompressorOilDisplacementTween.stop();
 this.scrollCompressorZP25K5EStatorDamagedWires.visible = false;
-this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = false;
+this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = false;
+// this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = false;
+this.scrollCompressorShortToGroundSparkSound.stop();
         }
         heatPumpCompressor.material.needsUpdate = true;
         this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.needsUpdate = true;
