@@ -913,11 +913,9 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     startDirectionalRefrigerantFlow() {
-        for (var i = 0; i < this.nature.directionalRefrigerantFlowNum; i++) {
-            if (this.gasFlows1[i] === undefined) {
-                setTimeout(this.startDirectionalRefrigerantFlow.bind(this), 250);
-                return;
-            }
+        if (this.gasFlows1[this.nature.directionalRefrigerantFlowNum - 1] === undefined) {
+            setTimeout(this.startDirectionalRefrigerantFlow.bind(this), 250);
+            return;
         }
         for (var i = 0; i < this.nature.directionalRefrigerantFlowNum; i++) {
             var startDelay = i > 0 ? 500 * i : 0;
@@ -926,11 +924,9 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     stopDirectionalRefrigerantFlow() {
-        for (var i = 0; i < this.nature.directionalRefrigerantFlowNum; i++) {
-            if (this.gasFlows1[i] === undefined) {
-                setTimeout(this.stopDirectionalRefrigerantFlow.bind(this), 250);
-                return;
-            }
+        if (this.gasFlows1[this.nature.directionalRefrigerantFlowNum - 1] === undefined) {
+            setTimeout(this.stopDirectionalRefrigerantFlow.bind(this), 250);
+            return;
         }
         for (var i = 0; i < this.nature.directionalRefrigerantFlowNum; i++) {
             this.gasFlows1[i].stop();

@@ -509,7 +509,7 @@ input:checked + .toggleSlider:before {
 
 .settingsViewItemsContentContainer {
     width: 100%;
-    height: calc(100% - 140px);
+    height: calc(100% - 80px);
     overflow-x: hidden;
     overflow-y: auto;
     white-space: nowrap;
