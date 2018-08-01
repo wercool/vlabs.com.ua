@@ -24,6 +24,31 @@
     },
     "showTHREEStats": true,
     "bumpMaps": false,
+    "useShadows": false,
+    "shadows": {
+        "cast": ["nishDoor",
+                "nishDoorVentGrill",
+                "ACDisconnectCase",
+                "ACDisconnectDoor",
+                "wireSleeve",
+                "airHandlerDeck",
+                "airHandlerCabinet",
+                "airHandlerStand",
+                "airHandlerCabinetBottomPanel",
+                "airHandlerCabinetUpperPanel",
+                "airHandlerCabinetCap",
+                "evaporatorACoil",
+                "blowerWheelHousing",
+                "duct",
+                "ductBox"
+                ],
+        "receive": ["interior",
+                    "nishFloor",
+                    "airHandlerCabinetInsulation",
+                    "airHandlerCabinet",
+                    "airHandlerStand"
+                   ]
+    },
     "alphaMaps": true,
     "advancedSelectionHelper": true,
     "interactivesSuppressorsObjects": [
@@ -32,5 +57,10 @@
         "airHandlerCabinetUpperPanel",
         "airHandlerCabinetBottomPanel"
     ],
-    "interactiveObjects": []
+    "interactiveObjects": [],
+
+    "ceelingAirVentFlow": false,
+    "airHandlerAirFlow": false,
+    "airHandlerCabinetPanelsLookThrough": false,
+    "airHandlerDuctLookThrough": false
 }

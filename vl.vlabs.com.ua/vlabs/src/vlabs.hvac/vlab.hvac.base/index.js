@@ -3,6 +3,7 @@ import * as THREE                   from 'three';
 import VlabHVACBaseHeatPump         from './vlabHVACBaseHeatPump';
 import VlabHVACBaseAirHandler       from './vlabHVACBaseAirHandler';
 import VLabLocator                  from '../../vlabs.core/vlab-locator';
+import Settings                     from '../../vlabs.core/settings';
 import Tablet                       from '../../vlabs.core/tablet';
 
 class HVACVLabBase {
@@ -39,7 +40,8 @@ class HVACVLabBase {
                     }
                 }
             },
-            locationChanged: this.locationChanged
+            locationChanged: this.locationChanged,
+            locationInitialized: this.locationInitialized,
         });
 
         this.locationInitObjs["HVACBaseHeatPump"] = {
@@ -59,9 +61,72 @@ class HVACVLabBase {
         };
 
         // this.locations["HVACBaseHeatPump"]      = new this.locationInitObjs["HVACBaseHeatPump"].class(this.locationInitObjs["HVACBaseHeatPump"]);
-        this.locations["HVACBaseHeatPump"]      = undefined;//new this.locationInitObjs["HVACBaseHeatPump"].class(this.locationInitObjs["HVACBaseHeatPump"]);
+        this.locations["HVACBaseHeatPump"]      = undefined;
         // this.locations["HVACBaseAirHandler"]    = undefined;
         this.locations["HVACBaseAirHandler"] = new this.locationInitObjs["HVACBaseAirHandler"].class(this.locationInitObjs["HVACBaseAirHandler"]);
+
+
+        this.settings = new Settings({
+            context: this,
+            vLabLocator: this.vLabLocator,
+            content: {
+                groups: [
+                    {
+                        title: 'General Settings',
+                        items: [
+                            {
+                                label: 'Resolution',
+                                innerHTML: '<input type="range" min="15" max="100" value="100" class="slider" id="SettingsResolutionSlider">'
+                            },
+                            {
+                                label: 'Shadows',
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsShadowsCheckbox"><span class="toggleSlider round"></span></label>'
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Indoor Location Settings',
+                        items: [
+                            {
+                                label: 'Airflow from ceiling ventilation grids',
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsCeilingVentGridsCheckbox"><span class="toggleSlider round"></span></label>'
+                            },
+                            {
+                                label: 'Air Handler ambient air flow',
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsAirHandlerAirFlowCheckbox"><span class="toggleSlider round"></span></label>'
+                            },
+                            {
+                                label: 'Look through Air Handler service panels',
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsAirHandlerLookThroughPanelsCheckbox"><span class="toggleSlider round"></span></label>'
+                            },
+                            {
+                                label: 'Look through Air Handler duct',
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsAirHandlerLookThroughDuctCheckbox"><span class="toggleSlider round"></span></label>'
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Outdoor Location Settings',
+                        items: [
+                            {
+                                label: 'Heat Pump ambient air flow',
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsHeatPumpAirFlowCheckbox"><span class="toggleSlider round"></span></label>'
+                            },
+                            {
+                                label: 'Heat Pump refrigerant',
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsHeatPumpRefrigerantCheckbox"><span class="toggleSlider round"></span></label>'
+                            },
+                            {
+                                label: 'Heat Pump refrigerant flow direction animation',
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsHeatPumpRefrigerantFlowAnimationCheckbox"><span class="toggleSlider round"></span></label>'
+                            },
+                        ]
+                    },
+                ]
+            },
+            onClosed: this.settingsClosed
+        });
+
 
         this.tablet = new Tablet({
             context: this,
@@ -126,6 +191,80 @@ class HVACVLabBase {
         }
         if(transientLocationName == 'HVACBaseAirHandler') {
             this.ambientSound.volume = 0.1;
+        }
+    }
+
+    locationInitialized(initObj) {
+        // console.log(initObj.location);
+        this.settings.showButton();
+        this.tablet.showButton();
+    }
+
+    settingsClosed() {
+        var SettingsResolutionSlider = document.getElementById('SettingsResolutionSlider');
+        var SettingsShadowsCheckbox = document.getElementById('SettingsShadowsCheckbox');
+        var SettingsCeilingVentGridsCheckbox = document.getElementById('SettingsCeilingVentGridsCheckbox');
+        var SettingsAirHandlerAirFlowCheckbox = document.getElementById('SettingsAirHandlerAirFlowCheckbox');
+        var SettingsHeatPumpAirFlowCheckbox = document.getElementById('SettingsHeatPumpAirFlowCheckbox');
+        var SettingsHeatPumpRefrigerantCheckbox = document.getElementById('SettingsHeatPumpRefrigerantCheckbox');
+        var SettingsHeatPumpRefrigerantFlowAnimationCheckbox = document.getElementById('SettingsHeatPumpRefrigerantFlowAnimationCheckbox');
+        var SettingsAirHandlerLookThroughPanelsCheckbox = document.getElementById('SettingsAirHandlerLookThroughPanelsCheckbox');
+        var SettingsAirHandlerLookThroughDuctCheckbox = document.getElementById('SettingsAirHandlerLookThroughDuctCheckbox');
+
+        for (var locationName in this.locationInitObjs) {
+            if (this.vLabLocator.locations[locationName] !== undefined) {
+                /* General Settings -> Resolution */
+                this.vLabLocator.locations[locationName].nature.resolutionFactor = (SettingsResolutionSlider.value / 100.0).toFixed(2);
+                this.vLabLocator.locations[locationName].resiezeWebGLContainer();
+                /* General Settings -> Shadows */
+                this.vLabLocator.locations[locationName].nature.useShadows = SettingsShadowsCheckbox.checked;
+                if (this.vLabLocator.locations[locationName].shadowsSetup !== undefined) {
+                    this.vLabLocator.locations[locationName].shadowsSetup();
+                }
+                /* Indoor (Air Handler) Location Settings -> Ceiling ventilation grids airflow */
+                if (locationName == 'HVACBaseAirHandler') {
+                    this.vLabLocator.locations['HVACBaseAirHandler'].nature.ceelingAirVentFlow = SettingsCeilingVentGridsCheckbox.checked;
+                    this.vLabLocator.locations['HVACBaseAirHandler'].toggleCeilingVentGridsAirFlow();
+
+                    this.vLabLocator.locations['HVACBaseAirHandler'].nature.airHandlerAirFlow = SettingsAirHandlerAirFlowCheckbox.checked;
+                    this.vLabLocator.locations['HVACBaseAirHandler'].toggleAirHandlerAirFlow();
+
+                    this.vLabLocator.locations['HVACBaseAirHandler'].nature.airHandlerCabinetPanelsLookThrough = SettingsAirHandlerLookThroughPanelsCheckbox.checked;
+                    this.vLabLocator.locations['HVACBaseAirHandler'].toggleAirHandlerCabinetPanelsLookThrough();
+
+                    this.vLabLocator.locations['HVACBaseAirHandler'].nature.airHandlerDuctLookThrough = SettingsAirHandlerLookThroughDuctCheckbox.checked;
+                    this.vLabLocator.locations['HVACBaseAirHandler'].toggleAirHandlerDuctLookThrough();
+                }
+                /* Outdoor (Heat Pump) Location Settings -> Ceiling ventilation grids airflow */
+                if (locationName == 'HVACBaseHeatPump') {
+                    this.vLabLocator.locations['HVACBaseHeatPump'].nature.heatPumpAirFlow = SettingsHeatPumpAirFlowCheckbox.checked;
+                    this.vLabLocator.locations['HVACBaseHeatPump'].toggleHeatPumpAirFlow();
+
+                    this.vLabLocator.locations['HVACBaseHeatPump'].nature.refrigerantFlow1 = SettingsHeatPumpRefrigerantCheckbox.checked;
+                    this.vLabLocator.locations['HVACBaseHeatPump'].toggleRefrigerantFlow1();
+
+                    this.vLabLocator.locations['HVACBaseHeatPump'].nature.directionalRefrigerantFlow = SettingsHeatPumpRefrigerantFlowAnimationCheckbox.checked;
+                    this.vLabLocator.locations['HVACBaseHeatPump'].toggleDirectionalRefrigerantFlow();
+                }
+            } else {
+                this.locationInitObjs[locationName]['altNature'] = {};
+                /* General Settings -> Resolution */
+                this.locationInitObjs[locationName]['altNature']['resolutionFactor'] = (SettingsResolutionSlider.value / 100.0).toFixed(2);
+                /* General Settings -> Shadows */
+                this.locationInitObjs[locationName]['altNature']['useShadows'] = SettingsShadowsCheckbox.checked;
+                /* Indoor Location Settings -> Ceiling ventilation grids airflow */
+                if (locationName == 'HVACBaseAirHandler') {
+                    this.locationInitObjs['HVACBaseAirHandler']['altNature']['ceelingAirVentFlow'] = SettingsCeilingVentGridsCheckbox.checked;
+                    this.locationInitObjs['HVACBaseAirHandler']['altNature']['airHandlerAirFlow'] = SettingsAirHandlerAirFlowCheckbox.checked;
+                    this.locationInitObjs['HVACBaseAirHandler']['altNature']['airHandlerCabinetPanelsLookThrough'] = SettingsAirHandlerLookThroughPanelsCheckbox.checked;
+                    this.locationInitObjs['HVACBaseAirHandler']['altNature']['airHandlerDuctLookThrough'] = SettingsAirHandlerLookThroughDuctCheckbox.checked;
+                }
+                if (locationName == 'HVACBaseHeatPump') {
+                    this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpAirFlow'] = SettingsHeatPumpAirFlowCheckbox.checked;
+                    this.locationInitObjs['HVACBaseHeatPump']['altNature']['refrigerantFlow1'] = SettingsHeatPumpRefrigerantCheckbox.checked;
+                    this.locationInitObjs['HVACBaseHeatPump']['altNature']['directionalRefrigerantFlow'] = SettingsHeatPumpRefrigerantFlowAnimationCheckbox.checked;
+                }
+            }
         }
     }
 }

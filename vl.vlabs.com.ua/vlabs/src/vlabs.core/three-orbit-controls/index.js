@@ -241,8 +241,8 @@ module.exports = function( THREE ) {
 			scope.domElement.removeEventListener( 'touchend', onTouchEnd, false );
 			scope.domElement.removeEventListener( 'touchmove', onTouchMove, false );
 
-			document.removeEventListener( 'mousemove', onMouseMove, false );
-			document.removeEventListener( 'mouseup', onMouseUp, false );
+			scope.domElement.removeEventListener( 'mousemove', onMouseMove, false );
+			scope.domElement.removeEventListener( 'mouseup', onMouseUp, false );
 
 			window.removeEventListener( 'keydown', onKeyDown, false );
 
@@ -709,8 +709,8 @@ module.exports = function( THREE ) {
 
 			if ( state !== STATE.NONE ) {
 
-				document.addEventListener( 'mousemove', onMouseMove, false );
-				document.addEventListener( 'mouseup', onMouseUp, false );
+				scope.domElement.addEventListener( 'mousemove', onMouseMove, false );
+				scope.domElement.addEventListener( 'mouseup', onMouseUp, false );
 
 				scope.dispatchEvent( startEvent );
 
@@ -758,8 +758,8 @@ module.exports = function( THREE ) {
 
 			handleMouseUp( event );
 
-			document.removeEventListener( 'mousemove', onMouseMove, false );
-			document.removeEventListener( 'mouseup', onMouseUp, false );
+			scope.domElement.removeEventListener( 'mousemove', onMouseMove, false );
+			scope.domElement.removeEventListener( 'mouseup', onMouseUp, false );
 
 			scope.dispatchEvent( endEvent );
 			scope.staticMode = true;

@@ -153,8 +153,8 @@ export default class DirectionalFlowWith3DArrow {
     stop() {
         if (this.prestartDelay) clearTimeout(this.prestartDelay);
 
-        this.model.visible = false;
-        this.animation.stop();
+        if (this.model) this.model.visible = false;
+        if (this.animation) this.animation.stop();
     }
 
     animate() {

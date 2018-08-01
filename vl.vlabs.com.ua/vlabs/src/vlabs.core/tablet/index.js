@@ -1,4 +1,4 @@
-import * as DOMUtils            from '../../vlabs.core/utils/dom.utils.js';
+// import * as DOMUtils            from '../../vlabs.core/utils/dom.utils.js';
 
 export default class Tablet {
 
@@ -18,6 +18,7 @@ export default class Tablet {
         this.tabletButton.className = 'tabletButton';
         this.tabletButton.addEventListener("mousedown", this.activate.bind(this), false);
         this.tabletButton.addEventListener("touchstart", this.activate.bind(this), false);
+        this.tabletButton.style.display = 'none';
         document.body.appendChild(this.tabletButton);
         this.tabletButtonCompleted = document.createElement('div');
         this.tabletButtonCompleted.id = this.context.name + 'TabletButtonCompleted';
@@ -95,12 +96,22 @@ export default class Tablet {
         console.log('Tablet initialized');
     }
 
+    showButton() {
+        this.tabletButton.style.display = 'block';
+    }
+
+    hideButton() {
+        this.tabletButton.style.display = 'none';
+    }
+
     activate() {
         this.tabletButtonPointer.style.display = 'none';
         this.container.style.display = 'block';
         this.tabletButton.style.display = 'none';
         if (this.vLabLocator.currentLocationVLab.statsTHREE) this.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.display = 'none';
         console.log('Tablet activated');
+
+        if (this.context.settings) this.context.settings.hideButton();
 
         var sumWidthOfButtonsInHeader = 0;
         this.tabButtons.forEach(tabButton => {
@@ -121,6 +132,7 @@ export default class Tablet {
         let self = this;
         setTimeout(function(){
             if (self.vLabLocator.currentLocationVLab.statsTHREE) self.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.display = 'block';
+            if (self.context.settings) self.context.settings.showButton();
         }, 100);
     }
 

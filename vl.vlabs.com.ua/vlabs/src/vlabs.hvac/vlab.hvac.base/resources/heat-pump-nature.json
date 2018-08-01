@@ -25,8 +25,21 @@
     "showTHREEStats": true,
     "useShadows": false,
     "shadows": {
-        "cast": ["bryantB225B_heatPumpFrameBottom", "bryantB225B_heatPumpFrontVentPanel", "bryantB225B_heatPumpFrame", "bryantB225B_heatPumpFrameCap", "bryantB225B_heatPumpFanGrid"],
-        "receive": ["houseWall", "ground"]
+        "cast": ["bryantB225B_heatPumpFrameBottom", 
+                 "bryantB225B_heatPumpFrontVentPanel", 
+                 "bryantB225B_heatPumpFrame", 
+                 "bryantB225B_heatPumpFrameCap", 
+                 "bryantB225B_heatPumpFanGrid",
+                 "filterDrier",
+                 "suctionServiceValve",
+                 "ACDisconnectDoor",
+                 "ACDisconnectCase",
+                 "wireSleeve",
+                 "bryantB225B_heatPumpCompressor",
+                 "bryantB225B_heatPumpEvaporator"],
+        "receive": ["houseWall", 
+                    "ground",
+                    "bryantB225B_heatPumpFrameBottom"]
     },
     "bumpMaps": false,
     "alphaMaps": true,
@@ -67,5 +80,11 @@
             "applyFn": "trueRMSMultimeterHS36ToControlBoard",
             "applyFnArgs": {}
         }
-    }
+    },
+
+
+    "heatPumpAirFlow": false,
+    "refrigerantFlow1": false,
+    "directionalRefrigerantFlow": false,
+    "directionalRefrigerantFlowNum": 10
 }

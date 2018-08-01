@@ -91,6 +91,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
 
+            if (this.vLabLocator.initObj.locationInitialized) {
+                this.vLabLocator.initObj.locationInitialized.call(this.vLabLocator.context, { location: this.name });
+            }
+
             this.light0 = new THREE.AmbientLight(0xffffff, 0.4);
             this.vLabScene.add(this.light0);
 
@@ -98,9 +102,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             this.light1.position.set(3.0, 5.0, 0.0);
             this.vLabScene.add(this.light1);
 
-            if (this.nature.useShadows) {
-                this.setupShadows({'defaultPointLight': this.light1});
-            }
+            this.shadowsSetup();
 
             //Z-fighting fixes
             var ZFightingMaterial = this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameBottom").material;
@@ -397,7 +399,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             minDistance: 0.1,
             maxDistance: 0.15,
             positionDeltas: new THREE.Vector3(0.0, 0.0, 0.015), 
-            scale: new THREE.Vector3(0.065, 0.065, 0.065),
+            scale: new THREE.Vector3(0.03, 0.03, 0.03),
             orbitTargetPositionDeltas: new THREE.Vector3(0.0, 0.0, 0.0), 
             color: 0xfff495,
             visible: false,
@@ -709,17 +711,14 @@ export default class VlabHVACBaseHeatPump extends VLab {
             gasFlowHelperMesh: this.vLabScene.getObjectByName('refrigerantFlowHelper'),
             confrontMaterials: [ this.vLabScene.getObjectByName('bryantB225B_heatPumpFanGrid').material ]
         });
-        var self = this;
-        setTimeout(()=>{
-            self.gasFlow.start();
-        }, 120000);
+        this.toggleRefrigerantFlow1();
 
         this.gasFlows1 = [];
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < this.nature.directionalRefrigerantFlowNum; i++) {
             var gasFlow1 = new DirectionalFlowWith3DArrow({
                     context: this,
-                    name: 'heatPumpGazFlow1',
-                    refPath: this.vLabScene.getObjectByName('heatPumpGazFlow1'),
+                    name: 'heatPumpDirectionalRefrigerantFlow',
+                    refPath: this.vLabScene.getObjectByName('heatPumpGasFlow1RefPath'),
                     cSectionVertices: 4,
                     reversed: true,
                     speed: 50,
@@ -731,7 +730,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 });
             this.gasFlows1.push(gasFlow1);
         }
-        this.strartGasFlowAnimations();
+        this.toggleDirectionalRefrigerantFlow();
 
         // this.startFanMotor();
         // this.startScrollCompressor();
@@ -744,7 +743,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.ambientAirFlow1.material.needsUpdate = true;
         this.ambientAirFlow1Throttling = 0;
         this.ambientAirFlow1.visible = false;
-this.ambientAirFlow1.visible = true;
+        this.toggleHeatPumpAirFlow();
 
         this.contactorElectricArcEffect = new ElectricArc({
             context: this,
@@ -849,6 +848,35 @@ this.ambientAirFlow1.visible = true;
     onVLabResumeAndShow() {
         // this.startFanMotor(true);
         // this.startScrollCompressor();
+        this.shadowsSetup();
+        this.toggleHeatPumpAirFlow();
+    }
+
+    shadowsSetup() {
+        if (this.nature.useShadows !== undefined) {
+            this.setupShadows({'defaultPointLight': this.light1});
+        }
+    }
+
+    toggleRefrigerantFlow1() {
+        if (this.gasFlow === undefined) setTimeout(this.toggleRefrigerantFlow1.bind(this), 250);
+        if (this.nature.refrigerantFlow1 === true) {
+            this.gasFlow.start();
+        } else {
+            this.gasFlow.stop();
+        }
+    }
+
+    toggleHeatPumpAirFlow() {
+        this.ambientAirFlow1.visible = this.nature.heatPumpAirFlow;
+    }
+
+    toggleDirectionalRefrigerantFlow() {
+        if (this.nature.directionalRefrigerantFlow === true) {
+            this.startDirectionalRefrigerantFlow();
+        } else {
+            this.stopDirectionalRefrigerantFlow();
+        }
     }
 
     startFanMotor(resumeMotor) {
@@ -884,10 +912,28 @@ this.ambientAirFlow1.visible = true;
         this.scrollCompressorSound.stop();
     }
 
-    strartGasFlowAnimations() {
-        for (var i = 0; i < 3; i++) {
-            var startDelay = 10000 + 15000 * i;
+    startDirectionalRefrigerantFlow() {
+        for (var i = 0; i < this.nature.directionalRefrigerantFlowNum; i++) {
+            if (this.gasFlows1[i] === undefined) {
+                setTimeout(this.startDirectionalRefrigerantFlow.bind(this), 250);
+                return;
+            }
+        }
+        for (var i = 0; i < this.nature.directionalRefrigerantFlowNum; i++) {
+            var startDelay = i > 0 ? 500 * i : 0;
             this.gasFlows1[i].start(startDelay);
+        }
+    }
+
+    stopDirectionalRefrigerantFlow() {
+        for (var i = 0; i < this.nature.directionalRefrigerantFlowNum; i++) {
+            if (this.gasFlows1[i] === undefined) {
+                setTimeout(this.stopDirectionalRefrigerantFlow.bind(this), 250);
+                return;
+            }
+        }
+        for (var i = 0; i < this.nature.directionalRefrigerantFlowNum; i++) {
+            this.gasFlows1[i].stop();
         }
     }
 
@@ -994,8 +1040,8 @@ this.ambientAirFlow1.visible = true;
                 .start()
                 .onComplete(() => {
 
-                    this.gasFlow.start();
-                    setTimeout(() => { this.gasFlow.stop(); }, 20000);
+                    // this.gasFlow.start();
+                    // setTimeout(() => { this.gasFlow.stop(); }, 20000);
 
                 });
             });

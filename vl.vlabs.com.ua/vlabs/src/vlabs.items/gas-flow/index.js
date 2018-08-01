@@ -47,7 +47,7 @@ export default class GasFlow {
 
     stop() {
         this.gasFlowHelperMesh.visible = false;
-        this.flowAnimation.stop();
+        if (this.flowAnimation) this.flowAnimation.stop();
         if (this.initObj.confrontMaterials) {
             for (var i = 0; i < this.initObj.confrontMaterials.length; i++) {
                 this.initObj.confrontMaterials[i].alphaTest = this.initObj.confrontMaterials[i].userData['GasFlowConfrontMaterialAlphaTest'];

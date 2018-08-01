@@ -257,6 +257,10 @@ export default class VLab {
     completeInitialization() {
         return new Promise((resolve, reject) => {
 
+            if (this.initObj.altNature !== undefined) {
+                this.setupAltNature(this.initObj.altNature);
+            }
+
             if (document.getElementById('loader')) {
                 document.body.removeChild(document.getElementById('loader'));
             }
@@ -581,7 +585,7 @@ export default class VLab {
             let thisVLab = this;
             this.overlayContainer.style.display = 'block';
             this.progressBarElement.style.display = 'block';
-            thisVLab.progressBarPrependText = (vlabItemName)? "VLab Item [" + vlabItemName + "] is loaded by " : "VLab item is loaded by ";
+            thisVLab.progressBarPrependText = (vlabItemName)? "HelpClips Item [" + vlabItemName + "] is loaded by " : "HelpClips item is loaded by ";
             if (itemURL) {
                 let loader = new THREE.ObjectLoader();
                 loader.convertUpAxis = true;
@@ -607,10 +611,10 @@ export default class VLab {
                     },
                     // onError callback
                     function (error) {
-                        reject('An error happened while loading VLab Item', error);
+                        reject('An error happened while loading HelpClips Item', error);
                     });
             } else {
-                reject("VLab Item File is missing!");
+                reject("HelpClips Item File is missing!");
             }
         });
     }
@@ -1679,13 +1683,13 @@ export default class VLab {
     }
 
     setupShadows(iniObj) {
-        iniObj.defaultPointLight.shadow.mapSize.width = 512;  // default
-        iniObj.defaultPointLight.shadow.mapSize.height = 512; // default
-        iniObj.defaultPointLight.shadow.camera.near = 0.5;    // default
-        iniObj.defaultPointLight.shadow.camera.far = 500      // default
-        iniObj.defaultPointLight.castShadow = true;
+        iniObj.defaultPointLight.shadow.mapSize.width = 512;
+        iniObj.defaultPointLight.shadow.mapSize.height = 512;
+        iniObj.defaultPointLight.shadow.camera.near = 0.5;
+        iniObj.defaultPointLight.shadow.camera.far = 500;
+        iniObj.defaultPointLight.castShadow = this.nature.useShadows;
 
-        this.webGLRenderer.shadowMap.enabled = true;
+        this.webGLRenderer.shadowMap.enabled = this.nature.useShadows;
         this.webGLRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
         this.nature.shadows.cast.forEach((castShadowMeshName) => {
@@ -1695,5 +1699,13 @@ export default class VLab {
         this.nature.shadows.receive.forEach((receiveShadowMeshName) => {
             this.vLabScene.getObjectByName(receiveShadowMeshName).receiveShadow = true;
         });
+    }
+
+    setupAltNature(altNature) {
+        for (var altNaturePropertyName in altNature) {
+            if (this.nature[altNaturePropertyName] !== undefined) {
+                this.nature[altNaturePropertyName] = altNature[altNaturePropertyName];
+            }
+        }
     }
 }

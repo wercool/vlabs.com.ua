@@ -67,12 +67,16 @@ export default class VlabHVACBaseAirHandler extends VLab {
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
 
-            var light0 = new THREE.AmbientLight(0xffffff, 0.3);
-            this.vLabScene.add(light0);
+            if (this.vLabLocator.initObj.locationInitialized) {
+                this.vLabLocator.initObj.locationInitialized.call(this.vLabLocator.context, { location: this.name });
+            }
 
-            var light1 = new THREE.PointLight(0xffffff, 0.85);
-            light1.position.set(-2.25, 2.8, 1.0);
-            this.vLabScene.add(light1);
+            this.light0 = new THREE.AmbientLight(0xffffff, 0.3);
+            this.vLabScene.add(this.light0);
+
+            this.light1 = new THREE.PointLight(0xffffff, 0.85);
+            this.light1.position.set(-2.25, 2.8, 1.0);
+            this.vLabScene.add(this.light1);
 
             // this.light1_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
             // this.light1_manipulationControl.setSize(0.5);
@@ -141,9 +145,8 @@ export default class VlabHVACBaseAirHandler extends VLab {
             //     visible: false
             // });
 
-
-this.airHandlerCabinetPanelsLookThrough();
-this.airHandlerDuctLookThrough();
+            this.toggleAirHandlerCabinetPanelsLookThrough();
+            this.toggleAirHandlerDuctLookThrough();
 
             console.log(this.name + " initialized");
         }).catch(error => {
@@ -312,42 +315,40 @@ this.airHandlerDuctLookThrough();
         });
 
         ////// Ambient Air Flow
-        this.airFlow = this.vLabScene.getObjectByName('airFlow');
-        this.airFlow.material.opacity = 0.75;
-        // this.airFlow.material.color = new THREE.Color(2.5, 1.0, 2.5);
-        this.airFlow.material.alphaTest = 0.1;
-        this.airFlow.material.needsUpdate = true;
-        this.airFlowThrottling = 0;
-        this.airFlow.visible = false;
-this.airFlow.visible = true;
+        this.airHandlerAirFlow = this.vLabScene.getObjectByName('airFlow');
+        this.airHandlerAirFlow.material.opacity = 0.75;
+        this.airHandlerAirFlow.material.alphaTest = 0.1;
+        this.airHandlerAirFlow.material.needsUpdate = true;
+        this.airHandlerAirFlowThrottling = 0;
+        this.airHandlerAirFlow.visible = false;
+        this.toggleAirHandlerAirFlow();
 
 
         ////// Ceeling Air Vent Flow
         this.ceelingAirVentFlow = this.vLabScene.getObjectByName('ceelingAirVentAirFlow');
         this.ceelingAirVentFlow.material.opacity = 0.25;
-        // this.airFlow.material.color = new THREE.Color(2.5, 1.0, 2.5);
 // this.ceelingAirVentFlow.material.map = this.ventAirFlowHeat;
         this.ceelingAirVentFlow.material.alphaTest = 0.1;
         this.ceelingAirVentFlow.material.needsUpdate = true;
         this.ceelingAirVentFlowThrottling = 0;
         this.ceelingAirVentFlow.visible = false;
-this.ceelingAirVentFlow.visible = true;
+        this.toggleCeilingVentGridsAirFlow();
 
         this.initializeActions();
     }
 
     onRedererFrameEvent(event) {
-        if (this.airFlow.visible) {
-            if (this.airFlowThrottling > 2)
+        if (this.airHandlerAirFlow.visible) {
+            if (this.airHandlerAirFlowThrottling > 2)
             {
-                this.airFlowThrottling = 0;
-                this.airFlow.material.map.offset.y -= 0.038;
-                if (this.airFlow.material.map.offset.y < -0.494) {
-                    this.airFlow.material.map.offset.y = -0.038;
+                this.airHandlerAirFlowThrottling = 0;
+                this.airHandlerAirFlow.material.map.offset.y -= 0.038;
+                if (this.airHandlerAirFlow.material.map.offset.y < -0.494) {
+                    this.airHandlerAirFlow.material.map.offset.y = -0.038;
                 }
-                this.airFlow.material.needsUpdate = true;
+                this.airHandlerAirFlow.material.needsUpdate = true;
             }
-            this.airFlowThrottling++;
+            this.airHandlerAirFlowThrottling++;
         }
         if (this.ceelingAirVentFlow.visible) {
             if (this.ceelingAirVentFlowThrottling > 6)
@@ -448,6 +449,39 @@ this.ceelingAirVentFlow.visible = true;
         // }, 100);
     }
 
+    onVLabStopAndHide() {
+    }
+
+    onVLabResumeAndShow() {
+        this.shadowsSetup();
+        this.toggleCeilingVentGridsAirFlow();
+        this.toggleAirHandlerAirFlow();
+        this.toggleAirHandlerCabinetPanelsLookThrough();
+        this.toggleAirHandlerDuctLookThrough();
+    }
+
+    shadowsSetup() {
+        if (this.nature.useShadows !== undefined) {
+            this.setupShadows({'defaultPointLight': this.light1});
+        }
+    }
+
+    toggleCeilingVentGridsAirFlow() {
+        this.ceelingAirVentFlow.visible = this.nature.ceelingAirVentFlow;
+    }
+
+    toggleAirHandlerAirFlow() {
+        this.airHandlerAirFlow.visible = this.nature.airHandlerAirFlow;
+    }
+
+    toggleAirHandlerCabinetPanelsLookThrough() {
+        this.airHandlerCabinetPanelsLookThrough(this.nature.airHandlerCabinetPanelsLookThrough);
+    }
+
+    toggleAirHandlerDuctLookThrough() {
+        this.airHandlerDuctLookThrough(this.nature.airHandlerDuctLookThrough);
+    }
+
     nishDoorOpenOrClose(caller) {
         caller.vLabInteractor.deactivate();
         new TWEEN.Tween(this.vLabScene.getObjectByName('nishDoor').rotation)
@@ -533,18 +567,35 @@ this.ceelingAirVentFlow.visible = true;
         }
     }
 
-    airHandlerCabinetPanelsLookThrough() {
+    airHandlerCabinetPanelsLookThrough(lookThrough) {
         var airHandlerCabinetBottomPanel = this.vLabScene.getObjectByName("airHandlerCabinetBottomPanel");
-        airHandlerCabinetBottomPanel.material.alphaMap = this.airHandlerCabinetBottomPanelAlphaMap;
-        airHandlerCabinetBottomPanel.material.transparent = true;
+        if (lookThrough === true) {
+            airHandlerCabinetBottomPanel.material.alphaMap = this.airHandlerCabinetBottomPanelAlphaMap;
+            airHandlerCabinetBottomPanel.material.transparent = true;
+        } else {
+            airHandlerCabinetBottomPanel.material.alphaMap = null;
+            airHandlerCabinetBottomPanel.material.transparent = false;
+        }
+        airHandlerCabinetBottomPanel.material.needsUpdate = true;
     }
-    airHandlerDuctLookThrough() {
+    airHandlerDuctLookThrough(lookThrough) {
         var airHandlerDuct = this.vLabScene.getObjectByName("duct");
-        airHandlerDuct.material.alphaMap = this.ductAlphaMap;
-        airHandlerDuct.material.transparent = true;
-
         var airHandlerDuctBox = this.vLabScene.getObjectByName("ductBox");
-        airHandlerDuctBox.material.alphaMap = this.ductBoxAlphaMap;
-        airHandlerDuctBox.material.transparent = true;
+
+        if (lookThrough === true) {
+            airHandlerDuct.material.alphaMap = this.ductAlphaMap;
+            airHandlerDuct.material.transparent = true;
+
+            airHandlerDuctBox.material.alphaMap = this.ductBoxAlphaMap;
+            airHandlerDuctBox.material.transparent = true;
+        } else {
+            airHandlerDuct.material.alphaMap = null;
+            airHandlerDuct.material.transparent = false;
+
+            airHandlerDuctBox.material.alphaMap = null;
+            airHandlerDuctBox.material.transparent = false;
+        }
+        airHandlerDuct.material.needsUpdate = true;
+        airHandlerDuctBox.material.needsUpdate = true;
     }
 }

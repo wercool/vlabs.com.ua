@@ -223,7 +223,11 @@ export default class Inventory {
         }
     }
 
-    close() {
+    close(event) {
+        if (event !== undefined) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
         this.paused = true;
         this.container.style.display = 'none';
         this.context.overlayContainer.style.display = 'none';
@@ -240,6 +244,8 @@ export default class Inventory {
                 this.context.backFromViewButton.style.display = 'block';
             }, 250)
         }
+
+        this.context.defaultCameraControls.resetState();
 
         console.log(this.context.name + " Inventory closed");
     }
