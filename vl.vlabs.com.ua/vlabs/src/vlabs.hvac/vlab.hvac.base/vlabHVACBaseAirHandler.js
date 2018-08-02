@@ -444,9 +444,6 @@ export default class VlabHVACBaseAirHandler extends VLab {
             animationDelay: 150,
             tooltip: '<span style="color: red; font-size: 24px;">⚡</span> ~110V Power'
         });
-        // setTimeout(() => {
-        //     this.ctrlVoltageFromAirHandlerToHeatPump.start();
-        // }, 100);
     }
 
     onVLabStopAndHide() {

@@ -46,7 +46,8 @@
                     "nishFloor",
                     "airHandlerCabinetInsulation",
                     "airHandlerCabinet",
-                    "airHandlerStand"
+                    "airHandlerStand",
+                    "nishBox"
                    ]
     },
     "alphaMaps": true,

@@ -1694,7 +1694,6 @@ export default class VLab {
 
         this.nature.shadows.cast.forEach((castShadowMeshName) => {
             this.vLabScene.getObjectByName(castShadowMeshName).castShadow = true;
-            this.vLabScene.getObjectByName(castShadowMeshName).receiveShadow = false;
         });
         this.nature.shadows.receive.forEach((receiveShadowMeshName) => {
             this.vLabScene.getObjectByName(receiveShadowMeshName).receiveShadow = true;
