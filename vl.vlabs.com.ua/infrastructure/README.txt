@@ -15,6 +15,7 @@ sudo npm cache clean -f
 sudo npm install -g n
 sudo n stable
 2.3) Update npm
+(npm config set strict-ssl false)
 sudo npm install npm@latest -g
 2.4) Gulp install https://gulpjs.com/
 sudo npm install gulp-cli -g
