@@ -46,8 +46,8 @@ export default class ZoomHelper {
             transparent: true,
             opacity: this.initObj.opacity ? this.initObj.opacity : 0.5,
             rotation: this.initObj.rotation ? this.initObj.rotation : 0.0,
-            depthTest: this.initObj.inDepthTest ? this.initObj.inDepthTest : true,
-            depthWrite: this.initObj.inDepthTest ? this.initObj.inDepthTest : true
+            depthTest: this.initObj.depthTest !== undefined ? this.initObj.depthTest : true,
+            depthWrite: this.initObj.depthWrite !== undefined ? this.initObj.depthWrite : true
         });
 
         this.handlerSprite = new THREE.Sprite(handlerSpriteMaterial);
@@ -267,5 +267,13 @@ export default class ZoomHelper {
 
     show() {
         this.handlerSprite.visible = true;
+    }
+
+    setMaterial(materialObj) {
+        if (this.handlerSprite == undefined) return;
+        let extendedMaterialObj = this.handlerSprite.material;
+        Object.assign(extendedMaterialObj, materialObj);
+        this.handlerSprite.material = extendedMaterialObj;
+        this.handlerSprite.material.needsUpdate = true;
     }
 }

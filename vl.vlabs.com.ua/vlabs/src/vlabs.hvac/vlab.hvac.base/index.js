@@ -173,13 +173,28 @@ class HVACVLabBase {
                                             </ul>',
                                 completed: false
                             }
+                        ],
+                        setModeCallBack: this.setNormalOperatonMode
+                    },
+                    {
+                        title: 'Short to ground demo',
+                        items: [
+                            {
+                                shortDesc: 'Approach the thermostat',
+                                detailDesc: '<ul style="padding-left: 20px;">\
+                                                <li>Thermostat is located inside the apartment <img src="resources/assistant/img/step1_0.png" style="vertical-align: middle;"></li>\
+                                                <li>Click <img src="resources/assistant/img/step1_1.png" style="vertical-align: middle;"> (yellow curved arrow)</li>\
+                                                <li>Click <img src="resources/assistant/img/step1_2.png" style="vertical-align: middle;"> (magnifying glass)</li>\
+                                            </ul>',
+                                completed: false
+                            },
+                        ],
+                        setModeCallBack: this.setShortToGroundMode
+                    },
+                    {
+                        title: 'Free mode',
+                        items: [
                         ]
-                    },
-                    {
-                        title: 'Short to ground demo'
-                    },
-                    {
-                        title: 'Free mode'
                     }
                 ]
             }
@@ -266,6 +281,39 @@ class HVACVLabBase {
                     this.locationInitObjs['HVACBaseHeatPump']['altNature']['directionalRefrigerantFlow'] = SettingsHeatPumpRefrigerantFlowAnimationCheckbox.checked;
                 }
             }
+        }
+    }
+
+    resetSettingsToDefault() {
+        document.getElementById('SettingsCeilingVentGridsCheckbox').checked = false;
+        document.getElementById('SettingsAirHandlerAirFlowCheckbox').checked = false;
+        document.getElementById('SettingsHeatPumpAirFlowCheckbox').checked = false;
+        document.getElementById('SettingsHeatPumpRefrigerantCheckbox').checked = false;
+        document.getElementById('SettingsHeatPumpRefrigerantFlowAnimationCheckbox').checked = false;
+        document.getElementById('SettingsAirHandlerLookThroughPanelsCheckbox').checked = false;
+        document.getElementById('SettingsAirHandlerLookThroughDuctCheckbox').checked = false;
+        this.settingsClosed();
+    }
+
+    setShortToGroundMode() {
+        this.resetSettingsToDefault();
+
+        this.vLabLocator.activateVLabLocation('HVACBaseAirHandler');
+        this.vLabLocator.locations['HVACBaseAirHandler'].initialPosition.moveToPosition();
+        this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setDefaultState();
+        if (!this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorClosed) {
+            this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorOpenOrClose();
+        }
+    }
+
+    setNormalOperatonMode() {
+        this.resetSettingsToDefault();
+
+        this.vLabLocator.activateVLabLocation('HVACBaseAirHandler');
+        this.vLabLocator.locations['HVACBaseAirHandler'].initialPosition.moveToPosition();
+        this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setDefaultState();
+        if (!this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorClosed) {
+            this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorOpenOrClose();
         }
     }
 }

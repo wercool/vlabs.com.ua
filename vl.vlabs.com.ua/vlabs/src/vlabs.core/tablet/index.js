@@ -88,6 +88,15 @@ export default class Tablet {
             this.itemsContentContainer.className = 'tabletViewItemsContentContainer';
             this.contentContainer.appendChild(this.itemsContentContainer);
 
+            this.modeActivationButton = document.createElement('button');
+            this.modeActivationButton.innerHTML = 'ACTIVATE MODE';
+            this.modeActivationButton.setAttribute('defaultInnerHTML', 'ACTIVATE MODE');
+            this.modeActivationButton.setAttribute('confirmInnerHTML', '<span style="color: yellow;">Sure?</span>');
+            this.modeActivationButton.className = 'tabletViewTabActivateButton';
+            this.modeActivationButton.addEventListener("mousedown", this.modeActivateButtonPressed.bind(this), false);
+            this.modeActivationButton.addEventListener("touchstart", this.modeActivateButtonPressed.bind(this), false);
+            this.contentContainer.appendChild(this.modeActivationButton);
+
             this.setActiveTab(0);
         } else {
 
@@ -142,7 +151,9 @@ export default class Tablet {
             tabButton.classList.remove("tabletViewContentTabsButtonPreselected");
         });
         pressedTabButton.classList.add("tabletViewContentTabsButtonPreselected");
-        // console.log(pressedTabButton.getAttribute('tabId'));
+        console.log('"' + this.initObj.content.tabs[pressedTabButton.getAttribute('tabId')].title + '" Tablet tab selected');
+
+        this.renderTabContent(pressedTabButton.getAttribute('tabId'));
     }
 
     tabPrevNextButtonPressed(event) {
@@ -163,11 +174,39 @@ export default class Tablet {
         }
     }
 
-    setActiveTab(tabId) {
-        this.tabButtons[tabId].classList.add("tabletViewContentTabsButtonSelected");
+    modeActivateButtonPressed() {
+        if (this.modeActivationButton.innerHTML == this.modeActivationButton.getAttribute('confirmInnerHTML')) {
+            if (this.initObj.content.tabs[this.currentSelectedTabId].setModeCallBack !== undefined) {
+                this.initObj.content.tabs[this.currentSelectedTabId].setModeCallBack.call(this.context);
+            }
+            this.resetTabContentItems();
+            this.setActiveTab(this.currentSelectedTabId);
+            this.modeActivationButton.style.visibility = 'collapse';
+        } else {
+            this.modeActivationButton.innerHTML = this.modeActivationButton.getAttribute('confirmInnerHTML');
+        }
+    }
 
+    setActiveTab(tabId) {
+        this.tabButtons.forEach(tabButton => {
+            tabButton.classList.remove("tabletViewContentTabsButtonSelected");
+        });
+        this.tabButtons[tabId].classList.add("tabletViewContentTabsButtonSelected");
+        this.currentActiveTabId = tabId;
+        this.renderTabContent(tabId);
+    }
+
+    renderTabContent(tabId) {
+        this.currentSelectedTabId = tabId;
+        this.modeActivationButton.style.visibility = 'collapse';
+        let tabContentHTML = '';
+        if (tabId != this.currentActiveTabId) {
+            this.modeActivationButton.innerHTML = this.modeActivationButton.getAttribute('defaultInnerHTML');
+            this.modeActivationButton.style.visibility = 'visible';
+            tabContentHTML += '<div style="opacity: 0.35;">';
+        }
         if (this.initObj.content.tabs[tabId].items.length > 0) {
-            var tabContentHTML = '<table style="width: 100%; border: none; color: white;">';
+            tabContentHTML += '<table style="width: 100%; border: none; color: white;">';
             for (var i = 0; i < this.initObj.content.tabs[tabId].items.length; i++) {
                 tabContentHTML += '<tr>';
                     tabContentHTML += '<td style="font-size: 24px; vertical-align: top; ' + (this.initObj.content.tabs[tabId].items[i].completed ? 'color: #44ff00;' : '') + '">';
@@ -184,11 +223,11 @@ export default class Tablet {
                 tabContentHTML += '</tr>';
             }
             tabContentHTML += '</table>';
-
-            this.itemsContentContainer.innerHTML = tabContentHTML;
         }
-
-        this.currentActiveTabId = tabId;
+        if (tabId != this.currentActiveTabId) {
+            tabContentHTML += '</div>';
+        }
+        this.itemsContentContainer.innerHTML = tabContentHTML;
     }
 
     stepCompletedAnimation(){
@@ -200,6 +239,16 @@ export default class Tablet {
             self.tabletButtonCompleted.classList.add("hidden");
             self.tabletButtonPointer.style.display = 'block';
         }, 4000);
+    }
+
+    resetTabContentItems() {
+        for (var t = 0; t < this.initObj.content.tabs.length; t++) {
+            for (var ti = 0; ti < this.initObj.content.tabs[t].items.length; ti++) {
+                if (this.initObj.content.tabs[t].items[ti].completed !== undefined) {
+                    this.initObj.content.tabs[t].items[ti].completed = false;
+                }
+            }
+        }
     }
 
 }

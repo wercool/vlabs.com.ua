@@ -32,8 +32,8 @@ export default class ElectricArc {
             transparent: true,
             opacity: this.initObj.opacity ? this.initObj.opacity : 0.5,
             rotation: this.initObj.rotation ? this.initObj.rotation : 0.0,
-            depthTest: this.initObj.inDepthTest ? this.initObj.inDepthTest : true,
-            depthWrite: this.initObj.inDepthTest ? this.initObj.inDepthTest : true
+            depthTest: this.initObj.depthTest !== undefined ? this.initObj.depthTest : true,
+            depthWrite: this.initObj.depthWrite !== undefined ? this.initObj.depthWrite : true
         });
 
         this.effectSprite = new THREE.Sprite(this.effectSpriteMaterial);

@@ -85,44 +85,7 @@ export default class CarrierTPWEM01 {
                 this.screens['settingsScreen'] = this.settingsScreen;
                 this.screens['preferencesScreen'] = this.preferencesScreen;
 
-                /* State */
-                this.curState['roomTemperature'] = 23;
-                this.curState['roomHumidity'] = 40;
-                this.curState['EquipmentConfiguration'] = false;
-                this.curState['Preferences'] = false;
-                this.curState['Rh_RcRh'] = 'Rh';
-                this.curState['terminalsConnected'] = {
-                    Rc: false,
-                    W1: true,
-                    Y1: true,
-                    Rh: true,
-                    W2: false,
-                    Y2: false,
-                    C: true,
-                    G: true,
-                    OB: false
-                };
-                this.curState['terminalsConnectedManual'] = {
-                    W1: this.curState['terminalsConnected'].W1,
-                    Y1: this.curState['terminalsConnected'].Y1,
-                    W2: this.curState['terminalsConnected'].W2,
-                    Y2: this.curState['terminalsConnected'].Y2,
-                    G: this.curState['terminalsConnected'].G,
-                    OB: this.curState['terminalsConnected'].OB
-                };
-                this.curState['terminalsConnectedScreenManualOverride'] = false;
-                this.curState['accessoryWiresToAcc'] = false;
-                this.curState['accessoryPowerSameAsThermostat'] = true;
-                this.curState['accessoryType'] = 'humidifier';
-                this.curState['fahrenheitOrCelsius'] = 'F';
-                this.curState['idealHomeTemperatureWinter'] = 20;
-                this.curState['idealHomeTemperatureSummer'] = 24;
-                this.curState['baseScreenTimer'] = undefined;
-                this.curState['baseScreenSetupMode'] = 'heat';
-                this.curState['heatToTemperature'] = 20;
-                this.curState['coolToTemperature'] = 24;
-                this.curState['fanMode'] = 'Auto';
-                this.curState['mainMode'] = 'Auto';
+                this.setDefaultState();
 
                 this.addVLabEventListeners();
 
@@ -166,6 +129,46 @@ export default class CarrierTPWEM01 {
         });
     }
 
+    setDefaultState() {
+        /* State */
+        this.curState['roomTemperature'] = 23;
+        this.curState['roomHumidity'] = 40;
+        this.curState['EquipmentConfiguration'] = false;
+        this.curState['Preferences'] = false;
+        this.curState['Rh_RcRh'] = 'Rh';
+        this.curState['terminalsConnected'] = {
+            Rc: false,
+            W1: true,
+            Y1: true,
+            Rh: true,
+            W2: false,
+            Y2: false,
+            C: true,
+            G: true,
+            OB: false
+        };
+        this.curState['terminalsConnectedManual'] = {
+            W1: this.curState['terminalsConnected'].W1,
+            Y1: this.curState['terminalsConnected'].Y1,
+            W2: this.curState['terminalsConnected'].W2,
+            Y2: this.curState['terminalsConnected'].Y2,
+            G: this.curState['terminalsConnected'].G,
+            OB: this.curState['terminalsConnected'].OB
+        };
+        this.curState['terminalsConnectedScreenManualOverride'] = false;
+        this.curState['accessoryWiresToAcc'] = false;
+        this.curState['accessoryPowerSameAsThermostat'] = true;
+        this.curState['accessoryType'] = 'humidifier';
+        this.curState['fahrenheitOrCelsius'] = 'F';
+        this.curState['idealHomeTemperatureWinter'] = 20;
+        this.curState['idealHomeTemperatureSummer'] = 24;
+        this.curState['baseScreenTimer'] = undefined;
+        this.curState['baseScreenSetupMode'] = 'heat';
+        this.curState['heatToTemperature'] = 20;
+        this.curState['coolToTemperature'] = 24;
+        this.curState['fanMode'] = 'Auto';
+        this.curState['mainMode'] = 'Auto';
+    }
 
     addVLabEventListeners() {
         //VLab events subscribers

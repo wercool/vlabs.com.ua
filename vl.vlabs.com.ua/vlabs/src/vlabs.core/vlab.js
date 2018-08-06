@@ -775,12 +775,18 @@ export default class VLab {
             this.nature.interactiveObjects.push(interactiveObject.name);
         }
         //interactive suppressors
+        this.setInteractivesSuppressorsObjects();
+    }
+
+    setInteractivesSuppressorsObjects(except = []) {
         this.interactivesSuppressorsObjects = [];
         if (this.nature.interactivesSuppressorsObjects) {
             for (var interactivesSuppressorObjectName of this.nature.interactivesSuppressorsObjects) {
                 var interactivesSuppressorsObject = this.vLabScene.getObjectByName(interactivesSuppressorObjectName);
                 if (interactivesSuppressorsObject) {
-                    this.interactivesSuppressorsObjects.push(interactivesSuppressorsObject);
+                    if (!except.includes(interactivesSuppressorObjectName)) {
+                        this.interactivesSuppressorsObjects.push(interactivesSuppressorsObject);
+                    }
                 } else {
                     console.error(interactivesSuppressorObjectName + "interactive suppressor Object is undefined");
                 }

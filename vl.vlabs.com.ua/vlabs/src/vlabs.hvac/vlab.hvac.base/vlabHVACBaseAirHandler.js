@@ -95,7 +95,8 @@ export default class VlabHVACBaseAirHandler extends VLab {
                 pos: defaultPos,
                 name: 'initialPosition',
                 scale: new THREE.Vector3(0.2, 0.2, 0.2),
-                target: defulatTarget
+                target: defulatTarget,
+                completeCallBack: this.initialPositionCompleted
             });
 
             this.positionInFrontOfTheNish = new VLabPositioner({
@@ -104,7 +105,8 @@ export default class VlabHVACBaseAirHandler extends VLab {
                 pos: new THREE.Vector3(-1.25, 1.75, 0.0),
                 name: 'positionInFrontOfTheNish',
                 scale: new THREE.Vector3(0.2, 0.2, 0.2),
-                target: new THREE.Vector3(-1.0, 1.72, 0.0)
+                target: new THREE.Vector3(-1.0, 1.72, 0.0),
+                completeCallBack: this.positionInFrontOfTheNishCompleted
             });
 
             var carrierTPWEM01WallMountPos = this.vLabScene.getObjectByName('carrierTPWEM01WallMount').position.clone();
@@ -117,7 +119,8 @@ export default class VlabHVACBaseAirHandler extends VLab {
                 pos: carrierTPWEM01WallMountPos,
                 name: 'carrierTPWEM01WallPosition',
                 scale: new THREE.Vector3(0.2, 0.2, 0.2),
-                target: carrierTPWEM01WallMountTarget
+                target: carrierTPWEM01WallMountTarget,
+                completeCallBack: this.carrierTPWEM01WallPositionCompleted
             });
 
             /* VLab Interactors */
@@ -241,17 +244,17 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
 
         // Misc helpers
-        this.airHandlerCabinetUpperPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        this.airHandlerCabinetUpperPanel_manipulationControl.setSize(0.5);
-        this.vLabScene.add(this.airHandlerCabinetUpperPanel_manipulationControl);
-        this.airHandlerCabinetUpperPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetUpperPanel"));
-        setTimeout(()=>{ this.airHandlerCabinetUpperPanel_manipulationControl.update(); }, 500);
+        // this.airHandlerCabinetUpperPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        // this.airHandlerCabinetUpperPanel_manipulationControl.setSize(0.5);
+        // this.vLabScene.add(this.airHandlerCabinetUpperPanel_manipulationControl);
+        // this.airHandlerCabinetUpperPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetUpperPanel"));
+        // setTimeout(()=>{ this.airHandlerCabinetUpperPanel_manipulationControl.update(); }, 500);
 
-        this.airHandlerCabinetBottomPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        this.airHandlerCabinetBottomPanel_manipulationControl.setSize(0.5);
-        this.vLabScene.add(this.airHandlerCabinetBottomPanel_manipulationControl);
-        this.airHandlerCabinetBottomPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetBottomPanel"));
-        setTimeout(()=>{ this.airHandlerCabinetBottomPanel_manipulationControl.update(); }, 500);
+        // this.airHandlerCabinetBottomPanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        // this.airHandlerCabinetBottomPanel_manipulationControl.setSize(0.5);
+        // this.vLabScene.add(this.airHandlerCabinetBottomPanel_manipulationControl);
+        // this.airHandlerCabinetBottomPanel_manipulationControl.attach(this.vLabScene.getObjectByName("airHandlerCabinetBottomPanel"));
+        // setTimeout(()=>{ this.airHandlerCabinetBottomPanel_manipulationControl.update(); }, 500);
 
 
         //Zoom helpers
@@ -309,7 +312,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
             targetObjectName: "blowerWheelHousing",
             minDistance: 0.1,
             positionDeltas: new THREE.Vector3(0.2, 0.0, 0.0),
-            scale: new THREE.Vector3(0.085, 0.085, 0.085),
+            scale: new THREE.Vector3(0.1, 0.1, 0.1),
             color: 0xfff495,
             opacity: 0.65
         });
@@ -473,19 +476,54 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
     toggleAirHandlerCabinetPanelsLookThrough() {
         this.airHandlerCabinetPanelsLookThrough(this.nature.airHandlerCabinetPanelsLookThrough);
+        if (this.positionInFrontOfTheNishActive === true) {
+            this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: !this.nature.airHandlerCabinetPanelsLookThrough});
+            this.blowerWheelHousingZoomHelper.setMaterial({depthTest: !this.nature.airHandlerCabinetPanelsLookThrough});
+            this.setInteractivesSuppressorsObjects('airHandlerCabinetUpperPanel');
+        }
+        if (!this.nature.airHandlerCabinetPanelsLookThrough) {
+            this.setInteractivesSuppressorsObjects();
+            this.blowerWheelHousingZoomHelper.setMaterial({depthTest: true});
+            this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: true});
+        }
     }
 
     toggleAirHandlerDuctLookThrough() {
         this.airHandlerDuctLookThrough(this.nature.airHandlerDuctLookThrough);
     }
 
+    positionInFrontOfTheNishCompleted() {
+        this.positionInFrontOfTheNishActive = true;
+        if (!this.nature.airHandlerCabinetPanelsLookThrough) {
+            this.setInteractivesSuppressorsObjects();
+            this.blowerWheelHousingZoomHelper.setMaterial({depthTest: true});
+            this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: true});
+        } else {
+            this.blowerWheelHousingZoomHelper.setMaterial({depthTest: false});
+            this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: false});
+            this.setInteractivesSuppressorsObjects('airHandlerCabinetUpperPanel');
+        }
+    }
+
+    initialPositionCompleted() {
+        this.positionInFrontOfTheNishActive = false;
+        this.blowerWheelHousingZoomHelper.setMaterial({depthTest: true});
+        this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: true});
+    }
+
+    carrierTPWEM01WallPositionCompleted() {
+        this.positionInFrontOfTheNishActive = false;
+        this.blowerWheelHousingZoomHelper.setMaterial({depthTest: true});
+        this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: true});
+    }
+
     nishDoorOpenOrClose(caller) {
-        caller.vLabInteractor.deactivate();
+        if (caller) caller.vLabInteractor.deactivate();
         new TWEEN.Tween(this.vLabScene.getObjectByName('nishDoor').rotation)
         .to({ z: (this.nishDoorClosed) ? (-Math.PI - Math.PI / 2) : -Math.PI }, 500)
         .easing(TWEEN.Easing.Cubic.InOut)
         .onComplete(() => {
-            caller.vLabInteractor.activate();
+            if (caller) caller.vLabInteractor.activate();
             this.nishDoorClosed = !this.nishDoorClosed;
 
             if (!this.nishDoorClosed) {
@@ -575,6 +613,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
         }
         airHandlerCabinetBottomPanel.material.needsUpdate = true;
     }
+
     airHandlerDuctLookThrough(lookThrough) {
         var airHandlerDuct = this.vLabScene.getObjectByName("duct");
         var airHandlerDuctBox = this.vLabScene.getObjectByName("ductBox");

@@ -80,6 +80,9 @@ export default class VLabPositioner {
     setActive(state) {
         this.active = state;
         this.handlerSprite.visible = !state;
+        if (this.initObj.completeCallBack) {
+            this.initObj.completeCallBack.call(this.context);
+        }
     }
 
     onVLabSceneMouseUp(event) {

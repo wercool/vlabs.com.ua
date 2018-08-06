@@ -664,7 +664,7 @@ input:checked + .toggleSlider:before {
 }
 
 .tabletViewContentTabsButtonSelected {
-    background-color: #0cb39de3;
+    background-color: #299e1f;
     color: #ffffff;
     font-weight: bold;
 }
@@ -685,6 +685,26 @@ input:checked + .toggleSlider:before {
     -ms-user-select: none;      /* IE 10+ */
     user-select: none;          /* Likely future */ 
     -webkit-tap-highlight-color: transparent;
+}
+
+.tabletViewTabActivateButton {
+    position: fixed;
+    top: 20%;
+    left: calc(50% - 100px);
+    width: 200px;
+    font-size: 14pt;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #2ba720;
+    border-radius: 6px;
+    border: 1px solid rgb(211, 211, 165);
+    box-shadow: 0 0 4px #ffffff;
+    outline: none;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 54px;
+    cursor: pointer;
+    visibility: collapse;
 }
 
 /* Clear floats (clearfix hack) */
