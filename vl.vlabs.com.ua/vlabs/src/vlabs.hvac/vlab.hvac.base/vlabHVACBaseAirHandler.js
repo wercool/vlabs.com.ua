@@ -571,6 +571,16 @@ export default class VlabHVACBaseAirHandler extends VLab {
                 this.checkThermostatIsSetToCool();
             }
         }
+        //Short to ground demo
+        if (this.vLabLocator.context.tablet.currentActiveTabId == 1) {
+            //Approach the thermostat completed
+            if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[0].completed === false) {
+                this.vLabLocator.context.tablet.initObj.content.tabs[1].items[0].completed = true;
+                this.vLabLocator.context.tablet.stepCompletedAnimation();
+                this.playSound('resources/assistant/snd/step1.mp3');
+                this.checkThermostatIsSetToCool();
+            }
+        }
     }
 
     // carrierTPWEM01InfoInteractorCallback() {

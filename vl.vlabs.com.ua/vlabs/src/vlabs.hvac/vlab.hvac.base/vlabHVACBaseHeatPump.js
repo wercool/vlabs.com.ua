@@ -230,7 +230,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.fanMotorSound = new THREE.Audio(this.defaultAudioListener);
         new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/fan-motor-sound.mp3', function(buffer) {
             self.fanMotorSound.setBuffer(buffer);
-            self.fanMotorSound.setVolume(0.25);
+            self.fanMotorSound.setVolume(0.15);
             self.fanMotorSound.setLoop(true);
             self.fanMotorSoundReady  = true;
         });
@@ -239,7 +239,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.scrollCompressorSound = new THREE.Audio(this.defaultAudioListener);
         new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/scroll-compressor-sound.mp3', function(buffer) {
             self.scrollCompressorSound.setBuffer(buffer);
-            self.scrollCompressorSound.setVolume(0.35);
+            self.scrollCompressorSound.setVolume(0.15);
             self.scrollCompressorSound.setLoop(true);
             self.scrollCompressorSoundReady  = true;
         });
@@ -732,8 +732,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
         }
         this.toggleDirectionalRefrigerantFlow();
 
-        // this.startFanMotor();
-        // this.startScrollCompressor();
+this.startFanMotor();
+this.startScrollCompressor();
 
         ////// Ambient Air Flow
         this.ambientAirFlow1 = this.vLabScene.getObjectByName('ambientAirFlow1');
@@ -840,14 +840,14 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     onVLabStopAndHide() {
-        // this.stopFanMotor();
-        // this.stopScrollCompressor();
+        this.stopFanMotor();
+        this.stopScrollCompressor();
         this.contactorElectricArcEffect.stop();
     }
 
     onVLabResumeAndShow() {
-        // this.startFanMotor(true);
-        // this.startScrollCompressor();
+        this.startFanMotor(true);
+        this.startScrollCompressor();
         this.shadowsSetup();
         this.toggleHeatPumpAirFlow();
     }
