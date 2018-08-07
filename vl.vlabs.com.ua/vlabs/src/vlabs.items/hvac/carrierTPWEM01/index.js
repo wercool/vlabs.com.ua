@@ -164,8 +164,12 @@ export default class CarrierTPWEM01 {
         this.curState['idealHomeTemperatureSummer'] = 24;
         this.curState['baseScreenTimer'] = undefined;
         this.curState['baseScreenSetupMode'] = 'heat';
-        this.curState['heatToTemperature'] = 20;
+        this.curState['heatToTemperature'] = 26;
+        this.curState['heatToTemperatureMin'] = 20;
+        this.curState['heatToTemperatureMax'] = 28;
         this.curState['coolToTemperature'] = 24;
+        this.curState['coolToTemperatureMin'] = 18;
+        this.curState['coolToTemperatureMax'] = 26;
         this.curState['fanMode'] = 'Auto';
         this.curState['mainMode'] = 'Auto';
     }
@@ -1157,9 +1161,13 @@ export default class CarrierTPWEM01 {
                     rect: [405, this.screenMapTopOffset + 110, 79, 57],
                     onTouch: function() {
                         if (self.curState['baseScreenSetupMode'] == 'heat') {
-                            self.curState['heatToTemperature'] += 1;
+                            if (self.curState['heatToTemperature'] < self.curState['heatToTemperatureMax']) {
+                                self.curState['heatToTemperature'] += 1;
+                            }
                         } else {
-                            self.curState['coolToTemperature'] += 1;
+                            if (self.curState['coolToTemperature'] < self.curState['coolToTemperatureMax']) {
+                                self.curState['coolToTemperature'] += 1;
+                            }
                         }
                         self.switchScreen('baseScreen', { mode: 'setup' });
                     }
@@ -1169,9 +1177,13 @@ export default class CarrierTPWEM01 {
                     rect: [405, this.screenMapTopOffset + 171, 79, 57],
                     onTouch: function() {
                         if (self.curState['baseScreenSetupMode'] == 'heat') {
-                            self.curState['heatToTemperature'] -= 1;
+                            if (self.curState['heatToTemperature'] > self.curState['heatToTemperatureMin']) {
+                                self.curState['heatToTemperature'] -= 1;
+                            }
                         } else {
-                            self.curState['coolToTemperature'] -= 1;
+                            if (self.curState['coolToTemperature'] > self.curState['coolToTemperatureMin']) {
+                                self.curState['coolToTemperature'] -= 1;
+                            }
                         }
                         self.switchScreen('baseScreen', { mode: 'setup' });
                     }

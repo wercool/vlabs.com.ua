@@ -537,7 +537,14 @@ export default class VlabHVACBaseAirHandler extends VLab {
                             this.power110VFromQuickDisconnect.start();
                             var self = this;
                             this.contolVoltagesAcknowledgmentStepTimeout = setTimeout(()=>{
-                                self.vLabLocator.context.tablet.initObj.content.tabs[0].items[2].completed = true;
+                                //Normal mode demo
+                                if (self.vLabLocator.context.tablet.currentActiveTabId == 0) {
+                                    self.vLabLocator.context.tablet.initObj.content.tabs[0].items[2].completed = true;
+                                }
+                                //Short to ground demo
+                                if (self.vLabLocator.context.tablet.currentActiveTabId == 1) {
+                                    self.vLabLocator.context.tablet.initObj.content.tabs[1].items[2].completed = true;
+                                }
                                 self.vLabLocator.context.tablet.stepCompletedAnimation();
                                 self.playSound('resources/assistant/snd/step3.mp3');
                                 self.contolVoltagesAcknowledgmentStepTimeout = undefined;
@@ -602,10 +609,19 @@ export default class VlabHVACBaseAirHandler extends VLab {
             format: 'F'
         })
         if (Math.round(roomTemperature - coolToTemperature) == 4 && this.carrierTPWEM01.curState['mainMode'] == 'Cool') {
-            if (this.vLabLocator.context.tablet.initObj.content.tabs[0].items[1].completed === false) {
-                this.vLabLocator.context.tablet.initObj.content.tabs[0].items[1].completed = true;
-                this.vLabLocator.context.tablet.stepCompletedAnimation();
-                this.playSound('resources/assistant/snd/step2.mp3');
+            if (this.vLabLocator.context.tablet.currentActiveTabId == 0) {
+                if (this.vLabLocator.context.tablet.initObj.content.tabs[0].items[1].completed === false) {
+                    this.vLabLocator.context.tablet.initObj.content.tabs[0].items[1].completed = true;
+                    this.vLabLocator.context.tablet.stepCompletedAnimation();
+                    this.playSound('resources/assistant/snd/step2.mp3');
+                }
+            }
+            if (this.vLabLocator.context.tablet.currentActiveTabId == 1) {
+                if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[1].completed === false) {
+                    this.vLabLocator.context.tablet.initObj.content.tabs[1].items[1].completed = true;
+                    this.vLabLocator.context.tablet.stepCompletedAnimation();
+                    this.playSound('resources/assistant/snd/step2.mp3');
+                }
             }
         } else {
             setTimeout(this.checkThermostatIsSetToCool.bind(this), 2000);

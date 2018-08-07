@@ -187,6 +187,8 @@ export default class ZoomHelper {
                 if (this.initObj.zoomCompleteCallback !== undefined) {
                     this.initObj.zoomCompleteCallback.call(this.context, {});
                 }
+
+                // this.context.lastActivatedZoomHelper = this;
             })
             .start();
             })
@@ -230,18 +232,18 @@ export default class ZoomHelper {
                 this.context.defaultCameraControls.update();
             })
             .onComplete(() => {
-                    this.onVLabSceneResetView();
-                    this.context.zoomHelperMode = false;
-                    this.context.zoomViewArea.style.display = 'none';
-                    this.context.zoomMode = false;
-                    this.context.defaultCameraControls.resetState();
-                    if (this.initObj.hideOnExit === true) {
-                        this.hide();
-                    }
-                    this.context.zoomModeHandler(false);
-                    this.context.zoomViewArea.opacity = 0.0;
-                    this.context.zoomViewArea.style.opacity = 0.0;
-                })
+                this.onVLabSceneResetView();
+                this.context.zoomHelperMode = false;
+                this.context.zoomViewArea.style.display = 'none';
+                this.context.zoomMode = false;
+                this.context.defaultCameraControls.resetState();
+                if (this.initObj.hideOnExit === true) {
+                    this.hide();
+                }
+                this.context.zoomModeHandler(false);
+                this.context.zoomViewArea.opacity = 0.0;
+                this.context.zoomViewArea.style.opacity = 0.0;
+            })
             .start();
         })
         .start();

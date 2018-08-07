@@ -188,6 +188,16 @@ class HVACVLabBase {
                                             </ul>',
                                 completed: false
                             },
+                            {
+                                shortDesc: 'Set up COOL MODE',
+                                detailDesc: '<ul style="padding-left: 20px;">\
+                                                <li>Set mode to Cool <img src="resources/assistant/img/step2_1.png" style="vertical-align: middle;"></li>\
+                                                <li>Tap / click the thermostat screen <img src="resources/assistant/img/step2_2.png" style="vertical-align: middle;"></li>\
+                                                <li>Select COOL TO <img src="resources/assistant/img/step2_3.png" style="vertical-align: middle;"></li>\
+                                                <li>Set COOL TO temperature to 3° below shown indoor temperature <img src="resources/assistant/img/step2_4.png" style="vertical-align: middle;"></li>\
+                                            </ul>',
+                                completed: false
+                            },
                         ],
                         setModeCallBack: this.setShortToGroundMode
                     },
@@ -299,6 +309,9 @@ class HVACVLabBase {
         this.resetSettingsToDefault();
 
         this.vLabLocator.activateVLabLocation('HVACBaseAirHandler');
+        if (this.vLabLocator.locations['HVACBaseAirHandler'].zoomMode) {
+            this.vLabLocator.locations['HVACBaseAirHandler'].resetView();
+        }
         this.vLabLocator.locations['HVACBaseAirHandler'].initialPosition.moveToPosition();
         this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setDefaultState();
         if (!this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorClosed) {
@@ -310,6 +323,9 @@ class HVACVLabBase {
         this.resetSettingsToDefault();
 
         this.vLabLocator.activateVLabLocation('HVACBaseAirHandler');
+        if (this.vLabLocator.locations['HVACBaseAirHandler'].zoomMode) {
+            this.vLabLocator.locations['HVACBaseAirHandler'].resetView();
+        }
         this.vLabLocator.locations['HVACBaseAirHandler'].initialPosition.moveToPosition();
         this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setDefaultState();
         if (!this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorClosed) {
