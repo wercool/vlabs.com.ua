@@ -206,8 +206,15 @@ export default class VLab {
             subscriber.callback.call(subscriber.instance, event);
         }
         this.paused = false;
-        this.container.style.display = 'block';
         this.statsTHREE.domElement.style.display = 'block';
+        this.container.style.display = 'block';
+
+        this.container.style.opacity = 0.1;
+        new TWEEN.Tween(this.container.style)
+        .to({ opacity: 1.0 }, 1000)
+        .easing(TWEEN.Easing.Linear.None)
+        .start();
+
         this.resiezeWebGLContainer();
     }
 
@@ -592,6 +599,15 @@ export default class VLab {
                 loader.load(itemURL, 
                     // onLoad callback
                     function (vLabItem) {
+
+
+                        thisVLab.container.style.opacity = 0.1;
+                        new TWEEN.Tween(thisVLab.container.style)
+                        .to({ opacity: 1.0 }, 1000)
+                        .easing(TWEEN.Easing.Linear.None)
+                        .start();
+
+
                         resolve(vLabItem);
                         thisVLab.overlayContainer.style.display = 'none';
                         thisVLab.progressBarElement.style.display = 'none';
