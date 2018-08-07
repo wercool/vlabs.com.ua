@@ -126,7 +126,7 @@ export default class VLab {
 
         this.container = document.createElement('div');
         this.container.id = this.initObj.name + 'VLabContainer';
-        this.container.className = 'vLabConatiner';
+        this.container.className = 'vLabContainer';
         if(document.body != null) {
             document.body.appendChild(this.container);
         }
@@ -209,8 +209,8 @@ export default class VLab {
         this.statsTHREE.domElement.style.display = 'block';
         this.container.style.display = 'block';
 
-        this.container.style.opacity = 0.1;
-        new TWEEN.Tween(this.container.style)
+        this.webGLContainer.style.opacity = 0.1;
+        new TWEEN.Tween(this.webGLContainer.style)
         .to({ opacity: 1.0 }, 1000)
         .easing(TWEEN.Easing.Linear.None)
         .start();
@@ -600,13 +600,16 @@ export default class VLab {
                     // onLoad callback
                     function (vLabItem) {
 
-
-                        thisVLab.container.style.opacity = 0.1;
-                        new TWEEN.Tween(thisVLab.container.style)
-                        .to({ opacity: 1.0 }, 1000)
-                        .easing(TWEEN.Easing.Linear.None)
-                        .start();
-
+                        if (thisVLab.vLabShowTransition === undefined) {
+                            thisVLab.webGLContainer.style.opacity = 0.1;
+                            thisVLab.vLabShowTransition = new TWEEN.Tween(thisVLab.webGLContainer.style)
+                            .to({ opacity: 1.0 }, 1000)
+                            .easing(TWEEN.Easing.Linear.None)
+                            .onComplete(() => {
+                                thisVLab.vLabShowTransition = undefined;
+                            })
+                            .start();
+                        }
 
                         resolve(vLabItem);
                         thisVLab.overlayContainer.style.display = 'none';
