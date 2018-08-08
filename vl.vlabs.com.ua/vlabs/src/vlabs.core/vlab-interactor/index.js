@@ -101,10 +101,18 @@ export default class VLabInteractor {
     }
 
     deactivate() {
+        if (this.handlerSprite === undefined) { 
+            setTimeout(this.deactivate.bind(this), 250);
+            return;
+        }
         this.handlerSprite.visible = false;
     }
 
     activate() {
+        if (this.handlerSprite === undefined) {
+            setTimeout(this.activate.bind(this), 250);
+            return;
+        }
         this.handlerSprite.visible = true;
     }
 

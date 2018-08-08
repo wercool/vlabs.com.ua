@@ -256,7 +256,7 @@ input:checked + .toggleSlider:before {
     right: 10px;
     background-color: #011e25e1;
     display: none;
-    z-index: 2e9;
+    z-index: 80000;
     border-radius: 5px;
     -moz-box-shadow: 0 0 10px #ccc;
     -webkit-box-shadow: 0 0 10px #ccc;
@@ -344,7 +344,7 @@ input:checked + .toggleSlider:before {
     left: 16px;
     top: 16px;
     cursor: pointer;
-    z-index: 2e12;
+    z-index: 85000;
     -webkit-user-select: none;  /* Chrome all / Safari all */
     -moz-user-select: none;     /* Firefox all */
     -ms-user-select: none;      /* IE 10+ */
@@ -387,7 +387,7 @@ input:checked + .toggleSlider:before {
     right: 10px;
     background-color: #011e25e1;
     display: none;
-    z-index: 2e9;
+    z-index: 80000;
     border-radius: 5px;
     -moz-box-shadow: 0 0 10px #ccc;
     -webkit-box-shadow: 0 0 10px #ccc;
@@ -411,7 +411,7 @@ input:checked + .toggleSlider:before {
     left: 16px;
     top: 16px;
     cursor: pointer;
-    z-index: 2e12;
+    z-index: 85000;
     -webkit-user-select: none;  /* Chrome all / Safari all */
     -moz-user-select: none;     /* Firefox all */
     -ms-user-select: none;      /* IE 10+ */

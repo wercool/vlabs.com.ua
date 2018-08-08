@@ -15,6 +15,8 @@ class HVACVLabBase {
         this.locationInitObjs = {};
         this.locations = {};
 
+        this.activatedMode = 'off';
+
         this.ambientSound = new Audio('./resources/sounds/ambient.mp3');
         this.ambientSound.volume = 0.1;
         this.ambientSound.addEventListener('ended', function() {
@@ -193,7 +195,7 @@ class HVACVLabBase {
                                 completed: false
                             },
                             {
-                                shortDesc: 'Set uambientSoundp COOL MODE',
+                                shortDesc: 'Set up COOL MODE',
                                 detailDesc: '<ul style="padding-left: 20px;">\
                                                 <li>Set mode to Cool <img src="resources/assistant/img/step2_1.png" style="vertical-align: middle;"></li>\
                                                 <li>Tap / click the thermostat screen <img src="resources/assistant/img/step2_2.png" style="vertical-align: middle;"></li>\
@@ -202,11 +204,19 @@ class HVACVLabBase {
                                             </ul>',
                                 completed: false
                             },
+                            {
+                                shortDesc: 'Go to the outside (Heat Pump) location',
+                                detailDesc: '<ul style="padding-left: 20px;">\
+                                                <li>Click / tap <img src="resources/assistant/img/shortToGround/step_1_0.jpg" style="vertical-align: middle;"></li>\
+                                                <li>At the Heat Pump (outside) location click / tap <img src="resources/assistant/img/shortToGround/step_1_1.jpg" style="vertical-align: middle;"></li>\
+                                            </ul>',
+                                completed: false
+                            },
                         ],
                         setModeCallBack: this.setShortToGroundMode
                     },
                     {
-                        title: 'Free mode',
+                        title: 'Advanced mode',
                         items: [
                         ]
                     }
@@ -320,28 +330,91 @@ class HVACVLabBase {
     setShortToGroundMode() {
         this.resetSettingsToDefault();
 
+        if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
+
+        this.locationInitObjs['HVACBaseAirHandler']['altNature'] = {};
+        this.locationInitObjs['HVACBaseHeatPump']['altNature'] = {};
+
         this.vLabLocator.activateVLabLocation('HVACBaseAirHandler');
-        if (this.vLabLocator.locations['HVACBaseAirHandler'].zoomMode) {
-            this.vLabLocator.locations['HVACBaseAirHandler'].resetView();
+        if (this.vLabLocator.locations['HVACBaseAirHandler'] !== undefined) {
+            if (this.vLabLocator.locations['HVACBaseAirHandler'].zoomMode) {
+                this.vLabLocator.locations['HVACBaseAirHandler'].resetView();
+            }
+            this.vLabLocator.locations['HVACBaseAirHandler'].initialPosition.moveToPosition();
+            this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setDefaultState();
+            if (!this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorClosed) {
+                this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorOpenOrClose();
+            }
+            this.vLabLocator.context.activatedMode = 'off';
+            this.vLabLocator.locations['HVACBaseAirHandler'].stoptAirBlower(true);
         }
-        this.vLabLocator.locations['HVACBaseAirHandler'].initialPosition.moveToPosition();
-        this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setDefaultState();
-        if (!this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorClosed) {
-            this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorOpenOrClose();
+        if (this.vLabLocator.locations['HVACBaseHeatPump'] !== undefined) {
+            this.vLabLocator.locations['HVACBaseHeatPump'].heatPumpFrameServicePanelTakeOutInteractor.activate();
+            this.vLabLocator.locations['HVACBaseHeatPump'].stopFanMotor();
+            this.vLabLocator.locations['HVACBaseHeatPump'].stopScrollCompressor();
         }
+        this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpFrameServicePanelTakeOutInteractor'] = true;
     }
 
     setNormalOperatonMode() {
         this.resetSettingsToDefault();
 
+        if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
+
+        this.locationInitObjs['HVACBaseAirHandler']['altNature'] = {};
+        this.locationInitObjs['HVACBaseHeatPump']['altNature'] = {};
+
         this.vLabLocator.activateVLabLocation('HVACBaseAirHandler');
-        if (this.vLabLocator.locations['HVACBaseAirHandler'].zoomMode) {
-            this.vLabLocator.locations['HVACBaseAirHandler'].resetView();
+        if (this.vLabLocator.locations['HVACBaseAirHandler'] !== undefined) {
+            if (this.vLabLocator.locations['HVACBaseAirHandler'].zoomMode) {
+                this.vLabLocator.locations['HVACBaseAirHandler'].resetView();
+            }
+            this.vLabLocator.locations['HVACBaseAirHandler'].initialPosition.moveToPosition();
+            this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setDefaultState();
+            if (!this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorClosed) {
+                this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorOpenOrClose();
+            }
+            this.vLabLocator.context.activatedMode = 'off';
+            this.vLabLocator.locations['HVACBaseAirHandler'].stoptAirBlower(true);
         }
-        this.vLabLocator.locations['HVACBaseAirHandler'].initialPosition.moveToPosition();
-        this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setDefaultState();
-        if (!this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorClosed) {
-            this.vLabLocator.locations['HVACBaseAirHandler'].nishDoorOpenOrClose();
+        if (this.vLabLocator.locations['HVACBaseHeatPump'] !== undefined) {
+            this.vLabLocator.locations['HVACBaseHeatPump'].heatPumpFrameServicePanelTakeOutInteractor.deactivate();
+            this.vLabLocator.locations['HVACBaseHeatPump'].stopFanMotor();
+            this.vLabLocator.locations['HVACBaseHeatPump'].stopScrollCompressor();
+        }
+        this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpFrameServicePanelTakeOutInteractor'] = false;
+    }
+
+    normalModeOperationProcessor() {
+        var roomTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
+            tempId: 'roomTemperature',
+            format: 'F'
+        });
+        if (roomTemperature <= 70) {
+            if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
+            console.log('Normal operation demo preset "cool to" temperature is reached. Demo is completed.');
+            this.normalModeOperationProcessorTimeOut = setTimeout(this.setNormalOperatonMode.bind(this), 90000);
+        } else {
+            this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
+            this.normalModeOperationProcessorTimeOut = setTimeout(this.normalModeOperationProcessor.bind(this), 5000);
+        }
+    }
+
+    shortToGroundOperationProcessor() {
+        if (this.tablet.initObj.content.tabs[1].items[2].completed === true) {
+            console.log('shortToGroundOperationProcessor -> TODO: show sparks...');
+        }
+        var roomTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
+            tempId: 'roomTemperature',
+            format: 'F'
+        });
+        if (roomTemperature <= 70) {
+            if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
+            console.log('Short to ground demo preset "cool to" temperature is reached. Demo is completed.');
+            this.normalModeOperationProcessorTimeOut = setTimeout(this.setShortToGroundMode.bind(this), 90000);
+        } else {
+            this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
+            this.normalModeOperationProcessorTimeOut = setTimeout(this.shortToGroundOperationProcessor.bind(this), 5000);
         }
     }
 }

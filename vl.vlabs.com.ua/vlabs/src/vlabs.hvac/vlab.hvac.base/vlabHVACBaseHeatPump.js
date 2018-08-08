@@ -192,7 +192,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 pos: new THREE.Vector3(1.0, 1.4, 0.0),
                 name: 'serviceLocation',
                 scale: new THREE.Vector3(0.2, 0.2, 0.2),
-                target: new THREE.Vector3(0.0, 0.5, 0.0)
+                target: new THREE.Vector3(0.0, 0.5, 0.0),
+                completeCallBack: this.serviceLocationPositioningCompleted
             });
 
             console.log(this.name + " initialized");
@@ -732,8 +733,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
         }
         this.toggleDirectionalRefrigerantFlow();
 
-this.startFanMotor();
-this.startScrollCompressor();
+        if (this.vLabLocator.context.activatedMode == 'cool') {
+            this.startFanMotor();
+            this.startScrollCompressor();
+        }
 
         ////// Ambient Air Flow
         this.ambientAirFlow1 = this.vLabScene.getObjectByName('ambientAirFlow1');
@@ -763,16 +766,23 @@ this.startScrollCompressor();
         });
 
 
+        if (this.nature.heatPumpFrameServicePanelTakeOutInteractor === true) {
+            this.heatPumpFrameServicePanelTakeOutInteractor.activate();
+        } else {
+            this.heatPumpFrameServicePanelTakeOutInteractor.deactivate();
+        }
+
+
         // Misc helpers
         this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
         this.heatPumpFrameCap_manipulationControl.setSize(0.5);
         this.vLabScene.add(this.heatPumpFrameCap_manipulationControl);
         this.heatPumpFrameCap_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameCap"));
 
-        this.heatPumpFrameServicePanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        this.heatPumpFrameServicePanel_manipulationControl.setSize(0.5);
-        this.vLabScene.add(this.heatPumpFrameServicePanel_manipulationControl);
-        this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameServicePanel"));
+        // this.heatPumpFrameServicePanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        // this.heatPumpFrameServicePanel_manipulationControl.setSize(0.5);
+        // this.vLabScene.add(this.heatPumpFrameServicePanel_manipulationControl);
+        // this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameServicePanel"));
 
     }
 
@@ -850,11 +860,15 @@ this.startScrollCompressor();
     }
 
     onVLabResumeAndShow() {
-        this.startFanMotor(true);
-        this.startScrollCompressor();
+        if (this.vLabLocator.context.activatedMode == 'cool') {
+            this.startFanMotor(true);
+            this.startScrollCompressor();
+        }
         this.shadowsSetup();
         this.toggleSounds();
         this.toggleHeatPumpAirFlow();
+        this.toggleRefrigerantFlow1();
+        this.toggleDirectionalRefrigerantFlow();
     }
 
     shadowsSetup() {
@@ -864,33 +878,44 @@ this.startScrollCompressor();
     }
 
     toggleSounds() {
+        if (this.vLabLocator.currentLocationVLab !== this) return;
         if (this.nature.sounds === true) {
             this.vLabLocator.context.ambientSound.play();
-            if (this.fanMotorStarted && !this.fanMotorSound.isPlaying) this.fanMotorSound.play();
-            if (this.scrollCompressorStarted && !this.scrollCompressorSound.isPlaying) this.scrollCompressorSound.play();
+            if (this.vLabLocator.context.activatedMode == 'cool') {
+                if (this.fanMotorStarted && !this.fanMotorSound.isPlaying) this.fanMotorSound.play();
+                if (this.scrollCompressorStarted && !this.scrollCompressorSound.isPlaying) this.scrollCompressorSound.play();
+            }
         } else {
             this.vLabLocator.context.ambientSound.pause();
-            this.fanMotorSound.stop();
-            this.scrollCompressorSound.stop();
+            if (this.fanMotorSound.isPlaying) this.fanMotorSound.stop();
+            if (this.scrollCompressorSound.isPlaying) this.scrollCompressorSound.stop();
         }
     }
 
     toggleRefrigerantFlow1() {
         if (this.gasFlow === undefined) setTimeout(this.toggleRefrigerantFlow1.bind(this), 250);
-        if (this.nature.refrigerantFlow1 === true) {
-            this.gasFlow.start();
+        if (this.vLabLocator.context.activatedMode == 'cool') {
+            if (this.nature.refrigerantFlow1 === true) {
+                this.gasFlow.start();
+            } else {
+                this.gasFlow.stop();
+            }
         } else {
             this.gasFlow.stop();
         }
     }
 
     toggleHeatPumpAirFlow() {
-        this.ambientAirFlow1.visible = this.nature.heatPumpAirFlow;
+        this.ambientAirFlow1.visible = this.nature.heatPumpAirFlow && (this.vLabLocator.context.activatedMode == 'cool');
     }
 
     toggleDirectionalRefrigerantFlow() {
-        if (this.nature.directionalRefrigerantFlow === true) {
-            this.startDirectionalRefrigerantFlow();
+        if (this.vLabLocator.context.activatedMode == 'cool') {
+            if (this.nature.directionalRefrigerantFlow === true) {
+                this.startDirectionalRefrigerantFlow();
+            } else {
+                this.stopDirectionalRefrigerantFlow();
+            }
         } else {
             this.stopDirectionalRefrigerantFlow();
         }
@@ -910,7 +935,9 @@ this.startScrollCompressor();
 
     stopFanMotor(stopMotor) {
         this.fanMotorStarted = false;
-        this.fanMotorSound.stop();
+        if (this.fanMotorSound !== undefined) {
+            if (this.fanMotorSound.isPlaying) this.fanMotorSound.stop();
+        }
     }
 
     startScrollCompressor() {
@@ -926,7 +953,9 @@ this.startScrollCompressor();
 
     stopScrollCompressor() {
         this.scrollCompressorStarted = true;
-        this.scrollCompressorSound.stop();
+        if (this.scrollCompressorSound !== undefined) {
+            if (this.scrollCompressorSound.isPlaying) this.scrollCompressorSound.stop();
+        }
     }
 
     startDirectionalRefrigerantFlow() {
@@ -1171,6 +1200,19 @@ if (this.nature.sounds) this.scrollCompressorShortToGroundSparkSound.stop();
         heatPumpCompressor.material.needsUpdate = true;
         this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.needsUpdate = true;
     }
+
+    serviceLocationPositioningCompleted() {
+        if (this.vLabLocator.context.tablet.currentActiveTabId == 1) {
+            if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[1].completed === true) {
+                if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[2].completed === false) {
+                    this.vLabLocator.context.tablet.initObj.content.tabs[1].items[2].completed = true;
+                    this.vLabLocator.context.tablet.stepCompletedAnimation();
+                }
+            }
+        }
+    }
+
+
 
     frameCapBoltUnscrew(argsObj) {
         this.selectedObject = this.BoshScrewdriver.model;

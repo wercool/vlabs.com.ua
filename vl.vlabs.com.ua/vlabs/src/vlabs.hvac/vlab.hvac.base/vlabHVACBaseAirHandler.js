@@ -38,6 +38,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
                         textureLoader.load('./resources/scene-air-handler/textures/ductAlphaMap.png'),
                         textureLoader.load('./resources/scene-air-handler/textures/ductBoxAlphaMap.png'),
                         textureLoader.load('./resources/scene-air-handler/textures/ceelingAirVentAirFlowHeat.png'),
+                        textureLoader.load('./resources/scene-air-handler/textures/blowerWheelHousingAlphaMap.jpg'),
                     ])
                     .then((result) => {
                         this.envMapMetal = result[0];
@@ -46,6 +47,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
                         this.ductAlphaMap = result[3];
                         this.ductBoxAlphaMap = result[4];
                         this.ventAirFlowHeat = result[5];
+                        this.blowerWheelHousingAlphaMap = result[6];
 
                         this.initialize(initObj);
                     })
@@ -63,6 +65,18 @@ export default class VlabHVACBaseAirHandler extends VLab {
     initialize(initObj) {
         this.initObj = initObj;
         this.vLabLocator = this.initObj.vLabLocator;
+
+        //VLab events subscribers
+        this.webGLContainerEventsSubcribers.stopandhide["HVACBaseAirHandlerLocationvLabStopAndHide"] = 
+        {
+            callback: this.onVLabStopAndHide,
+            instance: this
+        };
+        this.webGLContainerEventsSubcribers.resumeandshow["HVACBaseAirHandlerLocationvLabResumeAndShow"] = 
+        {
+            callback: this.onVLabResumeAndShow,
+            instance: this
+        };
 
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
@@ -184,10 +198,32 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
     onActivatedEvent() {
 
+        var self = this;
+
+        this.airBlowerStarted = false;
+        this.blowerWheelLA22LA034 = this.vLabScene.getObjectByName('blowerWheelLA22LA034');
+
         this.showOverlayMessage('<div style="position: absolute; top: 30%; left: calc(50% - 50px); width: 100px; text-align: center; color: white; font-size: 18px; padding: 20px; border-radius: 10px; box-shadow: 1px 1px 10px #cffdff80;">Initializing...</div>');
 
         //VLab Core Items
         this.vLabLocator.addLocation(this);
+
+        // Sounds
+        this.airBlowerSoundOnReady = false;
+        this.airBlowerSoundOn = new THREE.Audio(this.defaultAudioListener);
+        new THREE.AudioLoader().load('./resources/scene-air-handler/sounds/airBlowerSoundOn.mp3', function(buffer) {
+            self.airBlowerSoundOn.setBuffer(buffer);
+            self.airBlowerSoundOn.setVolume(0.2);
+            self.airBlowerSoundOnReady = true;
+        });
+        this.airBlowerSoundReady = false;
+        this.airBlowerSound = new THREE.Audio(this.defaultAudioListener);
+        new THREE.AudioLoader().load('./resources/scene-air-handler/sounds/airBlowerSound.mp3', function(buffer) {
+            self.airBlowerSound.setBuffer(buffer);
+            self.airBlowerSound.setVolume(0.2);
+            self.airBlowerSound.setLoop(true);
+            self.airBlowerSoundReady = true;
+        });
 
         //Zoom helpers
         this.carrierTPWEM01WallMountZoomHelper = new ZoomHelper({
@@ -314,7 +350,8 @@ export default class VlabHVACBaseAirHandler extends VLab {
             positionDeltas: new THREE.Vector3(0.2, 0.0, 0.0),
             scale: new THREE.Vector3(0.1, 0.1, 0.1),
             color: 0xfff495,
-            opacity: 0.65
+            opacity: 0.65,
+            zoomCompleteCallback: this.blowerWheelHousingLookThrough
         });
 
         ////// Ambient Air Flow
@@ -337,10 +374,30 @@ export default class VlabHVACBaseAirHandler extends VLab {
         this.ceelingAirVentFlow.visible = false;
         this.toggleCeilingVentGridsAirFlow();
 
+
+        this.blowerWheelHousingLookThroughInteractor = new VLabInteractor({
+            context: this,
+            name: 'blowerWheelHousingLookThroughInteractor',
+            pos: new THREE.Vector3(0.0, 0.0, 0.0),
+            object: this.vLabScene.getObjectByName('blowerWheelHousing'),
+            objectRelPos: new THREE.Vector3(0.2, 0.0, 0.075),
+            scale: new THREE.Vector3(0.03, 0.03, 0.03),
+            // depthTest: false,
+            icon: '../vlabs.assets/img/look-through.png',
+            action: this.blowerWheelHousingLookThroughInteractorHandler,
+            visible: false,
+            color: 0xffffff,
+            iconOpacity: 0.5
+        });
+
+
         this.initializeActions();
     }
 
     onRedererFrameEvent(event) {
+        if (this.airBlowerStarted === true) {
+            this.blowerWheelLA22LA034.rotateY(1.0);
+        }
         if (this.airHandlerAirFlow.visible) {
             if (this.airHandlerAirFlowThrottling > 2)
             {
@@ -450,11 +507,13 @@ export default class VlabHVACBaseAirHandler extends VLab {
     }
 
     onVLabStopAndHide() {
+        this.stoptAirBlower(false);
     }
 
     onVLabResumeAndShow() {
         this.shadowsSetup();
         this.toggleSounds();
+        this.startAirBlower(true);
         this.toggleCeilingVentGridsAirFlow();
         this.toggleAirHandlerAirFlow();
         this.toggleAirHandlerCabinetPanelsLookThrough();
@@ -468,19 +527,22 @@ export default class VlabHVACBaseAirHandler extends VLab {
     }
 
     toggleSounds() {
+        if (this.vLabLocator.currentLocationVLab !== this) return;
         if (this.nature.sounds === true) {
             this.vLabLocator.context.ambientSound.play();
+            this.startAirBlower(true);
         } else {
             this.vLabLocator.context.ambientSound.pause();
+            if (this.airBlowerSound.isPlaying) this.airBlowerSound.stop();
         }
     }
 
     toggleCeilingVentGridsAirFlow() {
-        this.ceelingAirVentFlow.visible = this.nature.ceelingAirVentFlow;
+        this.ceelingAirVentFlow.visible = this.nature.ceelingAirVentFlow && this.airBlowerStarted;
     }
 
     toggleAirHandlerAirFlow() {
-        this.airHandlerAirFlow.visible = this.nature.airHandlerAirFlow;
+        this.airHandlerAirFlow.visible = this.nature.airHandlerAirFlow && this.airBlowerStarted;
     }
 
     toggleAirHandlerCabinetPanelsLookThrough() {
@@ -499,6 +561,40 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
     toggleAirHandlerDuctLookThrough() {
         this.airHandlerDuctLookThrough(this.nature.airHandlerDuctLookThrough);
+    }
+
+    startAirBlower(resume) {
+        if (this.airBlowerSoundOnReady !== true || this.airBlowerSoundReady !== true) {
+            setTimeout(() => {
+                this.startAirBlower();
+            }, 500);
+            return;
+        }
+        var self = this;
+        if (this.nature.sounds === true && (this.vLabLocator.context.activatedMode == 'cool')) {
+            if (!this.airBlowerStarted) {
+                this.airBlowerSoundOn.play();
+                setTimeout(()=>{
+                    self.airBlowerSound.play();
+                }, 500);
+            } else {
+                self.airBlowerSound.play();
+            }
+        }
+        if (!resume && (this.vLabLocator.context.activatedMode == 'cool')) this.airBlowerStarted = true;
+        this.toggleCeilingVentGridsAirFlow();
+        this.toggleAirHandlerAirFlow();
+    }
+
+    stoptAirBlower(stopMotor) {
+        if (stopMotor) {
+            this.airBlowerStarted = false;
+        }
+        if (this.airBlowerSound !== undefined) {
+            if (this.airBlowerSound.isPlaying) this.airBlowerSound.stop();
+        }
+        this.toggleCeilingVentGridsAirFlow();
+        this.toggleAirHandlerAirFlow();
     }
 
     positionInFrontOfTheNishCompleted() {
@@ -618,18 +714,31 @@ export default class VlabHVACBaseAirHandler extends VLab {
             format: 'F'
         })
         if (Math.round(roomTemperature - coolToTemperature) == 4 && this.carrierTPWEM01.curState['mainMode'] == 'Cool') {
+            //Normal Mode demo
             if (this.vLabLocator.context.tablet.currentActiveTabId == 0) {
                 if (this.vLabLocator.context.tablet.initObj.content.tabs[0].items[1].completed === false) {
                     this.vLabLocator.context.tablet.initObj.content.tabs[0].items[1].completed = true;
                     this.vLabLocator.context.tablet.stepCompletedAnimation();
                     this.playSound('resources/assistant/snd/step2.mp3');
+
+                    this.vLabLocator.context.normalModeOperationProcessor();
+                    this.carrierTPWEM01.responsive = false;
+                    this.vLabLocator.context.activatedMode = 'cool';
+                    setTimeout(this.startAirBlower.bind(this), 2000);
                 }
             }
+
+            //Short to ground demo
             if (this.vLabLocator.context.tablet.currentActiveTabId == 1) {
                 if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[1].completed === false) {
                     this.vLabLocator.context.tablet.initObj.content.tabs[1].items[1].completed = true;
                     this.vLabLocator.context.tablet.stepCompletedAnimation();
                     this.playSound('resources/assistant/snd/step2.mp3');
+
+                    this.vLabLocator.context.shortToGroundOperationProcessor();
+                    this.carrierTPWEM01.responsive = false;
+                    this.vLabLocator.context.activatedMode = 'cool';
+                    setTimeout(this.startAirBlower.bind(this), 2000);
                 }
             }
         } else {
@@ -668,5 +777,28 @@ export default class VlabHVACBaseAirHandler extends VLab {
         }
         airHandlerDuct.material.needsUpdate = true;
         airHandlerDuctBox.material.needsUpdate = true;
+    }
+
+    blowerWheelHousingLookThrough() {
+        this.blowerWheelHousingLookThroughInteractor.activate();
+    }
+
+    blowerWheelHousingLookThroughInteractorHandler() {
+        var blowerWheelHousing = this.vLabScene.getObjectByName("blowerWheelHousing");
+        if (!blowerWheelHousing.material.alphaMap) {
+            blowerWheelHousing.material.alphaMap = this.blowerWheelHousingAlphaMap;
+            blowerWheelHousing.material.side = THREE.DoubleSide;
+            blowerWheelHousing.material.alphaTest = 0.5;
+            blowerWheelHousing.material.transparent = true;
+            this. blowerWheelHousingLookThroughInteractor.handlerSprite.material.opacity = 0.1;
+        } else {
+            blowerWheelHousing.material.alphaMap = undefined;
+            blowerWheelHousing.material.transparent = false;
+            blowerWheelHousing.material.side = THREE.FrontSide;
+            blowerWheelHousing.material.alphaTest = 0.0;
+            this.blowerWheelHousingLookThroughInteractor.handlerSprite.material.opacity = 0.5;
+        }
+        blowerWheelHousing.material.needsUpdate = true;
+        this.blowerWheelHousingLookThroughInteractor.handlerSprite.material.needsUpdate = true;
     }
 }

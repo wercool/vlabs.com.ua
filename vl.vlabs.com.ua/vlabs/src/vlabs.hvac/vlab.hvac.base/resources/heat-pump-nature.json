@@ -53,8 +53,7 @@
         "bryantB225B_heatPumpFanGrid",
         "bryantB225B_heatPumpFrameCap",
         "bryantB225B_heatPumpFrameServicePanel",
-        "bryantB225B_heatPumpFrameElectricalPanel",
-        "bryantB225B_heatPumpFrameServicePanel"
+        "bryantB225B_heatPumpFrameElectricalPanel"
     ],
     "interactiveObjects": [],
     "responsiveObjects": [
@@ -87,5 +86,7 @@
     "heatPumpAirFlow": false,
     "refrigerantFlow1": false,
     "directionalRefrigerantFlow": false,
-    "directionalRefrigerantFlowNum": 10
+    "directionalRefrigerantFlowNum": 10,
+
+    "heatPumpFrameServicePanelTakeOutInteractor": false
 }

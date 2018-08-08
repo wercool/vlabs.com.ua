@@ -25,6 +25,7 @@ export default class CarrierTPWEM01 {
        this.curScreenActiveElements = [];
 
        this.initial = true;
+       this.responsive = true;
 
        if (this.initObj.detailedView) {
         this.initialized = false;
@@ -130,6 +131,7 @@ export default class CarrierTPWEM01 {
     }
 
     setDefaultState() {
+        this.responsive = true;
         /* State */
         this.curState['roomTemperature'] = 23;
         this.curState['roomHumidity'] = 40;
@@ -171,7 +173,7 @@ export default class CarrierTPWEM01 {
         this.curState['coolToTemperatureMin'] = 18;
         this.curState['coolToTemperatureMax'] = 26;
         this.curState['fanMode'] = 'Auto';
-        this.curState['mainMode'] = 'Auto';
+        this.curState['mainMode'] = 'Off';
     }
 
     addVLabEventListeners() {
@@ -224,6 +226,8 @@ export default class CarrierTPWEM01 {
     }
 
     onVLabSceneMouseUp(event) {
+
+        if (this.responsive === false) return;
 
         var interactiveObjectsWithInteractiveSuppressors = this.context.interactiveObjects.concat(this.context.interactivesSuppressorsObjects).concat(this.screenMesh);
 
