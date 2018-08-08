@@ -209,8 +209,8 @@ export default class VLab {
         this.statsTHREE.domElement.style.display = 'block';
         this.container.style.display = 'block';
 
-        this.webGLContainer.style.opacity = 0.1;
-        new TWEEN.Tween(this.webGLContainer.style)
+        this.container.style.opacity = 0.1;
+        new TWEEN.Tween(this.container.style)
         .to({ opacity: 1.0 }, 1000)
         .easing(TWEEN.Easing.Linear.None)
         .start();
@@ -599,18 +599,6 @@ export default class VLab {
                 loader.load(itemURL, 
                     // onLoad callback
                     function (vLabItem) {
-
-                        if (thisVLab.vLabShowTransition === undefined) {
-                            thisVLab.webGLContainer.style.opacity = 0.1;
-                            thisVLab.vLabShowTransition = new TWEEN.Tween(thisVLab.webGLContainer.style)
-                            .to({ opacity: 1.0 }, 1000)
-                            .easing(TWEEN.Easing.Linear.None)
-                            .onComplete(() => {
-                                thisVLab.vLabShowTransition = undefined;
-                            })
-                            .start();
-                        }
-
                         resolve(vLabItem);
                         thisVLab.overlayContainer.style.display = 'none';
                         thisVLab.progressBarElement.style.display = 'none';

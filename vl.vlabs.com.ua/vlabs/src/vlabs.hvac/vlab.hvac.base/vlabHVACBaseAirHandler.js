@@ -454,6 +454,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
     onVLabResumeAndShow() {
         this.shadowsSetup();
+        this.toggleSounds();
         this.toggleCeilingVentGridsAirFlow();
         this.toggleAirHandlerAirFlow();
         this.toggleAirHandlerCabinetPanelsLookThrough();
@@ -463,6 +464,14 @@ export default class VlabHVACBaseAirHandler extends VLab {
     shadowsSetup() {
         if (this.nature.useShadows !== undefined) {
             this.setupShadows({'defaultPointLight': this.light1});
+        }
+    }
+
+    toggleSounds() {
+        if (this.nature.sounds === true) {
+            this.vLabLocator.context.ambientSound.play();
+        } else {
+            this.vLabLocator.context.ambientSound.pause();
         }
     }
 

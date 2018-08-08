@@ -230,7 +230,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.fanMotorSound = new THREE.Audio(this.defaultAudioListener);
         new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/fan-motor-sound.mp3', function(buffer) {
             self.fanMotorSound.setBuffer(buffer);
-            self.fanMotorSound.setVolume(0.15);
+            self.fanMotorSound.setVolume(0.2);
             self.fanMotorSound.setLoop(true);
             self.fanMotorSoundReady  = true;
         });
@@ -239,7 +239,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.scrollCompressorSound = new THREE.Audio(this.defaultAudioListener);
         new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/scroll-compressor-sound.mp3', function(buffer) {
             self.scrollCompressorSound.setBuffer(buffer);
-            self.scrollCompressorSound.setVolume(0.15);
+            self.scrollCompressorSound.setVolume(0.2);
             self.scrollCompressorSound.setLoop(true);
             self.scrollCompressorSoundReady  = true;
         });
@@ -258,7 +258,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.scrollCompressorShortToGroundSparkSound = new THREE.Audio(this.defaultAudioListener);
         new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/scrollCompressorShortToGroundSparkSound.mp3', function(buffer) {
             self.scrollCompressorShortToGroundSparkSound.setBuffer(buffer);
-            self.scrollCompressorShortToGroundSparkSound.setVolume(0.25);
+            self.scrollCompressorShortToGroundSparkSound.setVolume(1.0);
         });
 
         this.showOverlayMessage('<div style="position: absolute; top: 30%; left: calc(50% - 50px); width: 100px; text-align: center; color: white; font-size: 18px; padding: 20px; border-radius: 10px; box-shadow: 1px 1px 10px #cffdff80;">Initializing...</div>');
@@ -807,7 +807,9 @@ this.startScrollCompressor();
             if (this.scrollCompressorZP25K5EStatorDamagedSparkThrottling > 0 && this.scrollCompressorZP25K5EStatorDamagedSparkThrottling < 60) {
                 if (!this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible) {
                     this.scrollCompressorShortToGroundSparkSound.offset = Math.random() * 1.5;
-                    this.scrollCompressorShortToGroundSparkSound.play();
+                    if (this.scrollCompressorShortToGroundSparkSound) {
+                        if (this.nature.sounds) this.scrollCompressorShortToGroundSparkSound.play();
+                    }
                     this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight.visible = true;
                 }
 
@@ -826,7 +828,9 @@ this.startScrollCompressor();
             //     if (this.statorWindingSparkTextureCnt > 3) this.statorWindingSparkTextureCnt = 0;
             } else {
                 if (this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible) {
-                    this.scrollCompressorShortToGroundSparkSound.stop();
+                    if (this.scrollCompressorShortToGroundSparkSound !== undefined) {
+                        if (this.scrollCompressorShortToGroundSparkSound.isPlaying) this.scrollCompressorShortToGroundSparkSound.stop();
+                    }
                 }
                 this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = false;
                 this.scrollCompressorZP25K5EStatorDamagedSparkEffectLight.visible = false;
@@ -849,12 +853,25 @@ this.startScrollCompressor();
         this.startFanMotor(true);
         this.startScrollCompressor();
         this.shadowsSetup();
+        this.toggleSounds();
         this.toggleHeatPumpAirFlow();
     }
 
     shadowsSetup() {
         if (this.nature.useShadows !== undefined) {
             this.setupShadows({'defaultPointLight': this.light1});
+        }
+    }
+
+    toggleSounds() {
+        if (this.nature.sounds === true) {
+            this.vLabLocator.context.ambientSound.play();
+            if (this.fanMotorStarted && !this.fanMotorSound.isPlaying) this.fanMotorSound.play();
+            if (this.scrollCompressorStarted && !this.scrollCompressorSound.isPlaying) this.scrollCompressorSound.play();
+        } else {
+            this.vLabLocator.context.ambientSound.pause();
+            this.fanMotorSound.stop();
+            this.scrollCompressorSound.stop();
         }
     }
 
@@ -1109,11 +1126,13 @@ this.startScrollCompressor();
     }
 
     contactorOn() {
-        this.contactorOnSound.play();
+        if (this.nature.sounds) this.contactorOnSound.play();
     }
 
     contactorOff() {
-        this.contactorOffSound.play();
+        if (this.nature.sounds) {
+            this.contactorOffSound.play();
+        }
         this.contactorElectricArcEffect.start();
     }
 
@@ -1135,7 +1154,7 @@ this.startScrollCompressor();
 this.scrollCompressorZP25K5EStatorDamagedWires.visible = true;
 // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = true;
 this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = true;
-this.scrollCompressorShortToGroundSparkSound.play();
+if (this.nature.sounds) this.scrollCompressorShortToGroundSparkSound.play();
         } else {
             heatPumpCompressor.material.alphaMap = undefined;
             heatPumpCompressor.material.transparent = false;
@@ -1147,7 +1166,7 @@ this.scrollCompressorShortToGroundSparkSound.play();
 this.scrollCompressorZP25K5EStatorDamagedWires.visible = false;
 this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = false;
 // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = false;
-this.scrollCompressorShortToGroundSparkSound.stop();
+if (this.nature.sounds) this.scrollCompressorShortToGroundSparkSound.stop();
         }
         heatPumpCompressor.material.needsUpdate = true;
         this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.needsUpdate = true;

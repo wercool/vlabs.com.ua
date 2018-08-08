@@ -82,6 +82,10 @@ class HVACVLabBase {
                             {
                                 label: 'Shadows',
                                 innerHTML: '<label class="switch"><input type="checkbox" id="SettingsShadowsCheckbox"><span class="toggleSlider round"></span></label>'
+                            },
+                            {
+                                label: 'Sounds',
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsSoundsCheckbox" checked><span class="toggleSlider round"></span></label>'
                             }
                         ]
                     },
@@ -189,7 +193,7 @@ class HVACVLabBase {
                                 completed: false
                             },
                             {
-                                shortDesc: 'Set up COOL MODE',
+                                shortDesc: 'Set uambientSoundp COOL MODE',
                                 detailDesc: '<ul style="padding-left: 20px;">\
                                                 <li>Set mode to Cool <img src="resources/assistant/img/step2_1.png" style="vertical-align: middle;"></li>\
                                                 <li>Tap / click the thermostat screen <img src="resources/assistant/img/step2_2.png" style="vertical-align: middle;"></li>\
@@ -229,6 +233,7 @@ class HVACVLabBase {
     settingsClosed() {
         var SettingsResolutionSlider = document.getElementById('SettingsResolutionSlider');
         var SettingsShadowsCheckbox = document.getElementById('SettingsShadowsCheckbox');
+        var SettingsSoundsCheckbox = document.getElementById('SettingsSoundsCheckbox');
         var SettingsCeilingVentGridsCheckbox = document.getElementById('SettingsCeilingVentGridsCheckbox');
         var SettingsAirHandlerAirFlowCheckbox = document.getElementById('SettingsAirHandlerAirFlowCheckbox');
         var SettingsHeatPumpAirFlowCheckbox = document.getElementById('SettingsHeatPumpAirFlowCheckbox');
@@ -246,6 +251,11 @@ class HVACVLabBase {
                 this.vLabLocator.locations[locationName].nature.useShadows = SettingsShadowsCheckbox.checked;
                 if (this.vLabLocator.locations[locationName].shadowsSetup !== undefined) {
                     this.vLabLocator.locations[locationName].shadowsSetup();
+                }
+                /* General Settings -> Sounds */
+                this.vLabLocator.locations[locationName].nature.sounds = SettingsSoundsCheckbox.checked;
+                if (this.vLabLocator.locations[locationName].toggleSounds !== undefined) {
+                    this.vLabLocator.locations[locationName].toggleSounds();
                 }
                 /* Indoor (Air Handler) Location Settings -> Ceiling ventilation grids airflow */
                 if (locationName == 'HVACBaseAirHandler') {
@@ -278,6 +288,8 @@ class HVACVLabBase {
                 this.locationInitObjs[locationName]['altNature']['resolutionFactor'] = (SettingsResolutionSlider.value / 100.0).toFixed(2);
                 /* General Settings -> Shadows */
                 this.locationInitObjs[locationName]['altNature']['useShadows'] = SettingsShadowsCheckbox.checked;
+                /* General Settings -> Sounds */
+                this.locationInitObjs[locationName]['altNature']['sounds'] = SettingsSoundsCheckbox.checked;
                 /* Indoor Location Settings -> Ceiling ventilation grids airflow */
                 if (locationName == 'HVACBaseAirHandler') {
                     this.locationInitObjs['HVACBaseAirHandler']['altNature']['ceelingAirVentFlow'] = SettingsCeilingVentGridsCheckbox.checked;

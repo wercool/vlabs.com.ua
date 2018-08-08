@@ -114,7 +114,7 @@ export default class ElectricArc {
 
     onRedererFrameEvent(event) {
         if (!this.active) return;
-        if (this.arcSound != undefined) {
+        if (this.arcSound != undefined && this.context.nature.sounds) {
             if (!this.arcSound.isPlaying) this.arcSound.play();
         }
         this.effectSprite.material.rotation = Math.random();
