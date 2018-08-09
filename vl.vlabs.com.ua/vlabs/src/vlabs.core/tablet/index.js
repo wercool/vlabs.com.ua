@@ -16,8 +16,8 @@ export default class Tablet {
         this.tabletButton = document.createElement('div');
         this.tabletButton.id = this.context.name + 'Tablet';
         this.tabletButton.className = 'tabletButton';
-        this.tabletButton.addEventListener("mousedown", this.activate.bind(this), false);
-        this.tabletButton.addEventListener("touchstart", this.activate.bind(this), false);
+        this.tabletButton.addEventListener("mouseup", this.activate.bind(this), false);
+        this.tabletButton.addEventListener("touchend", this.activate.bind(this), false);
         this.tabletButton.style.display = 'none';
         document.body.appendChild(this.tabletButton);
         this.tabletButtonCompleted = document.createElement('div');
@@ -30,6 +30,10 @@ export default class Tablet {
         this.tabletButtonPointer.className = 'tabletButtonPointer';
         this.tabletButton.appendChild(this.tabletButtonPointer);
 
+        this.tabletShortToast = document.createElement('div');
+        this.tabletShortToast.id = this.context.name + 'TabletShortToast';
+        this.tabletShortToast.className = 'tabletShortToast';
+        document.body.appendChild(this.tabletShortToast);
 
         this.container = document.createElement('div');
         this.container.id = this.context.name + 'TabletViewContainer';
@@ -41,7 +45,7 @@ export default class Tablet {
         this.closeBtn.id = this.context.name + 'TabletViewCloseButton';
         this.closeBtn.className = 'tabletViewCloseButton';
         this.container.appendChild(this.closeBtn);
-        this.closeBtn.addEventListener("mousedown", this.close.bind(this), false);
+        this.closeBtn.addEventListener("mouseup", this.close.bind(this), false);
         this.closeBtn.addEventListener("touchend", this.close.bind(this), false);
 
         this.contentContainer = document.createElement('div');
@@ -107,17 +111,47 @@ export default class Tablet {
 
     showButton() {
         this.tabletButton.style.display = 'block';
+        this.showTabletShortToast();
     }
 
     hideButton() {
         this.tabletButton.style.display = 'none';
+        this.tabletShortToast.style.display = 'none';
+    }
+
+    isActive() {
+        return (this.container.style.display == 'block');
+    }
+
+    showTabletShortToast() {
+        if (this.tabletShortToastTimeout) {
+            this.tabletShortToast.style.display = 'none';
+            this.tabletShortToast.innerHTML = '';
+            clearTimeout(this.tabletShortToastTimeout);
+        }
+        if (this.initObj.content.tabs[this.currentActiveTabId].items.length > 0) {
+            for (var i = 0; i < this.initObj.content.tabs[this.currentActiveTabId].items.length; i++) {
+                if (this.tabletShortToast.style.display !== 'block' && !this.initObj.content.tabs[this.currentActiveTabId].items[i].completed) {
+                    this.tabletShortToast.innerHTML = this.initObj.content.tabs[this.currentActiveTabId].items[i].shortDesc;
+                    this.tabletShortToast.style.display = 'block';
+                    var self = this;
+                    this.tabletShortToastTimeout = setTimeout(() => {
+                        self.tabletShortToast.style.display = 'none';
+                        this.tabletShortToast.innerHTML = '';
+                    }, 15000);
+                }
+            }
+        }
     }
 
     activate() {
         this.tabletButtonPointer.style.display = 'none';
         this.container.style.display = 'block';
-        this.tabletButton.style.display = 'none';
-        if (this.vLabLocator.currentLocationVLab.statsTHREE) this.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.display = 'none';
+        this.hideButton();
+        if (this.vLabLocator.currentLocationVLab.statsTHREE) {
+            this.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.visibility = 'hidden';
+            this.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.display = 'none';
+        }
         console.log('Tablet activated');
 
         if (this.context.settings) this.context.settings.hideButton();
@@ -133,16 +167,25 @@ export default class Tablet {
         }
 
         this.setActiveTab(this.currentActiveTabId);
+
+        this.keyDownEventHandlerRef = this.keyDownEventHandler.bind(this);
+        addEventListener("keydown", this.keyDownEventHandlerRef, true);
     }
 
-    close() {
+    close(event) {
+        if (event) event.stopPropagation();
         this.container.style.display = 'none';
-        this.tabletButton.style.display = 'block';
         let self = this;
         setTimeout(function(){
-            if (self.vLabLocator.currentLocationVLab.statsTHREE) self.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.display = 'block';
+            if (self.vLabLocator.currentLocationVLab.statsTHREE) {
+                self.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.display = 'block';
+                self.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.visibility = 'visible';
+            }
             if (self.context.settings) self.context.settings.showButton();
+            self.showButton();
         }, 100);
+        removeEventListener('keydown', this.keyDownEventHandlerRef, true);
+        this.showTabletShortToast();
     }
 
     tabButtonPressed(event) {
@@ -238,7 +281,10 @@ export default class Tablet {
             self.tabletButtonCompleted.classList.remove("visible");
             self.tabletButtonCompleted.classList.add("hidden");
             self.tabletButtonPointer.style.display = 'block';
-        }, 4000);
+
+            self.showTabletShortToast();
+
+        }, 2000);
     }
 
     resetTabContentItems() {
@@ -251,4 +297,10 @@ export default class Tablet {
         }
     }
 
+    keyDownEventHandler(event) {
+        //Esc
+        if (event.keyCode == 27) {
+            this.close();
+        }
+    }
 }

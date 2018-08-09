@@ -80,7 +80,7 @@ export default class VLabPositioner {
     setActive(state) {
         this.active = state;
         this.handlerSprite.visible = !state;
-        if (this.initObj.completeCallBack) {
+        if (this.initObj.completeCallBack && this.active === true) {
             this.initObj.completeCallBack.call(this.context);
         }
     }

@@ -89,5 +89,6 @@
     "directionalRefrigerantFlow": false,
     "directionalRefrigerantFlowNum": 10,
 
-    "heatPumpFrameServicePanelTakeOutInteractor": false
+    "heatPumpFrameServicePanelTakeOutInteractor": false,
+    "bryantB225B_heatPumpFrameServicePanelInitial": {}
 }

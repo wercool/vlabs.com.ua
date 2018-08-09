@@ -195,23 +195,29 @@ export default class VLab {
             subscriber.callback.call(subscriber.instance, event);
         }
         this.paused = true;
-        this.statsTHREE.domElement.style.display = 'none';
+        if (this.statsTHREE.domElement.style.visibility === 'visible') this.statsTHREE.domElement.style.display = 'none';
         this.container.style.display = 'none';
     }
 
-    resumeAndShow() {
+    resumeAndShow(paramsObj) {
         for (var resumeandshowSubscriberName in this.webGLContainerEventsSubcribers.resumeandshow) {
             var subscriber = this.webGLContainerEventsSubcribers.resumeandshow[resumeandshowSubscriberName];
             var event = {};
             subscriber.callback.call(subscriber.instance, event);
         }
         this.paused = false;
-        this.statsTHREE.domElement.style.display = 'block';
+        if (this.statsTHREE.domElement.style.visibility === 'visible') this.statsTHREE.domElement.style.display = 'block';
         this.container.style.display = 'block';
+
+        if (paramsObj !== undefined) {
+            if (paramsObj.auto) {
+                this.statsTHREE.domElement.style.display = 'none';
+            }
+        }
 
         this.container.style.opacity = 0.1;
         new TWEEN.Tween(this.container.style)
-        .to({ opacity: 1.0 }, 1000)
+        .to({ opacity: 1.0 }, 750)
         .easing(TWEEN.Easing.Linear.None)
         .start();
 
@@ -270,6 +276,9 @@ export default class VLab {
 
             if (document.getElementById('loader')) {
                 document.body.removeChild(document.getElementById('loader'));
+            }
+            if (document.getElementById('loaderIcon')) {
+                document.body.removeChild(document.getElementById('loaderIcon'));
             }
 
             if (this.initObj.authRequired === 'true') {
@@ -1368,6 +1377,7 @@ export default class VLab {
         this.statsTHREE.domElement.style.position = 'absolute';
         this.statsTHREE.domElement.style.left = '0px';
         this.statsTHREE.domElement.style.top = '0px';
+        this.statsTHREE.domElement.style.visibility = 'visible';
         document.body.appendChild(this.statsTHREE.domElement);
     }
 
@@ -1718,6 +1728,13 @@ export default class VLab {
             if (this.nature[altNaturePropertyName] !== undefined) {
                 this.nature[altNaturePropertyName] = altNature[altNaturePropertyName];
             }
+        }
+    }
+
+    playSound(snd) {
+        if (this.nature.sounds) {
+            let audio = new Audio(snd);
+            audio.play();
         }
     }
 }

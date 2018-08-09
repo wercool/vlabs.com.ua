@@ -115,16 +115,42 @@ export default class VLabLocator {
         }
     }
 
-    activateVLabLocation(transientLocationName){
+    activateVLabLocation(transientLocationName, paramsObj){
+        if (paramsObj) {
+            if (paramsObj.auto) {
+                this.currentLocationVLab.statsTHREE.domElement.style.visibility = 'visible';
+            }
+        }
+        if (this.initObj.beforeLocationChanged) {
+            this.initObj.beforeLocationChanged.call(this.context, transientLocationName);
+        }
         this.currentLocationVLab.stopAndHide();
         if (this.context.locations[transientLocationName] === undefined) {
+            this.waitForLocationName = transientLocationName;
+            this.waitForLocationInitialized();
             this.context.locations[transientLocationName] = new this.context.locationInitObjs[transientLocationName].class(this.context.locationInitObjs[transientLocationName]);
         } else {
             this.currentLocationVLab = this.context.locations[transientLocationName];
-            this.currentLocationVLab.resumeAndShow();
+            this.currentLocationVLab.resumeAndShow(paramsObj);
+            if (this.initObj.locationChanged) {
+                this.initObj.locationChanged.call(this.context, transientLocationName);
+            }
+        }
+    }
+
+    waitForLocationInitialized() {
+        if (this.context.locations[this.waitForLocationName] === undefined) {
+            setTimeout(this.waitForLocationInitialized.bind(this), 250);
+            return;
+        } else {
+            if (this.context.locations[this.waitForLocationName].initialized !== true) {
+                setTimeout(this.waitForLocationInitialized.bind(this), 250);
+                return;
+            }
         }
         if (this.initObj.locationChanged) {
-            this.initObj.locationChanged.call(this.context, transientLocationName);
+            this.initObj.locationChanged.call(this.context, this.waitForLocationName);
         }
+        this.waitForLocationName = undefined;
     }
 }

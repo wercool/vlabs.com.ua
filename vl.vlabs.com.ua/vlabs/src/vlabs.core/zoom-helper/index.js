@@ -116,7 +116,7 @@ export default class ZoomHelper {
         }
     }
 
-    activate() {
+    activate(actionObj) {
         this.handlerSprite.visible = false;
 
         /* Save back state only for first activation of ZoomHelper */
@@ -183,6 +183,23 @@ export default class ZoomHelper {
 
                 this.context.zoomHelperMode = true;
                 this.context.zoomViewArea.style.opacity = 1.0;
+
+                if (actionObj !== undefined) {
+                    if (actionObj.finalTarget !== undefined) {
+                        new TWEEN.Tween(this.context.defaultCameraControls.target)
+                        .to({ x: actionObj.finalTarget.x, y: actionObj.finalTarget.y, z: actionObj.finalTarget.z }, 500)
+                        .easing(TWEEN.Easing.Linear.None)
+                        .onUpdate(() => {
+                            this.context.defaultCameraControls.update();
+                        })
+                        .start();
+                    }
+                    if (actionObj.backFromViewButtonHidden !== undefined) {
+                        if (actionObj.backFromViewButtonHidden == true) {
+                            this.context.backFromViewButton.style.display = 'none';
+                        }
+                    }
+                }
 
                 if (this.initObj.zoomCompleteCallback !== undefined) {
                     this.initObj.zoomCompleteCallback.call(this.context, {});

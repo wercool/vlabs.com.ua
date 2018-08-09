@@ -16,8 +16,8 @@ export default class Settings {
         this.settingsButton = document.createElement('div');
         this.settingsButton.id = this.context.name + 'Settings';
         this.settingsButton.className = 'sttingsButton';
-        this.settingsButton.addEventListener("mousedown", this.activate.bind(this), false);
-        this.settingsButton.addEventListener("touchstart", this.activate.bind(this), false);
+        this.settingsButton.addEventListener("mouseup", this.activate.bind(this), false);
+        this.settingsButton.addEventListener("touchend", this.activate.bind(this), false);
         document.body.appendChild(this.settingsButton);
         this.settingsButton.style.display = 'none';
 
@@ -31,7 +31,7 @@ export default class Settings {
         this.closeBtn.id = this.context.name + 'SettingsViewCloseButton';
         this.closeBtn.className = 'settingsViewCloseButton';
         this.container.appendChild(this.closeBtn);
-        this.closeBtn.addEventListener("mousedown", this.close.bind(this), false);
+        this.closeBtn.addEventListener("mouseup", this.close.bind(this), false);
         this.closeBtn.addEventListener("touchend", this.close.bind(this), false);
 
         this.contentContainer = document.createElement('div');
@@ -79,25 +79,46 @@ export default class Settings {
         this.settingsButton.style.display = 'none';
     }
 
+    isActive() {
+        return (this.container.style.display == 'block');
+    }
+
     activate() {
         this.container.style.display = 'block';
         this.settingsButton.style.display = 'none';
-        if (this.vLabLocator.currentLocationVLab.statsTHREE) this.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.display = 'none';
+        if (this.vLabLocator.currentLocationVLab.statsTHREE) {
+            this.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.display = 'none';
+            this.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.visibility = 'hidden';
+        }
         console.log('Settings activated');
 
         if (this.context.tablet) this.context.tablet.hideButton();
+
+        this.keyDownEventHandlerRef = this.keyDownEventHandler.bind(this);
+        addEventListener("keydown", this.keyDownEventHandlerRef, true);
     }
 
     close() {
+        removeEventListener('keydown', this.keyDownEventHandlerRef, true);
         this.container.style.display = 'none';
-        this.showButton();
         let self = this;
         setTimeout(function(){
-            if (self.vLabLocator.currentLocationVLab.statsTHREE) self.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.display = 'block';
+            if (self.vLabLocator.currentLocationVLab.statsTHREE) {
+                self.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.display = 'block';
+                self.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.visibility = 'visible';
+            }
             if (self.context.tablet) self.context.tablet.showButton();
+            self.showButton();
         }, 100);
         if (this.initObj.onClosed) {
             this.initObj.onClosed.call(this.context);
+        }
+    }
+
+    keyDownEventHandler(event) {
+        //Esc
+        if (event.keyCode == 27) {
+            this.close();
         }
     }
 

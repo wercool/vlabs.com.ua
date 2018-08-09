@@ -699,11 +699,6 @@ export default class VlabHVACBaseAirHandler extends VLab {
     //     console.log('carrierTPWEM01InfoInteractorCallback');
     // }
 
-    playSound(snd) {
-        let audio = new Audio(snd);
-        audio.play();
-    }
-
     checkThermostatIsSetToCool() {
         var roomTemperature = this.carrierTPWEM01.getTemperature({
             tempId: 'roomTemperature',

@@ -1087,8 +1087,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 .start()
                 .onComplete(() => {
 
-                    // this.gasFlow.start();
-                    // setTimeout(() => { this.gasFlow.stop(); }, 20000);
+
 
                 });
             });
@@ -1098,6 +1097,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
     heatPumpFrameServicePanelTakeOutInteractorHandler() {
         this.heatPumpFrameServicePanelTakeOutInteractor.deactivate();
         this.bryantB225B_heatPumpFrameServicePanel = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameServicePanel');
+        this.nature.bryantB225B_heatPumpFrameServicePanelInitial = {
+            position: this.bryantB225B_heatPumpFrameServicePanel.position.clone(),
+            rotation: this.bryantB225B_heatPumpFrameServicePanel.rotation.clone(),
+        };
         new TWEEN.Tween(this.bryantB225B_heatPumpFrameServicePanel.position)
         .to({ x: 0.6 }, 350)
         .easing(TWEEN.Easing.Linear.None)
@@ -1110,6 +1113,23 @@ export default class VlabHVACBaseHeatPump extends VLab {
         .to({ y: 0.005, z: -0.8 }, 350)
         .easing(TWEEN.Easing.Linear.None)
         .start();
+
+        if (this.vLabLocator.context.tablet.currentActiveTabId == 1) {
+            if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[3].completed === true) {
+                if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[4].completed === false) {
+                    this.vLabLocator.context.tablet.initObj.content.tabs[1].items[4].completed = true;
+                    this.vLabLocator.context.tablet.stepCompletedAnimation();
+                }
+            }
+        }
+    }
+
+    resetHeatPumpFrameServicePanel() {
+        if (this.nature.bryantB225B_heatPumpFrameServicePanelInitial.position == undefined) return;
+        this.heatPumpFrameServicePanelTakeOutInteractor.deactivate();
+        this.bryantB225B_heatPumpFrameServicePanel = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameServicePanel');
+        this.bryantB225B_heatPumpFrameServicePanel.position.copy(this.nature.bryantB225B_heatPumpFrameServicePanelInitial.position);
+        this.bryantB225B_heatPumpFrameServicePanel.rotation.copy(this.nature.bryantB225B_heatPumpFrameServicePanelInitial.rotation);
     }
 
     digitalMultimeterFluke17BToControlBoard() {
@@ -1177,31 +1197,46 @@ export default class VlabHVACBaseHeatPump extends VLab {
     heatPumpCompressorLookThroughInteractorHandler() {
         var heatPumpCompressor = this.vLabScene.getObjectByName("bryantB225B_heatPumpCompressor");
         if (!heatPumpCompressor.material.alphaMap) {
-            heatPumpCompressor.material.alphaMap = this.heatPumpCompressorAlphaMap;
-            heatPumpCompressor.material.side = THREE.DoubleSide;
-            heatPumpCompressor.material.alphaTest = 0.5;
-            heatPumpCompressor.material.transparent = true;
-            this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.opacity = 0.1;
-            this.heatPumpCompressorOil.visible = true;
-            this.heatPumpCompressorOilDisplacementTween.start();
-
-this.scrollCompressorZP25K5EStatorDamagedWires.visible = true;
-// this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = true;
-this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = true;
-if (this.nature.sounds) this.scrollCompressorShortToGroundSparkSound.play();
+            this.shortToGroundEffectOn();
         } else {
-            heatPumpCompressor.material.alphaMap = undefined;
-            heatPumpCompressor.material.transparent = false;
-            heatPumpCompressor.material.side = THREE.FrontSide;
-            heatPumpCompressor.material.alphaTest = 0.0;
-            this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.opacity = 0.5;
-            this.heatPumpCompressorOil.visible = false;
-            this.heatPumpCompressorOilDisplacementTween.stop();
-this.scrollCompressorZP25K5EStatorDamagedWires.visible = false;
-this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = false;
-// this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = false;
-if (this.nature.sounds) this.scrollCompressorShortToGroundSparkSound.stop();
+            this.shortToGroundEffectOff();
         }
+        heatPumpCompressor.material.needsUpdate = true;
+        this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.needsUpdate = true;
+    }
+
+    shortToGroundEffectOn() {
+        var heatPumpCompressor = this.vLabScene.getObjectByName("bryantB225B_heatPumpCompressor");
+        heatPumpCompressor.material.alphaMap = this.heatPumpCompressorAlphaMap;
+        heatPumpCompressor.material.side = THREE.DoubleSide;
+        heatPumpCompressor.material.alphaTest = 0.5;
+        heatPumpCompressor.material.transparent = true;
+        this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.opacity = 0.1;
+        this.heatPumpCompressorOil.visible = true;
+        this.heatPumpCompressorOilDisplacementTween.start();
+        this.scrollCompressorZP25K5EStatorDamagedWires.visible = true;
+        // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = true;
+        this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = true;
+        if (this.nature.sounds) this.scrollCompressorShortToGroundSparkSound.play();
+
+        heatPumpCompressor.material.needsUpdate = true;
+        this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.needsUpdate = true;
+    }
+
+    shortToGroundEffectOff() {
+        var heatPumpCompressor = this.vLabScene.getObjectByName("bryantB225B_heatPumpCompressor");
+        heatPumpCompressor.material.alphaMap = undefined;
+        heatPumpCompressor.material.transparent = false;
+        heatPumpCompressor.material.side = THREE.FrontSide;
+        heatPumpCompressor.material.alphaTest = 0.0;
+        this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.opacity = 0.5;
+        this.heatPumpCompressorOil.visible = false;
+        this.heatPumpCompressorOilDisplacementTween.stop();
+        this.scrollCompressorZP25K5EStatorDamagedWires.visible = false;
+        this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = false;
+        // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = false;
+        if (this.nature.sounds) this.scrollCompressorShortToGroundSparkSound.stop();
+
         heatPumpCompressor.material.needsUpdate = true;
         this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.needsUpdate = true;
     }
@@ -1212,6 +1247,7 @@ if (this.nature.sounds) this.scrollCompressorShortToGroundSparkSound.stop();
                 if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[2].completed === false) {
                     this.vLabLocator.context.tablet.initObj.content.tabs[1].items[2].completed = true;
                     this.vLabLocator.context.tablet.stepCompletedAnimation();
+                    this.playSound('resources/assistant/snd/shortToGround/step3.mp3');
                 }
             }
         }

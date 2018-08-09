@@ -42,6 +42,7 @@ class HVACVLabBase {
                     }
                 }
             },
+            beforeLocationChanged: this.beforeLocationChanged,
             locationChanged: this.locationChanged,
             locationInitialized: this.locationInitialized,
         });
@@ -151,7 +152,7 @@ class HVACVLabBase {
                             {
                                 shortDesc: 'Approach the thermostat',
                                 detailDesc: '<ul style="padding-left: 20px;">\
-                                                <li>Thermostat is located inside the apartment <img src="resources/assistant/img/step1_0.png" style="vertical-align: middle;"></li>\
+                                                <li>Thermostat is located inside the apartment <br><img src="resources/assistant/img/step1_0.png" style="vertical-align: middle;"></li>\
                                                 <li>Click <img src="resources/assistant/img/step1_1.png" style="vertical-align: middle;"> (yellow curved arrow)</li>\
                                                 <li>Click <img src="resources/assistant/img/step1_2.png" style="vertical-align: middle;"> (magnifying glass)</li>\
                                             </ul>',
@@ -160,26 +161,27 @@ class HVACVLabBase {
                             {
                                 shortDesc: 'Set up COOL MODE',
                                 detailDesc: '<ul style="padding-left: 20px;">\
-                                                <li>Set mode to Cool <img src="resources/assistant/img/step2_1.png" style="vertical-align: middle;"></li>\
-                                                <li>Tap / click the thermostat screen <img src="resources/assistant/img/step2_2.png" style="vertical-align: middle;"></li>\
-                                                <li>Select COOL TO <img src="resources/assistant/img/step2_3.png" style="vertical-align: middle;"></li>\
-                                                <li>Set COOL TO temperature to 3° below shown indoor temperature <img src="resources/assistant/img/step2_4.png" style="vertical-align: middle;"></li>\
+                                                <li>Set mode to Cool <br><img src="resources/assistant/img/step2_1.png" style="vertical-align: middle;"></li>\
+                                                <li>Tap / click the thermostat screen <br><img src="resources/assistant/img/step2_2.png" style="vertical-align: middle;"></li>\
+                                                <li>Select COOL TO <br><img src="resources/assistant/img/step2_3.png" style="vertical-align: middle;"></li>\
+                                                <li>Set COOL TO temperature to 3° below shown indoor temperature <br><img src="resources/assistant/img/step2_4.png" style="vertical-align: middle;"></li>\
                                             </ul>',
                                 completed: false
                             },
                             {
                                 shortDesc: 'Acknowledge yourself that: \
-                                            <p>1) Control voltage is applied to Heat Pump Control Board from the Air Handler Control Board.</p>\
-                                            <p>2) Control voltage is applied to Air Handler Control Board from the Thermostat.</p>',
+                                            <p style="font-size: 12pt;">1) Control voltage is applied to Heat Pump Control Board from the Air Handler Control Board.</p>\
+                                            <p style="font-size: 12pt;">2) Control voltage is applied to Air Handler Control Board from the Thermostat.</p> \
+                                            <p style="font-size: 12pt;">3) Hight voltage is applied to Air Handler.</p>',
                                 detailDesc: '<ul style="padding-left: 20px;">\
-                                                <li>Exit Zoom Mode <img src="resources/assistant/img/step3_1.png" style="vertical-align: middle;"> (click / tap the icon)</li>\
-                                                <li>Turn left <img src="resources/assistant/img/step3_2.png" style="vertical-align: middle;"> (press left mouse button / tap and drag left)</li>\
+                                                <li>Exit Zoom Mode <br><img src="resources/assistant/img/step3_1.png" style="vertical-align: middle;"> (click / tap the icon)</li>\
+                                                <li>Turn left <br><img src="resources/assistant/img/step3_2.png" style="vertical-align: middle;"> (press left mouse button / tap and drag left)</li>\
                                                 <li>Click <img src="resources/assistant/img/step3_3.png" style="vertical-align: middle;"> (location in front of the nish door where Air Handler is installed)</li>\
-                                                <li>Click left mouse button / tap the middle of the screen and drag to the bottom until door sill is visible <img src="resources/assistant/img/step3_4.png" style="vertical-align: middle;"></li>\
-                                                <li>Open the nish door by clicking <img src="resources/assistant/img/step3_5.png" style="vertical-align: middle;"></li>\
-                                                <li>Acknowledge applied control voltages <img src="resources/assistant/img/step3_6.png" style="vertical-align: middle;"></li>\
-                                                <li>Be careful, high voltage is applied to the Air Handler <img src="resources/assistant/img/step3_7.png" style="vertical-align: middle;"></li>\
-                                                <li>Close the nish door, be nice. <img src="resources/assistant/img/step3_8.png" style="vertical-align: middle;"></li>\
+                                                <li>Click left mouse button / tap the middle of the screen and drag to the bottom until door sill is visible <br><img src="resources/assistant/img/step3_4.png" style="vertical-align: middle;"></li>\
+                                                <li>Open the nish door by clicking <br><img src="resources/assistant/img/step3_5.png" style="vertical-align: middle;"></li>\
+                                                <li>Acknowledge applied control voltages <br><img src="resources/assistant/img/step3_6.png" style="vertical-align: middle;"></li>\
+                                                <li>Be careful, high voltage is applied to the Air Handler <br><img src="resources/assistant/img/step3_7.png" style="vertical-align: middle;"></li>\
+                                                <li>Close the nish door, be nice. <br><img src="resources/assistant/img/step3_8.png" style="vertical-align: middle;"></li>\
                                             </ul>',
                                 completed: false
                             }
@@ -192,7 +194,7 @@ class HVACVLabBase {
                             {
                                 shortDesc: 'Approach the thermostat',
                                 detailDesc: '<ul style="padding-left: 20px;">\
-                                                <li>Thermostat is located inside the apartment <img src="resources/assistant/img/step1_0.png" style="vertical-align: middle;"></li>\
+                                                <li>Thermostat is located inside the apartment <br><img src="resources/assistant/img/step1_0.png" style="vertical-align: middle;"></li>\
                                                 <li>Click <img src="resources/assistant/img/step1_1.png" style="vertical-align: middle;"> (yellow curved arrow)</li>\
                                                 <li>Click <img src="resources/assistant/img/step1_2.png" style="vertical-align: middle;"> (magnifying glass)</li>\
                                             </ul>',
@@ -201,21 +203,50 @@ class HVACVLabBase {
                             {
                                 shortDesc: 'Set up COOL MODE',
                                 detailDesc: '<ul style="padding-left: 20px;">\
-                                                <li>Set mode to Cool <img src="resources/assistant/img/step2_1.png" style="vertical-align: middle;"></li>\
-                                                <li>Tap / click the thermostat screen <img src="resources/assistant/img/step2_2.png" style="vertical-align: middle;"></li>\
-                                                <li>Select COOL TO <img src="resources/assistant/img/step2_3.png" style="vertical-align: middle;"></li>\
-                                                <li>Set COOL TO temperature to 3° below shown indoor temperature <img src="resources/assistant/img/step2_4.png" style="vertical-align: middle;"></li>\
+                                                <li>Set mode to Cool <br><img src="resources/assistant/img/step2_1.png" style="vertical-align: middle;"></li>\
+                                                <li>Tap / click the thermostat screen <br><img src="resources/assistant/img/step2_2.png" style="vertical-align: middle;"></li>\
+                                                <li>Select COOL TO <br><img src="resources/assistant/img/step2_3.png" style="vertical-align: middle;"></li>\
+                                                <li>Set COOL TO temperature to 3° below shown indoor temperature <br><img src="resources/assistant/img/step2_4.png" style="vertical-align: middle;"></li>\
                                             </ul>',
                                 completed: false
                             },
                             {
                                 shortDesc: 'Go to the outside (Heat Pump) location',
                                 detailDesc: '<ul style="padding-left: 20px;">\
-                                                <li>Click / tap <img src="resources/assistant/img/shortToGround/step_1_0.jpg" style="vertical-align: middle;"></li>\
-                                                <li>At the Heat Pump (outside) location click / tap <img src="resources/assistant/img/shortToGround/step_1_1.jpg" style="vertical-align: middle;"></li>\
+                                                <li>Click / tap <br><img src="resources/assistant/img/shortToGround/step_1_0.jpg" style="vertical-align: middle;"></li>\
+                                                <li>At the Heat Pump (outside) location click / tap <br><img src="resources/assistant/img/shortToGround/step_1_1.jpg" style="vertical-align: middle;"></li>\
                                             </ul>',
                                 completed: false
                             },
+                            {
+                                shortDesc: 'Compressor windings are shorted to ground and sparking',
+                                detailDesc: '<ul style="padding-left: 20px;">\
+                                                <li>Compressor windings sparking <br><img src="resources/assistant/img/shortToGround/step_1_2.jpg" style="vertical-align: middle;"></li>\
+                                            </ul>',
+                                started: false,
+                                completed: false
+                            },
+                            {
+                                shortDesc: 'Take off Heat Pump service panel',
+                                detailDesc: '<ul style="padding-left: 20px;">\
+                                                <li>Click / tap <br><img src="resources/assistant/img/shortToGround/step_1_3.jpg" style="vertical-align: middle;"></li>\
+                                            </ul>',
+                                completed: false
+                            },
+                            {
+                                shortDesc: 'Zoom to Heat Pump compressor contactor',
+                                detailDesc: '<ul style="padding-left: 20px;">\
+                                                <li>Click / tap <br><img src="resources/assistant/img/shortToGround/step_1_4.jpg" style="vertical-align: middle;"></li>\
+                                            </ul>',
+                                completed: false
+                            },
+                            // {
+                            //     shortDesc: 'Heat Pump contactor produces sparks during commutations when scroll compressor is shorted to ground',
+                            //     detailDesc: '<ul style="padding-left: 20px;">\
+                            //                     <li>Contactor spark <br><img src="resources/assistant/img/shortToGround/step_1_3.jpg" style="vertical-align: middle;"></li>\
+                            //                 </ul>',
+                            //     completed: false
+                            // },
                         ],
                         setModeCallBack: this.setShortToGroundMode
                     },
@@ -229,12 +260,22 @@ class HVACVLabBase {
         });
     }
 
+    beforeLocationChanged() {
+        this.settings.hideButton();
+        this.tablet.hideButton();
+    }
+
     locationChanged(transientLocationName) {
         if(transientLocationName == 'HVACBaseHeatPump') {
             this.ambientSound.volume = 0.5;
         }
         if(transientLocationName == 'HVACBaseAirHandler') {
             this.ambientSound.volume = 0.1;
+        }
+
+        if (!this.settings.isActive() && !this.tablet.isActive()) {
+            this.settings.showButton();
+            this.tablet.showButton();
         }
     }
 
@@ -342,6 +383,7 @@ class HVACVLabBase {
     }
 
     setShortToGroundMode() {
+        console.log('Short To Ground Mode');
         this.resetSettingsToDefault();
 
         if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
@@ -349,7 +391,7 @@ class HVACVLabBase {
         this.locationInitObjs['HVACBaseAirHandler']['altNature'] = {};
         this.locationInitObjs['HVACBaseHeatPump']['altNature'] = {};
 
-        this.vLabLocator.activateVLabLocation('HVACBaseAirHandler');
+        this.vLabLocator.activateVLabLocation('HVACBaseAirHandler', { auto: true });
         if (this.vLabLocator.locations['HVACBaseAirHandler'] !== undefined) {
             if (this.vLabLocator.locations['HVACBaseAirHandler'].zoomMode) {
                 this.vLabLocator.locations['HVACBaseAirHandler'].resetView();
@@ -363,14 +405,16 @@ class HVACVLabBase {
             this.vLabLocator.locations['HVACBaseAirHandler'].stoptAirBlower(true);
         }
         if (this.vLabLocator.locations['HVACBaseHeatPump'] !== undefined) {
-            this.vLabLocator.locations['HVACBaseHeatPump'].heatPumpFrameServicePanelTakeOutInteractor.activate();
+            // this.vLabLocator.locations['HVACBaseHeatPump'].heatPumpFrameServicePanelTakeOutInteractor.activate();
             this.vLabLocator.locations['HVACBaseHeatPump'].stopFanMotor();
             this.vLabLocator.locations['HVACBaseHeatPump'].stopScrollCompressor();
+            this.vLabLocator.locations['HVACBaseHeatPump'].shortToGroundEffectOff();
         }
-        this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpFrameServicePanelTakeOutInteractor'] = true;
+        // this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpFrameServicePanelTakeOutInteractor'] = true;
     }
 
     setNormalOperatonMode() {
+        console.log('Normal Operaton Mode');
         this.resetSettingsToDefault();
 
         if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
@@ -378,7 +422,7 @@ class HVACVLabBase {
         this.locationInitObjs['HVACBaseAirHandler']['altNature'] = {};
         this.locationInitObjs['HVACBaseHeatPump']['altNature'] = {};
 
-        this.vLabLocator.activateVLabLocation('HVACBaseAirHandler');
+        this.vLabLocator.activateVLabLocation('HVACBaseAirHandler', { auto: true });
         if (this.vLabLocator.locations['HVACBaseAirHandler'] !== undefined) {
             if (this.vLabLocator.locations['HVACBaseAirHandler'].zoomMode) {
                 this.vLabLocator.locations['HVACBaseAirHandler'].resetView();
@@ -392,9 +436,12 @@ class HVACVLabBase {
             this.vLabLocator.locations['HVACBaseAirHandler'].stoptAirBlower(true);
         }
         if (this.vLabLocator.locations['HVACBaseHeatPump'] !== undefined) {
-            this.vLabLocator.locations['HVACBaseHeatPump'].heatPumpFrameServicePanelTakeOutInteractor.deactivate();
+            // this.vLabLocator.locations['HVACBaseHeatPump'].heatPumpFrameServicePanelTakeOutInteractor.deactivate();
+            this.vLabLocator.locations['HVACBaseHeatPump'].resetView();
+            this.vLabLocator.locations['HVACBaseHeatPump'].resetHeatPumpFrameServicePanel();
             this.vLabLocator.locations['HVACBaseHeatPump'].stopFanMotor();
             this.vLabLocator.locations['HVACBaseHeatPump'].stopScrollCompressor();
+            this.vLabLocator.locations['HVACBaseHeatPump'].shortToGroundEffectOff();
         }
         this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpFrameServicePanelTakeOutInteractor'] = false;
     }
@@ -415,8 +462,31 @@ class HVACVLabBase {
     }
 
     shortToGroundOperationProcessor() {
+        if (this.tablet.initObj.content.tabs[1].items[3].started == true) {
+            this.tablet.initObj.content.tabs[1].items[3].started = false;
+            this.tablet.initObj.content.tabs[1].items[3].completed = true;
+            this.vLabLocator.locations['HVACBaseHeatPump'].bryantB225B_heatPumpCompressorZoomHelper.reset();
+            this.vLabLocator.locations['HVACBaseHeatPump'].shortToGroundEffectOff();
+            this.tablet.stepCompletedAnimation();
+            this.vLabLocator.locations['HVACBaseHeatPump'].heatPumpFrameServicePanelTakeOutInteractor.activate();
+        }
         if (this.tablet.initObj.content.tabs[1].items[2].completed === true) {
-            console.log('shortToGroundOperationProcessor -> TODO: show sparks...');
+            if (this.tablet.initObj.content.tabs[1].items[3].completed === false) {
+                let finalTarget = this.vLabLocator.locations['HVACBaseHeatPump'].vLabScene.getObjectByName('scrollCompressorZP25K5EStatorDamagedWires').position.clone();
+                finalTarget.x += 0.05;
+                finalTarget.z += 0.05;
+                this.vLabLocator.locations['HVACBaseHeatPump'].bryantB225B_heatPumpCompressorZoomHelper.activate({
+                    finalTarget: finalTarget,
+                    backFromViewButtonHidden: true
+                });
+                clearTimeout(this.normalModeOperationProcessorTimeOut);
+                var self = this;
+                setTimeout(() => {
+                    self.tablet.initObj.content.tabs[1].items[3].started = true;
+                    self.vLabLocator.locations['HVACBaseHeatPump'].shortToGroundEffectOn();
+                    self.normalModeOperationProcessorTimeOut = setTimeout(self.shortToGroundOperationProcessor.bind(self), 6000);
+                }, 750);
+            }
         }
         var roomTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
             tempId: 'roomTemperature',

@@ -36,9 +36,29 @@ html, body {
     z-index: 1;
 }
 
+#loaderIcon {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    margin-left: calc(50% - 24px);
+    margin-top: calc(25% + 18px);
+    animation: flickerAnimation 5s infinite;
+    background-image: url('../img/hc-icon-48px.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    z-index: 2;
+}
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+@keyframes flickerAnimation { /* flame pulses */
+  0%   { opacity:1; }
+  50%  { opacity:0.2; }
+  100% { opacity:1; }
 }
 
 .vLabContainer {
@@ -608,6 +628,7 @@ input:checked + .toggleSlider:before {
     -moz-user-select: none;     /* Firefox all */
     -ms-user-select: none;      /* IE 10+ */
     user-select: none;          /* Likely future */ 
+    /* pointer-events: none; */
 }
 
 .tabletViewCloseButton {
@@ -628,6 +649,7 @@ input:checked + .toggleSlider:before {
     -ms-user-select: none;      /* IE 10+ */
     user-select: none;          /* Likely future */ 
     -webkit-tap-highlight-color: transparent;
+    pointer-events: initial;
 }
 
 .tabletHeaderHR {
@@ -757,4 +779,20 @@ input:checked + .toggleSlider:before {
     -ms-user-select: none;      /* IE 10+ */
     user-select: none;          /* Likely future */ 
     -webkit-tap-highlight-color: transparent;
+}
+
+.tabletShortToast {
+    position: absolute;
+    width: 40vw;
+    left: calc(50% - 20vw);
+    top: 2px;
+    z-index: 40000;
+    border-radius: 8px;
+    -moz-box-shadow: 0 0 4px #ccc;
+    -webkit-box-shadow: 0 0 4px #ccc;
+    box-shadow: 0 0 4px #ccc;
+    background-color: #19495594;
+    display: none;
+    padding: 8px;
+    color: #ffffff;
 }
