@@ -710,7 +710,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
             context: this,
             name: 'refrigerantFlow',
             gasFlowHelperMesh: this.vLabScene.getObjectByName('refrigerantFlowHelper'),
-            confrontMaterials: [ this.vLabScene.getObjectByName('bryantB225B_heatPumpFanGrid').material ]
+            confrontMaterials: [ this.vLabScene.getObjectByName('bryantB225B_heatPumpFanGrid').material ],
+            expansionEffect: true
         });
         this.toggleRefrigerantFlow1();
 
@@ -802,7 +803,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 if (this.ambientAirFlow1.material.map.offset.y < -0.494) {
                     this.ambientAirFlow1.material.map.offset.y = -0.038;
                 }
-                this.ambientAirFlow1.material.needsUpdate = true;
+                this.ambientAirFlow1.material.map.needsUpdate = true;
             }
             this.ambientAirFlow1Throttling++;
         }
@@ -893,10 +894,14 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     toggleRefrigerantFlow1() {
+        // if (!this.gasFlow.gasFlowHelperMesh.visible) this.gasFlow.start();
         if (this.gasFlow === undefined) setTimeout(this.toggleRefrigerantFlow1.bind(this), 250);
         if (this.vLabLocator.context.activatedMode == 'cool') {
             if (this.nature.refrigerantFlow1 === true) {
                 this.gasFlow.start();
+                if (this.nature.refrigerantFlow1Animated === true) {
+                    this.gasFlow.startAnimation();
+                }
             } else {
                 this.gasFlow.stop();
             }

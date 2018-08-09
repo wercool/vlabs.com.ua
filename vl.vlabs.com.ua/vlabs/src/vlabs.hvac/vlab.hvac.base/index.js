@@ -124,6 +124,10 @@ class HVACVLabBase {
                                 innerHTML: '<label class="switch"><input type="checkbox" id="SettingsHeatPumpRefrigerantCheckbox"><span class="toggleSlider round"></span></label>'
                             },
                             {
+                                label: 'Heat Pump refrigerant animated',
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsHeatPumpRefrigerantAnimatedCheckbox"><span class="toggleSlider round"></span></label>'
+                            },
+                            {
                                 label: 'Heat Pump refrigerant flow direction animation',
                                 innerHTML: '<label class="switch"><input type="checkbox" id="SettingsHeatPumpRefrigerantFlowAnimationCheckbox"><span class="toggleSlider round"></span></label>'
                             },
@@ -251,6 +255,7 @@ class HVACVLabBase {
         var SettingsHeatPumpRefrigerantFlowAnimationCheckbox = document.getElementById('SettingsHeatPumpRefrigerantFlowAnimationCheckbox');
         var SettingsAirHandlerLookThroughPanelsCheckbox = document.getElementById('SettingsAirHandlerLookThroughPanelsCheckbox');
         var SettingsAirHandlerLookThroughDuctCheckbox = document.getElementById('SettingsAirHandlerLookThroughDuctCheckbox');
+        var SettingsHeatPumpRefrigerantAnimatedCheckbox = document.getElementById('SettingsHeatPumpRefrigerantAnimatedCheckbox');
 
         for (var locationName in this.locationInitObjs) {
             if (this.vLabLocator.locations[locationName] !== undefined) {
@@ -289,6 +294,13 @@ class HVACVLabBase {
                     this.vLabLocator.locations['HVACBaseHeatPump'].nature.refrigerantFlow1 = SettingsHeatPumpRefrigerantCheckbox.checked;
                     this.vLabLocator.locations['HVACBaseHeatPump'].toggleRefrigerantFlow1();
 
+                    this.vLabLocator.locations['HVACBaseHeatPump'].nature.refrigerantFlow1Animated = SettingsHeatPumpRefrigerantAnimatedCheckbox.checked;
+                    if (this.vLabLocator.locations['HVACBaseHeatPump'].nature.refrigerantFlow1Animated) {
+                        this.vLabLocator.locations['HVACBaseHeatPump'].gasFlow.startAnimation();
+                    } else {
+                        this.vLabLocator.locations['HVACBaseHeatPump'].gasFlow.stopAnimation();
+                    }
+
                     this.vLabLocator.locations['HVACBaseHeatPump'].nature.directionalRefrigerantFlow = SettingsHeatPumpRefrigerantFlowAnimationCheckbox.checked;
                     this.vLabLocator.locations['HVACBaseHeatPump'].toggleDirectionalRefrigerantFlow();
                 }
@@ -311,6 +323,7 @@ class HVACVLabBase {
                     this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpAirFlow'] = SettingsHeatPumpAirFlowCheckbox.checked;
                     this.locationInitObjs['HVACBaseHeatPump']['altNature']['refrigerantFlow1'] = SettingsHeatPumpRefrigerantCheckbox.checked;
                     this.locationInitObjs['HVACBaseHeatPump']['altNature']['directionalRefrigerantFlow'] = SettingsHeatPumpRefrigerantFlowAnimationCheckbox.checked;
+                    this.locationInitObjs['HVACBaseHeatPump']['altNature']['refrigerantFlow1Animated'] = SettingsHeatPumpRefrigerantAnimatedCheckbox.checked;
                 }
             }
         }
@@ -324,6 +337,7 @@ class HVACVLabBase {
         document.getElementById('SettingsHeatPumpRefrigerantFlowAnimationCheckbox').checked = false;
         document.getElementById('SettingsAirHandlerLookThroughPanelsCheckbox').checked = false;
         document.getElementById('SettingsAirHandlerLookThroughDuctCheckbox').checked = false;
+        document.getElementById('SettingsHeatPumpRefrigerantAnimatedCheckbox').checked = false;
         this.settingsClosed();
     }
 

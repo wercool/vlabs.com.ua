@@ -85,6 +85,7 @@
 
     "heatPumpAirFlow": false,
     "refrigerantFlow1": false,
+    "refrigerantFlow1Animated": false,
     "directionalRefrigerantFlow": false,
     "directionalRefrigerantFlowNum": 10,
 

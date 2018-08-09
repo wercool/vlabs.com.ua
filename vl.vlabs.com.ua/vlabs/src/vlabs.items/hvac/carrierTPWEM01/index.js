@@ -66,6 +66,8 @@ export default class CarrierTPWEM01 {
                 document.body.appendChild(this.screenCanvas);
                 this.screenCanvasContext = this.screenCanvas.getContext('2d');
 
+                this.screenMaterial.map = new THREE.CanvasTexture(this.screenCanvas);
+
                 /* Screen */
                 this.screens['menuScreen'] = this.menuScreen;
                 this.screens['welcomeScreen'] = this.welcomeScreen;
@@ -263,7 +265,7 @@ export default class CarrierTPWEM01 {
 
         if (this.curScreen) this.screens[this.curScreen].call(this, args);
 
-        this.screenMaterial.map = new THREE.Texture(this.screenCanvas);
+        // this.screenMaterial.map = new THREE.Texture(this.screenCanvas);
         this.screenMaterial.map.needsUpdate = true;
         this.screenMapIntersectionUV = undefined;
     }
