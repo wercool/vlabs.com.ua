@@ -521,6 +521,13 @@ export default class VlabHVACBaseAirHandler extends VLab {
     }
 
     onVLabResumeAndShow() {
+        console.log(this.name + ' RESUMED');
+        if (this.vLabLocator.prevCameraControlsType === 'pointerlock') {
+            super.switchCameraControls({
+                type: 'pointerlock',
+                vLabLocator: true
+            });
+        }
         this.shadowsSetup();
         this.toggleSounds();
         this.startAirBlower(true);

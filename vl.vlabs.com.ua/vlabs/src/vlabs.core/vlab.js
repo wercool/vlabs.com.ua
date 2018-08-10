@@ -44,6 +44,7 @@ export default class VLab {
         this.name = this.initObj.name;
         this.initialized = false;
         this.paused = true;
+        this.fullyResumed = false;
         this.nature = this.initObj.natureObj ? this.initObj.natureObj : {};
         this.webGLContainer = undefined;
         this.webGLRenderer = undefined;
@@ -201,12 +202,16 @@ export default class VLab {
     }
 
     resumeAndShow(paramsObj) {
+
+        this.fullyResumed = false;
+        this.paused = false;
+
         for (var resumeandshowSubscriberName in this.webGLContainerEventsSubcribers.resumeandshow) {
             var subscriber = this.webGLContainerEventsSubcribers.resumeandshow[resumeandshowSubscriberName];
             var event = {};
             subscriber.callback.call(subscriber.instance, event);
         }
-        this.paused = false;
+
         if (this.statsTHREE.domElement.style.visibility === 'visible') this.statsTHREE.domElement.style.display = 'block';
         this.container.style.display = 'block';
 
@@ -220,6 +225,9 @@ export default class VLab {
         new TWEEN.Tween(this.container.style)
         .to({ opacity: 1.0 }, 750)
         .easing(TWEEN.Easing.Linear.None)
+        .onComplete(() => {
+            this.fullyResumed = true;
+        })
         .start();
 
         this.resiezeWebGLContainer();
@@ -552,6 +560,7 @@ export default class VLab {
 
         this.initialized = true;
         this.paused = false;
+        this.fullyResumed = true;
 
         this.resetView();
 
@@ -686,6 +695,7 @@ export default class VLab {
 
     onMouseDown(event) {
 // console.log('onMouseDown event', event);
+        if (!this.fullyResumed) return;
         this.mouseCoords.set(event.x, event.y);
         this.mouseCoordsRaycaster.set((event.x / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.y / this.webGLContainer.clientHeight) * 2);
         this.toggleSelectedObject();
@@ -700,6 +710,7 @@ export default class VLab {
     onMouseUp(event) {
 // console.log('onMouseUp event', event);
 // console.log('this.defaultCameraControls.type', this.defaultCameraControls.type);
+        if (!this.fullyResumed) return;
         if (this.defaultCameraControls.type === 'orbit') {
             this.helpersTrigger();
         }
@@ -714,6 +725,7 @@ export default class VLab {
 // console.log('onDocumentMouseUp event', event);
 // console.log('this.defaultCameraControls.type', this.defaultCameraControls.type);
         if (this.paused) return;
+        if (!this.fullyResumed) return;
         if (this.defaultCameraControls.type === 'pointerlock') {
             this.mouseCoords.set(event.clientX, event.clientY);
 // console.log('this, onDocumentMouseUp this.mouseCoords', this, this.mouseCoords);
@@ -741,6 +753,7 @@ export default class VLab {
     }
 
     onTouchStart(event) {
+        if (!this.fullyResumed) return;
         this.touchDevice = true;
         this.touching = true;
         event.preventDefault();
@@ -754,6 +767,7 @@ export default class VLab {
     }
 
     onTouchEnd(event) {
+        if (!this.fullyResumed) return;
         this.touching = false;
         event.preventDefault();
         this.executeActions(true);
@@ -858,6 +872,9 @@ export default class VLab {
 
                 if (cameraControlConfig.type == 'pointerlock' && this.defaultCameraControls.type != 'pointerlock') {
                     var center = new THREE.Vector2(this.webGLContainer.clientWidth / 2, this.webGLContainer.clientHeight / 2);
+                    if (cameraControlConfig.vLabLocator === true) {
+                        this.mouseCoords.set(this.webGLContainer.clientWidth / 2, this.webGLContainer.clientHeight / 2);
+                    }
                     if (this.mouseCoords.distanceTo(center) > 5) {
                         iziToast.warning({
                             title: 'Caution',
@@ -1424,7 +1441,8 @@ export default class VLab {
 
     toggleFullscreen() {
         this.paused = true;
-        setTimeout(() => { this.paused = false; }, 750);
+        var self = this;
+        setTimeout(() => { self.paused = false; }, 750);
         var element = document.body;
         var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
         if (!fullscreenElement) {

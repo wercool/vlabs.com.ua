@@ -218,7 +218,15 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     onSceneCompleteEvent(event) {
         super.activate();
-        super.switchCameraControls(this.nature.cameraControls);
+
+        if (this.vLabLocator.prevCameraControlsType !== undefined) {
+            super.switchCameraControls({
+                type: this.vLabLocator.prevCameraControlsType,
+                vLabLocator: true
+            });
+        } else {
+            super.switchCameraControls(this.nature.cameraControls);
+        }
 
         this.fanMotorBladeShaft = this.vLabScene.getObjectByName('bryantB225B-heatPumpFanBlade');
     }
@@ -869,6 +877,14 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     onVLabResumeAndShow() {
+        console.log(this.name + ' RESUMED');
+        if (this.vLabLocator.prevCameraControlsType === 'pointerlock') {
+            super.switchCameraControls({
+                type: 'pointerlock',
+                vLabLocator: true
+            });
+        }
+
         if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
             this.inventory.showToolboxBtn();
         } else {

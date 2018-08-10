@@ -132,6 +132,8 @@ export default class VLabLocator {
                 this.currentLocationVLab.statsTHREE.domElement.style.visibility = 'visible';
             }
         }
+        this.prevCameraControlsType = this.currentLocationVLab.defaultCameraControls.type;
+
         if (this.initObj.beforeLocationChanged) {
             this.initObj.beforeLocationChanged.call(this.context, transientLocationName);
         }
