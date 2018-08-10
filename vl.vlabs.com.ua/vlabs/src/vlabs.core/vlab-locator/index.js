@@ -79,6 +79,11 @@ export default class VLabLocator {
                     callback: this.onVLabSceneTouchEnd,
                     instance: this
                 };
+                vLab.webGLContainerEventsSubcribers.documentmouseup[handlerSprite.name + "vLabSceneDocumentMouseUp"] = 
+                {
+                    callback: this.onVLabSceneDocumentMouseUp,
+                    instance: this
+                };
 
                 handlerSprite.visible = transientLocation.visible;
             }
@@ -88,17 +93,23 @@ export default class VLabLocator {
     }
 
     onVLabSceneMouseUp(event) {
-        // console.log("VLabLocator onVLabSceneMouseUp", event.type);
+// console.log("VLabLocator onVLabSceneMouseUp", event.type);
         this.interactionEvent();
     }
 
     onVLabSceneTouchEnd(event) {
-        // console.log("VLabLocator onVLabSceneTouchEnd", event.type);
+// console.log("VLabLocator onVLabSceneTouchEnd", event.type);
+        this.interactionEvent();
+    }
+
+    onVLabSceneDocumentMouseUp(event) {
+// console.log("VLabLocator onVLabSceneDocumentMouseUp event", event);
         this.interactionEvent();
     }
 
     interactionEvent() {
-        if (this.currentLocationVLab.defaultCameraControls.type !== 'orbit' || this.currentLocationVLab.paused) {
+        // if (this.currentLocationVLab.defaultCameraControls.type !== 'orbit' || this.currentLocationVLab.paused) {
+        if (this.currentLocationVLab.paused) {
             return;
         }
         this.currentLocationVLab.helpersRaycaster.setFromCamera(this.currentLocationVLab.mouseCoordsRaycaster, this.currentLocationVLab.defaultCamera);

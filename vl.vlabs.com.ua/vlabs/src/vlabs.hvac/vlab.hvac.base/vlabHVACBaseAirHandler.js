@@ -225,23 +225,6 @@ export default class VlabHVACBaseAirHandler extends VLab {
             self.airBlowerSoundReady = true;
         });
 
-        //Zoom helpers
-        this.carrierTPWEM01WallMountZoomHelper = new ZoomHelper({
-            context: this,
-            targetObjectName: 'carrierTPWEM01WallMount',
-            targetObjectIsAnOrbitTarget: true,
-            orbitTargetPositionDeltas: new THREE.Vector3(0.0, 0.0, 0.1),
-            minDistance: 0.02,
-            maxDistance: 0.15,
-            minAzimuthAngle: -1.0,
-            maxAzimuthAngle: 1.0,
-            positionDeltas: new THREE.Vector3(0.0, 0.1, 0.1), 
-            scale: new THREE.Vector3(0.15, 0.15, 0.15),
-            color: 0xfff495,
-            opacity: 0.5,
-            zoomCompleteCallback: this.carrierTPWEM01WallMountZoomHelperCallBack
-        });
-
         //VLab Items
         this.carrierTPWEM01 = new CarrierTPWEM01({
             context: this,
@@ -294,6 +277,33 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
 
         //Zoom helpers
+
+        this.carrierTPWEM01WallMountZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: 'carrierTPWEM01WallMount',
+            targetObjectIsAnOrbitTarget: true,
+            orbitTargetPositionDeltas: new THREE.Vector3(0.0, 0.0, 0.1),
+            minDistance: 0.02,
+            maxDistance: 0.15,
+            minAzimuthAngle: -1.0,
+            maxAzimuthAngle: 1.0,
+            positionDeltas: new THREE.Vector3(0.0, 0.1, 0.1), 
+            scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            color: 0xfff495,
+            opacity: 0.5,
+            zoomCompleteCallback: this.carrierTPWEM01WallMountZoomHelperCallBack
+        });
+
+        this.airHandlerStandZoomHelper = new ZoomHelper({
+            context: this,
+            targetObjectName: "airHandlerStand",
+            minDistance: 0.35,
+            positionDeltas: new THREE.Vector3(0.0, 0.0, 0.15), 
+            scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            color: 0xfff495,
+            maxPolarAngle: Math.PI * 2
+        });
+
         this.evaporatorACoilZoomHelper = new ZoomHelper({
             context: this,
             targetObjectName: "evaporatorACoil",

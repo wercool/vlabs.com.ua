@@ -271,6 +271,14 @@ export default class VlabHVACBaseHeatPump extends VLab {
             context: this
         });
 
+// console.log('this.vLabLocator.context.tablet.currentActiveTabId', this.vLabLocator.context.tablet.currentActiveTabId);
+
+        if (this.vLabLocator.context.tablet.currentActiveTabId != 2) {
+            this.inventory.hideToolboxBtn();
+        } else {
+            this.inventory.showToolboxBtn();
+        }
+
         //Detailed views
         this.bryantB225B_reversingValveDetailedView = new DetailedView({
             context: this,
@@ -775,10 +783,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
 
         // Misc helpers
-        this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
-        this.heatPumpFrameCap_manipulationControl.setSize(0.5);
-        this.vLabScene.add(this.heatPumpFrameCap_manipulationControl);
-        this.heatPumpFrameCap_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameCap"));
+        // this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
+        // this.heatPumpFrameCap_manipulationControl.setSize(0.5);
+        // this.vLabScene.add(this.heatPumpFrameCap_manipulationControl);
+        // this.heatPumpFrameCap_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameCap"));
 
         // this.heatPumpFrameServicePanel_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
         // this.heatPumpFrameServicePanel_manipulationControl.setSize(0.5);
@@ -861,6 +869,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     onVLabResumeAndShow() {
+        if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
+            this.inventory.showToolboxBtn();
+        } else {
+            this.inventory.hideToolboxBtn();
+        }
         if (this.vLabLocator.context.activatedMode == 'cool') {
             this.startFanMotor(true);
             this.startScrollCompressor();
@@ -1058,6 +1071,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.heatPumpFrameCapTakeOutInteractor.deactivate();
         this.bryantB225B_heatPumpFrameCap = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameCap');
 
+        this.nature.bryantB225B_heatPumpFrameCap = {
+            position: this.bryantB225B_heatPumpFrameCap.position.clone(),
+            rotation: this.bryantB225B_heatPumpFrameCap.rotation.clone(),
+        };
+
         this.vLabScene.getObjectByName('wire6').visible = false;
         this.vLabScene.getObjectByName('wire10').visible = false;
         this.vLabScene.getObjectByName('controlBoardOF2Wire').visible = false;
@@ -1092,6 +1110,22 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 });
             });
         });
+    }
+
+    resetHeatPumpFrameCap() {
+        if (this.nature.bryantB225B_heatPumpFrameCap.position == undefined) return;
+        this.heatPumpFrameCapTakeOutInteractor.deactivate();
+        this.bryantB225B_heatPumpFrameCap = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameCap');
+        this.bryantB225B_heatPumpFrameCap.position.copy(this.nature.bryantB225B_heatPumpFrameCap.position);
+        this.bryantB225B_heatPumpFrameCap.rotation.copy(this.nature.bryantB225B_heatPumpFrameCap.rotation);
+
+        this.vLabScene.getObjectByName('wire6').visible = true;
+        this.vLabScene.getObjectByName('wire10').visible = true;
+        this.vLabScene.getObjectByName('controlBoardOF2Wire').visible = true;
+
+        this.vLabScene.getObjectByName('wire6Unplugged').visible = false;
+        this.vLabScene.getObjectByName('controlBoardOF2WireUnplugged').visible = false;
+        this.vLabScene.getObjectByName('wire10Unplugged').visible = false;
     }
 
     heatPumpFrameServicePanelTakeOutInteractorHandler() {
@@ -1235,7 +1269,13 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.scrollCompressorZP25K5EStatorDamagedWires.visible = false;
         this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = false;
         // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = false;
-        if (this.nature.sounds) this.scrollCompressorShortToGroundSparkSound.stop();
+        if (this.nature.sounds) {
+            if (this.scrollCompressorShortToGroundSparkSound !== undefined) {
+                if (this.scrollCompressorShortToGroundSparkSound.isPlaying) {
+                    this.scrollCompressorShortToGroundSparkSound.stop();
+                }
+            }
+        }
 
         heatPumpCompressor.material.needsUpdate = true;
         this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.needsUpdate = true;

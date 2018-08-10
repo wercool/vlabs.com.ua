@@ -124,6 +124,14 @@ export default class Inventory {
         console.log(this.context.name + " Inventory initialization");
     }
 
+    showToolboxBtn() {
+        this.context.toolboxBtn.style.display = 'block';
+    }
+
+    hideToolboxBtn() {
+        this.context.toolboxBtn.style.display = 'none';
+    }
+
     activate() {
 
         if (this.context.selectedObject) {

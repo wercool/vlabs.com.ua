@@ -9,6 +9,7 @@
     "lang": "en",
     "defaultSceneCameraName": "defaultCamera",
     "cameraControls": {
+        "allowedSpaceMapObjectName": "allowedSpacePlane",
         "type": "orbit",
         "target": {
             "x": -1.0,

@@ -181,6 +181,8 @@ export default class ZoomHelper {
                 if (this.initObj.maxPolarAngle)
                     this.context.defaultCameraControls.maxPolarAngle =  this.initObj.maxPolarAngle;
 
+                // console.log(this.context.defaultCameraControls);
+
                 this.context.zoomHelperMode = true;
                 this.context.zoomViewArea.style.opacity = 1.0;
 

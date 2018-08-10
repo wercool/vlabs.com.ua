@@ -68,6 +68,7 @@ export default class VLab {
             mousemove: {},
             mousedown: {},
             mouseup: {},
+            documentmouseup: {},
             touchstart: {},
             touchend: {},
             resetview: {},
@@ -510,7 +511,7 @@ export default class VLab {
 
         this.webGLContainer.addEventListener("mousemove", this.onMouseMove.bind(this), false);
         this.webGLContainer.addEventListener("mousedown", this.onMouseDown.bind(this), false);
-        this.webGLContainer.addEventListener("mouseup", this.onMouseUpWindow.bind(this), false);
+        this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
         this.webGLContainer.addEventListener("touchstart", this.onTouchStart.bind(this), false);
         this.webGLContainer.addEventListener("touchend", this.onTouchEnd.bind(this), false);
 
@@ -523,11 +524,12 @@ export default class VLab {
         document.addEventListener("webkitfullscreenchange", this.onFullscreenChanged.bind(this), false);
         document.addEventListener("msfullscreenchange", this.onFullscreenChanged.bind(this), false);
 
+        document.addEventListener("mouseup", this.onDocumentMouseUp.bind(this), false);
+
         this.fullscreenButton.addEventListener("mouseup", this.toggleFullscreen.bind(this), false);
         this.resetViewButton.addEventListener("mouseup", this.resetView.bind(this), false);
         this.fullscreenButton.addEventListener("touchend", this.toggleFullscreen.bind(this), false);
         this.resetViewButton.addEventListener("touchend", this.resetView.bind(this), false);
-        // this.webGLContainer.addEventListener("mouseup", this.onMouseUp.bind(this), false);
 
         this.setInteractiveObjects();
         this.setReponsiveObjects();
@@ -683,6 +685,7 @@ export default class VLab {
     }
 
     onMouseDown(event) {
+// console.log('onMouseDown event', event);
         this.mouseCoords.set(event.x, event.y);
         this.mouseCoordsRaycaster.set((event.x / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.y / this.webGLContainer.clientHeight) * 2);
         this.toggleSelectedObject();
@@ -694,26 +697,9 @@ export default class VLab {
         }
     }
 
-    onMouseUpWindow(event) {
-        if (this.defaultCameraControls.type === 'pointerlock') {
-            this.mouseCoords.set(event.clientX, event.clientY);
-            this.mouseCoordsRaycaster.set((event.clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.clientY / this.webGLContainer.clientHeight) * 2);
-            this.toggleSelectedObject();
-            if (this.selectedObject) {
-                if (this.selectedObject == this.hoveredObject) {
-                    if (this.nature.objectMenus[this.selectedObject.name]) {
-                        if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
-                            this.switchCameraControls({ type: 'orbit', 
-                                                        targetPos: this.defaultCameraControls.getObject().position,
-                                                        targetObjectName: this.selectedObject.name });
-                            this.webGLContainer.style.cursor = 'none';
-                            this.showObjectSpecificCircularMenu();
-                        }
-                    }
-                }
-            }
-            return;
-        }
+    onMouseUp(event) {
+// console.log('onMouseUp event', event);
+// console.log('this.defaultCameraControls.type', this.defaultCameraControls.type);
         if (this.defaultCameraControls.type === 'orbit') {
             this.helpersTrigger();
         }
@@ -721,6 +707,36 @@ export default class VLab {
         for (var mouseUpEventSubscriberName in this.webGLContainerEventsSubcribers.mouseup) {
             var subscriber = this.webGLContainerEventsSubcribers.mouseup[mouseUpEventSubscriberName];
             subscriber.callback.call(subscriber.instance, event);
+        }
+    }
+
+    onDocumentMouseUp(event) {
+// console.log('onDocumentMouseUp event', event);
+// console.log('this.defaultCameraControls.type', this.defaultCameraControls.type);
+        if (this.paused) return;
+        if (this.defaultCameraControls.type === 'pointerlock') {
+            this.mouseCoords.set(event.clientX, event.clientY);
+// console.log('this, onDocumentMouseUp this.mouseCoords', this, this.mouseCoords);
+            this.mouseCoordsRaycaster.set((event.clientX / this.webGLContainer.clientWidth) * 2 - 1, 1 - (event.clientY / this.webGLContainer.clientHeight) * 2);
+            // this.toggleSelectedObject();
+            // if (this.selectedObject) {
+            //     if (this.selectedObject == this.hoveredObject) {
+            //         if (this.nature.objectMenus[this.selectedObject.name]) {
+            //             if (this.nature.objectMenus[this.selectedObject.name][this.nature.lang]) {
+            //                 this.switchCameraControls({ type: 'orbit', 
+            //                                             targetPos: this.defaultCameraControls.getObject().position,
+            //                                             targetObjectName: this.selectedObject.name });
+            //                 this.webGLContainer.style.cursor = 'none';
+            //                 this.showObjectSpecificCircularMenu();
+            //             }
+            //         }
+            //     }
+            // }
+            for (var documentMouseUpEventSubscriberName in this.webGLContainerEventsSubcribers.documentmouseup) {
+                var subscriber = this.webGLContainerEventsSubcribers.documentmouseup[documentMouseUpEventSubscriberName];
+                subscriber.callback.call(subscriber.instance, event);
+            }
+            return;
         }
     }
 
@@ -1047,10 +1063,18 @@ export default class VLab {
                     this.allowedSpaceRaycaster.set(this.defaultCameraControls.getObject().position, new THREE.Vector3(0, -1, 0));
                 }
                 var allowedSpaceIntersections = this.allowedSpaceRaycaster.intersectObject(this.allowedSpaceMapObject, true);
+// console.log('this.allowedSpaceMapObject', this.allowedSpaceMapObject);
+// console.log('allowedSpaceIntersections', allowedSpaceIntersections);
                 var allowed = false;
                 if (allowedSpaceIntersections[0]) {
                     var uv = allowedSpaceIntersections[0].uv;
                     var pixelData = this.allowedSpaceCanvas.getContext('2d').getImageData(511 * uv.x, 512 - 511 * uv.y, 1, 1).data;
+
+
+// !! Important -> 512 x 512 allowed space map
+
+
+// console.log('pixelData', pixelData);
                     if (pixelData[1] == 255) allowed = true;
                     if (this.defaultCameraControls.type === 'orbit') {
                         if (this.defaultCamera.position.y > this.yPanUp || this.defaultCamera.position.y < this.yPanDown) {
@@ -1058,8 +1082,11 @@ export default class VLab {
                         }
                     }
                 }
+// console.log('this.defaultCameraControls.type', this.defaultCameraControls.type);
+// console.log('allowed', allowed);
                 if (allowed) {
                     if (this.defaultCameraControls.type === 'orbit') {
+// console.log('this.defaultCamera.position', this.defaultCamera.position);
                         this.prevAllowedCameraControlPosition = this.defaultCamera.position.clone();
                     }
                     if (this.defaultCameraControls.type === 'pointerlock') {
@@ -1068,10 +1095,16 @@ export default class VLab {
                 } else {
                     this.defaultCameraControls.enabled = false;
                     if (this.defaultCameraControls.type === 'orbit') {
-                        this.defaultCamera.position.copy(this.prevAllowedCameraControlPosition);
+                        if (this.prevAllowedCameraControlPosition) {
+                            this.defaultCamera.position.copy(this.prevAllowedCameraControlPosition);
+                        }
                     }
                     if (this.defaultCameraControls.type === 'pointerlock') {
-                        this.defaultCameraControls.getObject().position.copy(this.prevAllowedCameraControlPosition);
+                        if (this.prevAllowedCameraControlPosition) {
+                            this.defaultCameraControls.getObject().position.copy(this.prevAllowedCameraControlPosition);
+                        } else {
+                            console.log('this.prevAllowedCameraControlPosition', this.prevAllowedCameraControlPosition);
+                        }
                     }
                     this.defaultCameraControls.enabled = true;
                 }

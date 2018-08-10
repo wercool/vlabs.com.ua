@@ -479,9 +479,9 @@ class VlabBase extends VLab {
         this.vLabScene.add(this.decalTargetSrcMesh);
 
 
-        this.webGLContainerEventsSubcribers.mouseup["decalPlacementHelpberVLabSceneMouseUp"] = 
+        this.webGLContainerEventsSubcribers.mouseup["decalPlacementHelperVLabSceneMouseUp"] = 
         {
-            callback: this.decalPlacementHelpberVLabSceneMouseUp,
+            callback: this.decalPlacementHelperVLabSceneMouseUp,
             instance: this
         };
     }
@@ -515,7 +515,7 @@ class VlabBase extends VLab {
         }
     }
 
-    decalPlacementHelpberVLabSceneMouseUp() {
+    decalPlacementHelperVLabSceneMouseUp() {
         if (this.decalPlacementHelperIntersection.intersects === true) {
             var position = new THREE.Vector3();
             var orientation = new THREE.Euler();

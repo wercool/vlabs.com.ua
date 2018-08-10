@@ -132,7 +132,8 @@ export default class Tablet {
         if (this.initObj.content.tabs[this.currentActiveTabId].items.length > 0) {
             for (var i = 0; i < this.initObj.content.tabs[this.currentActiveTabId].items.length; i++) {
                 if (this.tabletShortToast.style.display !== 'block' && !this.initObj.content.tabs[this.currentActiveTabId].items[i].completed) {
-                    this.tabletShortToast.innerHTML = this.initObj.content.tabs[this.currentActiveTabId].items[i].shortDesc;
+                    this.tabletShortToast.innerHTML = '<p style="color: #c4c4c4; font-size: 18px; margin: 5px; height: 24px;">' + this.initObj.content.tabs[this.currentActiveTabId].title + '</p>';
+                    this.tabletShortToast.innerHTML += this.initObj.content.tabs[this.currentActiveTabId].items[i].shortDesc;
                     this.tabletShortToast.style.display = 'block';
                     var self = this;
                     this.tabletShortToastTimeout = setTimeout(() => {
