@@ -240,13 +240,14 @@ class HVACVLabBase {
                                             </ul>',
                                 completed: false
                             },
-                            // {
-                            //     shortDesc: 'Heat Pump contactor produces sparks during commutations when scroll compressor is shorted to ground',
-                            //     detailDesc: '<ul style="padding-left: 20px;">\
-                            //                     <li>Contactor spark <br><img src="resources/assistant/img/shortToGround/step_1_3.jpg" style="vertical-align: middle;"></li>\
-                            //                 </ul>',
-                            //     completed: false
-                            // },
+                            {
+                                shortDesc: 'Heat Pump contactor produces sparks during commutations when scroll compressor is shorted to ground',
+                                detailDesc: '<ul style="padding-left: 20px;">\
+                                                <li>Wait until indoor temperature reached Cool Setpoint</li>\
+                                                <li>Contactor spark <br><img src="resources/assistant/img/shortToGround/step_1_5.jpg" style="vertical-align: middle;"></li>\
+                                            </ul>',
+                                completed: false
+                            },
                         ],
                         setModeCallBack: this.setShortToGroundMode
                     },
@@ -385,7 +386,11 @@ class HVACVLabBase {
 
     setShortToGroundMode() {
         console.log('Short To Ground Mode');
+        let audio = new Audio('./resources/assistant/snd/shortToGround/short-to-ground-demo-activated.mp3');
+        audio.play();
         this.resetSettingsToDefault();
+
+        this.tablet.resetTabContentItems();
 
         if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
 
@@ -417,9 +422,17 @@ class HVACVLabBase {
         // this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpFrameServicePanelTakeOutInteractor'] = true;
     }
 
-    setNormalOperatonMode() {
+    setNormalOperatonMode(forced) {
         console.log('Normal Operaton Mode');
+
+        if (forced == undefined) {
+            let audio = new Audio('./resources/assistant/snd/normal-operation-demo-activated.mp3');
+            audio.play();
+        }
+
         this.resetSettingsToDefault();
+
+        this.tablet.resetTabContentItems();
 
         if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
 
@@ -452,7 +465,9 @@ class HVACVLabBase {
     }
 
     setAdvancedMode() {
-        this.setNormalOperatonMode();
+        let audio = new Audio('./resources/assistant/snd/advanced-mode-activated.mp3');
+        audio.play();
+        this.setNormalOperatonMode(true);
     }
 
     normalModeOperationProcessor() {
@@ -460,10 +475,16 @@ class HVACVLabBase {
             tempId: 'roomTemperature',
             format: 'F'
         });
-        if (roomTemperature <= 70) {
+        var coolToTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
+            tempId: 'coolToTemperature',
+            format: 'F'
+        });
+        if (roomTemperature < coolToTemperature) {
             if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
-            console.log('Normal operation demo preset "cool to" temperature is reached. Demo is completed.');
-            this.normalModeOperationProcessorTimeOut = setTimeout(this.setNormalOperatonMode.bind(this), 90000);
+            console.log('Preset "cool to" temperature is reached. Normal operation demo is completed.');
+            this.normalModeOperationProcessorTimeOut = setTimeout(this.setNormalOperatonMode.bind(this), 30000);
+            let audio = new Audio('./resources/assistant/snd/normal-operation-demo-completed.mp3');
+            audio.play();
         } else {
             this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
             this.normalModeOperationProcessorTimeOut = setTimeout(this.normalModeOperationProcessor.bind(this), 5000);
@@ -493,18 +514,25 @@ class HVACVLabBase {
                 setTimeout(() => {
                     self.tablet.initObj.content.tabs[1].items[3].started = true;
                     self.vLabLocator.locations['HVACBaseHeatPump'].shortToGroundEffectOn();
-                    self.normalModeOperationProcessorTimeOut = setTimeout(self.shortToGroundOperationProcessor.bind(self), 6000);
+                    self.normalModeOperationProcessorTimeOut = setTimeout(self.shortToGroundOperationProcessor.bind(self), 7000);
                 }, 750);
+                return;
             }
         }
         var roomTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
             tempId: 'roomTemperature',
             format: 'F'
         });
-        if (roomTemperature <= 70) {
+        var coolToTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
+            tempId: 'coolToTemperature',
+            format: 'F'
+        });
+        if (roomTemperature < coolToTemperature) {
             if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
-            console.log('Short to ground demo preset "cool to" temperature is reached. Demo is completed.');
-            this.normalModeOperationProcessorTimeOut = setTimeout(this.setShortToGroundMode.bind(this), 90000);
+            console.log('Preset "cool to" temperature is reached. Short To Ground demo is completed.');
+            this.normalModeOperationProcessorTimeOut = setTimeout(this.setShortToGroundMode.bind(this), 30000);
+            let audio = new Audio('./resources/assistant/snd/shortToGround/short-to-ground-demo-completed.mp3');
+            audio.play();
         } else {
             this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
             this.normalModeOperationProcessorTimeOut = setTimeout(this.shortToGroundOperationProcessor.bind(this), 5000);

@@ -123,7 +123,7 @@ export default class Tablet {
         return (this.container.style.display == 'block');
     }
 
-    showTabletShortToast() {
+    showTabletShortToast(extraInnerHtml) {
         if (this.tabletShortToastTimeout) {
             this.tabletShortToast.style.display = 'none';
             this.tabletShortToast.innerHTML = '';
@@ -134,6 +134,9 @@ export default class Tablet {
                 if (this.tabletShortToast.style.display !== 'block' && !this.initObj.content.tabs[this.currentActiveTabId].items[i].completed) {
                     this.tabletShortToast.innerHTML = '<p style="color: #c4c4c4; font-size: 18px; margin: 5px; height: 24px;">' + this.initObj.content.tabs[this.currentActiveTabId].title + '</p>';
                     this.tabletShortToast.innerHTML += this.initObj.content.tabs[this.currentActiveTabId].items[i].shortDesc;
+                    if (extraInnerHtml !== undefined) {
+                        this.tabletShortToast.innerHTML += extraInnerHtml;
+                    }
                     this.tabletShortToast.style.display = 'block';
                     var self = this;
                     this.tabletShortToastTimeout = setTimeout(() => {

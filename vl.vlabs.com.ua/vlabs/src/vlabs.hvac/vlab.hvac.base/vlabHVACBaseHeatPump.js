@@ -244,6 +244,14 @@ export default class VlabHVACBaseHeatPump extends VLab {
             self.fanMotorSoundReady  = true;
         });
 
+        this.fanMotorOffSoundReady = false;
+        this.fanMotorOffSound = new THREE.Audio(this.defaultAudioListener);
+        new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/fan-motor-sound-off.mp3', function(buffer) {
+            self.fanMotorOffSound.setBuffer(buffer);
+            self.fanMotorOffSound.setVolume(0.2);
+            self.fanMotorOffSoundReady  = true;
+        });
+
         this.scrollCompressorSoundReady = false;
         this.scrollCompressorSound = new THREE.Audio(this.defaultAudioListener);
         new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/scroll-compressor-sound.mp3', function(buffer) {
@@ -251,6 +259,14 @@ export default class VlabHVACBaseHeatPump extends VLab {
             self.scrollCompressorSound.setVolume(0.2);
             self.scrollCompressorSound.setLoop(true);
             self.scrollCompressorSoundReady  = true;
+        });
+
+        this.scrollCompressorOffSoundReady = false;
+        this.scrollCompressorOffSound = new THREE.Audio(this.defaultAudioListener);
+        new THREE.AudioLoader().load('./resources/scene-heat-pump/sounds/scroll-compressor-sound-off.mp3', function(buffer) {
+            self.scrollCompressorOffSound.setBuffer(buffer);
+            self.scrollCompressorOffSound.setVolume(0.2);
+            self.scrollCompressorOffSoundReady  = true;
         });
 
         this.contactorOnSound = new THREE.Audio(this.defaultAudioListener);
@@ -397,7 +413,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             positionDeltas: new THREE.Vector3(0.0, 0.0, 0.1), 
             scale: new THREE.Vector3(0.075, 0.075, 0.075),
             color: 0xfff495,
-            zoomCompleteCallback: this.contactorOff
+            zoomCompleteCallback: this.zoomToContactorHandler
         });
 
         this.controlBoard_ZoomHelper = new ZoomHelper({
@@ -772,7 +788,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             relPos: new THREE.Vector3(0.01, 0.0, 0.0),
             scale: 0.02,
             opacity: 1.0,
-            duration: 0.1,
+            duration: 0.15,
             lightning: {
                 intensity: 1.0,
                 distance: 0.25,
@@ -891,8 +907,21 @@ export default class VlabHVACBaseHeatPump extends VLab {
             this.inventory.hideToolboxBtn();
         }
         if (this.vLabLocator.context.activatedMode == 'cool') {
-            this.startFanMotor(true);
-            this.startScrollCompressor();
+            var roomTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
+                tempId: 'roomTemperature',
+                format: 'F'
+            });
+            var coolToTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
+                tempId: 'coolToTemperature',
+                format: 'F'
+            });
+            if (roomTemperature > coolToTemperature) {
+                this.startFanMotor(true);
+                this.startScrollCompressor();
+            } else {
+                this.stopFanMotor();
+                this.stopScrollCompressor();
+            }
         }
         this.shadowsSetup();
         this.toggleSounds();
@@ -967,7 +996,12 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.fanMotorSound.play();
     }
 
-    stopFanMotor(stopMotor) {
+    stopFanMotor(offEffect) {
+        if (offEffect === true) {
+            if (this.fanMotorOffSound !== undefined) {
+                this.fanMotorOffSound.play();
+            }
+        }
         this.fanMotorStarted = false;
         if (this.fanMotorSound !== undefined) {
             if (this.fanMotorSound.isPlaying) this.fanMotorSound.stop();
@@ -985,7 +1019,12 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.scrollCompressorSound.play();
     }
 
-    stopScrollCompressor() {
+    stopScrollCompressor(offEffect) {
+        if (offEffect === true) {
+            if (this.scrollCompressorOffSound !== undefined) {
+                this.scrollCompressorOffSound.play();
+            }
+        }
         this.scrollCompressorStarted = true;
         if (this.scrollCompressorSound !== undefined) {
             if (this.scrollCompressorSound.isPlaying) this.scrollCompressorSound.stop();
@@ -1309,6 +1348,48 @@ export default class VlabHVACBaseHeatPump extends VLab {
         }
     }
 
+    zoomToContactorHandler() {
+        if (this.offDelayTimeout !== undefined) clearTimeout(this.offDelayTimeout);
+
+        if (this.vLabLocator.context.tablet.currentActiveTabId == 1) {
+            if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[4].completed === true) {
+
+                if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[5].completed === false) {
+                    this.vLabLocator.context.tablet.initObj.content.tabs[1].items[5].completed = true;
+                    this.vLabLocator.context.tablet.stepCompletedAnimation();
+                }
+
+                if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[5].completed === true) {
+                    var roomTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
+                        tempId: 'roomTemperature',
+                        format: 'F'
+                    });
+
+                    var coolToTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
+                        tempId: 'coolToTemperature',
+                        format: 'F'
+                    });
+
+                    if (roomTemperature > coolToTemperature) {
+                        this.offDelayTimeout = setTimeout(this.zoomToContactorHandler.bind(this), 1000);
+                        var extraInnerHtml = '';
+                        extraInnerHtml += '<p style="font-size: 18px;">Indoor Temperature: <span style="font-weight: bold; color: #dbe8ff;">' + roomTemperature.toFixed(1) + ' °F</span></p>';
+                        extraInnerHtml += '<p style="font-size: 18px;">Cool Setpoint: <span style="font-weight: bold; color: #ffffff;">' + Math.round(coolToTemperature) + ' °F</span></p>';
+                        this.vLabLocator.context.tablet.showTabletShortToast(extraInnerHtml);
+                        return;
+                    } else {
+                        this.vLabLocator.context.tablet.initObj.content.tabs[1].items[6].completed = true;
+                        this.vLabLocator.context.tablet.stepCompletedAnimation();
+                        this.contactorOff();
+                        this.stopFanMotor(true);
+                        this.stopScrollCompressor(true);
+                        this.shortToGroundEffectOff();
+                        return;
+                    }
+                }
+            }
+        }
+    }
 
 
     frameCapBoltUnscrew(argsObj) {
