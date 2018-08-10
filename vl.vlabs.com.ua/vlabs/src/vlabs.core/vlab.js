@@ -1127,8 +1127,14 @@ export default class VLab {
                     if (this.defaultCameraControls.type === 'pointerlock') {
                         if (this.prevAllowedCameraControlPosition) {
                             this.defaultCameraControls.getObject().position.copy(this.prevAllowedCameraControlPosition);
-                        } else {
-                            console.log('this.prevAllowedCameraControlPosition', this.prevAllowedCameraControlPosition);
+                            var self = this;
+                            if (this.pointerlockAllowedSpaceBackPushTimeout) {
+                                clearTimeout(this.pointerlockAllowedSpaceBackPushTimeout);
+                            }
+                            this.pointerlockAllowedSpaceBackPushTimeout = setTimeout(() => {
+                                self.defaultCameraControls.enabled = true;
+                            }, 100);
+                            return;
                         }
                     }
                     this.defaultCameraControls.enabled = true;
