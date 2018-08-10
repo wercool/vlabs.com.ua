@@ -5,15 +5,17 @@
  * Adopted to common js by Javier Zapata
  * Adopted to VLabs  by Alexey Maistrenko
  */
-module.exports = function ( camera, scene ) {
+module.exports = function ( camera, scene, vlab) {
 
   var THREE = window.THREE || require('three');
 
   var scope = this;
 
+  scope.vlab = vlab;
+
   var curCameraQuaternion = camera.quaternion.clone();
   var curCameraPosition = camera.position.clone();
-  var curCameraDirection = camera.getWorldDirection();
+  var curCameraDirection = camera.getWorldDirection(new THREE.Vector3());
 
   camera.rotation.set( 0, 0, 0 );
   camera.position.set( 0, 0, 0 );
@@ -42,6 +44,9 @@ module.exports = function ( camera, scene ) {
   yawObject.quaternion.setFromUnitVectors(zaxis, direction);
 
   scene.add(yawObject);
+
+// scope.defaultCameraDirectionArrow = new THREE.ArrowHelper(new THREE.Vector3(), yawObject.position, 1.0, new THREE.Color(0x00ff00));
+// scene.add(scope.defaultCameraDirectionArrow);
 
   pitchObject.quaternion.x = curCameraQuaternion.x;
 

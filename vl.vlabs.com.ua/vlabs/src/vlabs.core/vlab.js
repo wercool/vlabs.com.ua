@@ -769,10 +769,18 @@ export default class VLab {
     onPointerLockChanged(event) {
         if (!document.pointerLockElement) {
             if (this.defaultCameraControls.getObject) {
-                var curPos = this.defaultCameraControls.getObject().position.clone();
+                var targetPos = this.defaultCameraControls.getObject().position.clone();
+                var orbitCenter = this.defaultCameraControls.getDirection(new THREE.Vector3());
+                orbitCenter.add(targetPos);
+
+                if (orbitCenter.y > 1.75) {
+                    orbitCenter.y = 1.75;
+                }
+
                 this.switchCameraControls({ type: 'orbit', 
-                                            targetPos: curPos,
-                                            target: new THREE.Vector3() });
+                                            targetPos: targetPos,
+                                            forced: true,
+                                            target: orbitCenter });
             }
         }
     }
@@ -935,7 +943,7 @@ export default class VLab {
                         this.defaultCamera.position.y = this.defaultCameraInitialPosition.y;
                     }
                 }
-                this.defaultCameraControls = new PointerLockControls(this.defaultCamera, this.vLabScene);
+                this.defaultCameraControls = new PointerLockControls(this.defaultCamera, this.vLabScene, this);
                 this.crosshair.visible = true;
                 this.defaultCameraControls.update();
                 this.defaultCameraControls.requestPointerLock();
@@ -1444,6 +1452,7 @@ export default class VLab {
     }
 
     resetView() {
+console.log(this.name, 'resetView()');
         var targetPos = new THREE.Vector3(0.0, 0.0, 0.0);
         if (this.nature.cameraControls.targetObjectName) {
             targetPos = this.vLabScene.getObjectByName(this.nature.cameraControls.targetObjectName).position.clone();
