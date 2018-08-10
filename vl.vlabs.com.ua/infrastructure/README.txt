@@ -8,6 +8,12 @@ git clone https://github.com/wercool/vlabs.com.ua.git
 2) JS build essentials
 2.1)
 sudo apt-get update
+
+2.1.1) https://nodejs.org/uk/download/package-manager/
+
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
 sudo apt-get install nodejs
 sudo apt-get install npm
 2.2) Use n module from npm in order to upgrade node
