@@ -227,6 +227,7 @@ export default class VLab {
         .easing(TWEEN.Easing.Linear.None)
         .onComplete(() => {
             this.fullyResumed = true;
+            this.statsTHREE.domElement.style.display = 'block';
         })
         .start();
 

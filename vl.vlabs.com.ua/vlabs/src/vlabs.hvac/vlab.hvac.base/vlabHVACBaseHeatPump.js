@@ -941,8 +941,12 @@ export default class VlabHVACBaseHeatPump extends VLab {
         if (this.nature.sounds === true) {
             this.vLabLocator.context.ambientSound.play();
             if (this.vLabLocator.context.activatedMode == 'cool') {
-                if (this.fanMotorStarted && !this.fanMotorSound.isPlaying) this.fanMotorSound.play();
-                if (this.scrollCompressorStarted && !this.scrollCompressorSound.isPlaying) this.scrollCompressorSound.play();
+                if (this.fanMotorStarted) {
+                    if (!this.fanMotorSound.isPlaying) this.fanMotorSound.play();
+                }
+                if (this.scrollCompressorStarted) {
+                    if (!this.scrollCompressorSound.isPlaying) this.scrollCompressorSound.play();
+                }
             }
         } else {
             this.vLabLocator.context.ambientSound.pause();
@@ -954,7 +958,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
     toggleRefrigerantFlow1() {
         // if (!this.gasFlow.gasFlowHelperMesh.visible) this.gasFlow.start();
         if (this.gasFlow === undefined) setTimeout(this.toggleRefrigerantFlow1.bind(this), 250);
-        if (this.vLabLocator.context.activatedMode == 'cool') {
+        if (this.vLabLocator.context.activatedMode == 'cool' && this.scrollCompressorStarted) {
             if (this.nature.refrigerantFlow1 === true) {
                 this.gasFlow.start();
                 if (this.nature.refrigerantFlow1Animated === true) {
@@ -969,11 +973,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     toggleHeatPumpAirFlow() {
-        this.ambientAirFlow1.visible = this.nature.heatPumpAirFlow && (this.vLabLocator.context.activatedMode == 'cool');
+        this.ambientAirFlow1.visible = this.nature.heatPumpAirFlow && (this.vLabLocator.context.activatedMode == 'cool') && this.fanMotorStarted;
     }
 
     toggleDirectionalRefrigerantFlow() {
-        if (this.vLabLocator.context.activatedMode == 'cool') {
+        if (this.vLabLocator.context.activatedMode == 'cool' && this.scrollCompressorStarted) {
             if (this.nature.directionalRefrigerantFlow === true) {
                 this.startDirectionalRefrigerantFlow();
             } else {
@@ -993,18 +997,20 @@ export default class VlabHVACBaseHeatPump extends VLab {
         }
         if (resumeMotor !== true) this.fanMotorSpeed = 0.0;
         this.fanMotorStarted = true;
-        this.fanMotorSound.play();
+        if (this.nature.sounds === true) this.fanMotorSound.play();
     }
 
     stopFanMotor(offEffect) {
         if (offEffect === true) {
             if (this.fanMotorOffSound !== undefined) {
-                this.fanMotorOffSound.play();
+                if (this.nature.sounds === true) this.fanMotorOffSound.play();
             }
         }
         this.fanMotorStarted = false;
         if (this.fanMotorSound !== undefined) {
-            if (this.fanMotorSound.isPlaying) this.fanMotorSound.stop();
+            if (this.nature.sounds === true) {
+                if (this.fanMotorSound.isPlaying) this.fanMotorSound.stop();
+            }
         }
     }
 
@@ -1016,18 +1022,20 @@ export default class VlabHVACBaseHeatPump extends VLab {
             return;
         }
         this.scrollCompressorStarted = true;
-        this.scrollCompressorSound.play();
+        if (this.nature.sounds === true) this.scrollCompressorSound.play();
     }
 
     stopScrollCompressor(offEffect) {
         if (offEffect === true) {
             if (this.scrollCompressorOffSound !== undefined) {
-                this.scrollCompressorOffSound.play();
+                if (this.nature.sounds === true) this.scrollCompressorOffSound.play();
             }
         }
-        this.scrollCompressorStarted = true;
+        this.scrollCompressorStarted = false;
         if (this.scrollCompressorSound !== undefined) {
-            if (this.scrollCompressorSound.isPlaying) this.scrollCompressorSound.stop();
+            if (this.nature.sounds === true) {
+                if (this.scrollCompressorSound.isPlaying) this.scrollCompressorSound.stop();
+            }
         }
     }
 
@@ -1360,31 +1368,38 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 }
 
                 if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[5].completed === true) {
-                    var roomTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
-                        tempId: 'roomTemperature',
-                        format: 'F'
-                    });
+                    if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[6].completed === false) {
+                        var roomTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
+                            tempId: 'roomTemperature',
+                            format: 'F'
+                        });
+    
+                        var coolToTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
+                            tempId: 'coolToTemperature',
+                            format: 'F'
+                        });
+    
+                        if (roomTemperature > coolToTemperature) {
+                            this.offDelayTimeout = setTimeout(this.zoomToContactorHandler.bind(this), 1000);
+                            var extraInnerHtml = '';
+                            extraInnerHtml += '<p style="font-size: 18px;">Indoor Temperature: <span style="font-weight: bold; color: #dbe8ff;">' + roomTemperature.toFixed(1) + ' °F</span></p>';
+                            extraInnerHtml += '<p style="font-size: 18px;">Cool Setpoint: <span style="font-weight: bold; color: #ffffff;">' + Math.round(coolToTemperature) + ' °F</span></p>';
+                            this.vLabLocator.context.tablet.showTabletShortToast(extraInnerHtml);
+                            return;
+                        } else {
+                            this.vLabLocator.context.tablet.initObj.content.tabs[1].items[6].completed = true;
+                            this.vLabLocator.context.tablet.stepCompletedAnimation();
+                            this.contactorOff();
+                            this.stopFanMotor(true);
+                            this.stopScrollCompressor(true);
+                            this.shortToGroundEffectOff();
 
-                    var coolToTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
-                        tempId: 'coolToTemperature',
-                        format: 'F'
-                    });
+                            this.toggleHeatPumpAirFlow();
+                            this.toggleRefrigerantFlow1();
+                            this.toggleDirectionalRefrigerantFlow();
 
-                    if (roomTemperature > coolToTemperature) {
-                        this.offDelayTimeout = setTimeout(this.zoomToContactorHandler.bind(this), 1000);
-                        var extraInnerHtml = '';
-                        extraInnerHtml += '<p style="font-size: 18px;">Indoor Temperature: <span style="font-weight: bold; color: #dbe8ff;">' + roomTemperature.toFixed(1) + ' °F</span></p>';
-                        extraInnerHtml += '<p style="font-size: 18px;">Cool Setpoint: <span style="font-weight: bold; color: #ffffff;">' + Math.round(coolToTemperature) + ' °F</span></p>';
-                        this.vLabLocator.context.tablet.showTabletShortToast(extraInnerHtml);
-                        return;
-                    } else {
-                        this.vLabLocator.context.tablet.initObj.content.tabs[1].items[6].completed = true;
-                        this.vLabLocator.context.tablet.stepCompletedAnimation();
-                        this.contactorOff();
-                        this.stopFanMotor(true);
-                        this.stopScrollCompressor(true);
-                        this.shortToGroundEffectOff();
-                        return;
+                            return;
+                        }
                     }
                 }
             }

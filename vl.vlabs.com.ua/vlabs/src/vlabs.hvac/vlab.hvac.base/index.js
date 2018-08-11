@@ -386,8 +386,10 @@ class HVACVLabBase {
 
     setShortToGroundMode() {
         console.log('Short To Ground Mode');
-        let audio = new Audio('./resources/assistant/snd/shortToGround/short-to-ground-demo-activated.mp3');
-        audio.play();
+        if (document.getElementById('SettingsSoundsCheckbox').checked) {
+            let audio = new Audio('./resources/assistant/snd/shortToGround/short-to-ground-demo-activated.mp3');
+            audio.play();
+        }
         this.resetSettingsToDefault();
 
         this.tablet.resetTabContentItems();
@@ -398,6 +400,7 @@ class HVACVLabBase {
         this.locationInitObjs['HVACBaseHeatPump']['altNature'] = {};
 
         this.vLabLocator.activateVLabLocation('HVACBaseAirHandler', { auto: true });
+
         if (this.vLabLocator.locations['HVACBaseAirHandler'] !== undefined) {
             if (this.vLabLocator.locations['HVACBaseAirHandler'].zoomMode) {
                 this.vLabLocator.locations['HVACBaseAirHandler'].resetView();
@@ -426,8 +429,10 @@ class HVACVLabBase {
         console.log('Normal Operaton Mode');
 
         if (forced == undefined) {
-            let audio = new Audio('./resources/assistant/snd/normal-operation-demo-activated.mp3');
-            audio.play();
+            if (document.getElementById('SettingsSoundsCheckbox').checked) {
+                let audio = new Audio('./resources/assistant/snd/normal-operation-demo-activated.mp3');
+                audio.play();
+            }
         }
 
         this.resetSettingsToDefault();
@@ -440,6 +445,7 @@ class HVACVLabBase {
         this.locationInitObjs['HVACBaseHeatPump']['altNature'] = {};
 
         this.vLabLocator.activateVLabLocation('HVACBaseAirHandler', { auto: true });
+
         if (this.vLabLocator.locations['HVACBaseAirHandler'] !== undefined) {
             if (this.vLabLocator.locations['HVACBaseAirHandler'].zoomMode) {
                 this.vLabLocator.locations['HVACBaseAirHandler'].resetView();
@@ -465,8 +471,10 @@ class HVACVLabBase {
     }
 
     setAdvancedMode() {
-        let audio = new Audio('./resources/assistant/snd/advanced-mode-activated.mp3');
-        audio.play();
+        if (document.getElementById('SettingsSoundsCheckbox').checked) {
+            let audio = new Audio('./resources/assistant/snd/advanced-mode-activated.mp3');
+            audio.play();
+        }
         this.setNormalOperatonMode(true);
     }
 
@@ -483,8 +491,10 @@ class HVACVLabBase {
             if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
             console.log('Preset "cool to" temperature is reached. Normal operation demo is completed.');
             this.normalModeOperationProcessorTimeOut = setTimeout(this.setNormalOperatonMode.bind(this), 30000);
-            let audio = new Audio('./resources/assistant/snd/normal-operation-demo-completed.mp3');
-            audio.play();
+            if (document.getElementById('SettingsSoundsCheckbox').checked) {
+                let audio = new Audio('./resources/assistant/snd/normal-operation-demo-completed.mp3');
+                audio.play();
+            }
         } else {
             this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
             this.normalModeOperationProcessorTimeOut = setTimeout(this.normalModeOperationProcessor.bind(this), 5000);
@@ -531,8 +541,10 @@ class HVACVLabBase {
             if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
             console.log('Preset "cool to" temperature is reached. Short To Ground demo is completed.');
             this.normalModeOperationProcessorTimeOut = setTimeout(this.setShortToGroundMode.bind(this), 30000);
-            let audio = new Audio('./resources/assistant/snd/shortToGround/short-to-ground-demo-completed.mp3');
-            audio.play();
+            if (document.getElementById('SettingsSoundsCheckbox').checked) {
+                let audio = new Audio('./resources/assistant/snd/shortToGround/short-to-ground-demo-completed.mp3');
+                audio.play();
+            }
         } else {
             this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
             this.normalModeOperationProcessorTimeOut = setTimeout(this.shortToGroundOperationProcessor.bind(this), 5000);
