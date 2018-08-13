@@ -9,13 +9,20 @@
     "defaultSceneCameraName": "defaultCamera",
     "cameraControls": {
         "type": "orbit",
+        "allowedSpaceMapObjectName": "allowedSpacePlane",
         "target": {
             "x": 0.0,
-            "y": 1.5,
-            "z": 1.0
+            "y": 1.15,
+            "z": 0.5
         },
-        "maxDistance": 50.0,
-        "minDistance": 0.01
+        "maxDistance": 2.0,
+        "minDistance": 0.05,
+        "enablePan": false,
+        "yPanDeltaUp": 0.5,
+        "yPanDeltaDown": 0.75,
+        "minPolarAngle": 0.25,
+        "maxPolarAngle": 1.35,
+        "minClip": 0.01
     },
     "showTHREEStats": true,
     "interactiveObjects": [],

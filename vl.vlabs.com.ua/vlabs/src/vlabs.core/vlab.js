@@ -1477,7 +1477,7 @@ export default class VLab {
     }
 
     resetView() {
-console.log(this.name, 'resetView()');
+// console.log(this.name, 'resetView()');
         var targetPos = new THREE.Vector3(0.0, 0.0, 0.0);
         if (this.nature.cameraControls.targetObjectName) {
             targetPos = this.vLabScene.getObjectByName(this.nature.cameraControls.targetObjectName).position.clone();

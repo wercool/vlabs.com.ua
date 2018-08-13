@@ -65,7 +65,7 @@ class VlabApartment extends VLab {
         // this.vLabScene.add(this.PointLight1);
 
         this.SpotLight1 = new THREE.PointLight(0xffffff, 0.55);
-        this.SpotLight1.position.set(defaultCameraPos.x, 3.0, defaultCameraPos.z);
+        this.SpotLight1.position.set(defaultCameraPos.x, 2.95, defaultCameraPos.z);
         this.vLabScene.add(this.SpotLight1);
 
         this.Valter =  new Valter({
@@ -80,7 +80,7 @@ class VlabApartment extends VLab {
         var defaultCameraPos = this.getWorldPosition(this.defaultCamera);
         if (!this.prevDefaultCameraPos.equals(defaultCameraPos)) {
             this.prevDefaultCameraPos = defaultCameraPos;
-            this.SpotLight1.position.set(defaultCameraPos.x, 3.0, defaultCameraPos.z);
+            this.SpotLight1.position.set(defaultCameraPos.x, 2.95, defaultCameraPos.z);
         }
     }
 
