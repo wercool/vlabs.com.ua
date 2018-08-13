@@ -17,11 +17,11 @@
         },
         "maxDistance": 2.0,
         "minDistance": 0.05,
-        "enablePan": false,
+        "enablePan": true,
         "yPanDeltaUp": 0.5,
         "yPanDeltaDown": 0.75,
         "minPolarAngle": 0.25,
-        "maxPolarAngle": 1.35,
+        "maxPolarAngle": 1.85,
         "minClip": 0.01
     },
     "showTHREEStats": true,

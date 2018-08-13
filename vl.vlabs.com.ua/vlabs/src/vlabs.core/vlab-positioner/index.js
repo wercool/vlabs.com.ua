@@ -66,6 +66,10 @@ export default class VLabPositioner {
 
         this.setActive(this.active);
 
+        if (this.initObj.visibility !== undefined) {
+            this.setVisible(this.initObj.visibility);
+        }
+
         // var arrowHelper = new THREE.ArrowHelper(new THREE.Vector3(), new THREE.Vector3());
         // arrowHelper.setColor(new THREE.Color(0x00ff00));
         // this.context.vLabScene.add(arrowHelper);
@@ -78,11 +82,19 @@ export default class VLabPositioner {
     }
 
     setActive(state) {
+        if (this.visibility !== undefined) {
+            if (!this.visibility) return;
+        }
         this.active = state;
         this.handlerSprite.visible = !state;
         if (this.initObj.completeCallBack && this.active === true) {
             this.initObj.completeCallBack.call(this.context);
         }
+    }
+
+    setVisible(state) {
+        this.handlerSprite.visible = state;
+        this.visibility = state;
     }
 
     onVLabSceneMouseUp(event) {
@@ -96,7 +108,7 @@ export default class VLabPositioner {
     }
 
     interactionEvent() {
-        if (this.active || this.context.defaultCameraControls.type !== 'orbit' || this.context.paused) {
+        if (this.active || !this.handlerSprite.visible || this.context.defaultCameraControls.type !== 'orbit' || this.context.paused) {
             return;
         }
         if (this.reseted === true) {
