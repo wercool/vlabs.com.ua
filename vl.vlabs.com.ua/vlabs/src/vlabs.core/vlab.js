@@ -940,6 +940,12 @@ export default class VLab {
                 if (this.nature.cameraControls.enablePan !== undefined) {
                     this.defaultCameraControls.enablePan = this.nature.cameraControls.enablePan;
                 }
+                if (this.nature.cameraControls.rotateSpeed !== undefined) {
+                    this.defaultCameraControls.rotateSpeed = this.nature.cameraControls.rotateSpeed;
+                }
+                if (this.nature.cameraControls.zoomSpeed !== undefined) {
+                    this.defaultCameraControls.zoomSpeed = this.nature.cameraControls.zoomSpeed;
+                }
 
                 //override with cameraControlConfig from argument
                 if (cameraControlConfig.maxDistance) {

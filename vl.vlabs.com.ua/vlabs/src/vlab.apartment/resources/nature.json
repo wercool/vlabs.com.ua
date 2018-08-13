@@ -12,12 +12,13 @@
         "allowedSpaceMapObjectName": "allowedSpacePlane",
         "target": {
             "x": 0.0,
-            "y": 1.15,
-            "z": 0.5
+            "y": 1.4,
+            "z": 1.0
         },
-        "maxDistance": 2.0,
+        "maxDistance": 1.25,
         "minDistance": 0.05,
         "enablePan": true,
+        "rotateSpeed": 0.85,
         "yPanDeltaUp": 0.5,
         "yPanDeltaDown": 0.75,
         "minPolarAngle": 0.25,
