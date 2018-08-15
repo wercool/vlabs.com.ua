@@ -565,14 +565,18 @@ export default class VlabHVACBaseAirHandler extends VLab {
     toggleAirHandlerCabinetPanelsLookThrough() {
         this.airHandlerCabinetPanelsLookThrough(this.nature.airHandlerCabinetPanelsLookThrough);
         if (this.positionInFrontOfTheNishActive === true) {
-            this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: !this.nature.airHandlerCabinetPanelsLookThrough});
-            this.blowerWheelHousingZoomHelper.setMaterial({depthTest: !this.nature.airHandlerCabinetPanelsLookThrough});
+            if (!this.nishDoorClosed) {
+                this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: !this.nature.airHandlerCabinetPanelsLookThrough});
+                this.blowerWheelHousingZoomHelper.setMaterial({depthTest: !this.nature.airHandlerCabinetPanelsLookThrough});
+                this.controlBoardHK61EA005ZoomHelper.setMaterial({depthTest: !this.nature.airHandlerCabinetPanelsLookThrough});
+            }
             this.setInteractivesSuppressorsObjects('airHandlerCabinetUpperPanel');
         }
         if (!this.nature.airHandlerCabinetPanelsLookThrough) {
             this.setInteractivesSuppressorsObjects();
             this.blowerWheelHousingZoomHelper.setMaterial({depthTest: true});
             this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: true});
+            this.controlBoardHK61EA005ZoomHelper.setMaterial({depthTest: true});
         }
     }
 
@@ -620,9 +624,11 @@ export default class VlabHVACBaseAirHandler extends VLab {
             this.setInteractivesSuppressorsObjects();
             this.blowerWheelHousingZoomHelper.setMaterial({depthTest: true});
             this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: true});
+            this.controlBoardHK61EA005ZoomHelper.setMaterial({depthTest: true});
         } else {
             this.blowerWheelHousingZoomHelper.setMaterial({depthTest: false});
             this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: false});
+            this.controlBoardHK61EA005ZoomHelper.setMaterial({depthTest: false});
             this.setInteractivesSuppressorsObjects('airHandlerCabinetUpperPanel');
         }
     }
@@ -631,12 +637,14 @@ export default class VlabHVACBaseAirHandler extends VLab {
         this.positionInFrontOfTheNishActive = false;
         this.blowerWheelHousingZoomHelper.setMaterial({depthTest: true});
         this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: true});
+        this.controlBoardHK61EA005ZoomHelper.setMaterial({depthTest: true});
     }
 
     carrierTPWEM01WallPositionCompleted() {
         this.positionInFrontOfTheNishActive = false;
         this.blowerWheelHousingZoomHelper.setMaterial({depthTest: true});
         this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: true});
+        this.controlBoardHK61EA005ZoomHelper.setMaterial({depthTest: true});
     }
 
     nishDoorOpenOrClose(caller) {
@@ -649,6 +657,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
             this.nishDoorClosed = !this.nishDoorClosed;
 
             if (!this.nishDoorClosed) {
+                this.toggleAirHandlerCabinetPanelsLookThrough();
                 //Normal mode demo
                 if (this.vLabLocator.context.tablet.currentActiveTabId == 0) {
                     //Approach the thermostat completed
@@ -681,6 +690,9 @@ export default class VlabHVACBaseAirHandler extends VLab {
                 this.ctrlVoltageFromAirHandlerToHeatPump.stop();
                 this.ctrlVFromThermostatToAirHandler.stop();
                 this.power110VFromQuickDisconnect.stop();
+                this.blowerWheelHousingZoomHelper.setMaterial({depthTest: true});
+                this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: true});
+                this.controlBoardHK61EA005ZoomHelper.setMaterial({depthTest: true});
             }
 
         })
