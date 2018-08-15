@@ -626,9 +626,11 @@ export default class VlabHVACBaseAirHandler extends VLab {
             this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: true});
             this.controlBoardHK61EA005ZoomHelper.setMaterial({depthTest: true});
         } else {
-            this.blowerWheelHousingZoomHelper.setMaterial({depthTest: false});
-            this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: false});
-            this.controlBoardHK61EA005ZoomHelper.setMaterial({depthTest: false});
+            if (!this.nishDoorClosed) {
+                this.blowerWheelHousingZoomHelper.setMaterial({depthTest: false});
+                this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: false});
+                this.controlBoardHK61EA005ZoomHelper.setMaterial({depthTest: false});
+            }
             this.setInteractivesSuppressorsObjects('airHandlerCabinetUpperPanel');
         }
     }
@@ -754,6 +756,13 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
             //Short to ground demo
             if (this.vLabLocator.context.tablet.currentActiveTabId == 1) {
+                if (this.vLabLocator.context.advancedModeOperationProcessorTimeOut === undefined); {
+                    this.vLabLocator.context.advancedModeOperationProcessor();
+                }
+            }
+
+            //Advanced mode
+            if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
                 if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[1].completed === false) {
                     this.vLabLocator.context.tablet.initObj.content.tabs[1].items[1].completed = true;
                     this.vLabLocator.context.tablet.stepCompletedAnimation();

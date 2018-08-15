@@ -816,7 +816,6 @@ export default class VlabHVACBaseHeatPump extends VLab {
         // this.heatPumpFrameServicePanel_manipulationControl.setSize(0.5);
         // this.vLabScene.add(this.heatPumpFrameServicePanel_manipulationControl);
         // this.heatPumpFrameServicePanel_manipulationControl.attach(this.vLabScene.getObjectByName("bryantB225B_heatPumpFrameServicePanel"));
-
     }
 
     onRedererFrameEvent(event) {
@@ -1023,6 +1022,9 @@ export default class VlabHVACBaseHeatPump extends VLab {
         }
         this.scrollCompressorStarted = true;
         if (this.nature.sounds === true) this.scrollCompressorSound.play();
+        this.toggleRefrigerantFlow1();
+        this.toggleHeatPumpAirFlow();
+        this.toggleDirectionalRefrigerantFlow();
     }
 
     stopScrollCompressor(offEffect) {
