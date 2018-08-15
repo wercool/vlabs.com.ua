@@ -1015,6 +1015,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     acPowerOff() {
         this.vLabLocator.context.HeatPumpACPower = false;
+        if (this.vLabLocator.context.activatedMode.indexOf('cool') == -1) return;
         this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.5;
         this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.opacity = 0.4;
         this.shortToGroundEffectOff();

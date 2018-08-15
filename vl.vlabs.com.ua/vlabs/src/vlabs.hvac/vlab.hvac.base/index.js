@@ -618,20 +618,20 @@ console.log('this.HeatPumpACPower', this.HeatPumpACPower);
             } else {
                 if (roomTemperature < this.ambientDefaultRoomTemperature) {
                     this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] += 0.1;
-                    if (this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.color.b > 0.0) {
-                        this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.color = new THREE.Color(this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.color.r + 0.1, 0.0, this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.color.b - 0.1);
-                        if (this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.opacity > 0.2) {
-                            this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.opacity -= 0.1;
-                        }
-                        this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.needsUpdate = true;
+                }
+                if (this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.color.b > 0.0) {
+                    this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.color = new THREE.Color(this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.color.r + 0.1, 0.0, this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.color.b - 0.1);
+                    if (this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.opacity > 0.2) {
+                        this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.opacity -= 0.1;
                     }
-                    if (this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.color.b > 0.0) {
-                        this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.color = new THREE.Color(this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.color.r + 0.1, 0.0, this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.color.b - 0.1);
-                        if (this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.opacity > 0.2) {
-                            this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.opacity -= 0.1;
-                        }
-                        this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.needsUpdate = true;
+                    this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.needsUpdate = true;
+                }
+                if (this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.color.b > 0.0) {
+                    this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.color = new THREE.Color(this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.color.r + 0.1, 0.0, this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.color.b - 0.1);
+                    if (this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.opacity > 0.2) {
+                        this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.opacity -= 0.1;
                     }
+                    this.vLabLocator.locations['HVACBaseAirHandler'].ceelingAirVentFlow.material.needsUpdate = true;
                 }
             }
             this.advancedModeOperationProcessorTimeOut = setTimeout(this.advancedModeOperationProcessor.bind(this), 5000);
