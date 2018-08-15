@@ -47,6 +47,7 @@
     "advancedSelectionHelper": true,
     "detailedViewEffectComposer": true,
     "interactivesSuppressorsObjects": [
+        "houseWall",
         "bryantB225B_heatPumpFrontVentPanel", 
         "bryantB225B_heatPumpLeftVentPanel",
         "bryantB225B_heatPumpFrame",

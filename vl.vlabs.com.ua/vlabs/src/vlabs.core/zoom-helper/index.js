@@ -262,6 +262,9 @@ export default class ZoomHelper {
                 this.context.zoomModeHandler(false);
                 this.context.zoomViewArea.opacity = 0.0;
                 this.context.zoomViewArea.style.opacity = 0.0;
+                if (this.initObj.zoomResetCallback !== undefined) {
+                    this.initObj.zoomResetCallback.call(this.context, {});
+                }
             })
             .start();
         })
@@ -280,6 +283,10 @@ export default class ZoomHelper {
         this.context.zoomMode = false;
 
         this.context.zoomHelperMode = false;
+
+        if (this.initObj.zoomResetCallback !== undefined) {
+            this.initObj.zoomResetCallback.call(this.context, {});
+        }
     }
 
     hide() {

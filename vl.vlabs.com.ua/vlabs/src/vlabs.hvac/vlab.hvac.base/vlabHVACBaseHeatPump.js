@@ -403,7 +403,22 @@ export default class VlabHVACBaseHeatPump extends VLab {
             minDistance: 0.25,
             positionDeltas: new THREE.Vector3(-0.05, 0.15, 0.0), 
             scale: new THREE.Vector3(0.1, 0.1, 0.1),
-            color: 0xfff495
+            color: 0xfff495,
+            zoomCompleteCallback: this.ACDisconnectCaseZoomHelperHandler,
+            zoomResetCallback: this.ACDisconnectCasezoomResetCallback
+        });
+
+        this.ACDisconnectCaseZoomHelper_CloseUp = new ZoomHelper({
+            context: this,
+            targetObjectName: "ACDisconnectCase",
+            minDistance: 0.1,
+            maxDistance: 0.15,
+            positionDeltas: new THREE.Vector3(-0.05, 0.05, -0.05), 
+            scale: new THREE.Vector3(0.03, 0.03, 0.03),
+            orbitTargetPositionDeltas: new THREE.Vector3(0.0, 0.0, 0.0), 
+            color: 0xfff495,
+            visible: false,
+            hideOnExit: true
         });
 
         this.contactor_ZoomHelper = new ZoomHelper({
@@ -640,15 +655,16 @@ export default class VlabHVACBaseHeatPump extends VLab {
         //     action: this.heatPumpFrameCapTakeOutWithScrewdriver
         // });
 
-        // this.ACDisconnectDoorInteractor = new VLabInteractor({
-        //     context: this,
-        //     name: 'ACDisconnectDoorInteractor',
-        //     pos: new THREE.Vector3(0.0, 0.0, 0.0),
-        //     object: this.vLabScene.getObjectByName('ACDisconnectDoor'),
-        //     objectRelPos: new THREE.Vector3(0.0, 0.05, -0.15),
-        //     scale: new THREE.Vector3(0.05, 0.05, 0.05),
-        //     action: this.ACDisconnectDoorInteractorHandler
-        // });
+        this.ACDisconnectDoorInteractor = new VLabInteractor({
+            context: this,
+            name: 'ACDisconnectDoorInteractor',
+            pos: new THREE.Vector3(0.0, 0.0, 0.0),
+            object: this.vLabScene.getObjectByName('ACDisconnectDoor'),
+            objectRelPos: new THREE.Vector3(0.0, 0.05, -0.15),
+            scale: new THREE.Vector3(0.05, 0.05, 0.05),
+            action: this.ACDisconnectDoorInteractorHandler,
+            deactivated: true
+        });
 
         this.ACDisconnectClampInteractor = new VLabInteractor({
             context: this,
@@ -767,7 +783,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.toggleDirectionalRefrigerantFlow();
 
         if (this.vLabLocator.context.activatedMode == 'cool') {
-            this.startFanMotor();
+            this.startFanMotor(true);
             this.startScrollCompressor();
         }
 
@@ -820,11 +836,16 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     onRedererFrameEvent(event) {
         if (this.fanMotorStarted === true) {
-            this.fanMotorBladeShaft.rotateZ(0.5);
-            // this.fanMotorBladeShaft.rotateZ(this.fanMotorSpeed);
-            // if (this.fanMotorSpeed < 0.5) {
-            //     this.fanMotorSpeed += 0.005;
-            // }
+            // this.fanMotorBladeShaft.rotateZ(0.5);
+            this.fanMotorBladeShaft.rotateZ(this.fanMotorSpeed);
+            if (this.fanMotorSpeed < 0.5) {
+                this.fanMotorSpeed += 0.005;
+            }
+        } else {
+            if (this.fanMotorSpeed > 0.0) {
+                this.fanMotorBladeShaft.rotateZ(this.fanMotorSpeed);
+                this.fanMotorSpeed -= 0.005;
+            }
         }
         if (this.ambientAirFlow1.visible) {
             if (this.ambientAirFlow1Throttling > 2)
@@ -891,7 +912,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.contactorElectricArcEffect.stop();
     }
 
-    onVLabResumeAndShow() {
+    onVLabResumeAndShow(initObj) {
         console.log(this.name + ' RESUMED');
         if (this.vLabLocator.prevCameraControlsType === 'pointerlock') {
             super.switchCameraControls({
@@ -905,7 +926,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         } else {
             this.inventory.hideToolboxBtn();
         }
-        if (this.vLabLocator.context.activatedMode == 'cool') {
+        if (this.vLabLocator.context.activatedMode == 'cool' && this.vLabLocator.context.HeatPumpACPower == true) {
             var roomTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
                 tempId: 'roomTemperature',
                 format: 'F'
@@ -915,7 +936,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 format: 'F'
             });
             if (roomTemperature > coolToTemperature) {
-                this.startFanMotor(true);
+                let fanMotorResumed = true;
+                if (initObj !== undefined) {
+                    fanMotorResumed = (initObj.autoResume == true) ? false : true;
+                }
+                this.startFanMotor(fanMotorResumed);
                 this.startScrollCompressor();
             } else {
                 this.stopFanMotor();
@@ -987,14 +1012,27 @@ export default class VlabHVACBaseHeatPump extends VLab {
         }
     }
 
+    acPowerOff() {
+        this.vLabLocator.context.HeatPumpACPower = false;
+        this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.5;
+        this.shortToGroundEffectOff();
+        this.stopFanMotor(true);
+        this.stopScrollCompressor(true);
+        this.onVLabResumeAndShow();
+    }
+
     startFanMotor(resumeMotor) {
         if (this.fanMotorSoundReady !== true) {
             setTimeout(() => {
-                this.startFanMotor();
+                this.startFanMotor(resumeMotor);
             }, 500);
             return;
         }
-        if (resumeMotor !== true) this.fanMotorSpeed = 0.0;
+        if (resumeMotor !== true) {
+            this.fanMotorSpeed = 0.0;
+        } else {
+            this.fanMotorSpeed = 0.5;
+        }
         this.fanMotorStarted = true;
         if (this.nature.sounds === true) this.fanMotorSound.play();
     }
@@ -1076,6 +1114,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     ACDisconnectDoorInteractorHandler() {
         if (this.vLabScene.getObjectByName('ACDisconnectDoor').rotation.x != -Math.PI) {
+            this.ACDisconnectCaseZoomHelper_CloseUp.show();
             new TWEEN.Tween(this.vLabScene.getObjectByName('ACDisconnectDoor').rotation)
             .to({ x: -Math.PI }, 200)
             .easing(TWEEN.Easing.Linear.None)
@@ -1085,6 +1124,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             .start();
         } else {
             this.ACDisconnectClampInteractor.deactivate();
+            this.ACDisconnectCaseZoomHelper_CloseUp.hide();
             new TWEEN.Tween(this.vLabScene.getObjectByName('ACDisconnectDoor').rotation)
             .to({ x: -Math.PI / 2 }, 200)
             .easing(TWEEN.Easing.Linear.None)
@@ -1102,6 +1142,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             .easing(TWEEN.Easing.Linear.None)
             .onComplete(() => {
                 this.ACDisconnectClampReverseInteractor.activate();
+                this.acPowerOff();
             })
             .start();
         } else {
@@ -1111,6 +1152,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
             .easing(TWEEN.Easing.Linear.None)
             .onComplete(() => {
                 this.ACDisconnectDoorInteractor.activate();
+                if(this.vLabScene.getObjectByName('ACDisconnectClamp').rotation.y == 0.0) {
+                    this.vLabLocator.context.HeatPumpACPower = true;
+                } else {
+                    this.vLabLocator.context.HeatPumpACPower = false;
+                }
             })
             .start();
         }
@@ -1406,6 +1452,26 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 }
             }
         }
+    }
+
+    ACDisconnectCaseZoomHelperHandler() {
+        if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
+            if (this.vLabScene.getObjectByName('ACDisconnectDoor').rotation.x == -Math.PI) {
+                this.ACDisconnectClampInteractor.activate();
+                this.ACDisconnectClampReverseInteractor.activate();
+                if (this.vLabScene.getObjectByName('ACDisconnectClamp').position.z != -0.5) {
+                    this.ACDisconnectDoorInteractor.activate();
+                }
+            } else {
+                this.ACDisconnectDoorInteractor.activate();
+            }
+        }
+    }
+
+    ACDisconnectCasezoomResetCallback() {
+        this.ACDisconnectDoorInteractor.deactivate();
+        this.ACDisconnectClampInteractor.deactivate();
+        this.ACDisconnectClampReverseInteractor.deactivate();
     }
 
 

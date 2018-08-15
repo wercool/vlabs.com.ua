@@ -216,6 +216,13 @@ export default class VlabHVACBaseAirHandler extends VLab {
             self.airBlowerSoundOn.setVolume(0.2);
             self.airBlowerSoundOnReady = true;
         });
+        this.airBlowerSoundOffReady = false;
+        this.airBlowerSoundOff = new THREE.Audio(this.defaultAudioListener);
+        new THREE.AudioLoader().load('./resources/scene-air-handler/sounds/airBlowerSoundOff.mp3', function(buffer) {
+            self.airBlowerSoundOff.setBuffer(buffer);
+            self.airBlowerSoundOff.setVolume(0.2);
+            self.airBlowerSoundOffReady = true;
+        });
         this.airBlowerSoundReady = false;
         this.airBlowerSound = new THREE.Audio(this.defaultAudioListener);
         new THREE.AudioLoader().load('./resources/scene-air-handler/sounds/airBlowerSound.mp3', function(buffer) {
@@ -520,7 +527,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
         this.stoptAirBlower(false);
     }
 
-    onVLabResumeAndShow() {
+    onVLabResumeAndShow(initObj) {
         console.log(this.name + ' RESUMED');
         if (this.vLabLocator.prevCameraControlsType === 'pointerlock') {
             super.switchCameraControls({
@@ -528,9 +535,29 @@ export default class VlabHVACBaseAirHandler extends VLab {
                 vLabLocator: true
             });
         }
+
+        if (this.vLabLocator.context.activatedMode == 'cool') {
+            var roomTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
+                tempId: 'roomTemperature',
+                format: 'F'
+            });
+            var coolToTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
+                tempId: 'coolToTemperature',
+                format: 'F'
+            });
+            if (roomTemperature > coolToTemperature) {
+                let airBlowerResumed = true;
+                if (initObj !== undefined) {
+                    airBlowerResumed = (initObj.autoResume == true) ? false : true;
+                }
+                this.startAirBlower(airBlowerResumed);
+            } else {
+                this.stoptAirBlower();
+            }
+        }
+
         this.shadowsSetup();
         this.toggleSounds();
-        this.startAirBlower(true);
         this.toggleCeilingVentGridsAirFlow();
         this.toggleAirHandlerAirFlow();
         this.toggleAirHandlerCabinetPanelsLookThrough();
@@ -547,7 +574,6 @@ export default class VlabHVACBaseAirHandler extends VLab {
         if (this.vLabLocator.currentLocationVLab !== this) return;
         if (this.nature.sounds === true) {
             this.vLabLocator.context.ambientSound.play();
-            this.startAirBlower(true);
         } else {
             this.vLabLocator.context.ambientSound.pause();
             if (this.airBlowerSound.isPlaying) this.airBlowerSound.stop();
@@ -585,13 +611,14 @@ export default class VlabHVACBaseAirHandler extends VLab {
     }
 
     startAirBlower(resume) {
+        var self = this;
         if (this.airBlowerSoundOnReady !== true || this.airBlowerSoundReady !== true) {
+            var self = this;
             setTimeout(() => {
-                this.startAirBlower();
+                self.startAirBlower(resume);
             }, 500);
             return;
         }
-        var self = this;
         if (this.nature.sounds === true && (this.vLabLocator.context.activatedMode == 'cool')) {
             if (!this.airBlowerStarted) {
                 this.airBlowerSoundOn.play();
@@ -610,9 +637,14 @@ export default class VlabHVACBaseAirHandler extends VLab {
     stoptAirBlower(stopMotor) {
         if (stopMotor) {
             this.airBlowerStarted = false;
+            if (this.airBlowerSound.isPlaying) {
+                if (this.nature.sounds === true) this.airBlowerSoundOff.play();
+            }
         }
         if (this.airBlowerSound !== undefined) {
-            if (this.airBlowerSound.isPlaying) this.airBlowerSound.stop();
+            if (this.airBlowerSound.isPlaying) {
+                this.airBlowerSound.stop();
+            }
         }
         this.toggleCeilingVentGridsAirFlow();
         this.toggleAirHandlerAirFlow();
@@ -660,6 +692,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
             if (!this.nishDoorClosed) {
                 this.toggleAirHandlerCabinetPanelsLookThrough();
+                this.airBlowerSound.setVolume(0.5);
                 //Normal mode demo
                 if (this.vLabLocator.context.tablet.currentActiveTabId == 0) {
                     //Approach the thermostat completed
@@ -689,6 +722,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
                 if (this.contolVoltagesAcknowledgmentStepTimeout !== undefined) {
                     clearTimeout(this.contolVoltagesAcknowledgmentStepTimeout);
                 }
+                this.airBlowerSound.setVolume(0.2);
                 this.ctrlVoltageFromAirHandlerToHeatPump.stop();
                 this.ctrlVFromThermostatToAirHandler.stop();
                 this.power110VFromQuickDisconnect.stop();
@@ -724,6 +758,11 @@ export default class VlabHVACBaseAirHandler extends VLab {
                 this.checkThermostatIsSetToCool();
             }
         }
+        //Advanced mode
+        if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
+            //Approach the thermostat completed
+            this.checkThermostatIsSetToCool();
+        }
     }
 
     // carrierTPWEM01InfoInteractorCallback() {
@@ -747,30 +786,33 @@ export default class VlabHVACBaseAirHandler extends VLab {
                     this.vLabLocator.context.tablet.stepCompletedAnimation();
                     this.playSound('resources/assistant/snd/step2.mp3');
 
-                    this.vLabLocator.context.normalModeOperationProcessor();
                     this.carrierTPWEM01.responsive = false;
                     this.vLabLocator.context.activatedMode = 'cool';
+                    this.vLabLocator.context.normalModeOperationProcessor();
                     setTimeout(this.startAirBlower.bind(this), 2000);
                 }
             }
 
             //Short to ground demo
             if (this.vLabLocator.context.tablet.currentActiveTabId == 1) {
-                if (this.vLabLocator.context.advancedModeOperationProcessorTimeOut === undefined); {
-                    this.vLabLocator.context.advancedModeOperationProcessor();
-                }
-            }
-
-            //Advanced mode
-            if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
                 if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[1].completed === false) {
                     this.vLabLocator.context.tablet.initObj.content.tabs[1].items[1].completed = true;
                     this.vLabLocator.context.tablet.stepCompletedAnimation();
                     this.playSound('resources/assistant/snd/step2.mp3');
 
-                    this.vLabLocator.context.shortToGroundOperationProcessor();
                     this.carrierTPWEM01.responsive = false;
                     this.vLabLocator.context.activatedMode = 'cool';
+                    this.vLabLocator.context.shortToGroundOperationProcessor();
+                    setTimeout(this.startAirBlower.bind(this), 2000);
+                }
+            }
+
+            //Advanced mode
+            if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
+                if (this.vLabLocator.context.advancedModeOperationProcessorTimeOut === undefined); {
+                    this.carrierTPWEM01.responsive = false;
+                    this.vLabLocator.context.activatedMode = 'cool';
+                    this.vLabLocator.context.advancedModeOperationProcessor();
                     setTimeout(this.startAirBlower.bind(this), 2000);
                 }
             }
