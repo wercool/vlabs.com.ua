@@ -564,6 +564,16 @@ export default class VlabHVACBaseAirHandler extends VLab {
         this.toggleAirHandlerDuctLookThrough();
     }
 
+    resetNormalOperaionDefaults() {
+        this.airHandlerAirFlow.material.color = new THREE.Color(1.0, 1.0, 1.0);
+        this.airHandlerAirFlow.material.opacity = 0.75;
+        this.airHandlerAirFlow.material.needsUpdate = true;
+
+        this.ceelingAirVentFlow.material.color = new THREE.Color(1.0, 1.0, 1.0);
+        this.ceelingAirVentFlow.material.opacity = 0.25;
+        this.ceelingAirVentFlow.material.needsUpdate = true;
+    }
+
     shadowsSetup() {
         if (this.nature.useShadows !== undefined) {
             this.setupShadows({'defaultPointLight': this.light1});

@@ -414,6 +414,7 @@ class HVACVLabBase {
         this.vLabLocator.activateVLabLocation('HVACBaseAirHandler', { auto: true });
 
         if (this.vLabLocator.locations['HVACBaseAirHandler'] !== undefined) {
+            this.vLabLocator.locations['HVACBaseAirHandler'].resetNormalOperaionDefaults();
             if (this.vLabLocator.locations['HVACBaseAirHandler'].zoomMode) {
                 this.vLabLocator.locations['HVACBaseAirHandler'].resetView();
             }
@@ -433,6 +434,7 @@ class HVACVLabBase {
             this.vLabLocator.locations['HVACBaseHeatPump'].stopFanMotor();
             this.vLabLocator.locations['HVACBaseHeatPump'].stopScrollCompressor();
             this.vLabLocator.locations['HVACBaseHeatPump'].shortToGroundEffectOff();
+            this.vLabLocator.locations['HVACBaseHeatPump'].resetACDisconnect();
         }
         this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpFrameServicePanelTakeOutInteractor'] = false;
     }
@@ -455,6 +457,7 @@ class HVACVLabBase {
         this.vLabLocator.activateVLabLocation('HVACBaseAirHandler', { auto: true });
 
         if (this.vLabLocator.locations['HVACBaseAirHandler'] !== undefined) {
+            this.vLabLocator.locations['HVACBaseAirHandler'].resetNormalOperaionDefaults();
             if (this.vLabLocator.locations['HVACBaseAirHandler'].zoomMode) {
                 this.vLabLocator.locations['HVACBaseAirHandler'].resetView();
             }
@@ -474,6 +477,7 @@ class HVACVLabBase {
             this.vLabLocator.locations['HVACBaseHeatPump'].stopFanMotor();
             this.vLabLocator.locations['HVACBaseHeatPump'].stopScrollCompressor();
             this.vLabLocator.locations['HVACBaseHeatPump'].shortToGroundEffectOff();
+            this.vLabLocator.locations['HVACBaseHeatPump'].resetACDisconnect();
         }
         // this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpFrameServicePanelTakeOutInteractor'] = true;
     }

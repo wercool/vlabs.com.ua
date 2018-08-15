@@ -688,6 +688,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             icon: 'resources/scene-heat-pump/assets/reverse.png',
             iconRotation: THREE.Math.degToRad(0.0),
             action: this.ACDisconnectClampReverseInteractorHandler,
+            depthTest: false,
             deactivated: true
         });
 
@@ -1015,10 +1016,23 @@ export default class VlabHVACBaseHeatPump extends VLab {
     acPowerOff() {
         this.vLabLocator.context.HeatPumpACPower = false;
         this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.5;
+        this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.opacity = 0.4;
         this.shortToGroundEffectOff();
         this.stopFanMotor(true);
         this.stopScrollCompressor(true);
-        this.onVLabResumeAndShow();
+        this.onVLabResumeAndShow({
+            autoResume: true
+        });
+    }
+
+    acPowerOn() {
+        this.vLabLocator.context.HeatPumpACPower = true;
+        this.vLabLocator.locations['HVACBaseAirHandler'].resetNormalOperaionDefaults();
+        this.fanMotorStarted = true;
+        this.scrollCompressorStarted = true;
+        this.onVLabResumeAndShow({
+            autoResume: true
+        });
     }
 
     startFanMotor(resumeMotor) {
@@ -1136,13 +1150,13 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     ACDisconnectClampInteractorHandler() {
         if (this.vLabScene.getObjectByName('ACDisconnectClamp').position.z != -0.5) {
+            if (this.vLabLocator.context.HeatPumpACPower) this.acPowerOff();
             this.ACDisconnectDoorInteractor.deactivate();
             new TWEEN.Tween(this.vLabScene.getObjectByName('ACDisconnectClamp').position)
             .to({ z: -0.5 }, 200)
             .easing(TWEEN.Easing.Linear.None)
             .onComplete(() => {
                 this.ACDisconnectClampReverseInteractor.activate();
-                this.acPowerOff();
             })
             .start();
         } else {
@@ -1153,9 +1167,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             .onComplete(() => {
                 this.ACDisconnectDoorInteractor.activate();
                 if(this.vLabScene.getObjectByName('ACDisconnectClamp').rotation.y == 0.0) {
-                    this.vLabLocator.context.HeatPumpACPower = true;
-                } else {
-                    this.vLabLocator.context.HeatPumpACPower = false;
+                    this.acPowerOn();
                 }
             })
             .start();
@@ -1174,6 +1186,13 @@ export default class VlabHVACBaseHeatPump extends VLab {
             .easing(TWEEN.Easing.Linear.None)
             .start();
         }
+    }
+
+    resetACDisconnect() {
+        this.vLabScene.getObjectByName('ACDisconnectClamp').position.z = -0.747261;
+        this.vLabScene.getObjectByName('ACDisconnectDoor').rotation.x = -Math.PI / 2;
+        this.ACDisconnectCasezoomResetCallback();
+        this.vLabLocator.context.HeatPumpACPower = true;
     }
 
     heatPumpFrameCapTakeOutInteractorHandler() {
@@ -1458,9 +1477,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
         if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
             if (this.vLabScene.getObjectByName('ACDisconnectDoor').rotation.x == -Math.PI) {
                 this.ACDisconnectClampInteractor.activate();
-                this.ACDisconnectClampReverseInteractor.activate();
                 if (this.vLabScene.getObjectByName('ACDisconnectClamp').position.z != -0.5) {
                     this.ACDisconnectDoorInteractor.activate();
+                } else {
+                    this.ACDisconnectClampReverseInteractor.activate();
                 }
             } else {
                 this.ACDisconnectDoorInteractor.activate();
