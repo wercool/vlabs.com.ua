@@ -16,7 +16,19 @@ class VlabApartment extends VLab {
         super.preInitialize().then(() => {
             super.initialize().then((success) => {
                 if (success) {
-                    this.initialize(initObj);
+                    var textureLoader = new THREE.TextureLoader();
+
+                    Promise.all([
+                        textureLoader.load('../vlabs.assets/effectmaps/lampHalo.png'),
+                    ])
+                    .then((result) => {
+                        this.lampHalo = result[0];
+
+                        this.initialize(initObj);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
                 }
             });
         }).catch(error => {
@@ -58,18 +70,54 @@ class VlabApartment extends VLab {
         var defaultCameraPos = this.getWorldPosition(this.defaultCamera);
         this.prevDefaultCameraPos = defaultCameraPos;
 
-        var light0 = new THREE.AmbientLight(0xffffff, 0.35);
+        var light0 = new THREE.AmbientLight(0xffffff, 0.5);
         this.vLabScene.add(light0);
 
         // this.PointLight1 = new THREE.PointLight(0xffffff, 1.0);
         // this.PointLight1.position.set(0.0, 6.0, 1.0);
         // this.vLabScene.add(this.PointLight1);
 
-        this.SpotLight1 = new THREE.PointLight(0xffffff, 0.55);
+        this.SpotLight1 = new THREE.PointLight(0xffffff, 0.4);
         this.SpotLight1.position.set(defaultCameraPos.x, 2.95, defaultCameraPos.z);
         this.vLabScene.add(this.SpotLight1);
 
-        this.Valter =  new Valter({
+        this.ceiling = this.vLabScene.getObjectByName('ceiling');
+        // this.ceiling.material.color = new THREE.Color(1.1, 1.1, 1.1);
+        this.ceiling.material.depthTest = false;
+        this.ceiling.material.needsUpdate = true;
+
+        this.lampHaloSpriteMaterial = new THREE.SpriteMaterial({
+            map: this.lampHalo,
+            transparent: true,
+            opacity: 0.75,
+            rotation: 0.0,
+            depthTest: true,
+            depthWrite: true,
+            color: 0xfffef3,
+            // blending: THREE.AdditiveBlending
+        });
+        this.kitchenLampHaloSprite1 = new THREE.Sprite(this.lampHaloSpriteMaterial);
+        this.kitchenLampHaloSprite1.scale.set(0.75, 0.75, 0.75);
+        this.kitchenLampHaloSprite1.position.copy(new THREE.Vector3(0.0, 0.0, -0.01));
+        this.ceiling.add(this.kitchenLampHaloSprite1);
+        this.kitchenLampHaloSprite2 = new THREE.Sprite(this.lampHaloSpriteMaterial);
+        this.kitchenLampHaloSprite2.scale.set(0.75, 0.75, 0.75);
+        this.kitchenLampHaloSprite2.position.copy(new THREE.Vector3(0.953, -0.721, -0.01));
+        this.ceiling.add(this.kitchenLampHaloSprite2);
+        this.kitchenLampHaloSprite3 = new THREE.Sprite(this.lampHaloSpriteMaterial);
+        this.kitchenLampHaloSprite3.scale.set(0.75, 0.75, 0.75);
+        this.kitchenLampHaloSprite3.position.copy(new THREE.Vector3(0.953, 0.858, -0.01));
+        this.ceiling.add(this.kitchenLampHaloSprite3);
+        this.kitchenLampHaloSprite4 = new THREE.Sprite(this.lampHaloSpriteMaterial);
+        this.kitchenLampHaloSprite4.scale.set(0.75, 0.75, 0.75);
+        this.kitchenLampHaloSprite4.position.copy(new THREE.Vector3(-0.781, -0.721, -0.01));
+        this.ceiling.add(this.kitchenLampHaloSprite4);
+        this.kitchenLampHaloSprite5 = new THREE.Sprite(this.lampHaloSpriteMaterial);
+        this.kitchenLampHaloSprite5.scale.set(0.75, 0.75, 0.75);
+        this.kitchenLampHaloSprite5.position.copy(new THREE.Vector3(-0.781, 0.858, -0.01));
+        this.ceiling.add(this.kitchenLampHaloSprite5);
+
+        this.Valter = new Valter({
             context: this,
             pos: new THREE.Vector3(0, 0, 1.0),
             name: "Valter",
