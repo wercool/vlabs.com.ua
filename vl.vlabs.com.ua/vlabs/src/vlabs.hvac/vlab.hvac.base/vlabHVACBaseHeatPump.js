@@ -76,6 +76,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.initObj = initObj;
         this.vLabLocator = this.initObj.vLabLocator;
 
+        this.heatPumpFrameCapUnscrewed = false;
+
         //VLab events subscribers
         this.webGLContainerEventsSubcribers.stopandhide["HVACHeatPumpLocationvLabStopAndHide"] = 
         {
@@ -785,7 +787,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
         if (this.vLabLocator.context.activatedMode == 'cool') {
             this.startFanMotor(true);
-            this.startScrollCompressor();
+            this.startScrollCompressor(true);
         }
 
         ////// Ambient Air Flow
@@ -798,14 +800,15 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.ambientAirFlow1.visible = false;
         this.toggleHeatPumpAirFlow();
 
+        this.contactorTraverse = this.vLabScene.getObjectByName("contactorTraverse");
         this.contactorElectricArcEffect = new ElectricArc({
             context: this,
             color: 0xffffff,
-            parentObj: this.vLabScene.getObjectByName("contactorTraverse"),
+            parentObj: this.contactorTraverse,
             relPos: new THREE.Vector3(0.01, 0.0, 0.0),
             scale: 0.02,
             opacity: 1.0,
-            duration: 0.15,
+            duration: 0.2,
             lightning: {
                 intensity: 1.0,
                 distance: 0.25,
@@ -937,12 +940,12 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 format: 'F'
             });
             if (roomTemperature > coolToTemperature) {
-                let fanMotorResumed = true;
+                let resumed = true;
                 if (initObj !== undefined) {
-                    fanMotorResumed = (initObj.autoResume == true) ? false : true;
+                    resumed = (initObj.autoResume == true) ? false : true;
                 }
-                this.startFanMotor(fanMotorResumed);
-                this.startScrollCompressor();
+                this.startFanMotor(resumed);
+                this.startScrollCompressor(resumed);
             } else {
                 this.stopFanMotor();
                 this.stopScrollCompressor();
@@ -953,6 +956,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.toggleHeatPumpAirFlow();
         this.toggleRefrigerantFlow1();
         this.toggleDirectionalRefrigerantFlow();
+    }
+
+    resetNormalOperaionDefaults() {
+        this.heatPumpFrameCapUnscrewed = false;
     }
 
     shadowsSetup() {
@@ -1015,15 +1022,19 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     acPowerOff() {
         this.vLabLocator.context.HeatPumpACPower = false;
-        if (this.vLabLocator.context.activatedMode.indexOf('cool') == -1) return;
-        this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.5;
-        this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.opacity = 0.4;
-        this.shortToGroundEffectOff();
-        this.stopFanMotor(true);
-        this.stopScrollCompressor(true);
-        this.onVLabResumeAndShow({
-            autoResume: true
-        });
+        if (this.vLabLocator.context.activatedMode.indexOf('cool') != -1) {
+            this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.5;
+            this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.opacity = 0.4;
+            this.shortToGroundEffectOff();
+            this.stopFanMotor(true);
+            this.stopScrollCompressor(true);
+            this.onVLabResumeAndShow({
+                autoResume: true
+            });
+        }
+        if (this.heatPumpFrameCapUnscrewed == true) {
+            this.heatPumpFrameCapTakeOutInteractor.activate();
+        }
     }
 
     acPowerOn() {
@@ -1034,6 +1045,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.onVLabResumeAndShow({
             autoResume: true
         });
+        this.heatPumpFrameCapTakeOutInteractor.deactivate();
     }
 
     startFanMotor(resumeMotor) {
@@ -1066,15 +1078,16 @@ export default class VlabHVACBaseHeatPump extends VLab {
         }
     }
 
-    startScrollCompressor() {
+    startScrollCompressor(resumed) {
         if (this.scrollCompressorSoundReady !== true) {
             setTimeout(() => {
-                this.startScrollCompressor();
+                this.startScrollCompressor(resumed);
             }, 500);
             return;
         }
         this.scrollCompressorStarted = true;
         if (this.nature.sounds === true) this.scrollCompressorSound.play();
+        this.contactorOn(resumed);
         this.toggleRefrigerantFlow1();
         this.toggleHeatPumpAirFlow();
         this.toggleDirectionalRefrigerantFlow();
@@ -1084,6 +1097,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         if (offEffect === true) {
             if (this.scrollCompressorOffSound !== undefined) {
                 if (this.nature.sounds === true) this.scrollCompressorOffSound.play();
+                this.contactorOff();
             }
         }
         this.scrollCompressorStarted = false;
@@ -1092,6 +1106,22 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 if (this.scrollCompressorSound.isPlaying) this.scrollCompressorSound.stop();
             }
         }
+    }
+
+    contactorOn(resumed) {
+        this.contactorTraverse.position.z = 0.04988;//0.05188 - 0.002
+        if (resumed !== true) {
+            if (this.nature.sounds) this.contactorOnSound.play();
+            this.contactorElectricArcEffect.start();
+        }
+    }
+
+    contactorOff() {
+        if (this.nature.sounds) {
+            this.contactorOffSound.play();
+        }
+        this.contactorTraverse.position.z = 0.05188;//0.04988 + 0.002
+        this.contactorElectricArcEffect.start();
     }
 
     startDirectionalRefrigerantFlow() {
@@ -1134,7 +1164,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             .to({ x: -Math.PI }, 200)
             .easing(TWEEN.Easing.Linear.None)
             .onComplete(() => {
-                this.ACDisconnectClampInteractor.activate();
+                if (this.heatPumpFrameCapTakenOut !== true) this.ACDisconnectClampInteractor.activate();
             })
             .start();
         } else {
@@ -1197,8 +1227,13 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     heatPumpFrameCapTakeOutInteractorHandler() {
-        // this.stopFanMotor();
-        // this.stopScrollCompressor();
+
+        if (this.heatPumpFrameCapTakenOut == true) {
+            this.resetHeatPumpFrameCap();
+            this.heatPumpFrameCapTakenOut = false;
+            return;
+        }
+
         this.heatPumpFrameCapTakeOutInteractor.deactivate();
         this.bryantB225B_heatPumpFrameCap = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameCap');
 
@@ -1236,7 +1271,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 .start()
                 .onComplete(() => {
 
+                    this.heatPumpFrameCapTakeOutInteractor.handlerSprite.translateZ(-0.3);
 
+                    this.ACDisconnectClampInteractor.deactivate();
+                    this.heatPumpFrameCapTakeOutInteractor.activate();
+                    this.heatPumpFrameCapTakenOut = true;
 
                 });
             });
@@ -1249,6 +1288,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.bryantB225B_heatPumpFrameCap = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameCap');
         this.bryantB225B_heatPumpFrameCap.position.copy(this.nature.bryantB225B_heatPumpFrameCap.position);
         this.bryantB225B_heatPumpFrameCap.rotation.copy(this.nature.bryantB225B_heatPumpFrameCap.rotation);
+
+        this.heatPumpFrameCapUnscrewed = false;
 
         this.vLabScene.getObjectByName('wire6').visible = true;
         this.vLabScene.getObjectByName('wire10').visible = true;
@@ -1342,17 +1383,6 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     showControlBoardZoomHelperCloseUp() {
         this.controlBoard_ZoomHelper_CloseUp.show();
-    }
-
-    contactorOn() {
-        if (this.nature.sounds) this.contactorOnSound.play();
-    }
-
-    contactorOff() {
-        if (this.nature.sounds) {
-            this.contactorOffSound.play();
-        }
-        this.contactorElectricArcEffect.start();
     }
 
     heatPumpCompressorLookThrough() {
@@ -1475,6 +1505,9 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     ACDisconnectCaseZoomHelperHandler() {
+        if (this.heatPumpFrameCapTakenOut == true) {
+            this.ACDisconnectClampInteractor.deactivate();
+        }
         if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
             if (this.vLabScene.getObjectByName('ACDisconnectDoor').rotation.x == -Math.PI) {
                 this.ACDisconnectClampInteractor.activate();
@@ -1742,8 +1775,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
                                                                                                                                                                                     setTimeout(() => {
                                                                                                                                                                                         this.selectedObject = this.BoshScrewdriver.model;
                                                                                                                                                                                         this.takeObjectToInventory();
-                                                                                                                                                                                        this.heatPumpFrameCapTakeOutInteractor.activate();
-                                                                                                                                                                                        this.heatPumpFrameServicePanelTakeOutInteractor.activate();
+                                                                                                                                                                                        this.heatPumpFrameCapUnscrewed = true;
+                                                                                                                                                                                        if (this.vLabLocator.context.HeatPumpACPower == false) {
+                                                                                                                                                                                            this.heatPumpFrameCapTakeOutInteractor.activate();
+                                                                                                                                                                                        }
                                                                                                                                                                                     }, delay * 2);
                                                                                                                                                                                 }, delay);
                                                                                                                                                                             });

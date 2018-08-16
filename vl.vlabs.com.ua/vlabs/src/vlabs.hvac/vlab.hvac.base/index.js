@@ -427,7 +427,7 @@ class HVACVLabBase {
             this.vLabLocator.locations['HVACBaseAirHandler'].stoptAirBlower(true);
         }
         if (this.vLabLocator.locations['HVACBaseHeatPump'] !== undefined) {
-            // this.vLabLocator.locations['HVACBaseHeatPump'].heatPumpFrameServicePanelTakeOutInteractor.deactivate();
+            this.vLabLocator.locations['HVACBaseHeatPump'].heatPumpFrameServicePanelTakeOutInteractor.deactivate();
             this.vLabLocator.locations['HVACBaseHeatPump'].resetView();
             this.vLabLocator.locations['HVACBaseHeatPump'].resetHeatPumpFrameServicePanel();
             this.vLabLocator.locations['HVACBaseHeatPump'].resetHeatPumpFrameCap();
@@ -470,7 +470,7 @@ class HVACVLabBase {
             this.vLabLocator.locations['HVACBaseAirHandler'].stoptAirBlower(true);
         }
         if (this.vLabLocator.locations['HVACBaseHeatPump'] !== undefined) {
-            // this.vLabLocator.locations['HVACBaseHeatPump'].heatPumpFrameServicePanelTakeOutInteractor.activate();
+            this.vLabLocator.locations['HVACBaseHeatPump'].heatPumpFrameServicePanelTakeOutInteractor.deactivate();
             this.vLabLocator.locations['HVACBaseHeatPump'].resetView();
             this.vLabLocator.locations['HVACBaseHeatPump'].resetHeatPumpFrameServicePanel();
             this.vLabLocator.locations['HVACBaseHeatPump'].resetHeatPumpFrameCap();
@@ -479,7 +479,7 @@ class HVACVLabBase {
             this.vLabLocator.locations['HVACBaseHeatPump'].shortToGroundEffectOff();
             this.vLabLocator.locations['HVACBaseHeatPump'].resetACDisconnect();
         }
-        // this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpFrameServicePanelTakeOutInteractor'] = true;
+        this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpFrameServicePanelTakeOutInteractor'] = false;
     }
 
     setAdvancedMode() {
@@ -488,6 +488,11 @@ class HVACVLabBase {
             audio.play();
         }
         this.setNormalOperatonMode(true);
+        if (this.vLabLocator.locations['HVACBaseHeatPump'] !== undefined) {
+            this.vLabLocator.locations['HVACBaseHeatPump'].heatPumpFrameServicePanelTakeOutInteractor.activate();
+        } else {
+            this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpFrameServicePanelTakeOutInteractor'] = true;
+        }
     }
 
     normalModeOperationProcessor() {
