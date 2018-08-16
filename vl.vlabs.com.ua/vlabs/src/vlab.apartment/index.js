@@ -70,7 +70,7 @@ class VlabApartment extends VLab {
         var defaultCameraPos = this.getWorldPosition(this.defaultCamera);
         this.prevDefaultCameraPos = defaultCameraPos;
 
-        var light0 = new THREE.AmbientLight(0xffffff, 0.5);
+        var light0 = new THREE.AmbientLight(0xffffff, 0.25);
         this.vLabScene.add(light0);
 
         // this.PointLight1 = new THREE.PointLight(0xffffff, 1.0);
