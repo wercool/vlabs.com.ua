@@ -507,11 +507,11 @@ class HVACVLabBase {
         if (roomTemperature < coolToTemperature) {
             if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
             console.log('Preset "cool to" temperature is reached. Normal operation demo is completed.');
-            this.normalModeOperationProcessorTimeOut = setTimeout(this.setNormalOperatonMode.bind(this), 30000);
             if (document.getElementById('SettingsSoundsCheckbox').checked) {
                 let audio = new Audio('./resources/assistant/snd/normal-operation-demo-completed.mp3');
                 audio.play();
             }
+            this.normalModeOperationProcessorTimeOut = setTimeout(this.setNormalOperatonMode.bind(this), 5000);
         } else {
             this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
             this.normalModeOperationProcessorTimeOut = setTimeout(this.normalModeOperationProcessor.bind(this), 5000);
@@ -557,11 +557,11 @@ class HVACVLabBase {
         if (roomTemperature < coolToTemperature) {
             if (this.shortToGroundOperationProcessorTimeOut) clearTimeout(this.shortToGroundOperationProcessorTimeOut);
             console.log('Preset "cool to" temperature is reached. Short To Ground demo is completed.');
-            this.shortToGroundOperationProcessorTimeOut = setTimeout(this.setShortToGroundMode.bind(this), 30000);
             if (document.getElementById('SettingsSoundsCheckbox').checked) {
                 let audio = new Audio('./resources/assistant/snd/shortToGround/short-to-ground-demo-completed.mp3');
                 audio.play();
             }
+            this.shortToGroundOperationProcessorTimeOut = setTimeout(this.setShortToGroundMode.bind(this), 5000);
         } else {
             this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
             this.shortToGroundOperationProcessorTimeOut = setTimeout(this.shortToGroundOperationProcessor.bind(this), 5000);
@@ -577,8 +577,8 @@ class HVACVLabBase {
             tempId: 'coolToTemperature',
             format: 'F'
         });
-console.log('advancedModeOperationProcessor', this.activatedMode, roomTemperature.toFixed(2), this.ambientDefaultRoomTemperature.toFixed(2));
-console.log('this.HeatPumpACPower', this.HeatPumpACPower);
+// console.log('advancedModeOperationProcessor', this.activatedMode, roomTemperature.toFixed(2), this.ambientDefaultRoomTemperature.toFixed(2));
+// console.log('this.HeatPumpACPower', this.HeatPumpACPower);
         if (roomTemperature < coolToTemperature && this.activatedMode == 'cool' && this.HeatPumpACPower == true) {
             console.log('Preset "cool to" temperature is reached.');
 
