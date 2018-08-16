@@ -378,7 +378,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
             orbitTargetPositionDeltas: new THREE.Vector3(0.0, 0.0, 0.0), 
             color: 0xfff495,
             visible: true,
-            zoomCompleteCallback: this.heatPumpCompressorLookThrough
+            zoomCompleteCallback: this.heatPumpCompressorLookThrough,
+            zoomResetCallback: this.shortToGroundEffectOff
         });
 
         this.bryantB225BReversingValveZoomHelper = new ZoomHelper({
@@ -826,6 +827,12 @@ export default class VlabHVACBaseHeatPump extends VLab {
         }
 
 
+        this.ACDisconnectDoorHingeCodeLock = this.vLabScene.getObjectByName('ACDisconnectDoorHingeCodeLock');
+
+        if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
+            this.ACDisconnectDoorHingeCodeLock.visible = false;
+        }
+
         // Misc helpers
         // this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
         // this.heatPumpFrameCap_manipulationControl.setSize(0.5);
@@ -863,7 +870,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             }
             this.ambientAirFlow1Throttling++;
         }
-        if (this.heatPumpCompressorOil.visible === true) {
+        if (this.vLabLocator.context.HeatPumpACPower == true && this.scrollCompressorStarted == true && this.heatPumpCompressorOil.visible == true) {
             this.heatPumpCompressorOil.material.map.rotation += Math.random() / 150;
             this.heatPumpCompressorOil.material.map.needsUpdate = true;
             this.heatPumpCompressorOil.material.needsUpdate = true;
@@ -926,9 +933,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
         }
 
         if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
+            this.ACDisconnectDoorHingeCodeLock.visible = false;
             this.inventory.showToolboxBtn();
         } else {
             this.inventory.hideToolboxBtn();
+            this.ACDisconnectDoorHingeCodeLock.visible = true;
         }
         if (this.vLabLocator.context.activatedMode == 'cool' && this.vLabLocator.context.HeatPumpACPower == true) {
             var roomTemperature = this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.getTemperature({
@@ -1240,6 +1249,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.nature.bryantB225B_heatPumpFrameCap = {
             position: this.bryantB225B_heatPumpFrameCap.position.clone(),
             rotation: this.bryantB225B_heatPumpFrameCap.rotation.clone(),
+            takeOutInteractorSpritePos: this.heatPumpFrameCapTakeOutInteractor.handlerSprite.position.clone()
         };
 
         this.vLabScene.getObjectByName('wire6').visible = false;
@@ -1271,7 +1281,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 .start()
                 .onComplete(() => {
 
-                    this.heatPumpFrameCapTakeOutInteractor.handlerSprite.translateZ(-0.3);
+                    this.heatPumpFrameCapTakeOutInteractor.handlerSprite.position.z = this.nature.bryantB225B_heatPumpFrameCap.position.z - 0.3;
 
                     this.ACDisconnectClampInteractor.deactivate();
                     this.heatPumpFrameCapTakeOutInteractor.activate();
@@ -1284,7 +1294,13 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     resetHeatPumpFrameCap() {
         if (this.nature.bryantB225B_heatPumpFrameCap.position == undefined) return;
-        this.heatPumpFrameCapTakeOutInteractor.deactivate();
+        this.vLabScene.getObjectByName('frameCapBolt10').visible = true;
+        if (this.vLabLocator.context.tablet.currentActiveTabId == 2 && this.vLabLocator.context.HeatPumpACPower == false) {
+            this.heatPumpFrameCapTakeOutInteractor.activate();
+        } else {
+            this.heatPumpFrameCapTakeOutInteractor.deactivate();
+        }
+        this.heatPumpFrameCapTakeOutInteractor.handlerSprite.position.copy(this.nature.bryantB225B_heatPumpFrameCap.takeOutInteractorSpritePos);
         this.bryantB225B_heatPumpFrameCap = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameCap');
         this.bryantB225B_heatPumpFrameCap.position.copy(this.nature.bryantB225B_heatPumpFrameCap.position);
         this.bryantB225B_heatPumpFrameCap.rotation.copy(this.nature.bryantB225B_heatPumpFrameCap.rotation);
@@ -1407,12 +1423,15 @@ export default class VlabHVACBaseHeatPump extends VLab {
         heatPumpCompressor.material.alphaTest = 0.5;
         heatPumpCompressor.material.transparent = true;
         this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.opacity = 0.1;
+
         this.heatPumpCompressorOil.visible = true;
-        this.heatPumpCompressorOilDisplacementTween.start();
-        this.scrollCompressorZP25K5EStatorDamagedWires.visible = true;
-        // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = true;
-        this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = true;
-        if (this.nature.sounds) this.scrollCompressorShortToGroundSparkSound.play();
+        if (this.vLabLocator.context.HeatPumpACPower == true) {
+            this.heatPumpCompressorOilDisplacementTween.start();
+            this.scrollCompressorZP25K5EStatorDamagedWires.visible = true;
+            // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = true;
+            this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = true;
+            if (this.nature.sounds) this.scrollCompressorShortToGroundSparkSound.play();
+        }
 
         heatPumpCompressor.material.needsUpdate = true;
         this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.needsUpdate = true;
@@ -1426,7 +1445,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         heatPumpCompressor.material.alphaTest = 0.0;
         this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.opacity = 0.5;
         this.heatPumpCompressorOil.visible = false;
-        this.heatPumpCompressorOilDisplacementTween.stop();
+        if (this.heatPumpCompressorOilDisplacementTween !== undefined) this.heatPumpCompressorOilDisplacementTween.stop();
         this.scrollCompressorZP25K5EStatorDamagedWires.visible = false;
         this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = false;
         // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = false;
@@ -1510,7 +1529,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         }
         if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
             if (this.vLabScene.getObjectByName('ACDisconnectDoor').rotation.x == -Math.PI) {
-                this.ACDisconnectClampInteractor.activate();
+                if (this.heatPumpFrameCapTakenOut != true) this.ACDisconnectClampInteractor.activate();
                 if (this.vLabScene.getObjectByName('ACDisconnectClamp').position.z != -0.5) {
                     this.ACDisconnectDoorInteractor.activate();
                 } else {
