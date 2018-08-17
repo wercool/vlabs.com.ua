@@ -8,6 +8,8 @@ export default class VLabInteractor {
 
         var textureLoader = new THREE.TextureLoader();
 
+        this.stayActive = false;
+
         Promise.all([
             textureLoader.load(this.initObj.icon ? this.initObj.icon : '../vlabs.assets/img/interactor.png'),
         ])
@@ -100,12 +102,13 @@ export default class VLabInteractor {
         }
     }
 
-    deactivate() {
+    deactivate(stayActive) {
+        this.stayActive = stayActive !== undefined ? stayActive : false;
         if (this.handlerSprite === undefined) { 
             setTimeout(this.deactivate.bind(this), 250);
             return;
         }
-        this.handlerSprite.visible = false;
+        if (!this.stayActive) this.handlerSprite.visible = false;
     }
 
     activate() {
@@ -114,6 +117,10 @@ export default class VLabInteractor {
             return;
         }
         this.handlerSprite.visible = true;
+    }
+
+    isDeactivated() {
+        return !this.handlerSprite.visible || this.stayActive;
     }
 
     executeAction() {

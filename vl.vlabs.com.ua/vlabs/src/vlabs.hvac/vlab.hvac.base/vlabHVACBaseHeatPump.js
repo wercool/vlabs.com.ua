@@ -1304,12 +1304,28 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     resetHeatPumpFrameCap() {
         if (this.nature.bryantB225B_heatPumpFrameCap.position == undefined) return;
+
+        this.vLabScene.getObjectByName('frameCapBolt1').visible = true;
+        this.vLabScene.getObjectByName('frameCapBolt2').visible = true;
+        this.vLabScene.getObjectByName('frameCapBolt3').visible = true;
+        this.vLabScene.getObjectByName('frameCapBolt4').visible = true;
+        this.vLabScene.getObjectByName('frameCapBolt5').visible = true;
+        this.vLabScene.getObjectByName('frameCapBolt6').visible = true;
+        this.vLabScene.getObjectByName('frameCapBolt7').visible = true;
+        this.vLabScene.getObjectByName('frameCapBolt8').visible = true;
         this.vLabScene.getObjectByName('frameCapBolt10').visible = true;
-        if (this.vLabLocator.context.tablet.currentActiveTabId == 2 && this.vLabLocator.context.HeatPumpACPower == false) {
-            this.heatPumpFrameCapTakeOutInteractor.activate();
-        } else {
-            this.heatPumpFrameCapTakeOutInteractor.deactivate();
-        }
+        this.vLabScene.getObjectByName('frameCapBolt11').visible = true;
+        this.vLabScene.getObjectByName('frameCapBolt12').visible = true;
+        this.vLabScene.getObjectByName('frameCapBolt13').visible = true;
+        this.vLabScene.getObjectByName('frameCapBolt14').visible = true;
+        this.vLabScene.getObjectByName('frameCapBolt15').visible = true;
+        this.heatPumpFrameCapTakeOutInteractor.deactivate();
+
+        // if (this.vLabLocator.context.tablet.currentActiveTabId == 2 && this.vLabLocator.context.HeatPumpACPower == false) {
+        //     this.heatPumpFrameCapTakeOutInteractor.activate();
+        // } else {
+        //     this.heatPumpFrameCapTakeOutInteractor.deactivate();
+        // }
         this.heatPumpFrameCapTakeOutInteractor.handlerSprite.position.copy(this.nature.bryantB225B_heatPumpFrameCap.takeOutInteractorSpritePos);
         this.bryantB225B_heatPumpFrameCap = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameCap');
         this.bryantB225B_heatPumpFrameCap.position.copy(this.nature.bryantB225B_heatPumpFrameCap.position);
@@ -1327,30 +1343,35 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     heatPumpFrameServicePanelTakeOutInteractorHandler() {
-        this.heatPumpFrameServicePanelTakeOutInteractor.deactivate();
-        this.bryantB225B_heatPumpFrameServicePanel = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameServicePanel');
-        this.nature.bryantB225B_heatPumpFrameServicePanelInitial = {
-            position: this.bryantB225B_heatPumpFrameServicePanel.position.clone(),
-            rotation: this.bryantB225B_heatPumpFrameServicePanel.rotation.clone(),
-        };
-        new TWEEN.Tween(this.bryantB225B_heatPumpFrameServicePanel.position)
-        .to({ x: 0.6 }, 350)
-        .easing(TWEEN.Easing.Linear.None)
-        .start()
-        new TWEEN.Tween(this.bryantB225B_heatPumpFrameServicePanel.rotation)
-        .to({ z: -Math.PI * 1.5 }, 350)
-        .easing(TWEEN.Easing.Linear.None)
-        .start();
-        new TWEEN.Tween(this.bryantB225B_heatPumpFrameServicePanel.position)
-        .to({ y: 0.005, z: -0.8 }, 350)
-        .easing(TWEEN.Easing.Linear.None)
-        .start();
-
-        if (this.vLabLocator.context.tablet.currentActiveTabId == 1) {
-            if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[3].completed === true) {
-                if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[4].completed === false) {
-                    this.vLabLocator.context.tablet.initObj.content.tabs[1].items[4].completed = true;
-                    this.vLabLocator.context.tablet.stepCompletedAnimation();
+        if (this.heatPumpFrameServicePanelTakeOutInteractor.isDeactivated()) {
+            this.resetHeatPumpFrameServicePanel();
+            // TODO: check for applied devices
+        } else {
+            this.heatPumpFrameServicePanelTakeOutInteractor.deactivate(true);
+            this.bryantB225B_heatPumpFrameServicePanel = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameServicePanel');
+            this.nature.bryantB225B_heatPumpFrameServicePanelInitial = {
+                position: this.bryantB225B_heatPumpFrameServicePanel.position.clone(),
+                rotation: this.bryantB225B_heatPumpFrameServicePanel.rotation.clone(),
+            };
+            new TWEEN.Tween(this.bryantB225B_heatPumpFrameServicePanel.position)
+            .to({ x: 0.6 }, 350)
+            .easing(TWEEN.Easing.Linear.None)
+            .start()
+            new TWEEN.Tween(this.bryantB225B_heatPumpFrameServicePanel.rotation)
+            .to({ z: -Math.PI * 1.5 }, 350)
+            .easing(TWEEN.Easing.Linear.None)
+            .start();
+            new TWEEN.Tween(this.bryantB225B_heatPumpFrameServicePanel.position)
+            .to({ y: 0.005, z: -0.8 }, 350)
+            .easing(TWEEN.Easing.Linear.None)
+            .start();
+    
+            if (this.vLabLocator.context.tablet.currentActiveTabId == 1) {
+                if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[3].completed === true) {
+                    if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[4].completed === false) {
+                        this.vLabLocator.context.tablet.initObj.content.tabs[1].items[4].completed = true;
+                        this.vLabLocator.context.tablet.stepCompletedAnimation();
+                    }
                 }
             }
         }
@@ -1358,7 +1379,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     resetHeatPumpFrameServicePanel() {
         if (this.nature.bryantB225B_heatPumpFrameServicePanelInitial.position == undefined) return;
-        this.heatPumpFrameServicePanelTakeOutInteractor.deactivate();
+        if (!this.heatPumpFrameServicePanelTakeOutInteractor.stayActive) this.heatPumpFrameServicePanelTakeOutInteractor.deactivate();
+        this.heatPumpFrameServicePanelTakeOutInteractor.stayActive = false;
         this.bryantB225B_heatPumpFrameServicePanel = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameServicePanel');
         this.bryantB225B_heatPumpFrameServicePanel.position.copy(this.nature.bryantB225B_heatPumpFrameServicePanelInitial.position);
         this.bryantB225B_heatPumpFrameServicePanel.rotation.copy(this.nature.bryantB225B_heatPumpFrameServicePanelInitial.rotation);
