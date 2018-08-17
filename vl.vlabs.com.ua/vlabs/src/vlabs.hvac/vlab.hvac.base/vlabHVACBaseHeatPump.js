@@ -848,7 +848,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     onRedererFrameEvent(event) {
-        if (this.fanMotorStarted === true) {
+        if (this.fanMotorStarted === true && this.vLabLocator.context.HeatPumpACPower == true) {
             // this.fanMotorBladeShaft.rotateZ(0.5);
             this.fanMotorBladeShaft.rotateZ(this.fanMotorSpeed);
             if (this.fanMotorSpeed < 0.5) {
@@ -950,7 +950,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 tempId: 'coolToTemperature',
                 format: 'F'
             });
-            if (roomTemperature > coolToTemperature) {
+            if (roomTemperature > coolToTemperature && this.vLabLocator.context.HeatPumpACPower == true) {
                 let resumed = true;
                 if (initObj !== undefined) {
                     resumed = (initObj.autoResume == true) ? false : true;
@@ -1020,8 +1020,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     toggleDirectionalRefrigerantFlow() {
-        if (this.vLabLocator.context.activatedMode == 'cool' && this.scrollCompressorStarted) {
-            if (this.nature.directionalRefrigerantFlow === true) {
+        if (this.vLabLocator.context.activatedMode == 'cool' 
+         && this.scrollCompressorStarted 
+         && this.vLabLocator.context.HeatPumpACPower == true) {
+            if (this.nature.directionalRefrigerantFlow === true && this.scrollCompressorStarted == true) {
                 this.startDirectionalRefrigerantFlow();
             } else {
                 this.stopDirectionalRefrigerantFlow();
@@ -1034,7 +1036,9 @@ export default class VlabHVACBaseHeatPump extends VLab {
     acPowerOff() {
         this.vLabLocator.context.HeatPumpACPower = false;
         if (this.vLabLocator.context.activatedMode.indexOf('cool') != -1) {
-            this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.5;
+            if (this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] > this.vLabLocator.context.ambientDefaultRoomTemperature) {
+                this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.5;
+            }
             this.vLabLocator.locations['HVACBaseAirHandler'].airHandlerAirFlow.material.opacity = 0.4;
             this.shortToGroundEffectOff();
             this.stopFanMotor(true);
@@ -1051,8 +1055,6 @@ export default class VlabHVACBaseHeatPump extends VLab {
     acPowerOn() {
         this.vLabLocator.context.HeatPumpACPower = true;
         this.vLabLocator.locations['HVACBaseAirHandler'].resetNormalOperaionDefaults();
-        this.fanMotorStarted = true;
-        this.scrollCompressorStarted = true;
         this.onVLabResumeAndShow({
             autoResume: true
         });
@@ -1078,7 +1080,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
     stopFanMotor(offEffect) {
         if (offEffect === true) {
             if (this.fanMotorOffSound !== undefined) {
-                if (this.nature.sounds === true) this.fanMotorOffSound.play();
+                if (this.nature.sounds === true) {
+                    if (this.fanMotorStarted == true) {
+                        this.fanMotorOffSound.play();
+                    }
+                }
             }
         }
         this.fanMotorStarted = false;
@@ -1106,9 +1112,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     stopScrollCompressor(offEffect) {
         if (offEffect === true) {
-            if (this.scrollCompressorOffSound !== undefined) {
-                if (this.nature.sounds === true) this.scrollCompressorOffSound.play();
-                this.contactorOff();
+            if (this.scrollCompressorOffSound !== undefined && this.nature.sounds === true) {
+                if (this.scrollCompressorStarted == true) {
+                    this.scrollCompressorOffSound.play();
+                    this.contactorOff();
+                }
             }
         }
         this.scrollCompressorStarted = false;
@@ -1192,7 +1200,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     ACDisconnectClampInteractorHandler() {
         if (this.vLabScene.getObjectByName('ACDisconnectClamp').position.z != -0.5) {
-            if (this.vLabLocator.context.HeatPumpACPower) this.acPowerOff();
+            if (this.vLabLocator.context.HeatPumpACPower == true) this.acPowerOff();
             this.ACDisconnectDoorInteractor.deactivate();
             new TWEEN.Tween(this.vLabScene.getObjectByName('ACDisconnectClamp').position)
             .to({ z: -0.5 }, 200)

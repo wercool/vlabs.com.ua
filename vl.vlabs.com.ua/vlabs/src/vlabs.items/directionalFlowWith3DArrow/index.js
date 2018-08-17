@@ -191,9 +191,9 @@ export default class DirectionalFlowWith3DArrow {
                 .easing(TWEEN.Easing.Linear.None)
                 .start();
 
-                this.animate();
+                if (this.model.visible) this.animate();
             } else {
-                this.start();
+                if (this.model.visible) this.start();
             }
         })
         .start();
