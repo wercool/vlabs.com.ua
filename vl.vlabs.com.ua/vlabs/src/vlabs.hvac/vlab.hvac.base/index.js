@@ -511,7 +511,7 @@ class HVACVLabBase {
                 let audio = new Audio('./resources/assistant/snd/normal-operation-demo-completed.mp3');
                 audio.play();
             }
-            this.normalModeOperationProcessorTimeOut = setTimeout(this.setNormalOperatonMode.bind(this), 5000);
+            this.normalModeOperationProcessorTimeOut = setTimeout(this.setNormalOperatonMode.bind(this), 8000);
         } else {
             this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
             this.normalModeOperationProcessorTimeOut = setTimeout(this.normalModeOperationProcessor.bind(this), 5000);
@@ -561,7 +561,7 @@ class HVACVLabBase {
                 let audio = new Audio('./resources/assistant/snd/shortToGround/short-to-ground-demo-completed.mp3');
                 audio.play();
             }
-            this.shortToGroundOperationProcessorTimeOut = setTimeout(this.setShortToGroundMode.bind(this), 5000);
+            this.shortToGroundOperationProcessorTimeOut = setTimeout(this.setShortToGroundMode.bind(this), 8000);
         } else {
             this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
             this.shortToGroundOperationProcessorTimeOut = setTimeout(this.shortToGroundOperationProcessor.bind(this), 5000);
