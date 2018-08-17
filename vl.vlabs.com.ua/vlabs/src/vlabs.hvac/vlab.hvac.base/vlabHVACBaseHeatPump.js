@@ -397,7 +397,9 @@ export default class VlabHVACBaseHeatPump extends VLab {
             minDistance: 0.35,
             positionDeltas: new THREE.Vector3(-0.05, 0.0, 0.05), 
             scale: new THREE.Vector3(0.1, 0.1, 0.1),
-            color: 0xfff495
+            color: 0xfff495,
+            minAzimuthAngle: 1.1,
+            maxAzimuthAngle: 0.0,
         });
 
         this.ACDisconnectCaseZoomHelper = new ZoomHelper({
