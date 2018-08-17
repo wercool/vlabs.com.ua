@@ -13,6 +13,7 @@ import VLabInteractor               from '../../vlabs.core/vlab-interactor';
 import CarrierTPWEM01              from '../../vlabs.items/hvac/carrierTPWEM01';
 import FlowAlongTube               from '../../vlabs.items/flow-along-tube';
 import DirectionalFlow             from '../../vlabs.items/directional-flow';
+import HeadPhones                  from '../../vlabs.items/headphones';
 
 export default class VlabHVACBaseAirHandler extends VLab {
     constructor(initObj = {}) {
@@ -239,6 +240,13 @@ export default class VlabHVACBaseAirHandler extends VLab {
             rot: this.vLabScene.getObjectByName('carrierTPWEM01WallMount').rotation,
             name: 'carrierTPWEM01',
             initialScreen: 'baseScreen'
+        });
+
+        this.headPhones = new HeadPhones({
+            context: this,
+            name: 'headPhones',
+            position: this.vLabScene.getObjectByName('entranceRoomTable').position.clone().add(new THREE.Vector3(0.4, 1.05, 0.0)),
+            rotation: new THREE.Vector3(0.0, Math.PI / 4, Math.PI / 2)
         });
 
         /* Lamp setup */
