@@ -290,7 +290,7 @@ export default class DetailedView {
     }
 
     close() {
-
+console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
         this.paused = true;
 
         this.container.style.display = 'none';
@@ -299,7 +299,11 @@ export default class DetailedView {
         this.context.paused = false;
         this.context.statsTHREE.domElement.style.display = 'block';
         if (this.context.toolboxBtn) {
-            this.context.toolboxBtn.style.display = 'block';
+            if (this.context.inventory !== undefined) {
+                if (!this.context.inventory.iconHidden) {
+                    this.context.toolboxBtn.style.display = 'block';
+                }
+            }
         }
 
         this.context.fullscreenButton.style.display = 'block';

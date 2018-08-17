@@ -18,6 +18,7 @@ export default class Inventory {
 
         this.items = {};
         this.currentItemIdx = 0;
+        this.iconHidden = false;
 
         this.mouseCoordsRaycaster = new THREE.Vector2();
         this.iteractionRaycaster = new THREE.Raycaster();
@@ -126,10 +127,12 @@ export default class Inventory {
 
     showToolboxBtn() {
         this.context.toolboxBtn.style.display = 'block';
+        this.iconHidden = false;
     }
 
     hideToolboxBtn() {
         this.context.toolboxBtn.style.display = 'none';
+        this.iconHidden = true;
     }
 
     activate() {
