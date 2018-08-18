@@ -857,6 +857,7 @@ export default class VLab {
                 this.responosiveObjects.push(this.vLabScene.getObjectByName(responsiveObjectName));
             }
         }
+        // console.log(this.responosiveObjects);
         this.nature.responsiveObjects = [];
         for (var responsiveObject of this.responosiveObjects) {
             this.nature.responsiveObjects.push(responsiveObject.name);

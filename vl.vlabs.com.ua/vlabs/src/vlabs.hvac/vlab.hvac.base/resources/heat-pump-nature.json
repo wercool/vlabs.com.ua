@@ -59,7 +59,8 @@
     "interactiveObjects": [],
     "responsiveObjects": [
         "frameCapBolt10",
-        "controlBoard"
+        "controlBoard",
+        "contactor"
     ],
     "tooltips": {
         "frameCapBolt10": {
@@ -79,6 +80,10 @@
         },
         "trueRMSMultimeterHS36|controlBoard": {
             "applyFn": "trueRMSMultimeterHS36ToControlBoard",
+            "applyFnArgs": {}
+        },
+        "trueRMSMultimeterHS36|contactor": {
+            "applyFn": "trueRMSMultimeterHS36ToContactor",
             "applyFnArgs": {}
         }
     },

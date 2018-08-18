@@ -71,7 +71,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             ZFightingMaterial.polygonOffsetUnits = -4.0;
             ZFightingMaterial.needsUpdate = true;
 
-            // var ZFightingMaterial = this.vLabScene.getObjectByName("contactror").material;
+            // var ZFightingMaterial = this.vLabScene.getObjectByName("contactor").material;
             // ZFightingMaterial.polygonOffset = true;
             // ZFightingMaterial.polygonOffsetFactor = 1.0;
             // ZFightingMaterial.polygonOffsetUnits = 4.0;
@@ -215,7 +215,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
         this.contactor_ZoomHelper = new ZoomHelper({
             context: this,
-            targetObjectName: "contactror",
+            targetObjectName: "contactor",
             minDistance: 0.25,
             positionDeltas: new THREE.Vector3(0.0, 0.0, 0.1), 
             scale: new THREE.Vector3(0.075, 0.075, 0.075),

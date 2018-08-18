@@ -245,7 +245,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
         this.headPhones = new HeadPhones({
             context: this,
             name: 'headPhones',
-            position: this.vLabScene.getObjectByName('entranceRoomTable').position.clone().add(new THREE.Vector3(0.4, 1.05, 0.0)),
+            position: this.vLabScene.getObjectByName('entranceRoomTable').position.clone().add(new THREE.Vector3(0.4, 1.06, 0.0)),
             rotation: new THREE.Vector3(0.0, Math.PI / 4, Math.PI / 2)
         });
 

@@ -119,7 +119,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             ZFightingMaterial.polygonOffsetUnits = -4.0;
             ZFightingMaterial.needsUpdate = true;
 
-            // var ZFightingMaterial = this.vLabScene.getObjectByName("contactror").material;
+            // var ZFightingMaterial = this.vLabScene.getObjectByName("contactor").material;
             // ZFightingMaterial.polygonOffset = true;
             // ZFightingMaterial.polygonOffsetFactor = 1.0;
             // ZFightingMaterial.polygonOffsetUnits = 4.0;
@@ -428,12 +428,26 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
         this.contactor_ZoomHelper = new ZoomHelper({
             context: this,
-            targetObjectName: "contactror",
+            targetObjectName: "contactor",
             minDistance: 0.25,
             positionDeltas: new THREE.Vector3(0.0, 0.0, 0.1), 
             scale: new THREE.Vector3(0.075, 0.075, 0.075),
             color: 0xfff495,
             zoomCompleteCallback: this.zoomToContactorHandler
+        });
+
+        this.contactor_ZoomHelper_CloseUp = new ZoomHelper({
+            context: this,
+            targetObjectName: "contactor",
+            minDistance: 0.1,
+            maxDistance: 0.15,
+            positionDeltas: new THREE.Vector3(0.0, -0.05, 0.06), 
+            scale: new THREE.Vector3(0.03, 0.03, 0.03),
+            orbitTargetPositionDeltas: new THREE.Vector3(0.0, 0.0, 0.0), 
+            color: 0xfff495,
+            opacity: 0.3,
+            visible: false,
+            hideOnExit: true
         });
 
         this.controlBoard_ZoomHelper = new ZoomHelper({
@@ -559,6 +573,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         }).then((instance) => {
             this.trueRMSMultimeterHS36 = instance;
 
+            //controlBoard
             this.trueRMSMultimeterHS36.addResponsiveObject({
                 mesh: this.vLabScene.getObjectByName('controlBoard'),
                 testPoints: [
@@ -641,6 +656,202 @@ export default class VlabHVACBaseHeatPump extends VLab {
                                 new THREE.Vector3(0.326, 0.737, -0.546),
                                 new THREE.Vector3(0.322, 0.748, -0.518),
                             ],
+                        }
+                    },
+                ]
+            });
+
+            //contactor
+            this.trueRMSMultimeterHS36.addResponsiveObject({
+                mesh: this.vLabScene.getObjectByName('contactor'),
+                testPoints: [
+                    {
+                        name: 'contactor24VL',
+                        target: new THREE.Vector3(0.0, -0.0198938, 0.029299),
+                        spritePosDeltas: new THREE.Vector3(-0.04, -0.025, 0.02),
+                        spriteScale: 0.05,
+                        spriteRotation: 0.0,
+                        redProbeOrientation: new THREE.Vector3(1.89180, 0.13956, -2.22175),
+                        blackProbeOrientation: new THREE.Vector3(1.85011, 0.21216, -1.98470),
+                        probeWiresPathes: {
+                            // redWire: [
+                            //     new THREE.Vector3(0.260, 0.658, -0.428),
+                            //     new THREE.Vector3(0.291, 0.649, -0.437),
+                            //     new THREE.Vector3(0.302, 0.481, -0.428),
+                            //     new THREE.Vector3(0.425, 0.468, -0.350),
+                            //     new THREE.Vector3(0.494, 0.636, -0.310),
+                            //     new THREE.Vector3(0.478, 0.656, -0.313),
+                            // ],
+                            // blackWire: [
+                            //     new THREE.Vector3(0.253, 0.658, -0.447),
+                            //     new THREE.Vector3(0.301, 0.667, -0.449),
+                            //     new THREE.Vector3(0.341, 0.400, -0.397),
+                            //     new THREE.Vector3(0.415, 0.417, -0.333),
+                            //     new THREE.Vector3(0.486, 0.629, -0.270),
+                            //     new THREE.Vector3(0.466, 0.656, -0.276),
+                            // ],
+                        }
+                    },
+                    {
+                        name: 'contactor24VR',
+                        target: new THREE.Vector3(0.0, 0.0206694, 0.029299),
+                        spritePosDeltas: new THREE.Vector3(-0.04, 0.025, 0.02),
+                        spriteScale: 0.05,
+                        spriteRotation: THREE.Math.degToRad(270.0),
+                        redProbeOrientation: new THREE.Vector3(1.89180, 0.13956, -2.22175),
+                        blackProbeOrientation: new THREE.Vector3(1.85011, 0.21216, -1.98470),
+                        probeWiresPathes: {
+                            // redWire: [
+                            //     new THREE.Vector3(0.260, 0.658, -0.428),
+                            //     new THREE.Vector3(0.291, 0.649, -0.437),
+                            //     new THREE.Vector3(0.302, 0.481, -0.428),
+                            //     new THREE.Vector3(0.425, 0.468, -0.350),
+                            //     new THREE.Vector3(0.494, 0.636, -0.310),
+                            //     new THREE.Vector3(0.478, 0.656, -0.313),
+                            // ],
+                            // blackWire: [
+                            //     new THREE.Vector3(0.253, 0.658, -0.447),
+                            //     new THREE.Vector3(0.301, 0.667, -0.449),
+                            //     new THREE.Vector3(0.341, 0.400, -0.397),
+                            //     new THREE.Vector3(0.415, 0.417, -0.333),
+                            //     new THREE.Vector3(0.486, 0.629, -0.270),
+                            //     new THREE.Vector3(0.466, 0.656, -0.276),
+                            // ],
+                        }
+                    },
+                    {
+                        name: 'contactor23t',
+                        target: new THREE.Vector3(-0.02725, -0.01124, 0.04828),
+                        spritePosDeltas: new THREE.Vector3(-0.04, -0.02, 0.01),
+                        spriteScale: 0.05,
+                        spriteRotation: 0.0,
+                        redProbeOrientation: new THREE.Vector3(1.89180, 0.13956, -2.22175),
+                        blackProbeOrientation: new THREE.Vector3(1.85011, 0.21216, -1.98470),
+                        probeWiresPathes: {
+                            // redWire: [
+                            //     new THREE.Vector3(0.260, 0.658, -0.428),
+                            //     new THREE.Vector3(0.291, 0.649, -0.437),
+                            //     new THREE.Vector3(0.302, 0.481, -0.428),
+                            //     new THREE.Vector3(0.425, 0.468, -0.350),
+                            //     new THREE.Vector3(0.494, 0.636, -0.310),
+                            //     new THREE.Vector3(0.478, 0.656, -0.313),
+                            // ],
+                            // blackWire: [
+                            //     new THREE.Vector3(0.253, 0.658, -0.447),
+                            //     new THREE.Vector3(0.301, 0.667, -0.449),
+                            //     new THREE.Vector3(0.341, 0.400, -0.397),
+                            //     new THREE.Vector3(0.415, 0.417, -0.333),
+                            //     new THREE.Vector3(0.486, 0.629, -0.270),
+                            //     new THREE.Vector3(0.466, 0.656, -0.276),
+                            // ],
+                        }
+                    },
+                    {
+                        name: 'contactor11',
+                        target: new THREE.Vector3(-0.02682, 0.004246, 0.05263),
+                        spritePosDeltas: new THREE.Vector3(-0.04, 0.02, 0.01),
+                        spriteScale: 0.05,
+                        spriteRotation: THREE.Math.degToRad(270.0),
+                        redProbeOrientation: new THREE.Vector3(1.89180, 0.13956, -2.22175),
+                        blackProbeOrientation: new THREE.Vector3(1.85011, 0.21216, -1.98470),
+                        probeWiresPathes: {
+                            // redWire: [
+                            //     new THREE.Vector3(0.260, 0.658, -0.428),
+                            //     new THREE.Vector3(0.291, 0.649, -0.437),
+                            //     new THREE.Vector3(0.302, 0.481, -0.428),
+                            //     new THREE.Vector3(0.425, 0.468, -0.350),
+                            //     new THREE.Vector3(0.494, 0.636, -0.310),
+                            //     new THREE.Vector3(0.478, 0.656, -0.313),
+                            // ],
+                            // blackWire: [
+                            //     new THREE.Vector3(0.253, 0.658, -0.447),
+                            //     new THREE.Vector3(0.301, 0.667, -0.449),
+                            //     new THREE.Vector3(0.341, 0.400, -0.397),
+                            //     new THREE.Vector3(0.415, 0.417, -0.333),
+                            //     new THREE.Vector3(0.486, 0.629, -0.270),
+                            //     new THREE.Vector3(0.466, 0.656, -0.276),
+                            // ],
+                        }
+                    },
+                    {
+                        name: 'contactor23b',
+                        target: new THREE.Vector3(0.02901, -0.01138, 0.04829),
+                        spritePosDeltas: new THREE.Vector3(0.03, -0.025, 0.01),
+                        spriteScale: 0.05,
+                        spriteRotation: THREE.Math.degToRad(110.0),
+                        redProbeOrientation: new THREE.Vector3(1.89180, 0.13956, -2.22175),
+                        blackProbeOrientation: new THREE.Vector3(1.85011, 0.21216, -1.98470),
+                        probeWiresPathes: {
+                            // redWire: [
+                            //     new THREE.Vector3(0.260, 0.658, -0.428),
+                            //     new THREE.Vector3(0.291, 0.649, -0.437),
+                            //     new THREE.Vector3(0.302, 0.481, -0.428),
+                            //     new THREE.Vector3(0.425, 0.468, -0.350),
+                            //     new THREE.Vector3(0.494, 0.636, -0.310),
+                            //     new THREE.Vector3(0.478, 0.656, -0.313),
+                            // ],
+                            // blackWire: [
+                            //     new THREE.Vector3(0.253, 0.658, -0.447),
+                            //     new THREE.Vector3(0.301, 0.667, -0.449),
+                            //     new THREE.Vector3(0.341, 0.400, -0.397),
+                            //     new THREE.Vector3(0.415, 0.417, -0.333),
+                            //     new THREE.Vector3(0.486, 0.629, -0.270),
+                            //     new THREE.Vector3(0.466, 0.656, -0.276),
+                            // ],
+                        }
+                    },
+                    {
+                        name: 'contactor21',
+                        target: new THREE.Vector3(0.02777, 0.00396, 0.05269),
+                        spritePosDeltas: new THREE.Vector3(0.03, 0.01, 0.03),
+                        spriteScale: 0.05,
+                        spriteRotation: THREE.Math.degToRad(160.0),
+                        redProbeOrientation: new THREE.Vector3(1.89180, 0.13956, -2.22175),
+                        blackProbeOrientation: new THREE.Vector3(1.85011, 0.21216, -1.98470),
+                        probeWiresPathes: {
+                            // redWire: [
+                            //     new THREE.Vector3(0.260, 0.658, -0.428),
+                            //     new THREE.Vector3(0.291, 0.649, -0.437),
+                            //     new THREE.Vector3(0.302, 0.481, -0.428),
+                            //     new THREE.Vector3(0.425, 0.468, -0.350),
+                            //     new THREE.Vector3(0.494, 0.636, -0.310),
+                            //     new THREE.Vector3(0.478, 0.656, -0.313),
+                            // ],
+                            // blackWire: [
+                            //     new THREE.Vector3(0.253, 0.658, -0.447),
+                            //     new THREE.Vector3(0.301, 0.667, -0.449),
+                            //     new THREE.Vector3(0.341, 0.400, -0.397),
+                            //     new THREE.Vector3(0.415, 0.417, -0.333),
+                            //     new THREE.Vector3(0.486, 0.629, -0.270),
+                            //     new THREE.Vector3(0.466, 0.656, -0.276),
+                            // ],
+                        }
+                    },
+                    {
+                        name: 'ground',
+                        target: new THREE.Vector3(0.05983, 0.03805, 0.0037),
+                        spritePosDeltas: new THREE.Vector3(0.0, 0.02, 0.05),
+                        spriteScale: 0.05,
+                        spriteRotation: THREE.Math.degToRad(200.0),
+                        redProbeOrientation: new THREE.Vector3(1.89180, 0.13956, -2.22175),
+                        blackProbeOrientation: new THREE.Vector3(1.85011, 0.21216, -1.98470),
+                        probeWiresPathes: {
+                            // redWire: [
+                            //     new THREE.Vector3(0.260, 0.658, -0.428),
+                            //     new THREE.Vector3(0.291, 0.649, -0.437),
+                            //     new THREE.Vector3(0.302, 0.481, -0.428),
+                            //     new THREE.Vector3(0.425, 0.468, -0.350),
+                            //     new THREE.Vector3(0.494, 0.636, -0.310),
+                            //     new THREE.Vector3(0.478, 0.656, -0.313),
+                            // ],
+                            // blackWire: [
+                            //     new THREE.Vector3(0.253, 0.658, -0.447),
+                            //     new THREE.Vector3(0.301, 0.667, -0.449),
+                            //     new THREE.Vector3(0.341, 0.400, -0.397),
+                            //     new THREE.Vector3(0.415, 0.417, -0.333),
+                            //     new THREE.Vector3(0.486, 0.629, -0.270),
+                            //     new THREE.Vector3(0.466, 0.656, -0.276),
+                            // ],
                         }
                     },
                 ]
@@ -817,7 +1028,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 distance: 0.25,
                 decay: 3.0,
                 relPos: new THREE.Vector3(0.01, 0.0, 0.075),
-                // target: this.vLabScene.getObjectByName("contactror"),
+                // target: this.vLabScene.getObjectByName("contactor"),
             }
         });
 
@@ -1429,6 +1640,42 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.trueRMSMultimeterHS36.model.getObjectByName('trueRMSMultimeterHS36Clamp').rotation.x = THREE.Math.degToRad(-180.0);
     }
 
+    trueRMSMultimeterHS36ToContactor() {
+        console.log('trueRMSMultimeterHS36ToContactor');
+        this.takeOffObject(true);
+        this.setInteractiveObjects("trueRMSMultimeterHS36");
+        this.trueRMSMultimeterHS36.activate({
+            pos: new THREE.Vector3(0.233, 0.6, -0.429),
+            rot: new THREE.Vector3(0.0, THREE.Math.degToRad(110.0), 0.0)
+        });
+        this.trueRMSMultimeterHS36.setProbes({
+            initialLocation: {
+                blackNeedleShift: new THREE.Vector3(0.025, 0.0, 0.0),
+                redNeedleShift: new THREE.Vector3(0.125, 0.0, 0.0)
+            },
+            probeWiresPathes: {
+                redWire: [
+                    new THREE.Vector3(0.260, 0.608, -0.428),
+                    new THREE.Vector3(0.280, 0.609, -0.440),
+                    new THREE.Vector3(0.189, 0.567, -0.486),
+                    new THREE.Vector3(0.162, 0.31, -0.508),
+                    new THREE.Vector3(0.198, 0.343, -0.488),
+                    new THREE.Vector3(0.214, 0.437, -0.480),
+                ],
+                blackWire: [
+                    new THREE.Vector3(0.253, 0.608, -0.447),
+                    new THREE.Vector3(0.278, 0.605, -0.459),
+                    new THREE.Vector3(0.189, 0.528, -0.502),
+                    new THREE.Vector3(0.118, 0.302, -0.527),
+                    new THREE.Vector3(0.197, 0.385, -0.522),
+                    new THREE.Vector3(0.200, 0.437, -0.518),
+                ]
+            },
+            devMode: false
+        });
+        this.trueRMSMultimeterHS36.model.getObjectByName('trueRMSMultimeterHS36Clamp').rotation.x = THREE.Math.degToRad(-180.0);
+    }
+
     showControlBoardZoomHelperCloseUp() {
         this.controlBoard_ZoomHelper_CloseUp.show();
     }
@@ -1507,6 +1754,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     zoomToContactorHandler() {
         if (this.offDelayTimeout !== undefined) clearTimeout(this.offDelayTimeout);
+
+        this.contactor_ZoomHelper_CloseUp.show();
 
         if (this.vLabLocator.context.tablet.currentActiveTabId == 1) {
             if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[4].completed === true) {
