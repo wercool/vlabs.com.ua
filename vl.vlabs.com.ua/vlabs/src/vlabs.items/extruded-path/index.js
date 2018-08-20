@@ -12,7 +12,8 @@ export default class ExtrudedPath {
 
         this.material = new THREE.MeshLambertMaterial({
             color: (this.initObj.color !== undefined) ? this.initObj.color : 0xffffff,
-            depthTest: (this.initObj.depthTest !== undefined) ? this.initObj.depthTest : true
+            depthTest: (this.initObj.depthTest !== undefined) ? this.initObj.depthTest : true,
+            side: (this.initObj.side !== undefined) ? this.initObj.side : THREE.FrontSide,
         });
     }
 

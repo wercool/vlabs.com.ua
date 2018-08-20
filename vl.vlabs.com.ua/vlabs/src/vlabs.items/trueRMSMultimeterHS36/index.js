@@ -35,6 +35,8 @@ initObj {
                 textureLoader.load('../vlabs.items/trueRMSMultimeterHS36/sprites/probe.png'),
                 textureLoader.load('../vlabs.items/trueRMSMultimeterHS36/sprites/rotate-left.png'),
                 textureLoader.load('../vlabs.items/trueRMSMultimeterHS36/sprites/rotate-right.png'),
+                textureLoader.load('../vlabs.items/trueRMSMultimeterHS36/sprites/hv-splash.png'),
+                textureLoader.load('../vlabs.items/trueRMSMultimeterHS36/sprites/beep-splash.png'),
             ])
             .then((result) => {
                 this.probeSpriteTexture = result[0];
@@ -71,6 +73,30 @@ initObj {
                     rotation: 0.0,
                     depthTest: true,
                     depthWrite: true
+                });
+
+                this.hvSplashSpriteTexture = result[3];
+                this.hvSplashSpriteMaterial = new THREE.SpriteMaterial({
+                    map: this.hvSplashSpriteTexture,
+                    color: 0xffffff,
+                    blending: THREE.AdditiveBlending,
+                    transparent: true,
+                    opacity: 0.75,
+                    rotation: 0.0,
+                    depthTest: false,
+                    depthWrite: false
+                });
+
+                this.beepSplashSpriteTexture = result[4];
+                this.beepSplashSpriteMaterial = new THREE.SpriteMaterial({
+                    map: this.beepSplashSpriteTexture,
+                    color: 0xffffff,
+                    blending: THREE.AdditiveBlending,
+                    transparent: true,
+                    opacity: 0.75,
+                    rotation: 0.0,
+                    depthTest: false,
+                    depthWrite: false
                 });
 
                 WebFont.load({
@@ -156,6 +182,8 @@ initObj {
                     'backLight': false
                 };
 
+                this.probesElectricConditions = {};
+
 
                 this.probes = {
                     redProbe:               this.model.getObjectByName('trueRMSMultimeterHS36ProbeRed'),
@@ -175,6 +203,9 @@ initObj {
                 this.probes.redProbe.userData['needle'] = this.probes.redNeedle;
                 this.probes.blackProbe.userData['needle'] = this.probes.blackNeedle;
 
+                this.probes.redProbe.userData['testPoint'] = undefined;
+                this.probes.blackProbe.userData['testPoint'] = undefined;
+
                 // Sounds
                 this.trueRMSMultimeterHS36SwitchSound = new THREE.Audio(this.context.defaultAudioListener);
 
@@ -182,6 +213,12 @@ initObj {
                 audioLoader.load('../vlabs.items/trueRMSMultimeterHS36/sounds/switch.mp3', function(buffer) {
                     self.trueRMSMultimeterHS36SwitchSound.setBuffer(buffer);
                     self.trueRMSMultimeterHS36SwitchSound.setVolume(1.0);
+                });
+
+                this.beepSound = new THREE.Audio(this.context.defaultAudioListener);
+                audioLoader.load('../vlabs.items/trueRMSMultimeterHS36/sounds/beep.mp3', function(buffer) {
+                    self.beepSound.setBuffer(buffer);
+                    self.beepSound.setVolume(1.0);
                 });
 
                 this.model.mousePressHandler = this.modelPressed;
@@ -233,6 +270,22 @@ initObj {
                 this.interactiveElements.push(this.rotateRightHelperSprite);
                 this.rotateRightHelperSprite.visible = false;
 
+                this.trueRMSMultimeterHS36HiVLightBulb = this.model.getObjectByName('trueRMSMultimeterHS36HiVLightBulb');
+                this.hvSplashSprite = new THREE.Sprite(this.hvSplashSpriteMaterial);
+                this.hvSplashSprite.name = this.switch.name + '_HVSplachSprite';
+                this.hvSplashSprite.scale.multiplyScalar(0.025);
+                this.hvSplashSprite.position.add(new THREE.Vector3(0.0, 0.0, 0.0));
+                this.trueRMSMultimeterHS36HiVLightBulb.add(this.hvSplashSprite);
+                this.hvSplashSprite.visible = false;
+
+                this.trueRMSMultimeterHS36ContinuityLightBulb = this.model.getObjectByName('trueRMSMultimeterHS36ContinuityLightBulb');
+                this.beepSplashSprite = new THREE.Sprite(this.beepSplashSpriteMaterial);
+                this.beepSplashSprite.name = this.switch.name + '_BeepSplachSprite';
+                this.beepSplashSprite.scale.multiplyScalar(0.025);
+                this.beepSplashSprite.position.add(new THREE.Vector3(0.0, 0.0, 0.0));
+                this.trueRMSMultimeterHS36ContinuityLightBulb.add(this.beepSplashSprite);
+                this.beepSplashSprite.visible = false;
+
 
                 this.trueRMSMultimeterHS36LightButton = this.model.getObjectByName('trueRMSMultimeterHS36LightButton');
                 this.trueRMSMultimeterHS36LightButton.mousePressHandler = function(){
@@ -244,6 +297,13 @@ initObj {
                         this.screenMaterial.emissive = new THREE.Color(0.0, 0.0, 0.0);
                         this.trueRMSMultimeterHS36['backLight'] = false;
                     } else {
+                        this.beepSound.play();
+                        this.trueRMSMultimeterHS36ContinuityLightBulb.material.emissive = new THREE.Color(0.0, 1.0, 0.0);
+                        this.beepSplashSprite.visible = true;
+                        setTimeout(()=>{
+                            self.trueRMSMultimeterHS36ContinuityLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+                            self.beepSplashSprite.visible = false;
+                        }, 300);
                         this.screenMaterial.map.offset.y = -0.335;
                         this.screenMaterial.emissive = new THREE.Color(0.21, 0.57, 1.0);
                         this.trueRMSMultimeterHS36['backLight'] = true;
@@ -434,6 +494,7 @@ initObj {
                 if(this.preselectedProbe.userData['needle'].name.indexOf('Red') > -1) {
                     if (helperSprite.userData['testPoint'].redProbeOrientation) {
                         this.preselectedProbe.userData['needle'].rotation.set(helperSprite.userData['testPoint'].redProbeOrientation.x, helperSprite.userData['testPoint'].redProbeOrientation.y, helperSprite.userData['testPoint'].redProbeOrientation.z);
+                        this.probes.redProbe.userData['testPoint'] = helperSprite.userData['testPoint'].name;
                     } else 
                     {
                         console.error('Red Probe Orientation is not set');
@@ -442,6 +503,7 @@ initObj {
                 } else {
                     if (helperSprite.userData['testPoint'].blackProbeOrientation) {
                         this.preselectedProbe.userData['needle'].rotation.set(helperSprite.userData['testPoint'].blackProbeOrientation.x, helperSprite.userData['testPoint'].blackProbeOrientation.y, helperSprite.userData['testPoint'].blackProbeOrientation.z);
+                        this.probes.blackProbe.userData['testPoint'] = helperSprite.userData['testPoint'].name;
                     } else  {
                         console.error('Black Probe Orientation is not set');
                         this.preselectedProbe.userData['needle'].rotation.set(0.0, 0.0, 0.0);
@@ -451,6 +513,7 @@ initObj {
                 helperSprite.parent.remove(this.preselectedProbe.userData['needle']);
                 helperSprite.parent.add(this.preselectedProbe.userData['needle']);
                 this.preselectedProbe.userData['needle'].userData['probeAttachedTo'] = helperSprite.parent;
+
                 this.setProbes({
                     probeWiresPathes: helperSprite.userData['testPoint'].probeWiresPathes,
                     probeSelected: this.preselectedProbe
@@ -483,12 +546,14 @@ initObj {
         this.trueRMSMultimeterHS36RedProbeWire = new ExtrudedPath({
             name: 'trueRMSMultimeterHS36RedProbeWire',
             context: this.context,
-            color: 0xff0000
+            color: 0xff0000,
+            side: THREE.DoubleSide
         });
         this.trueRMSMultimeterHS36BlackProbeWire = new ExtrudedPath({
             name: 'trueRMSMultimeterHS36BlackProbeWire',
             context: this.context,
-            color: 0x202020
+            color: 0x202020,
+            side: THREE.DoubleSide
         });
     }
 
@@ -517,11 +582,13 @@ initObj {
                 this.probes.redNeedle.position.copy(this.probes['initialRedProbe']['needlePosition']);
                 this.probes.redNeedle.rotation.copy(this.probes['initialRedProbe']['needleRotation']);
                 setupProbesObj['probeWiresPathes']['redWire'] = this.probes['initialRedProbe']['wirePath'];
+                this.probes.redProbe.userData['testPoint'] = undefined;
             }
             if (setupProbesObj.resetInitialProbeState.black) {
                 this.probes.blackNeedle.position.copy(this.probes['initialBlackProbe']['needlePosition']);
                 this.probes.blackNeedle.rotation.copy(this.probes['initialBlackProbe']['needleRotation']);
                 setupProbesObj['probeWiresPathes']['blackWire'] = this.probes['initialBlackProbe']['wirePath'];
+                this.probes.blackProbe.userData['testPoint'] = undefined;
             }
         }
 
@@ -640,6 +707,11 @@ initObj {
                 }, false);
             }
         }
+        if (this.probes.redProbe.userData['testPoint'] !== undefined && this.probes.blackProbe.userData['testPoint'] !== undefined) {
+            this.refreshScreenInterval = setInterval(this.setProbesElectricConditions.bind(this), 500);
+        } else {
+            if (this.refreshScreenInterval !== undefined) clearInterval(this.refreshScreenInterval);
+        }
     }
 
     resetProbes() {
@@ -706,6 +778,7 @@ initObj {
     }
 
     changeSwitchState(leftDir) {
+        var self = this;
         var positionChanged = false;
         if (leftDir) {
             if (this.trueRMSMultimeterHS36['switch'].curPos > 0) {
@@ -723,6 +796,19 @@ initObj {
         if (this.trueRMSMultimeterHS36SwitchSound.isPlaying) this.trueRMSMultimeterHS36SwitchSound.stop();
         this.trueRMSMultimeterHS36SwitchSound.play();
         this.switch.rotation.z = THREE.Math.degToRad(this.trueRMSMultimeterHS36['switch'].altPos[this.trueRMSMultimeterHS36['switch'].curPos].angle);
+
+        switch (this.trueRMSMultimeterHS36['switch'].altPos[this.trueRMSMultimeterHS36['switch'].curPos].title) {
+            case 'VADC':
+                this.beepSound.play();
+                this.trueRMSMultimeterHS36HiVLightBulb.material.emissive = new THREE.Color(1.0, 0.0, 0.0);
+                this.hvSplashSprite.visible = true;
+                setTimeout(()=>{
+                    self.trueRMSMultimeterHS36HiVLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+                    self.hvSplashSprite.visible = false;
+                }, 300);
+            break;
+        }
+
         this.refreshScreen();
     }
 
@@ -736,6 +822,11 @@ initObj {
                     this.screenCanvasContext.font = 'bold 100px DigitalFont';
                     this.screenCanvasContext.fillText('0L.', 110, 130);
                 break;
+                case 'VADC':
+                    this.screenCanvasContext.font = 'bold 100px DigitalFont';
+                    this.screenCanvasContext.fillText('0.00', 110, 130);
+                    this.refreshVADCScreen();
+                break;
             }
         } else {
             this.screenMaterial.map.offset.y = 0.0;
@@ -745,6 +836,11 @@ initObj {
 
         this.screenMaterial.map = new THREE.Texture(this.screenCanvas);
         this.screenMaterial.map.needsUpdate = true;
+    }
+
+    refreshVADCScreen() {
+        this.screenCanvasContext.font = 'bold 26px DigitalFont';
+        this.screenCanvasContext.fillText('AC', 15, 50);
     }
 
     showTestPointsHelpers(object) {
@@ -811,5 +907,15 @@ initObj {
         worldPosition.setFromMatrixPosition(obj.matrixWorld);
 
         return worldPosition;
+    }
+
+    setProbesElectricConditions(conditionObj) {
+        if (conditionObj !== undefined) {
+            console.log('New Probes Electric Conditions: ', conditionObj);
+            this.probesElectricConditions = Object.assign(this.probesElectricConditions, conditionObj);
+        }
+        console.log(this.probesElectricConditions);
+        console.log('redProbe testPoint: ', this.probes.redProbe.userData['testPoint']);
+        console.log('blackProbe testPoint: ', this.probes.blackProbe.userData['testPoint']);
     }
 }

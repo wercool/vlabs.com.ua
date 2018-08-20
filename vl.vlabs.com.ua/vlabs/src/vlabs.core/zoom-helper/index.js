@@ -88,12 +88,14 @@ export default class ZoomHelper {
     }
 
     onVLabSceneMouseUp(event) {
-        // console.log("ZoomHelper" + this.initObj.targetObjectName + "vLabSceneMouseUp", event.type);
+        // console.log("ZoomHelper" + this.initObj.targetObjectName + "vLabSceneMouseUp", event.type, event);
+        // event.stopPropagation();
         this.interactionEvent();
     }
 
     onVLabSceneTouchEnd(event) {
         // console.log("ZoomHelper" + this.initObj.targetObjectName + "vLabSceneTouchEnd", event.type);
+        // event.stopPropagation();
         this.interactionEvent();
     }
 
