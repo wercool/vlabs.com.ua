@@ -111,6 +111,44 @@ export default class CarrierTPWEM01 {
                     }
                 };
 
+                if (this.initObj.onScreenHelper) {
+                    this.onScreenHelper = document.createElement('div');
+                    this.onScreenHelper.id = this.initObj.name + 'OnScreenHelper';
+
+                    this.onScreenHelperStyle = document.createElement('style');
+                    this.onScreenHelperStyle.type = 'text/css';
+                    this.onScreenHelperStyle.innerHTML = '.carrierTPWEM01ScreenHelper { \
+                                                            pointer-events: none; \
+                                                            position: absolute; \
+                                                            width: 256px; \
+                                                            height: 256px; \
+                                                            left: 2px; \
+                                                            top: 165px; \
+                                                            opacity: 0.50; \
+                                                            z-index: 50000; \
+                                                            z-index: 50000; \
+                                                            background-image: url("../vlabs.items/hvac/carrierTPWEM01/assets/tpwem01.png"); \
+                                                            background-repeat: no-repeat; \
+                                                            background-size: contain; \
+                                                          }';
+                    document.getElementsByTagName('head')[0].appendChild(this.onScreenHelperStyle);
+                    this.onScreenHelper.className = 'carrierTPWEM01ScreenHelper';
+                    this.setOnScreenHelperDisplay(false);
+                    document.body.appendChild(this.onScreenHelper);
+
+                    this.onScreenHelperCanvas = document.createElement('canvas');
+                    this.onScreenHelperCanvas.id = 'carrierTPWEM01ScreenHelperCanvas';
+                    this.onScreenHelperCanvas.width = 178;
+                    this.onScreenHelperCanvas.height = 117;
+                    this.onScreenHelperCanvas.style = 'margin-left: 40px; margin-top: 70px;';
+                    this.onScreenHelper.appendChild(this.onScreenHelperCanvas);
+                    this.onScreenHelperCanvasContext = this.onScreenHelperCanvas.getContext('2d');
+
+                    this.onScreenHelperCanvasContext.clearRect(0, 0, 178, 117);
+                    this.onScreenHelperCanvasContext.fillStyle = '#0f0f0f';
+                    this.onScreenHelperCanvasContext.fillRect(0, 0, 178, 117);
+                }
+
                 resolve(this);
 
                 if (this.pos) {
@@ -253,8 +291,17 @@ export default class CarrierTPWEM01 {
     onVLabRedererFrameEvent(event) {
     }
 
+    setOnScreenHelperDisplay(state) {
+        this.onScreenHelper.style.display = state ? 'block' : 'none';
+    }
+
     switchScreen(screen, args) {
         this.curScreen = screen;
+
+        if (this.onScreenHelper.style.display !== 'none') {
+            this.onScreenHelperCanvasContext.drawImage(this.screenCanvas, 0, this.screenMapTopOffset, 512, 512 - this.screenMapTopOffset, 0, 0, 178, 117);
+        }
+
         this.screenCanvasContext.clearRect(0, 0, 512, 512);
         this.screenCanvasContext.fillStyle = '#161616';
         this.screenCanvasContext.fillRect(0, 0, 512, 512);
@@ -306,13 +353,17 @@ export default class CarrierTPWEM01 {
         }
     }
 
-    putTemperatureLabel(x, y, t, font, label) {
+    putTemperatureLabel(x, y, t, font, label, round = true) {
         this.screenCanvasContext.fillStyle = 'white';
         if (this.curState['fahrenheitOrCelsius'] == 'F') {
             t = t * 9/5 + 32;
         }
         this.screenCanvasContext.font = font ? font : '30px Arial';
-        this.screenCanvasContext.fillText(Math.round(t).toString() + '°' + (label ? this.curState['fahrenheitOrCelsius'] : ''), x, y);
+        if (round) {
+            this.screenCanvasContext.fillText(Math.round(t).toString() + '°' + (label ? this.curState['fahrenheitOrCelsius'] : ''), x, y);
+        } else {
+            this.screenCanvasContext.fillText(t.toFixed(1).toString() + '°' + (label ? this.curState['fahrenheitOrCelsius'] : ''), x, y);
+        }
     }
 
     getTemperature(prefObj) {
@@ -1108,7 +1159,14 @@ export default class CarrierTPWEM01 {
             this.putTemperatureLabel(330, this.screenMapTopOffset + 80, this.curState['heatToTemperature'], '24px Arial', (initObj ? false : true));
         }
 
-        this.putTemperatureLabel(170, this.screenMapTopOffset + 180, this.curState['roomTemperature'], '90px Arial', (initObj ? false : true));
+        let roundTemperatureValue = false;
+        if (initObj) {
+            if (initObj.mode == 'setup') {
+                roundTemperatureValue = true;
+            }
+        }
+
+        this.putTemperatureLabel(roundTemperatureValue ? 170 : 150, this.screenMapTopOffset + 180, this.curState['roomTemperature'], '90px Arial', (initObj ? false : true), roundTemperatureValue);
         this.screenCanvasContext.font = '24px Arial';
         this.screenCanvasContext.fillText(this.curState['roomHumidity'].toString() + '%', 240, this.screenMapTopOffset + 240);
 

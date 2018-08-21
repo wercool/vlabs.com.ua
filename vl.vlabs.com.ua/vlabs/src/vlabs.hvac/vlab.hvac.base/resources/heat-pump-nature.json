@@ -89,6 +89,7 @@
     },
 
 
+    "thermostatOnScreenHelper": true,
     "heatPumpAirFlow": false,
     "refrigerantFlow1": false,
     "refrigerantFlow1Animated": false,

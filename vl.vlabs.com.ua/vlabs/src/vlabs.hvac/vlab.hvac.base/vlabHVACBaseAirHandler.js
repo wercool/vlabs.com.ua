@@ -239,7 +239,8 @@ export default class VlabHVACBaseAirHandler extends VLab {
             pos: this.vLabScene.getObjectByName('carrierTPWEM01WallMount').position,
             rot: this.vLabScene.getObjectByName('carrierTPWEM01WallMount').rotation,
             name: 'carrierTPWEM01',
-            initialScreen: 'baseScreen'
+            initialScreen: 'baseScreen',
+            onScreenHelper: true
         });
 
         this.headPhones = new HeadPhones({

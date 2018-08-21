@@ -132,7 +132,7 @@ export default class Tablet {
         if (this.initObj.content.tabs[this.currentActiveTabId].items.length > 0) {
             for (var i = 0; i < this.initObj.content.tabs[this.currentActiveTabId].items.length; i++) {
                 if (this.tabletShortToast.style.display !== 'block' && !this.initObj.content.tabs[this.currentActiveTabId].items[i].completed) {
-                    this.tabletShortToast.innerHTML = '<p style="color: #c4c4c4; font-size: 18px; margin: 5px; height: 24px;">' + this.initObj.content.tabs[this.currentActiveTabId].title + '</p>';
+                    this.tabletShortToast.innerHTML = '<div style="color: #c4c4c4; font-size: 18px; margin: 5px; min-height: 24px; clear: both;">' + this.initObj.content.tabs[this.currentActiveTabId].title + '</div>';
                     this.tabletShortToast.innerHTML += this.initObj.content.tabs[this.currentActiveTabId].items[i].shortDesc;
                     if (extraInnerHtml !== undefined) {
                         this.tabletShortToast.innerHTML += extraInnerHtml;
@@ -159,6 +159,10 @@ export default class Tablet {
         console.log('Tablet activated');
 
         if (this.context.settings) this.context.settings.hideButton();
+
+        if (this.context.onTabletOpened !== undefined) {
+            this.context.onTabletOpened();
+        }
 
         var sumWidthOfButtonsInHeader = 0;
         this.tabButtons.forEach(tabButton => {
@@ -190,6 +194,9 @@ export default class Tablet {
         }, 100);
         removeEventListener('keydown', this.keyDownEventHandlerRef, true);
         this.showTabletShortToast();
+        if (this.context.onTabletClosed !== undefined) {
+            this.context.onTabletClosed();
+        }
     }
 
     tabButtonPressed(event) {

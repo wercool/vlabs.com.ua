@@ -94,6 +94,10 @@ export default class Settings {
 
         if (this.context.tablet) this.context.tablet.hideButton();
 
+        if (this.context.onSettingsOpened !== undefined) {
+            this.context.onSettingsOpened();
+        }
+
         this.keyDownEventHandlerRef = this.keyDownEventHandler.bind(this);
         addEventListener("keydown", this.keyDownEventHandlerRef, true);
     }
@@ -112,6 +116,10 @@ export default class Settings {
         }, 100);
         if (this.initObj.onClosed) {
             this.initObj.onClosed.call(this.context);
+        }
+
+        if (this.context.onSettingsClosed !== undefined) {
+            this.context.onSettingsClosed();
         }
     }
 

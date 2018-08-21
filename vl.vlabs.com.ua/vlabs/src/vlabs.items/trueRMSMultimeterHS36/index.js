@@ -223,6 +223,13 @@ initObj {
                     self.beepSound.setVolume(1.0);
                 });
 
+                this.ncvSound = new THREE.Audio(this.context.defaultAudioListener);
+                audioLoader.load('../vlabs.items/trueRMSMultimeterHS36/sounds/ncv.mp3', function(buffer) {
+                    self.ncvSound.setBuffer(buffer);
+                    self.ncvSound.setVolume(0.25);
+                    self.ncvSound.setLoop(true);
+                });
+
                 this.model.mousePressHandler = this.modelPressed;
                 this.interactiveElements.push(this.model);
 
@@ -288,6 +295,14 @@ initObj {
                 this.trueRMSMultimeterHS36ContinuityLightBulb.add(this.beepSplashSprite);
                 this.beepSplashSprite.visible = false;
 
+                this.trueRMSMultimeterHS36NCVLightBulb = this.model.getObjectByName('trueRMSMultimeterHS36NCVLightBulb');
+                this.NCVSplashSprite = new THREE.Sprite(this.hvSplashSpriteMaterial);
+                this.NCVSplashSprite.name = this.switch.name + '_NCVSplashSprite';
+                this.NCVSplashSprite.scale.multiplyScalar(0.025);
+                this.NCVSplashSprite.position.add(new THREE.Vector3(0.0, 0.0, 0.0));
+                this.trueRMSMultimeterHS36NCVLightBulb.add(this.NCVSplashSprite);
+                this.NCVSplashSprite.visible = false;
+
 
                 this.trueRMSMultimeterHS36LightButton = this.model.getObjectByName('trueRMSMultimeterHS36LightButton');
                 this.trueRMSMultimeterHS36LightButton.mousePressHandler = function(){
@@ -313,6 +328,22 @@ initObj {
                     this.refreshScreen();
                 };
                 this.interactiveElements.push(this.trueRMSMultimeterHS36LightButton);
+
+
+                this.trueRMSMultimeterHS36NCVButton = this.model.getObjectByName('trueRMSMultimeterHS36NCVButton');
+                this.trueRMSMultimeterHS36NCVButton.userData['pressed'] = false;
+                this.trueRMSMultimeterHS36NCVButton.mousePressHandler = function(){
+                    if (!this.trueRMSMultimeterHS36NCVButton.userData['pressed']) {
+                        this.trueRMSMultimeterHS36NCVButton.translateZ(-0.001);
+                        this.trueRMSMultimeterHS36NCVButton.userData['pressed'] = true;
+                    } else {
+                        this.trueRMSMultimeterHS36NCVButton.translateZ(0.001);
+                        this.trueRMSMultimeterHS36NCVButton.userData['pressed'] = false;
+                    }
+                    this.NCVProcessor();
+                };
+                this.interactiveElements.push(this.trueRMSMultimeterHS36NCVButton);
+
 
                 this.accessableInteractiveELements = this.interactiveElements.concat(this.interactiveSuppressElements);
                 this.addVLabEventListeners();
@@ -449,6 +480,7 @@ initObj {
             if (interactionObjectIntersects[0].object.name.indexOf('trueRMSMultimeterHS36') > -1) {
                 if (interactionObjectIntersects[0].object.mousePressHandler) {
                     interactionObjectIntersects[0].object.mousePressHandler.call(this, interactionObjectIntersects[0].object);
+                    return;
                 }
             }
             if (this.context.interactivesSuppressorsObjects.indexOf(interactionObjectIntersects[0].object) > -1) {
@@ -914,8 +946,7 @@ initObj {
 
             switch (this.trueRMSMultimeterHS36['switch'].altPos[this.trueRMSMultimeterHS36['switch'].curPos].title) {
                 case 'Continuity':
-                    this.screenCanvasContext.font = 'bold 100px DigitalFont';
-                    this.screenCanvasContext.fillText('0L.', 110, 130);
+                    this.refreshContinuityScreen();
                 break;
                 case 'VADC':
                     this.refreshVADCScreen();
@@ -929,6 +960,48 @@ initObj {
 
         this.screenMaterial.map = new THREE.Texture(this.screenCanvas);
         this.screenMaterial.map.needsUpdate = true;
+    }
+
+    refreshContinuityScreen() {
+        let reading = -0.0001;
+
+        if (this.probes.redProbe.userData['testPoint'] !== undefined && this.probes.blackProbe.userData['testPoint'] !== undefined) {
+            if (this.probesElectricConditions.CONT != undefined) {
+                this.probesElectricConditions.CONT.forEach((probeCombination) => {
+                    if (probeCombination.testPoints.indexOf(this.probes.redProbe.userData['testPoint']) > -1 
+                    &&  probeCombination.testPoints.indexOf(this.probes.blackProbe.userData['testPoint']) > -1 )
+                    reading = probeCombination.reading;
+                });
+            }
+        }
+
+        this.screenCanvasContext.font = 'bold 100px DigitalFont';
+        if (reading == -0.0001)
+        {
+            this.screenCanvasContext.fillText('0L.', 110, 130);
+        } else {
+            if (reading < 1.0 && reading > 0) {
+                if (this.beepSound) {
+                    if (!this.beepSound.isPlaying) {
+                        this.beepSound.setLoop(true);
+                        this.beepSound.play();
+                    }
+                    this.trueRMSMultimeterHS36ContinuityLightBulb.material.emissive = new THREE.Color(0.0, 1.0, 0.0);
+                    this.beepSplashSprite.visible = true;
+                } else {
+                    this.beepSound.setLoop(false);
+                    if (this.beepSound) {
+                        if (this.beepSound.isPlaying) {
+                            this.beepSound.stop();
+                        }
+                    }
+                    this.trueRMSMultimeterHS36ContinuityLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+                    this.beepSplashSprite.visible = false;
+                }
+            }
+            reading = reading.toFixed(1);
+            this.screenCanvasContext.fillText(reading, 110, 130);
+        }
     }
 
     refreshVADCScreen() {
@@ -992,5 +1065,32 @@ initObj {
         // console.log(this.probesElectricConditions);
         // console.log('redProbe testPoint: ', this.probes.redProbe.userData['testPoint']);
         // console.log('blackProbe testPoint: ', this.probes.blackProbe.userData['testPoint']);
+    }
+
+    NCVProcessor() {
+        if (this.trueRMSMultimeterHS36NCVButton.userData['pressed'] == true) {
+
+            if (this.probesElectricConditions.NCV == true) {
+                if (this.ncvSound && this.context.nature.sounds) {
+                    if (!this.ncvSound.isPlaying) this.ncvSound.play();
+                } 
+                this.NCVSplashSprite.visible = true;
+                this.trueRMSMultimeterHS36NCVLightBulb.material.emissive = new THREE.Color(1.0, 0.0, 0.0);
+            } else {
+                if (this.ncvSound) {
+                    if (this.ncvSound.isPlaying) this.ncvSound.stop();
+                }
+                this.NCVSplashSprite.visible = false;
+                this.trueRMSMultimeterHS36NCVLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+            }
+
+            setTimeout(this.NCVProcessor.bind(this), 500);
+        } else {
+            if (this.ncvSound) {
+                if (this.ncvSound.isPlaying) this.ncvSound.stop();
+            }
+            this.NCVSplashSprite.visible = false;
+            this.trueRMSMultimeterHS36NCVLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+        }
     }
 }

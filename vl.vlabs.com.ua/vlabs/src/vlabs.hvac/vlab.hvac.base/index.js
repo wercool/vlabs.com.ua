@@ -119,6 +119,10 @@ class HVACVLabBase {
                         title: 'Outdoor Location Settings',
                         items: [
                             {
+                                label: 'Show Thermostat on-screen Helper',
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsHeatPumpThermostatOnScreenHelperCheckbox" checked><span class="toggleSlider round"></span></label>'
+                            },
+                            {
                                 label: 'Heat Pump ambient air flow',
                                 innerHTML: '<label class="switch"><input type="checkbox" id="SettingsHeatPumpAirFlowCheckbox"><span class="toggleSlider round"></span></label>'
                             },
@@ -264,9 +268,28 @@ class HVACVLabBase {
         });
     }
 
+    onSettingsOpened() {
+        this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setOnScreenHelperDisplay(false);
+    }
+
+    onSettingsClosed() {
+        if (this.vLabLocator.currentLocationVLab == this.vLabLocator.locations['HVACBaseHeatPump']) {
+            this.vLabLocator.locations['HVACBaseHeatPump'].toggleThermostatOnScreenHelper();
+        }
+    }
+
+    onTabletOpened() {
+        this.onSettingsOpened();
+    }
+
+    onTabletClosed() {
+        this.onSettingsClosed();
+    }
+
     beforeLocationChanged() {
         this.settings.hideButton();
         this.tablet.hideButton();
+        this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setOnScreenHelperDisplay(false);
     }
 
     locationChanged(transientLocationName) {
@@ -293,13 +316,16 @@ class HVACVLabBase {
         var SettingsResolutionSlider = document.getElementById('SettingsResolutionSlider');
         var SettingsShadowsCheckbox = document.getElementById('SettingsShadowsCheckbox');
         var SettingsSoundsCheckbox = document.getElementById('SettingsSoundsCheckbox');
+
         var SettingsCeilingVentGridsCheckbox = document.getElementById('SettingsCeilingVentGridsCheckbox');
         var SettingsAirHandlerAirFlowCheckbox = document.getElementById('SettingsAirHandlerAirFlowCheckbox');
+        var SettingsAirHandlerLookThroughPanelsCheckbox = document.getElementById('SettingsAirHandlerLookThroughPanelsCheckbox');
+        var SettingsAirHandlerLookThroughDuctCheckbox = document.getElementById('SettingsAirHandlerLookThroughDuctCheckbox');
+
+        var SettingsHeatPumpThermostatOnScreenHelperCheckbox = document.getElementById('SettingsHeatPumpThermostatOnScreenHelperCheckbox');
         var SettingsHeatPumpAirFlowCheckbox = document.getElementById('SettingsHeatPumpAirFlowCheckbox');
         var SettingsHeatPumpRefrigerantCheckbox = document.getElementById('SettingsHeatPumpRefrigerantCheckbox');
         var SettingsHeatPumpRefrigerantFlowAnimationCheckbox = document.getElementById('SettingsHeatPumpRefrigerantFlowAnimationCheckbox');
-        var SettingsAirHandlerLookThroughPanelsCheckbox = document.getElementById('SettingsAirHandlerLookThroughPanelsCheckbox');
-        var SettingsAirHandlerLookThroughDuctCheckbox = document.getElementById('SettingsAirHandlerLookThroughDuctCheckbox');
         var SettingsHeatPumpRefrigerantAnimatedCheckbox = document.getElementById('SettingsHeatPumpRefrigerantAnimatedCheckbox');
 
         for (var locationName in this.locationInitObjs) {
@@ -333,6 +359,10 @@ class HVACVLabBase {
                 }
                 /* Outdoor (Heat Pump) Location Settings -> Ceiling ventilation grids airflow */
                 if (locationName == 'HVACBaseHeatPump') {
+
+                    this.vLabLocator.locations['HVACBaseHeatPump'].nature.thermostatOnScreenHelper = SettingsHeatPumpThermostatOnScreenHelperCheckbox.checked;
+                    this.vLabLocator.locations['HVACBaseHeatPump'].toggleThermostatOnScreenHelper();
+
                     this.vLabLocator.locations['HVACBaseHeatPump'].nature.heatPumpAirFlow = SettingsHeatPumpAirFlowCheckbox.checked;
                     this.vLabLocator.locations['HVACBaseHeatPump'].toggleHeatPumpAirFlow();
 
@@ -365,6 +395,7 @@ class HVACVLabBase {
                     this.locationInitObjs['HVACBaseAirHandler']['altNature']['airHandlerDuctLookThrough'] = SettingsAirHandlerLookThroughDuctCheckbox.checked;
                 }
                 if (locationName == 'HVACBaseHeatPump') {
+                    this.locationInitObjs['HVACBaseHeatPump']['altNature']['thermostatOnScreenHelper'] = SettingsHeatPumpThermostatOnScreenHelperCheckbox.checked;
                     this.locationInitObjs['HVACBaseHeatPump']['altNature']['heatPumpAirFlow'] = SettingsHeatPumpAirFlowCheckbox.checked;
                     this.locationInitObjs['HVACBaseHeatPump']['altNature']['refrigerantFlow1'] = SettingsHeatPumpRefrigerantCheckbox.checked;
                     this.locationInitObjs['HVACBaseHeatPump']['altNature']['directionalRefrigerantFlow'] = SettingsHeatPumpRefrigerantFlowAnimationCheckbox.checked;
@@ -378,7 +409,6 @@ class HVACVLabBase {
         if (this.normalModeOperationProcessorTimeOut) clearTimeout(this.normalModeOperationProcessorTimeOut);
         if (this.shortToGroundOperationProcessorTimeOut) clearTimeout(this.shortToGroundOperationProcessorTimeOut);
         if (this.advancedModeOperationProcessorTimeOut) clearTimeout(this.advancedModeOperationProcessorTimeOut);
-
     }
 
     resetSettingsToDefault() {

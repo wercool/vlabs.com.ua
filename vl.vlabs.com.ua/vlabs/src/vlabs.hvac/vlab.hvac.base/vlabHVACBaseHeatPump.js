@@ -589,6 +589,16 @@ export default class VlabHVACBaseHeatPump extends VLab {
                         ],
                         reading: 230.0
                     },
+                ],
+                NCV: true,
+                CONT: [
+                    {
+                        testPoints: [
+                            'contactor11',
+                            'ground'
+                        ],
+                        reading: 0.6
+                    },
                 ]
             });
 
@@ -1064,6 +1074,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
             this.ACDisconnectDoorHingeCodeLock.visible = false;
         }
 
+        this.toggleThermostatOnScreenHelper();
+
         // Misc helpers
         // this.heatPumpFrameCap_manipulationControl = new TransformControls(this.defaultCamera, this.webGLRenderer.domElement);
         // this.heatPumpFrameCap_manipulationControl.setSize(0.5);
@@ -1197,6 +1209,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         }
         this.shadowsSetup();
         this.toggleSounds();
+        this.toggleThermostatOnScreenHelper();
         this.toggleHeatPumpAirFlow();
         this.toggleRefrigerantFlow1();
         this.toggleDirectionalRefrigerantFlow();
@@ -1229,6 +1242,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
             if (this.fanMotorSound.isPlaying) this.fanMotorSound.stop();
             if (this.scrollCompressorSound.isPlaying) this.scrollCompressorSound.stop();
         }
+    }
+
+    toggleThermostatOnScreenHelper() {
+        this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setOnScreenHelperDisplay(this.nature.thermostatOnScreenHelper);
     }
 
     toggleRefrigerantFlow1() {
@@ -1305,7 +1322,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
                     ],
                     reading: 0.0
                 },
-            ]
+            ],
+            NCV: false
         });
 
         if (this.vLabLocator.context.activatedMode.indexOf('cool') != -1) {
@@ -1344,7 +1362,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
                     ],
                     reading: 230.0
                 },
-            ]
+            ],
+            NCV: true
         });
 
         this.vLabLocator.locations['HVACBaseAirHandler'].resetNormalOperaionDefaults();
