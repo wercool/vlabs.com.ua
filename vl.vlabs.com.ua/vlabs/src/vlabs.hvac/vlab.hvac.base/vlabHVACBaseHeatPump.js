@@ -441,9 +441,9 @@ export default class VlabHVACBaseHeatPump extends VLab {
             targetObjectName: "contactor",
             minDistance: 0.1,
             maxDistance: 0.15,
-            positionDeltas: new THREE.Vector3(0.0, -0.05, 0.06), 
-            scale: new THREE.Vector3(0.03, 0.03, 0.03),
-            orbitTargetPositionDeltas: new THREE.Vector3(0.0, 0.0, 0.0), 
+            positionDeltas: new THREE.Vector3(-0.075, 0.0, 0.06), 
+            scale: new THREE.Vector3(0.02, 0.02, 0.02),
+            orbitTargetPositionDeltas: new THREE.Vector3(0.0, -0.1, 0.0), 
             color: 0xfff495,
             opacity: 0.3,
             visible: false,
@@ -572,6 +572,25 @@ export default class VlabHVACBaseHeatPump extends VLab {
             pos: new THREE.Vector3(0.0, 0.0, 0.0)
         }).then((instance) => {
             this.trueRMSMultimeterHS36 = instance;
+
+            this.trueRMSMultimeterHS36.setProbesElectricConditions({
+                VADC: [
+                    {
+                        testPoints: [
+                            'contactor23b',
+                            'contactor21'
+                        ],
+                        reading: 230.0
+                    },
+                    {
+                        testPoints: [
+                            'contactor23t',
+                            'contactor21'
+                        ],
+                        reading: 230.0
+                    },
+                ]
+            });
 
             // //controlBoard
             // this.trueRMSMultimeterHS36.addResponsiveObject({
@@ -732,7 +751,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
                                 new THREE.Vector3(0.260, 0.608, -0.428),
                                 new THREE.Vector3(0.293, 0.614, -0.432),
                                 new THREE.Vector3(0.365, 0.395, -0.512),
-                                new THREE.Vector3(0.424, 0.490, -0.483),
+                                new THREE.Vector3(0.450, 0.490, -0.483),
                                 new THREE.Vector3(0.428, 0.605, -0.456),
                                 new THREE.Vector3(0.424, 0.607, -0.442),
                             ],
@@ -1000,8 +1019,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.toggleDirectionalRefrigerantFlow();
 
         if (this.vLabLocator.context.activatedMode == 'cool') {
-            this.startFanMotor(true);
-            this.startScrollCompressor(true);
+            this.contactorOn(true);
         }
 
         ////// Ambient Air Flow
@@ -1164,13 +1182,17 @@ export default class VlabHVACBaseHeatPump extends VLab {
             if (roomTemperature > coolToTemperature && this.vLabLocator.context.HeatPumpACPower == true) {
                 let resumed = true;
                 if (initObj !== undefined) {
-                    resumed = (initObj.autoResume == true) ? false : true;
+                    if (initObj.autoResume !== undefined) {
+                        resumed = initObj.autoResume;
+                    }
                 }
-                this.startFanMotor(resumed);
-                this.startScrollCompressor(resumed);
+                this.contactorOn(resumed);
             } else {
-                this.stopFanMotor();
-                this.stopScrollCompressor();
+                this.contactorOff();
+            }
+        } else {
+            if (this.vLabLocator.context.activatedMode == 'cool') {
+                this.contactorOn(true);
             }
         }
         this.shadowsSetup();
@@ -1210,7 +1232,6 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     toggleRefrigerantFlow1() {
-        // if (!this.gasFlow.gasFlowHelperMesh.visible) this.gasFlow.start();
         if (this.gasFlow === undefined) setTimeout(this.toggleRefrigerantFlow1.bind(this), 250);
         if (this.vLabLocator.context.activatedMode == 'cool' && this.scrollCompressorStarted) {
             if (this.nature.refrigerantFlow1 === true) {
@@ -1246,6 +1267,47 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     acPowerOff() {
         this.vLabLocator.context.HeatPumpACPower = false;
+
+        this.trueRMSMultimeterHS36.setProbesElectricConditions({
+            VADC: [
+                {
+                    testPoints: [
+                        'contactor24VL',
+                        'contactor24VR'
+                    ],
+                    reading: (this.vLabLocator.context.activatedMode == 'cool') ? 24.0 : 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor21'
+                    ],
+                    reading: 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'contactor11'
+                    ],
+                    reading: 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor11'
+                    ],
+                    reading: 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'contactor21'
+                    ],
+                    reading: 0.0
+                },
+            ]
+        });
+
         if (this.vLabLocator.context.activatedMode.indexOf('cool') != -1) {
             if (this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] > this.vLabLocator.context.ambientDefaultRoomTemperature) {
                 this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.5;
@@ -1265,6 +1327,26 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     acPowerOn() {
         this.vLabLocator.context.HeatPumpACPower = true;
+
+        this.trueRMSMultimeterHS36.setProbesElectricConditions({
+            VADC: [
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor21'
+                    ],
+                    reading: 230.0
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'contactor21'
+                    ],
+                    reading: 230.0
+                },
+            ]
+        });
+
         this.vLabLocator.locations['HVACBaseAirHandler'].resetNormalOperaionDefaults();
         this.onVLabResumeAndShow({
             autoResume: true
@@ -1272,14 +1354,14 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.heatPumpFrameCapTakeOutInteractor.deactivate();
     }
 
-    startFanMotor(resumeMotor) {
+    startFanMotor(resumed) {
         if (this.fanMotorSoundReady !== true) {
             setTimeout(() => {
-                this.startFanMotor(resumeMotor);
+                this.startFanMotor(resumed);
             }, 500);
             return;
         }
-        if (resumeMotor !== true) {
+        if (resumed !== true) {
             this.fanMotorSpeed = 0.0;
         } else {
             this.fanMotorSpeed = 0.5;
@@ -1315,7 +1397,6 @@ export default class VlabHVACBaseHeatPump extends VLab {
         }
         this.scrollCompressorStarted = true;
         if (this.nature.sounds === true) this.scrollCompressorSound.play();
-        this.contactorOn(resumed);
         this.toggleRefrigerantFlow1();
         this.toggleHeatPumpAirFlow();
         this.toggleDirectionalRefrigerantFlow();
@@ -1323,10 +1404,9 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
     stopScrollCompressor(offEffect) {
         if (offEffect === true) {
-            if (this.scrollCompressorOffSound !== undefined && this.nature.sounds === true) {
-                if (this.scrollCompressorStarted == true) {
+            if (this.scrollCompressorStarted == true) {
+                if (this.scrollCompressorOffSound !== undefined && this.nature.sounds === true) {
                     this.scrollCompressorOffSound.play();
-                    this.contactorOff();
                 }
             }
         }
@@ -1339,36 +1419,126 @@ export default class VlabHVACBaseHeatPump extends VLab {
     }
 
     contactorOn(resumed) {
-        this.contactorTraverse.position.z = 0.04988;//0.05188 - 0.002
-        if (resumed !== true) {
+        if (this.contactorTraverse == undefined) {
+            setTimeout(() => {
+                console.log('contactorTraverse Object not ready yet');
+                this.contactorOn(resumed);
+            }, 500);
+            return;
+        }
+        if (this.trueRMSMultimeterHS36 == undefined) {
+            setTimeout(() => {
+                console.log('trueRMSMultimeterHS36 Object not ready yet');
+                this.contactorOn(resumed);
+            }, 500);
+            return;
+        }
+        if (this.contactorTraverse.position.z != 0.04988) {
+            this.contactorTraverse.position.z = 0.04988;//0.05188 - 0.002
             if (this.nature.sounds) this.contactorOnSound.play();
-            this.contactorElectricArcEffect.start();
+            if (this.vLabLocator.context.HeatPumpACPower == true) {
+                this.contactorElectricArcEffect.start();
+            }
+        }
+        if (this.vLabLocator.context.HeatPumpACPower == true) {
+            this.startScrollCompressor(resumed);
+            this.startFanMotor(resumed);
         }
         this.trueRMSMultimeterHS36.setProbesElectricConditions({
-            VADC: {
-                type: 'unipolar',
-                testPoints: {
-                    'contactor24VL': 24.0,
-                    'contactor24VR': 24.0
-                }
-            }
+            VADC: [
+                {
+                    testPoints: [
+                        'contactor24VL',
+                        'contactor24VR'
+                    ],
+                    reading: 24.0
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor21'
+                    ],
+                    reading: this.vLabLocator.context.HeatPumpACPower == true ? 230.0 : 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'contactor11'
+                    ],
+                    reading: this.vLabLocator.context.HeatPumpACPower == true ? 230.0 : 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor11'
+                    ],
+                    reading: this.vLabLocator.context.HeatPumpACPower == true ? 230.0 : 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'contactor21'
+                    ],
+                    reading: this.vLabLocator.context.HeatPumpACPower == true ? 230.0 : 0.0
+                },
+            ]
         });
     }
 
-    contactorOff() {
-        if (this.nature.sounds) {
-            this.contactorOffSound.play();
-        }
-        this.contactorTraverse.position.z = 0.05188;//0.04988 + 0.002
-        this.contactorElectricArcEffect.start();
-        this.trueRMSMultimeterHS36.setProbesElectricConditions({
-            VADC: {
-                type: 'unipolar',
-                testPoints: {
-                    'contactor24VL': 0.0,
-                    'contactor24VR': 0.0
-                }
+    contactorOff(offEffect) {
+        if (offEffect) {
+            if (this.nature.sounds) {
+                this.contactorOffSound.play();
             }
+            this.contactorElectricArcEffect.start();
+    
+            this.stopFanMotor(offEffect);
+            this.stopScrollCompressor(offEffect);
+        } else {
+            this.stopFanMotor();
+            this.stopScrollCompressor();
+        }
+
+        this.contactorTraverse.position.z = 0.05188;//0.04988 + 0.002
+
+        this.trueRMSMultimeterHS36.setProbesElectricConditions({
+            VADC: [
+                {
+                    testPoints: [
+                        'contactor24VL',
+                        'contactor24VR'
+                    ],
+                    reading: (this.vLabLocator.context.activatedMode == 'cool') ? 24.0 : 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor21'
+                    ],
+                    reading: this.vLabLocator.context.HeatPumpACPower == true ? 230.0 : 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'contactor11'
+                    ],
+                    reading: 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor11'
+                    ],
+                    reading: 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'contactor21'
+                    ],
+                    reading: this.vLabLocator.context.HeatPumpACPower == true ? 230.0 : 0.0
+                },
+            ]
         });
     }
 
@@ -1574,7 +1744,6 @@ export default class VlabHVACBaseHeatPump extends VLab {
     heatPumpFrameServicePanelTakeOutInteractorHandler() {
         if (this.heatPumpFrameServicePanelTakeOutInteractor.isDeactivated()) {
             this.resetHeatPumpFrameServicePanel();
-            // TODO: check for applied devices
         } else {
             this.heatPumpFrameServicePanelTakeOutInteractor.deactivate(true);
             this.bryantB225B_heatPumpFrameServicePanel = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameServicePanel');
@@ -1613,6 +1782,10 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.bryantB225B_heatPumpFrameServicePanel = this.vLabScene.getObjectByName('bryantB225B_heatPumpFrameServicePanel');
         this.bryantB225B_heatPumpFrameServicePanel.position.copy(this.nature.bryantB225B_heatPumpFrameServicePanelInitial.position);
         this.bryantB225B_heatPumpFrameServicePanel.rotation.copy(this.nature.bryantB225B_heatPumpFrameServicePanelInitial.rotation);
+
+        this.trueRMSMultimeterHS36.takenToInventory();
+        this.selectedObject = this.trueRMSMultimeterHS36.model;
+        this.takeObjectToInventory();
     }
 
     digitalMultimeterFluke17BToControlBoard() {
@@ -1628,7 +1801,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.setInteractiveObjects("trueRMSMultimeterHS36");
         this.trueRMSMultimeterHS36.activate({
             pos: new THREE.Vector3(0.233, 0.65, -0.429),
-            rot: new THREE.Vector3(0.0, THREE.Math.degToRad(110.0), 0.0)
+            rot: new THREE.Vector3(0.0, THREE.Math.degToRad(110.0), 0.0),
+            attachedToMesh: this.vLabScene.getObjectByName('controlBoard')
         });
         this.trueRMSMultimeterHS36.setProbes({
             initialLocation: {
@@ -1664,7 +1838,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.setInteractiveObjects("trueRMSMultimeterHS36");
         this.trueRMSMultimeterHS36.activate({
             pos: new THREE.Vector3(0.233, 0.6, -0.429),
-            rot: new THREE.Vector3(0.0, THREE.Math.degToRad(110.0), 0.0)
+            rot: new THREE.Vector3(0.0, THREE.Math.degToRad(110.0), 0.0),
+            attachedToMesh: this.vLabScene.getObjectByName('contactor')
         });
         this.trueRMSMultimeterHS36.setProbes({
             initialLocation: {
@@ -1805,9 +1980,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
                         } else {
                             this.vLabLocator.context.tablet.initObj.content.tabs[1].items[6].completed = true;
                             this.vLabLocator.context.tablet.stepCompletedAnimation();
-                            this.contactorOff();
-                            this.stopFanMotor(true);
-                            this.stopScrollCompressor(true);
+                            this.contactorOff(true);
                             this.shortToGroundEffectOff();
 
                             this.toggleHeatPumpAirFlow();

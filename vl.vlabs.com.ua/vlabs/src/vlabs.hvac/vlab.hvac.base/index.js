@@ -431,8 +431,7 @@ class HVACVLabBase {
             this.vLabLocator.locations['HVACBaseHeatPump'].resetView();
             this.vLabLocator.locations['HVACBaseHeatPump'].resetHeatPumpFrameServicePanel();
             this.vLabLocator.locations['HVACBaseHeatPump'].resetHeatPumpFrameCap();
-            this.vLabLocator.locations['HVACBaseHeatPump'].stopFanMotor();
-            this.vLabLocator.locations['HVACBaseHeatPump'].stopScrollCompressor();
+            this.vLabLocator.locations['HVACBaseHeatPump'].contactorOff();
             this.vLabLocator.locations['HVACBaseHeatPump'].shortToGroundEffectOff();
             this.vLabLocator.locations['HVACBaseHeatPump'].resetACDisconnect();
         }
@@ -474,8 +473,7 @@ class HVACVLabBase {
             this.vLabLocator.locations['HVACBaseHeatPump'].resetView();
             this.vLabLocator.locations['HVACBaseHeatPump'].resetHeatPumpFrameServicePanel();
             this.vLabLocator.locations['HVACBaseHeatPump'].resetHeatPumpFrameCap();
-            this.vLabLocator.locations['HVACBaseHeatPump'].stopFanMotor();
-            this.vLabLocator.locations['HVACBaseHeatPump'].stopScrollCompressor();
+            this.vLabLocator.locations['HVACBaseHeatPump'].contactorOff();
             this.vLabLocator.locations['HVACBaseHeatPump'].shortToGroundEffectOff();
             this.vLabLocator.locations['HVACBaseHeatPump'].resetACDisconnect();
         }
@@ -579,7 +577,7 @@ class HVACVLabBase {
         });
 // console.log('advancedModeOperationProcessor', this.activatedMode, roomTemperature.toFixed(2), this.ambientDefaultRoomTemperature.toFixed(2));
 // console.log('this.HeatPumpACPower', this.HeatPumpACPower);
-        if (roomTemperature < coolToTemperature && this.activatedMode == 'cool' && this.HeatPumpACPower == true) {
+        if (roomTemperature < coolToTemperature && this.activatedMode == 'cool') {
             console.log('Preset "cool to" temperature is reached.');
 
             this.activatedMode = 'cool-suspend';
@@ -590,8 +588,7 @@ class HVACVLabBase {
             if (this.vLabLocator.locations['HVACBaseHeatPump'] !== undefined) {
                 this.vLabLocator.locations['HVACBaseHeatPump'].shortToGroundEffectOff();
                 if (this.vLabLocator.currentLocationVLab == this.vLabLocator.locations['HVACBaseHeatPump']) {
-                    this.vLabLocator.locations['HVACBaseHeatPump'].stopFanMotor();
-                    this.vLabLocator.locations['HVACBaseHeatPump'].stopScrollCompressor(true);
+                    this.vLabLocator.locations['HVACBaseHeatPump'].contactorOff(true);
                     this.vLabLocator.locations['HVACBaseHeatPump'].onVLabResumeAndShow();
                 } else {
                     this.vLabLocator.locations['HVACBaseHeatPump'].fanMotorStarted = false;
@@ -600,27 +597,26 @@ class HVACVLabBase {
             }
             this.advancedModeOperationProcessorTimeOut = setTimeout(this.advancedModeOperationProcessor.bind(this), 5000);
         } else {
-            if (this.HeatPumpACPower) {
-                if (this.activatedMode == 'cool') {
-                    this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
+            if (this.activatedMode == 'cool') {
+                this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
+            } else {
+                if (roomTemperature < this.ambientDefaultRoomTemperature) {
+                    this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] += 0.1;
                 } else {
-                    if (roomTemperature < this.ambientDefaultRoomTemperature) {
-                        this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] += 0.1;
+                    this.activatedMode = 'cool';
+                    if (this.vLabLocator.currentLocationVLab == this.vLabLocator.locations['HVACBaseAirHandler']) {
+                        this.vLabLocator.locations['HVACBaseAirHandler'].startAirBlower();
                     } else {
-                        this.activatedMode = 'cool';
-                        if (this.vLabLocator.currentLocationVLab == this.vLabLocator.locations['HVACBaseAirHandler']) {
-                            this.vLabLocator.locations['HVACBaseAirHandler'].startAirBlower();
-                        } else {
-                            this.vLabLocator.locations['HVACBaseAirHandler'].airBlowerStarted = true;
-                            if (this.vLabLocator.locations['HVACBaseHeatPump'] !== undefined) {
-                                this.vLabLocator.locations['HVACBaseHeatPump'].onVLabResumeAndShow({
-                                    autoResume: true
-                                });
-                            }
+                        this.vLabLocator.locations['HVACBaseAirHandler'].airBlowerStarted = true;
+                        if (this.vLabLocator.locations['HVACBaseHeatPump'] !== undefined) {
+                            this.vLabLocator.locations['HVACBaseHeatPump'].onVLabResumeAndShow({
+                                autoResume: false
+                            });
                         }
                     }
                 }
-            } else {
+            }
+            if (this.HeatPumpACPower == false) {
                 if (roomTemperature < this.ambientDefaultRoomTemperature) {
                     this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] += 0.1;
                 }
