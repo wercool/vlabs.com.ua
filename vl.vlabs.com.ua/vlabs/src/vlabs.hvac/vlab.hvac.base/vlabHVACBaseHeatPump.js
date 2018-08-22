@@ -155,7 +155,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             this.scrollCompressorZP25K5EStator.material.map = this.heatPumpCompressorDamagedWindings;
             this.scrollCompressorZP25K5EStator.material.needsUpdate = true;
             this.scrollCompressorZP25K5EStatorDamagedWires = this.vLabScene.getObjectByName("scrollCompressorZP25K5EStatorDamagedWires");
-            this.scrollCompressorZP25K5EStatorDamagedWires.visible = false;
+            // this.scrollCompressorZP25K5EStatorDamagedWires.visible = false;
 
             this.scrollCompressorZP25K5EStatorDamagedWiresSpark = this.vLabScene.getObjectByName("scrollCompressorZP25K5EStatorDamagedWiresSpark");
             this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = false;
@@ -525,45 +525,6 @@ export default class VlabHVACBaseHeatPump extends VLab {
             detailedView: this.bryantB225B_heatPumpCompressorDetailedView
         });
 
-        new DigitalMultimeterFluke17B({
-            context: this,
-            inventory: this.inventory,
-            interactive: true,
-            name: 'digitalMultimeterFluke17B',
-            pos: new THREE.Vector3(-0.072, -0.07, -0.11)
-        }).then((instance) => {
-            this.digitalMultimeterFluke17B = instance;
-            this.digitalMultimeterFluke17B.addResponsiveObject({
-                mesh: this.vLabScene.getObjectByName('controlBoard'),
-                testPoints: [
-                    {
-                        name: 'relayT9AV5022ContactCOM',
-                        target: new THREE.Vector3(0.0352108, 0.02511, 0.0296565),
-                        orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(30.0)),
-                        spritePosDeltas: new THREE.Vector3(-0.03, 0.05, 0.05),
-                        spriteScale: 0.05,
-                        spriteRotation: 0.0
-                    },
-                    {
-                        name: 'relayT9AV5022ContactNC',
-                        target: new THREE.Vector3(0.0550126, 0.0309874, 0.0296565),
-                        orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(-60.0)),
-                        spritePosDeltas: new THREE.Vector3(0.05, -0.05, 0.05),
-                        spriteScale: 0.05,
-                        spriteRotation: THREE.Math.degToRad(270.0)
-                    },
-                    {
-                        name: 'relayT9AV5022ContactNO',
-                        target: new THREE.Vector3(0.055229, 0.0400362, 0.0296565),
-                        orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, 0.0),
-                        spritePosDeltas: new THREE.Vector3(0.05, 0.05, 0.05),
-                        spriteScale: 0.05,
-                        spriteRotation: THREE.Math.degToRad(300.0)
-                    },
-                ]
-            });
-        });
-
         new TrueRMSMultimeterHS36({
             context: this,
             inventory: this.inventory,
@@ -594,10 +555,46 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 CONT: [
                     {
                         testPoints: [
+                            'contactor23b',
+                            'contactor23t',
+                        ],
+                        reading: 0.4
+                    },
+                    {
+                        testPoints: [
                             'contactor11',
                             'ground'
                         ],
-                        reading: 0.6
+                        reading: 0.8
+                    },
+                    {
+                        testPoints: [
+                            'contactor23t',
+                            'ground'
+                        ],
+                        reading: 2.4
+                    },
+                    {
+                        testPoints: [
+                            'contactor23b',
+                            'ground'
+                        ],
+                        reading: 2.8
+                    },
+                    {
+                        testPoints: [
+                            'contactor23b',
+                            'contactor21'
+                        ],
+                        reading: 'HV',
+                        hv: 230.0
+                    },
+                    {
+                        testPoints: [
+                            'contactor21',
+                            'contactor11',
+                        ],
+                        reading: Infinity
                     },
                 ]
             });
@@ -886,6 +883,45 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 ]
             });
         });
+
+        // new DigitalMultimeterFluke17B({
+        //     context: this,
+        //     inventory: this.inventory,
+        //     interactive: true,
+        //     name: 'digitalMultimeterFluke17B',
+        //     pos: new THREE.Vector3(-0.072, -0.07, -0.11)
+        // }).then((instance) => {
+        //     this.digitalMultimeterFluke17B = instance;
+        //     this.digitalMultimeterFluke17B.addResponsiveObject({
+        //         mesh: this.vLabScene.getObjectByName('controlBoard'),
+        //         testPoints: [
+        //             {
+        //                 name: 'relayT9AV5022ContactCOM',
+        //                 target: new THREE.Vector3(0.0352108, 0.02511, 0.0296565),
+        //                 orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(30.0)),
+        //                 spritePosDeltas: new THREE.Vector3(-0.03, 0.05, 0.05),
+        //                 spriteScale: 0.05,
+        //                 spriteRotation: 0.0
+        //             },
+        //             {
+        //                 name: 'relayT9AV5022ContactNC',
+        //                 target: new THREE.Vector3(0.0550126, 0.0309874, 0.0296565),
+        //                 orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, THREE.Math.degToRad(-60.0)),
+        //                 spritePosDeltas: new THREE.Vector3(0.05, -0.05, 0.05),
+        //                 spriteScale: 0.05,
+        //                 spriteRotation: THREE.Math.degToRad(270.0)
+        //             },
+        //             {
+        //                 name: 'relayT9AV5022ContactNO',
+        //                 target: new THREE.Vector3(0.055229, 0.0400362, 0.0296565),
+        //                 orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, 0.0),
+        //                 spritePosDeltas: new THREE.Vector3(0.05, 0.05, 0.05),
+        //                 spriteScale: 0.05,
+        //                 spriteRotation: THREE.Math.degToRad(300.0)
+        //             },
+        //         ]
+        //     });
+        // });
 
         /* VLab Interactors */
         // this.heatPumpFrameCapInteractor = new VLabInteractor({
@@ -1323,7 +1359,52 @@ export default class VlabHVACBaseHeatPump extends VLab {
                     reading: 0.0
                 },
             ],
-            NCV: false
+            NCV: false,
+            CONT: [
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor23t',
+                    ],
+                    reading: 0.4
+                },
+                {
+                    testPoints: [
+                        'contactor11',
+                        'ground'
+                    ],
+                    reading: 0.8
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'ground'
+                    ],
+                    reading: 2.4
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'ground'
+                    ],
+                    reading: 2.8
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor21'
+                    ],
+                    reading: Infinity,
+                    hv: 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'contactor11',
+                    ],
+                    reading: Infinity
+                },
+            ]
         });
 
         if (this.vLabLocator.context.activatedMode.indexOf('cool') != -1) {
@@ -1363,7 +1444,52 @@ export default class VlabHVACBaseHeatPump extends VLab {
                     reading: 230.0
                 },
             ],
-            NCV: true
+            NCV: true,
+            CONT: [
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor23t',
+                    ],
+                    reading: 0.4
+                },
+                {
+                    testPoints: [
+                        'contactor11',
+                        'ground'
+                    ],
+                    reading: 0.8
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'ground'
+                    ],
+                    reading: 2.4
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'ground'
+                    ],
+                    reading: 2.8
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor21'
+                    ],
+                    reading: 'HV',
+                    hv: 230.0
+                },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'contactor11',
+                    ],
+                    reading: Infinity
+                },
+            ]
         });
 
         this.vLabLocator.locations['HVACBaseAirHandler'].resetNormalOperaionDefaults();
@@ -1500,6 +1626,13 @@ export default class VlabHVACBaseHeatPump extends VLab {
                     ],
                     reading: this.vLabLocator.context.HeatPumpACPower == true ? 230.0 : 0.0
                 },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'contactor11',
+                    ],
+                    reading: 0.5
+                },
             ]
         });
     }
@@ -1556,7 +1689,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
                         'contactor21'
                     ],
                     reading: this.vLabLocator.context.HeatPumpACPower == true ? 230.0 : 0.0
-                },
+                }
             ]
         });
     }
@@ -1920,7 +2053,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             this.heatPumpCompressorOilDisplacementTween.start();
             this.scrollCompressorZP25K5EStatorDamagedWires.visible = true;
             // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = true;
-            this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = true;
+            // this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = true;
             if (this.nature.sounds) this.scrollCompressorShortToGroundSparkSound.play();
         }
 
@@ -1937,7 +2070,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.heatPumpCompressorLookThroughInteractor.handlerSprite.material.opacity = 0.5;
         this.heatPumpCompressorOil.visible = false;
         if (this.heatPumpCompressorOilDisplacementTween !== undefined) this.heatPumpCompressorOilDisplacementTween.stop();
-        this.scrollCompressorZP25K5EStatorDamagedWires.visible = false;
+        // this.scrollCompressorZP25K5EStatorDamagedWires.visible = false;
         this.scrollCompressorZP25K5EStatorDamagedWiresSpark.visible = false;
         // this.scrollCompressorZP25K5EStatorDamagedSparkSprite.visible = false;
         if (this.nature.sounds) {

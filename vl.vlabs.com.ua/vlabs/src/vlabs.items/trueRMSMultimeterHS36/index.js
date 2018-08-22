@@ -30,6 +30,9 @@ initObj {
         this.interactiveSuppressElements = [];
         this.accessableInteractiveELements = [];
 
+        this.continutiyResitanceThershold = 5.0;
+        this.continutiyBeep = false;
+
         var textureLoader = new THREE.TextureLoader();
 
         return new Promise((resolve, reject) => {
@@ -314,12 +317,13 @@ initObj {
                         this.screenMaterial.emissive = new THREE.Color(0.0, 0.0, 0.0);
                         this.trueRMSMultimeterHS36['backLight'] = false;
                     } else {
-                        this.beepSound.play();
+                        if (this.continutiyBeep == false) this.beepSound.play();
                         this.trueRMSMultimeterHS36ContinuityLightBulb.material.emissive = new THREE.Color(0.0, 1.0, 0.0);
                         this.beepSplashSprite.visible = true;
                         setTimeout(()=>{
                             self.trueRMSMultimeterHS36ContinuityLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
                             self.beepSplashSprite.visible = false;
+                            if (this.continutiyBeep == false) self.beepSound.stop();
                         }, 300);
                         this.screenMaterial.map.offset.y = -0.335;
                         this.screenMaterial.emissive = new THREE.Color(0.21, 0.57, 1.0);
@@ -897,6 +901,7 @@ initObj {
             this.rotateRightHelperSprite.visible = false;
         })
         .start();
+        this.refreshScreen();
     }
 
     changeSwitchState(leftDir) {
@@ -956,6 +961,18 @@ initObj {
             this.screenMaterial.map.offset.y = 0.0;
             this.screenMaterial.emissive = new THREE.Color(0.0, 0.0, 0.0);
             this.trueRMSMultimeterHS36['backLight'] = false;
+
+            this.trueRMSMultimeterHS36HiVLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+            this.hvSplashSprite.visible = false;
+
+            this.trueRMSMultimeterHS36ContinuityLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+            this.beepSplashSprite.visible = false;
+            if (this.beepSound) {
+                this.beepSound.setLoop(false);
+                if (this.beepSound.isPlaying) {
+                    this.beepSound.stop();
+                }
+            }
         }
 
         this.screenMaterial.map = new THREE.Texture(this.screenCanvas);
@@ -963,43 +980,72 @@ initObj {
     }
 
     refreshContinuityScreen() {
-        let reading = -0.0001;
+        let reading = Infinity;
+        let hv = 0.0;
 
-        if (this.probes.redProbe.userData['testPoint'] !== undefined && this.probes.blackProbe.userData['testPoint'] !== undefined) {
+        this.trueRMSMultimeterHS36HiVLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+        this.hvSplashSprite.visible = false;
+
+        if (this.probes.redProbe.userData['testPoint'] !== undefined && this.probes.blackProbe.userData['testPoint'] !== undefined && this.trueRMSMultimeterHS36['switch'].altPos[this.trueRMSMultimeterHS36['switch'].curPos].title != 'OFF') {
             if (this.probesElectricConditions.CONT != undefined) {
                 this.probesElectricConditions.CONT.forEach((probeCombination) => {
                     if (probeCombination.testPoints.indexOf(this.probes.redProbe.userData['testPoint']) > -1 
-                    &&  probeCombination.testPoints.indexOf(this.probes.blackProbe.userData['testPoint']) > -1 )
-                    reading = probeCombination.reading;
+                    &&  probeCombination.testPoints.indexOf(this.probes.blackProbe.userData['testPoint']) > -1 ) {
+                        reading = probeCombination.reading;
+                        hv = probeCombination.hv;
+                    }
                 });
             }
         }
 
         this.screenCanvasContext.font = 'bold 100px DigitalFont';
-        if (reading == -0.0001)
-        {
+        if (reading == Infinity) {
             this.screenCanvasContext.fillText('0L.', 110, 130);
-        } else {
-            if (reading < 1.0 && reading > 0) {
-                if (this.beepSound) {
-                    if (!this.beepSound.isPlaying) {
-                        this.beepSound.setLoop(true);
-                        this.beepSound.play();
-                    }
-                    this.trueRMSMultimeterHS36ContinuityLightBulb.material.emissive = new THREE.Color(0.0, 1.0, 0.0);
-                    this.beepSplashSprite.visible = true;
-                } else {
-                    this.beepSound.setLoop(false);
-                    if (this.beepSound) {
-                        if (this.beepSound.isPlaying) {
-                            this.beepSound.stop();
-                        }
-                    }
-                    this.trueRMSMultimeterHS36ContinuityLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
-                    this.beepSplashSprite.visible = false;
+            this.trueRMSMultimeterHS36ContinuityLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+            this.beepSplashSprite.visible = false;
+            if (this.beepSound) {
+                this.beepSound.setLoop(false);
+                if (this.beepSound.isPlaying) {
+                    this.beepSound.stop();
+                    this.continutiyBeep = false;
                 }
             }
-            reading = reading.toFixed(1);
+        } else {
+            if (reading != 'HV') {
+                this.trueRMSMultimeterHS36HiVLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+                this.hvSplashSprite.visible = false;
+                if (reading < this.continutiyResitanceThershold && reading > 0) {
+                    if (this.beepSound) {
+                        if (!this.beepSound.isPlaying) {
+                            this.continutiyBeep = true;
+                            this.beepSound.setLoop(true);
+                            this.beepSound.play();
+                        }
+                        this.trueRMSMultimeterHS36ContinuityLightBulb.material.emissive = new THREE.Color(0.0, 1.0, 0.0);
+                        this.beepSplashSprite.visible = true;
+                    } else {
+                        if (this.beepSound) {
+                            this.beepSound.setLoop(false);
+                            if (this.beepSound.isPlaying) {
+                                this.beepSound.stop();
+                                this.continutiyBeep = false;
+                            }
+                        }
+                        this.trueRMSMultimeterHS36ContinuityLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+                        this.beepSplashSprite.visible = false;
+                    }
+                }
+                reading = reading.toFixed(1);
+            } else {
+                reading = '----';
+                if (hv > 50.0) {
+                    this.trueRMSMultimeterHS36HiVLightBulb.material.emissive = new THREE.Color(1.0, 0.0, 0.0);
+                    this.hvSplashSprite.visible = true;
+                    if (this.beepSound) {
+                        if (this.beepSound.isPlaying) this.beepSound.stop();
+                    }
+                }
+            }
             this.screenCanvasContext.fillText(reading, 110, 130);
         }
     }
@@ -1012,8 +1058,9 @@ initObj {
             if (this.probesElectricConditions.VADC != undefined) {
                 this.probesElectricConditions.VADC.forEach((probeCombination) => {
                     if (probeCombination.testPoints.indexOf(this.probes.redProbe.userData['testPoint']) > -1 
-                    &&  probeCombination.testPoints.indexOf(this.probes.blackProbe.userData['testPoint']) > -1 )
-                    reading = probeCombination.reading;
+                    &&  probeCombination.testPoints.indexOf(this.probes.blackProbe.userData['testPoint']) > -1 ) {
+                        reading = probeCombination.reading;
+                    }
                 });
             }
         }
@@ -1057,7 +1104,7 @@ initObj {
 
     setProbesElectricConditions(conditionObj) {
         if (conditionObj !== undefined) {
-            console.log('New Probes Electric Conditions: ', conditionObj);
+            console.log('Probes Electric Conditions set: ', conditionObj);
             if (conditionObj.resetAll == true) this.probesElectricConditions = {};
             this.probesElectricConditions = Object.assign(this.probesElectricConditions, conditionObj);
         }
