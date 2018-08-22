@@ -1044,6 +1044,8 @@ initObj {
                     if (this.beepSound) {
                         if (this.beepSound.isPlaying) this.beepSound.stop();
                     }
+                    this.trueRMSMultimeterHS36ContinuityLightBulb.material.emissive = new THREE.Color(0.0, 0.0, 0.0);
+                    this.beepSplashSprite.visible = false;
                 }
             }
             this.screenCanvasContext.fillText(reading, 110, 130);
