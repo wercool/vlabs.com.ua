@@ -2,6 +2,7 @@ import * as THREE           from 'three';
 import * as TWEEN           from 'tween.js';
 import VLab                 from '../../vlabs.core/vlab';
 import Inventory            from '../../vlabs.core/inventory';
+import deepmerge            from 'deepmerge'
 import ExtrudedPath         from '../../vlabs.items/extruded-path';
 
 var TransformControls       = require('../../vlabs.core/three-transformcontrols/index');
@@ -154,7 +155,26 @@ initObj {
                             "icon": ["fa fa-info"],
                             "click": "showInfo",
                             "args": {   "title": "True RMS Multimeter HS36",
-                                        "html": 'DESCRIPTION...'}
+                                        "html": ' \
+                                            <div style="color: white;"> \
+                                                <b>Expandable True RMS Stick Multimeter with Backlight - Designed for HVACR Field Service - HS36</b> \
+                                                <br/> \
+                                                Our top of the line Stick Meter, the HS36 includes the ranges you use everyday for HVACR field service plus includes a bright blue backlight and True RMS. Like the rest of the HS30 series, the HS36 comes equipped with a magnetic hanger, along with detachable silicone test leads and alligator clip probe tips for remote and easy one-handed testing, as well as the full set of built-in safety features.  This auto-ranging stick meter also includes a bar graph on the LCD for an analog feel. Technicians who prefer our expandable stick meters tell us this is the best digital multimeter for HVACR field service. \
+                                                <br/> \
+                                                The HS meter series is unlike any other found in HVACR. We incorporate a number of safety features, both those you can and can’t see, into our meters.  In addition, the HS series accepts modular test instrument accessory heads, so you have more testing capabilities without buying a lot of expensive instruments.  And it\'s packed with the features HVACR technicians need: <br>\
+                                                Non-contact Voltage <br/>\
+                                                High Voltage and Continuity Indicators <br/>\
+                                                Microamps <br/>\
+                                                Capacitance <br/>\
+                                                MIN/MAX <br/>\
+                                                Temperature <br/>\
+                                                Silicone Leads with Detachable Probe Tips <br/>\
+                                                Rugged ABS case with rubberized bumpers <br/>\
+                                                Built-in magnetic hanger allows you to test with one hand or no-hands <br/>\
+                                                Built-in lead storage <br/>\
+                                                Ergonomic shape fits naturally in your hand <br/>\
+                                                Auto power-off (APO) to conserve battery life <br/>\
+                                        '}
                             }, {
                             "disabled": true
                             }, {
@@ -484,11 +504,13 @@ initObj {
             if (interactionObjectIntersects[0].object.name.indexOf('trueRMSMultimeterHS36') > -1) {
                 if (interactionObjectIntersects[0].object.mousePressHandler) {
                     interactionObjectIntersects[0].object.mousePressHandler.call(this, interactionObjectIntersects[0].object);
+                    event.stopPropagation();
                     return;
                 }
             }
             if (this.context.interactivesSuppressorsObjects.indexOf(interactionObjectIntersects[0].object) > -1) {
                 this.probePressed();
+                event.stopPropagation();
             }
         } else {
             this.probePressed();
@@ -521,8 +543,8 @@ initObj {
 
         var lineMaterial = new THREE.LineDashedMaterial( {
             color: 0xffffff,
-            dashSize: 0.005,
-            gapSize: 0.0025,
+            dashSize: 0.002,
+            gapSize:  0.001,
             transparent: true,
             opacity: 0.5,
             depthTest: true
@@ -1106,9 +1128,10 @@ initObj {
 
     setProbesElectricConditions(conditionObj) {
         if (conditionObj !== undefined) {
-            console.log('Probes Electric Conditions set: ', conditionObj);
             if (conditionObj.resetAll == true) this.probesElectricConditions = {};
-            this.probesElectricConditions = Object.assign(this.probesElectricConditions, conditionObj);
+            // this.probesElectricConditions = Object.assign(this.probesElectricConditions, conditionObj);
+            this.probesElectricConditions = deepmerge(this.probesElectricConditions, conditionObj);
+            // console.log('Probes Electric Conditions set: ', conditionObj, this.probesElectricConditions);
         }
         this.refreshScreen();
         // console.log(this.probesElectricConditions);

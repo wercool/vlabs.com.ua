@@ -628,7 +628,9 @@ class HVACVLabBase {
             this.advancedModeOperationProcessorTimeOut = setTimeout(this.advancedModeOperationProcessor.bind(this), 5000);
         } else {
             if (this.activatedMode == 'cool') {
-                this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
+                if (this.HeatPumpACPower == true) {
+                    this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
+                }
             } else {
                 if (roomTemperature < this.ambientDefaultRoomTemperature) {
                     this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] += 0.1;

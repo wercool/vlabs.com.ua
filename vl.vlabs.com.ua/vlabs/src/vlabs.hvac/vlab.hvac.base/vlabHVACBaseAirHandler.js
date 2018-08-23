@@ -733,7 +733,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
                                 self.vLabLocator.context.tablet.stepCompletedAnimation();
                                 self.playSound('resources/assistant/snd/step3.mp3');
                                 self.contolVoltagesAcknowledgmentStepTimeout = undefined;
-                            }, 6000);
+                            }, 2000);
                         }
                     }
                 }

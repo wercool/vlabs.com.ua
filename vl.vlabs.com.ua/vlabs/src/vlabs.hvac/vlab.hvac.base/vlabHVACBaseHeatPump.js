@@ -436,19 +436,19 @@ export default class VlabHVACBaseHeatPump extends VLab {
             zoomCompleteCallback: this.zoomToContactorHandler
         });
 
-        this.contactor_ZoomHelper_CloseUp = new ZoomHelper({
-            context: this,
-            targetObjectName: "contactor",
-            minDistance: 0.1,
-            maxDistance: 0.15,
-            positionDeltas: new THREE.Vector3(-0.075, 0.0, 0.06), 
-            scale: new THREE.Vector3(0.02, 0.02, 0.02),
-            orbitTargetPositionDeltas: new THREE.Vector3(0.0, -0.1, 0.0), 
-            color: 0xfff495,
-            opacity: 0.3,
-            visible: false,
-            hideOnExit: true
-        });
+        // this.contactor_ZoomHelper_CloseUp = new ZoomHelper({
+        //     context: this,
+        //     targetObjectName: "contactor",
+        //     minDistance: 0.1,
+        //     maxDistance: 0.15,
+        //     positionDeltas: new THREE.Vector3(-0.075, 0.0, 0.06), 
+        //     scale: new THREE.Vector3(0.02, 0.02, 0.02),
+        //     orbitTargetPositionDeltas: new THREE.Vector3(0.0, -0.1, 0.0), 
+        //     color: 0xfff495,
+        //     opacity: 0.3,
+        //     visible: false,
+        //     hideOnExit: true
+        // });
 
         this.controlBoard_ZoomHelper = new ZoomHelper({
             context: this,
@@ -550,9 +550,30 @@ export default class VlabHVACBaseHeatPump extends VLab {
                         ],
                         reading: 230.0
                     },
+                    {
+                        testPoints: [
+                            'contactor21',
+                            'contactor11',
+                        ],
+                        reading: 230.0
+                    },
+                    {
+                        testPoints: [
+                            'contactor21',
+                            'ground',
+                        ],
+                        reading: 230.0
+                    },
                 ],
                 NCV: true,
                 CONT: [
+                    {
+                        testPoints: [
+                            'contactor24VL',
+                            'contactor24VR',
+                        ],
+                        reading: 13.5,
+                    },
                     {
                         testPoints: [
                             'contactor23b',
@@ -572,7 +593,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
                             'contactor23t',
                             'ground'
                         ],
-                        reading: 2.4
+                        reading: 2.6
                     },
                     {
                         testPoints: [
@@ -591,10 +612,41 @@ export default class VlabHVACBaseHeatPump extends VLab {
                     },
                     {
                         testPoints: [
+                            'contactor23t',
+                            'contactor11'
+                        ],
+                        reading: 1.2
+                    },
+                    {
+                        testPoints: [
+                            'contactor23b',
+                            'contactor11'
+                        ],
+                        reading: 1.2
+                    },
+                    {
+                        testPoints: [
                             'contactor21',
                             'contactor11',
                         ],
-                        reading: Infinity
+                        reading: 'HV',
+                        hv: 230.0
+                    },
+                    {
+                        testPoints: [
+                            'contactor23t',
+                            'contactor21'
+                        ],
+                        reading: 'HV',
+                        hv: 230.0
+                    },
+                    {
+                        testPoints: [
+                            'contactor21',
+                            'ground'
+                        ],
+                        reading: (this.vLabLocator.context.HeatPumpACPower == true) ? 'HV' : 0.8,
+                        hv: 208.0
                     },
                 ]
             });
@@ -694,9 +746,9 @@ export default class VlabHVACBaseHeatPump extends VLab {
                     {
                         name: 'contactor24VL',
                         target: new THREE.Vector3(0.0, -0.0198938, 0.029299),
-                        spritePosDeltas: new THREE.Vector3(-0.03, -0.035, 0.01),
+                        spritePosDeltas: new THREE.Vector3(-0.02, -0.035, 0.03),
                         spriteScale: 0.05,
-                        spriteRotation: 0.0,
+                        spriteRotation: THREE.Math.degToRad(30.0),
                         redProbeOrientation: new THREE.Vector3(2.23672, 0.42903, -3.02680),
                         blackProbeOrientation: new THREE.Vector3(2.25340, 0.52562, -2.92846),
                         probeWiresPathes: {
@@ -721,9 +773,9 @@ export default class VlabHVACBaseHeatPump extends VLab {
                     {
                         name: 'contactor24VR',
                         target: new THREE.Vector3(0.0, 0.0206694, 0.029299),
-                        spritePosDeltas: new THREE.Vector3(-0.03, 0.035, 0.01),
+                        spritePosDeltas: new THREE.Vector3(-0.02, 0.035, 0.015),
                         spriteScale: 0.05,
-                        spriteRotation: THREE.Math.degToRad(270.0),
+                        spriteRotation: THREE.Math.degToRad(250.0),
                         redProbeOrientation: new THREE.Vector3(0.97131, 0.20891, 2.78713),
                         blackProbeOrientation: new THREE.Vector3(0.91651, 0.21074, 2.82736),
                         probeWiresPathes: {
@@ -914,7 +966,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         //             {
         //                 name: 'relayT9AV5022ContactNO',
         //                 target: new THREE.Vector3(0.055229, 0.0400362, 0.0296565),
-        //                 orientation: new THREE.Vector3(THREE.Math.degToRad(70.0), 0.0, 0.0),
+        //                 orientation: new THREE.Vector3(THREE.Math.degToRad(90.0), 0.0, 0.0),
         //                 spritePosDeltas: new THREE.Vector3(0.05, 0.05, 0.05),
         //                 spriteScale: 0.05,
         //                 spriteRotation: THREE.Math.degToRad(300.0)
@@ -1358,6 +1410,20 @@ export default class VlabHVACBaseHeatPump extends VLab {
                     ],
                     reading: 0.0
                 },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'ground',
+                    ],
+                    reading: 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'contactor11'
+                    ],
+                    reading: 0.0
+                },
             ],
             NCV: false,
             CONT: [
@@ -1380,7 +1446,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
                         'contactor23t',
                         'ground'
                     ],
-                    reading: 2.4
+                    reading: 2.6
                 },
                 {
                     testPoints: [
@@ -1388,6 +1454,20 @@ export default class VlabHVACBaseHeatPump extends VLab {
                         'ground'
                     ],
                     reading: 2.8
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'contactor11'
+                    ],
+                    reading: 1.2
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor11'
+                    ],
+                    reading: 1.2
                 },
                 {
                     testPoints: [
@@ -1399,8 +1479,23 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 },
                 {
                     testPoints: [
+                        'contactor23t',
+                        'contactor21'
+                    ],
+                    reading: Infinity,
+                    hv: 0.0
+                },
+                {
+                    testPoints: [
                         'contactor21',
                         'contactor11',
+                    ],
+                    reading: Infinity
+                },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'ground'
                     ],
                     reading: Infinity
                 },
@@ -1443,6 +1538,34 @@ export default class VlabHVACBaseHeatPump extends VLab {
                     ],
                     reading: 230.0
                 },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'ground',
+                    ],
+                    reading: (this.vLabLocator.context.activatedMode == 'cool') ? 208.0 : 230.0
+                },
+                {
+                    testPoints: [
+                        'contactor11',
+                        'ground',
+                    ],
+                    reading: (this.vLabLocator.context.activatedMode == 'cool') ? 208.0 : 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'ground',
+                    ],
+                    reading: (this.vLabLocator.context.activatedMode == 'cool') ? 150.0 : 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'ground',
+                    ],
+                    reading: (this.vLabLocator.context.activatedMode == 'cool') ? 150.0 : 0.0
+                },
             ],
             NCV: true,
             CONT: [
@@ -1458,21 +1581,24 @@ export default class VlabHVACBaseHeatPump extends VLab {
                         'contactor11',
                         'ground'
                     ],
-                    reading: 0.8
+                    reading: (this.vLabLocator.context.activatedMode == 'cool') ? 'HV' : 0.8,
+                    hv: 150.0
                 },
                 {
                     testPoints: [
                         'contactor23t',
                         'ground'
                     ],
-                    reading: 2.4
+                    reading: (this.vLabLocator.context.activatedMode == 'cool') ? 'HV' : 2.6,
+                    hv: 150.0
                 },
                 {
                     testPoints: [
                         'contactor23b',
                         'ground'
                     ],
-                    reading: 2.8
+                    reading: (this.vLabLocator.context.activatedMode == 'cool') ? 'HV' : 2.8,
+                    hv: 150.0
                 },
                 {
                     testPoints: [
@@ -1484,10 +1610,26 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 },
                 {
                     testPoints: [
+                        'contactor23t',
+                        'contactor21'
+                    ],
+                    reading: 'HV',
+                    hv: 230.0
+                },
+                {
+                    testPoints: [
                         'contactor21',
                         'contactor11',
                     ],
                     reading: Infinity
+                },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'ground'
+                    ],
+                    reading: 'HV',
+                    hv: 208.0
                 },
             ]
         });
@@ -1578,13 +1720,13 @@ export default class VlabHVACBaseHeatPump extends VLab {
             }, 500);
             return;
         }
-        if (this.contactorTraverse.position.z != 0.04988) {
-            this.contactorTraverse.position.z = 0.04988;//0.05188 - 0.002
+        if (this.contactorTraverse.position.z != 0.04988 && resumed !== true) {
             if (this.nature.sounds) this.contactorOnSound.play();
             if (this.vLabLocator.context.HeatPumpACPower == true) {
                 this.contactorElectricArcEffect.start();
             }
         }
+        this.contactorTraverse.position.z = 0.04988;//0.05188 - 0.002
         if (this.vLabLocator.context.HeatPumpACPower == true) {
             this.startScrollCompressor(resumed);
             this.startFanMotor(resumed);
@@ -1617,7 +1759,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
                         'contactor23b',
                         'contactor11'
                     ],
-                    reading: this.vLabLocator.context.HeatPumpACPower == true ? 230.0 : 0.0
+                    reading: this.vLabLocator.context.HeatPumpACPower == true ? 150.0 : 0.0
                 },
                 {
                     testPoints: [
@@ -1629,9 +1771,94 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 {
                     testPoints: [
                         'contactor21',
+                        'ground',
+                    ],
+                    reading: (this.vLabLocator.context.HeatPumpACPower == true) ? 208.0 : 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor11',
+                        'ground',
+                    ],
+                    reading: (this.vLabLocator.context.HeatPumpACPower == true) ? 208.0 : 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'ground',
+                    ],
+                    reading: (this.vLabLocator.context.HeatPumpACPower == true) ? 150.0 : 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'ground',
+                    ],
+                    reading: (this.vLabLocator.context.HeatPumpACPower == true) ? 150.0 : 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor21',
                         'contactor11',
                     ],
                     reading: 0.5
+                },
+            ],
+            CONT: [
+                {
+                    testPoints: [
+                        'contactor24VL',
+                        'contactor24VR',
+                    ],
+                    reading: 'HV',
+                    hv: 24.0
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'contactor11'
+                    ],
+                    reading: (this.vLabLocator.context.HeatPumpACPower == true) ? 'HV' : 1.2,
+                    hv: 230.0
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor11'
+                    ],
+                    reading: (this.vLabLocator.context.HeatPumpACPower == true) ? 'HV' : 1.2,
+                    hv: 230.0
+                },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'contactor11'
+                    ],
+                    reading: 0.4,
+                },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'contactor23t'
+                    ],
+                    reading: (this.vLabLocator.context.HeatPumpACPower == true) ? 'HV' : 1.2,
+                    hv: 150.0
+                },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'contactor23b'
+                    ],
+                    reading: (this.vLabLocator.context.HeatPumpACPower == true) ? 'HV' : 1.2,
+                    hv: 150.0
+                },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'ground'
+                    ],
+                    reading: (this.vLabLocator.context.HeatPumpACPower == true) ? 'HV' : 0.8,
+                    hv: 208.0
                 },
             ]
         });
@@ -1689,7 +1916,102 @@ export default class VlabHVACBaseHeatPump extends VLab {
                         'contactor21'
                     ],
                     reading: this.vLabLocator.context.HeatPumpACPower == true ? 230.0 : 0.0
-                }
+                },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'contactor11'
+                    ],
+                    reading: this.vLabLocator.context.HeatPumpACPower == true ? 230.0 : 0.0,
+                },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'ground',
+                    ],
+                    reading: (this.vLabLocator.context.HeatPumpACPower == true) ? 230.0 : 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor11',
+                        'ground',
+                    ],
+                    reading: 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'ground',
+                    ],
+                    reading: 0.0
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'ground',
+                    ],
+                    reading: 0.0
+                },
+            ],
+            CONT: [
+                {
+                    testPoints: [
+                        'contactor24VL',
+                        'contactor24VR',
+                    ],
+                    reading: 13.5,
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'contactor11'
+                    ],
+                    reading: 1.2
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'contactor11'
+                    ],
+                    reading: 1.2
+                },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'contactor11'
+                    ],
+                    reading: this.vLabLocator.context.HeatPumpACPower == true ? 'HV' : Infinity,
+                    hv: 230.0
+                },
+                {
+                    testPoints: [
+                        'contactor21',
+                        'ground'
+                    ],
+                    reading: (this.vLabLocator.context.HeatPumpACPower == true) ? 'HV' : Infinity,
+                    hv: 230.0
+                },
+                {
+                    testPoints: [
+                        'contactor23b',
+                        'ground'
+                    ],
+                    reading: 2.8
+                },
+                {
+                    testPoints: [
+                        'contactor23t',
+                        'ground'
+                    ],
+                    reading: 2.6
+                },
+                {
+                    testPoints: [
+                        'contactor11',
+                        'ground'
+                    ],
+                    reading: 0.8
+                },
             ]
         });
     }
@@ -2100,7 +2422,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
     zoomToContactorHandler() {
         if (this.offDelayTimeout !== undefined) clearTimeout(this.offDelayTimeout);
 
-        this.contactor_ZoomHelper_CloseUp.show();
+        // this.contactor_ZoomHelper_CloseUp.show();
 
         if (this.vLabLocator.context.tablet.currentActiveTabId == 1) {
             if (this.vLabLocator.context.tablet.initObj.content.tabs[1].items[4].completed === true) {
