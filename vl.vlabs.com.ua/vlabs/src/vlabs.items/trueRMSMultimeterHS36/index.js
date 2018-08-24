@@ -518,6 +518,7 @@ initObj {
     }
 
     takenToInventory() {
+        if (this === undefined) return;
         this.activated = false;
         this.reset();
         this.context.resetAllSelections();

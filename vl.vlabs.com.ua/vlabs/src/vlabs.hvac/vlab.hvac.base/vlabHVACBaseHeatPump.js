@@ -22,6 +22,7 @@ import DirectionalFlow              from '../../vlabs.items/directional-flow';
 import GasFlow                      from '../../vlabs.items/gas-flow';
 import DirectionalFlowWith3DArrow   from '../../vlabs.items/directionalFlowWith3DArrow';
 import ElectricArc                  from '../../vlabs.items/electric-arc';
+import WireHelper                   from '../../vlabs.items/wire-helper';
 
 export default class VlabHVACBaseHeatPump extends VLab {
     constructor(initObj = {}) {
@@ -1147,6 +1148,18 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 // target: this.vLabScene.getObjectByName("contactor"),
             }
         });
+
+
+        //Wire helpers
+        // this.wire6Helper =  new WireHelper({
+        //     context: this,
+        //     name: 'wire6Helper',
+        //     object: this.vLabScene.getObjectByName('wire6'),
+        //     icon: 'resources/scene-heat-pump/textures/wireHelpers/wire6Helper.png',
+        //     objectRelPos: new THREE.Vector3(-0.349, 0.0, 0.084),
+        //     scale: new THREE.Vector3(0.1, 0.1, 0.1),
+        //     depthTest: false,
+        // });
 
 
         if (this.nature.heatPumpFrameServicePanelTakeOutInteractor === true) {

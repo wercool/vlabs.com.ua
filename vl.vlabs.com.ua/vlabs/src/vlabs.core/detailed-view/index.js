@@ -290,7 +290,6 @@ export default class DetailedView {
     }
 
     close() {
-console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
         this.paused = true;
 
         this.container.style.display = 'none';
