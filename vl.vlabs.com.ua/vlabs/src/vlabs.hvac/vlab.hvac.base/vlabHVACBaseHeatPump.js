@@ -434,7 +434,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
             positionDeltas: new THREE.Vector3(0.0, 0.0, 0.1), 
             scale: new THREE.Vector3(0.075, 0.075, 0.075),
             color: 0xfff495,
-            zoomCompleteCallback: this.zoomToContactorHandler
+            zoomCompleteCallback: this.zoomToContactorHandler,
+            maxPolarAngle: THREE.Math.degToRad(140.0)
         });
 
         // this.contactor_ZoomHelper_CloseUp = new ZoomHelper({
@@ -1151,15 +1152,41 @@ export default class VlabHVACBaseHeatPump extends VLab {
 
 
         //Wire helpers
-        // this.wire6Helper =  new WireHelper({
-        //     context: this,
-        //     name: 'wire6Helper',
-        //     object: this.vLabScene.getObjectByName('wire6'),
-        //     icon: 'resources/scene-heat-pump/textures/wireHelpers/wire6Helper.png',
-        //     objectRelPos: new THREE.Vector3(-0.349, 0.0, 0.084),
-        //     scale: new THREE.Vector3(0.1, 0.1, 0.1),
-        //     depthTest: false,
-        // });
+        this.wire6Helper =  new WireHelper({
+            context: this,
+            name: 'wire6Helper',
+            object: this.vLabScene.getObjectByName('wire6'),
+            sourceThumb: 'resources/scene-heat-pump/textures/wireHelpers/wire6HelperSource.png',
+            targetThumb: 'resources/scene-heat-pump/textures/wireHelpers/wire6HelperTarget.png',
+            sourceRelPos: new THREE.Vector3(0.0, 0.0, 0.0),
+            targetRelPos: new THREE.Vector3(-0.349, 0.0, 0.084),
+            sourceThumbRelPos: new THREE.Vector3(0.0, -0.015, 0.0),
+            targetThumbRelPos: new THREE.Vector3(0.0, 0.01, 0.0),
+            sourceThumbScale: new THREE.Vector3(0.125, 0.125, 0.125),
+            targetThumbScale: new THREE.Vector3(0.11, 0.11, 0.11),
+            sourceThumbRotation: 0.0,
+            targetThumbRotation: 0.0,
+            sourceThumbDepthTest: false,
+            targetThumbDepthTest: false,
+        });
+
+        this.wire7Helper =  new WireHelper({
+            context: this,
+            name: 'wire7Helper',
+            object: this.vLabScene.getObjectByName('wire7'),
+            sourceThumb: 'resources/scene-heat-pump/textures/wireHelpers/wire7HelperSource.png',
+            targetThumb: 'resources/scene-heat-pump/textures/wireHelpers/wire7HelperTarget.png',
+            sourceRelPos: new THREE.Vector3(-0.2143, -0.3251, 0.2709),
+            targetRelPos: new THREE.Vector3(0.0, 0.0, 0.0),
+            sourceThumbRelPos: new THREE.Vector3(0.0, 0.0, 0.0),
+            targetThumbRelPos: new THREE.Vector3(0.0, 0.0, 0.0),
+            sourceThumbScale: new THREE.Vector3(0.125, 0.125, 0.125),
+            targetThumbScale: new THREE.Vector3(0.2, 0.2, 0.2),
+            sourceThumbRotation: 0.0,
+            targetThumbRotation: 0.0,
+            sourceThumbDepthTest: false,
+            targetThumbDepthTest: false,
+        });
 
 
         if (this.nature.heatPumpFrameServicePanelTakeOutInteractor === true) {

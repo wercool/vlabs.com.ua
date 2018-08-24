@@ -1,4 +1,6 @@
 import * as THREE               from 'three';
+import * as TWEEN               from 'tween.js';
+import * as StringUtils         from '../../vlabs.core/utils/string.utils.js';
 
 export default class WireHelper {
     constructor(initObj) {
@@ -8,16 +10,22 @@ export default class WireHelper {
 
         var textureLoader = new THREE.TextureLoader();
 
-        if (this.initObj.icon == undefined) {
-            console.error(this.initObj.name + ' WireHelper wire end icon is not defined');
+        if (this.initObj.sourceThumb == undefined) {
+            console.error(this.initObj.name + ' WireHelper wire Source Thumb is not defined');
+            return undefined;
+        }
+        if (this.initObj.targetThumb == undefined) {
+            console.error(this.initObj.name + ' WireHelper wire Target Thumb is not defined');
             return undefined;
         }
 
         Promise.all([
-            textureLoader.load(this.initObj.icon),
+            textureLoader.load(this.initObj.sourceThumb),
+            textureLoader.load(this.initObj.targetThumb),
         ])
         .then((result) => {
-            this.handlerSpriteTexture = result[0];
+            this.sourceThumbSpriteTexture = result[0];
+            this.targetThumbSpriteTexture = result[1];
 
             this.initialize();
         })
@@ -27,95 +35,149 @@ export default class WireHelper {
     }
 
     initialize() {
-        this.handlerSpriteMaterial = new THREE.SpriteMaterial({
-            map: this.handlerSpriteTexture,
-            rotation: this.initObj.iconRotation ? this.initObj.iconRotation : 0.0,
-            depthTest: this.initObj.depthTest !== undefined ? this.initObj.depthTest : true,
-            depthWrite: this.initObj.depthWrite !== undefined ? this.initObj.depthWrite : true,
+        this.sourceThumbSpriteMaterial = new THREE.SpriteMaterial({
+            map: this.sourceThumbSpriteTexture,
+            rotation: this.initObj.sourceThumbRotation ? this.initObj.sourceThumbRotation : 0.0,
+            depthTest: this.initObj.sourceThumbDepthTest !== undefined ? this.initObj.sourceThumbDepthTest : true,
+            depthWrite: this.initObj.sourceThumbDepthTest !== undefined ? this.initObj.sourceThumbDepthTest : true,
         });
+        this.sourceThumbSprite = new THREE.Sprite(this.sourceThumbSpriteMaterial);
+        this.sourceThumbSprite.name = this.initObj.name + "WireSourceHelper";
+        this.sourceThumbSprite.scale.copy(this.initObj.sourceThumbScale ? this.initObj.sourceThumbScale : new THREE.Vector3(1.0, 1.0, 1.0));
+        this.sourceThumbSprite.visible = false;
 
-        this.handlerSprite = new THREE.Sprite(this.handlerSpriteMaterial);
-        this.handlerSprite.name = this.initObj.name + "WireHelper";
-        this.handlerSprite.scale.copy(this.initObj.scale ? this.initObj.scale : new THREE.Vector3(1.0, 1.0, 1.0));
+        this.targetThumbSpriteMaterial = new THREE.SpriteMaterial({
+            map: this.targetThumbSpriteTexture,
+            rotation: this.initObj.targetThumbRotation ? this.initObj.targetThumbRotation : 0.0,
+            depthTest: this.initObj.targetThumbDepthTest !== undefined ? this.initObj.targetThumbDepthTest : true,
+            depthWrite: this.initObj.targetThumbDepthTest !== undefined ? this.initObj.targetThumbDepthTest : true,
+        });
+        this.targetThumbSprite = new THREE.Sprite(this.targetThumbSpriteMaterial);
+        this.targetThumbSprite.name = this.initObj.name + "WireTargetHelper";
+        this.targetThumbSprite.scale.copy(this.initObj.targetThumbScale ? this.initObj.targetThumbScale : new THREE.Vector3(1.0, 1.0, 1.0));
+        this.targetThumbSprite.visible = false;
 
         if (this.initObj.visible !== undefined) {
-            this.handlerSprite.visible = this.initObj.visible;
+            this.sourceThumbSprite.visible = this.initObj.visible;
+            this.targetThumbSprite.visible = this.initObj.visible;
         }
 
         if (this.initObj.object) {
-            this.initObj.object.add(this.handlerSprite);
-            if (this.initObj.objectRelPos) {
-                this.handlerSprite.position.add(this.initObj.objectRelPos);
+            this.initObj.object.add(this.sourceThumbSprite);
+            this.initObj.object.add(this.targetThumbSprite);
+            if (this.initObj.sourceThumbRelPos) {
+                this.sourceThumbSprite.position.add(this.initObj.sourceRelPos).add(this.initObj.sourceThumbRelPos);
+            }
+            if (this.initObj.targetThumbRelPos) {
+                this.targetThumbSprite.position.add(this.initObj.targetRelPos).add(this.initObj.targetThumbRelPos);
             }
         } else {
-            console.error(this.initObj.name + ' WireHelper target wire is not defined');
+            console.error(this.initObj.name + ' WireHelper target wire mesh is not defined');
             return;
         }
 
-        var lineMaterial = new THREE.LineDashedMaterial( {
-            color: 0xffffff,
-            dashSize: 0.005,
-            gapSize:  0.0025,
-            depthTest: false,
-            depthWrite: false,
-            alphaTest: 0.1
-        });
 
-        var lineGeometry = new THREE.Geometry();
-        lineGeometry.vertices.push(
-            new THREE.Vector3(0.0, 0.0, 0.0),
-            this.handlerSprite.position
-        );
+        // var lineMaterial = new THREE.LineDashedMaterial( {
+        //     color: 0xfff700,
+        //     dashSize: 0.002,
+        //     gapSize:  0.001,
+        //     transparent: true,
+        //     opacity: 0.75,
+        //     depthTest: true
+        // });
+        // if (this.initObj.sourceRelPos.distanceTo(this.sourceThumbSprite.position) > 0.01) {
+        //     var sourceThumbLineGeometry = new THREE.Geometry();
+        //     sourceThumbLineGeometry.vertices.push(
+        //         this.initObj.sourceRelPos,
+        //         this.sourceThumbSprite.position
+        //     );
+        //     this.sourceThumbLine = new THREE.Line(sourceThumbLineGeometry, lineMaterial);
+        //     this.initObj.object.add(this.sourceThumbLine);
+        // }
 
-        this.directPathLine = new THREE.Line(lineGeometry, lineMaterial);
-
-        // this.directPathLine = new THREE.ArrowHelper(this.handlerSprite.position.clone().normalize(), new THREE.Vector3(), new THREE.Vector3().distanceTo(this.handlerSprite.position), new THREE.Color(0xffffff));
-
-        this.initObj.object.add(this.directPathLine);
-
-
+        // if (this.initObj.targetRelPos.distanceTo(this.targetThumbSprite.position) > 0.05) {
+        //     var targetThumbLineGeometry = new THREE.Geometry();
+        //     targetThumbLineGeometry.vertices.push(
+        //         this.initObj.targetRelPos,
+        //         this.targetThumbSprite.position
+        //     );
+        //     this.targetThumbLine = new THREE.Line(targetThumbLineGeometry, lineMaterial);
+        //     this.initObj.object.add(this.targetThumbLine);
+        // }
 
         //VLab events subscribers
-        // this.context.webGLContainerEventsSubcribers.mouseup[this.handlerSprite.name + "vLabSceneMouseUp"] = 
-        // {
-        //     callback: this.onVLabSceneMouseUp,
-        //     instance: this
-        // };
-        // this.context.webGLContainerEventsSubcribers.touchend[this.handlerSprite.name + "vLabSceneTouchEnd"] = 
-        // {
-        //     callback: this.onVLabSceneTouchEnd,
-        //     instance: this
-        // };
+        this.context.webGLContainerEventsSubcribers.mouseup[this.initObj.name + "_" + StringUtils.getRandomString(8) + "vLabSceneMouseUp"] = 
+        {
+            callback: this.onVLabSceneMouseUp,
+            instance: this
+        };
+        this.context.webGLContainerEventsSubcribers.touchend[this.initObj.name + "_" + StringUtils.getRandomString(8) + "vLabSceneTouchEnd"] = 
+        {
+            callback: this.onVLabSceneTouchEnd,
+            instance: this
+        };
 
-        console.log("WireHelper initialized");
+        console.log("WireHelper for the wire " + this.initObj.object.name + " initialized");
     }
 
-    // onVLabSceneMouseUp(event) {
-    //     // console.log("VLabLocator onVLabSceneMouseUp", event.type);
-    //     this.interactionEvent();
-    // }
+    onVLabSceneMouseUp(event) {
+        // console.log("VLabLocator onVLabSceneMouseUp", event.type);
+        this.interactionEvent();
+    }
 
-    // onVLabSceneTouchEnd(event) {
-    //     // console.log("VLabLocator onVLabSceneTouchEnd", event.type);
-    //     this.interactionEvent();
-    // }
+    onVLabSceneTouchEnd(event) {
+        // console.log("VLabLocator onVLabSceneTouchEnd", event.type);
+        this.interactionEvent();
+    }
 
-    // interactionEvent() {
-    //     if (!this.handlerSprite.visible || this.context.paused) {
-    //         return;
-    //     }
+    interactionEvent() {
+        if (this.context.paused || this.sourceThumbSprite == undefined || this.targetThumbSprite == undefined) {
+            return;
+        }
 
-    //     this.context.helpersRaycaster.setFromCamera(this.context.mouseCoordsRaycaster, this.context.defaultCamera);
+        this.context.helpersRaycaster.setFromCamera(this.context.mouseCoordsRaycaster, this.context.defaultCamera);
 
-    //     var intersectObjects = this.context.interactivesSuppressorsObjects.slice();
-    //     intersectObjects = intersectObjects.concat(this.handlerSprite);
+        var intersectObjects = this.context.interactivesSuppressorsObjects.slice();
 
-    //     var intersects = this.context.helpersRaycaster.intersectObjects(intersectObjects);
+        intersectObjects = intersectObjects.concat(this.initObj.object);
+        intersectObjects = intersectObjects.concat(this.sourceThumbSprite);
+        intersectObjects = intersectObjects.concat(this.targetThumbSprite);
 
-    //     if (intersects.length > 0) {
-    //         if (intersects[0].object == this.handlerSprite) {
-    //             this.executeAction();
-    //         }
-    //     }
-    // }
+        var intersects = this.context.helpersRaycaster.intersectObjects(intersectObjects);
+
+        if (intersects.length > 0) {
+            if (intersects[0].object == this.initObj.object
+             || intersects[0].object == this.sourceThumbSprite
+             || intersects[0].object == this.targetThumbSprite) {
+                this.showHelpers();
+            }
+        }
+    }
+
+    showHelpers() {
+        if (this.thumbsDisappearTimeout !== undefined) clearTimeout(this.thumbsDisappearTimeout);
+        if(this.thumbsDisappearTween !== undefined) {
+            this.thumbsDisappearTween.stop();
+        }
+
+        this.sourceThumbSprite.material.opacity = 1.0;
+        this.targetThumbSprite.material.opacity = 1.0;
+        this.sourceThumbSprite.visible = true;
+        this.targetThumbSprite.visible = true;
+
+        let self = this;
+        this.thumbsDisappearTimeout = setTimeout(() => {
+            self.thumbsDisappearTween = new TWEEN.Tween(self.sourceThumbSprite.material)
+            .to({ opacity: 0.0 }, 5000)
+            .easing(TWEEN.Easing.Linear.None)
+            .onUpdate(() => {
+                self.targetThumbSprite.material.opacity = self.sourceThumbSprite.material.opacity;
+            })
+            .onComplete(() => {
+                self.sourceThumbSprite.visible = false;
+                self.targetThumbSprite.visible = false;
+            })
+            .start();
+        }, 10000);
+    }
 }
