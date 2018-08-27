@@ -140,7 +140,10 @@ export default class WireHelper {
     }
 
     interactionEvent() {
-        if (this.context.paused || this.sourceThumbSprite == undefined || this.targetThumbSprite == undefined) {
+        if (this.context.paused 
+         || this.sourceThumbSprite == undefined 
+         || this.targetThumbSprite == undefined
+         || this.context.wireHelperShown !== undefined) {
             return;
         }
 
@@ -164,6 +167,7 @@ export default class WireHelper {
     }
 
     showHelpers() {
+        this.context.wireHelperShown = true;
         if (this.thumbsDisappearTimeout !== undefined) clearTimeout(this.thumbsDisappearTimeout);
         if(this.thumbsDisappearTween !== undefined) {
             this.thumbsDisappearTween.stop();
@@ -178,7 +182,7 @@ export default class WireHelper {
         let self = this;
         this.thumbsDisappearTimeout = setTimeout(() => {
             self.thumbsDisappearTween = new TWEEN.Tween(self.sourceThumbSprite.material)
-            .to({ opacity: 0.0 }, 5000)
+            .to({ opacity: 0.0 }, 3000)
             .easing(TWEEN.Easing.Linear.None)
             .onUpdate(() => {
                 self.targetThumbSprite.material.opacity = self.sourceThumbSprite.material.opacity;
@@ -187,6 +191,7 @@ export default class WireHelper {
                 self.sourceThumbSprite.visible = false;
                 self.targetThumbSprite.visible = false;
                 self.sourceToTargetThumbsLine.visible = false;
+                self.context.wireHelperShown = undefined;
             })
             .start();
         }, 10000);

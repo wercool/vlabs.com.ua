@@ -23,6 +23,7 @@ import GasFlow                      from '../../vlabs.items/gas-flow';
 import DirectionalFlowWith3DArrow   from '../../vlabs.items/directionalFlowWith3DArrow';
 import ElectricArc                  from '../../vlabs.items/electric-arc';
 import WireHelper                   from '../../vlabs.items/wire-helper';
+import SchematicHelper              from '../../vlabs.items/schematic-helper';
 
 export default class VlabHVACBaseHeatPump extends VLab {
     constructor(initObj = {}) {
@@ -1190,6 +1191,51 @@ export default class VlabHVACBaseHeatPump extends VLab {
             targetThumbDepthTest: false,
         });
 
+        this.wire7Helper =  new WireHelper({
+            context: this,
+            name: 'wire5Helper',
+            object: this.vLabScene.getObjectByName('wire5'),
+            sourceThumb: 'resources/scene-heat-pump/textures/wireHelpers/wire5HelperSource.png',
+            targetThumb: 'resources/scene-heat-pump/textures/wireHelpers/wire5HelperTarget.png',
+            sourceRelPos: new THREE.Vector3(-0.2157, -0.3129, 0.2673),
+            targetRelPos: new THREE.Vector3(0.0, 0.0, 0.0),
+            sourceThumbRelPos: new THREE.Vector3(0.0, 0.0, 0.0),
+            targetThumbRelPos: new THREE.Vector3(0.0, 0.0, 0.0),
+            sourceThumbScale: new THREE.Vector3(0.125, 0.125, 0.125),
+            targetThumbScale: new THREE.Vector3(0.2, 0.2, 0.2),
+            sourceThumbRotation: 0.0,
+            targetThumbRotation: 0.0,
+            sourceThumbDepthTest: false,
+            targetThumbDepthTest: false,
+        });
+
+        this.controlBoardOF1Wire7Helper =  new WireHelper({
+            context: this,
+            name: 'controlBoardOF1WireHelper',
+            object: this.vLabScene.getObjectByName('controlBoardOF1Wire'),
+            sourceThumb: 'resources/scene-heat-pump/textures/wireHelpers/controlBoardOF1WireHelperSource.png',
+            targetThumb: 'resources/scene-heat-pump/textures/wireHelpers/controlBoardOF1WireHelperTarget.png',
+            sourceRelPos: new THREE.Vector3(0.0078, -0.01316, -0.1853),
+            targetRelPos: new THREE.Vector3(0.0, 0.0, 0.0),
+            sourceThumbRelPos: new THREE.Vector3(0.0, 0.0, 0.0),
+            targetThumbRelPos: new THREE.Vector3(0.0, 0.0, 0.0),
+            sourceThumbScale: new THREE.Vector3(0.125, 0.125, 0.125),
+            targetThumbScale: new THREE.Vector3(0.075, 0.075, 0.075),
+            sourceThumbRotation: 0.0,
+            targetThumbRotation: 0.0,
+            sourceThumbDepthTest: false,
+            targetThumbDepthTest: false,
+        });
+
+        //Scehamitc helpers
+        this.servicePanelSchematicHelper = new SchematicHelper({
+            context: this,
+            name: 'servicePanelSchematicHelper',
+            object: this.vLabScene.getObjectByName('contactor'),
+            scale: new THREE.Vector3(0.025, 0.025, 0.025),
+            relPos: new THREE.Vector3(-0.11, -0.02, 0.05),
+            schematicPNG: 'resources/scene-heat-pump/textures/schematicHelpers/servicePanelWiringDiagram.png'
+        });
 
         if (this.nature.heatPumpFrameServicePanelTakeOutInteractor === true) {
             this.heatPumpFrameServicePanelTakeOutInteractor.activate();
@@ -2533,6 +2579,31 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.ACDisconnectDoorInteractor.deactivate();
         this.ACDisconnectClampInteractor.deactivate();
         this.ACDisconnectClampReverseInteractor.deactivate();
+    }
+
+
+    onSchematicHelperOpened() {
+        if (this.statsTHREE) {
+            this.statsTHREE.domElement.style.display = 'none';
+        }
+        this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setOnScreenHelperDisplay(false);
+        this.vLabLocator.context.settings.hideButton();
+        this.vLabLocator.context.tablet.hideButton();
+        if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
+            this.inventory.hideToolboxBtn();
+        }
+    }
+
+    onSchematicHelperClosed() {
+        if (this.statsTHREE) {
+            this.statsTHREE.domElement.style.display = 'block';
+        }
+        this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setOnScreenHelperDisplay(this.nature.thermostatOnScreenHelper);
+        this.vLabLocator.context.settings.showButton();
+        this.vLabLocator.context.tablet.showButton();
+        if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
+            this.inventory.showToolboxBtn();
+        }
     }
 
 

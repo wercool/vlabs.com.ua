@@ -1,0 +1,51 @@
+.schematicsHelperViewContainer {
+    position: fixed;
+    top: 5px;
+    bottom: 5px;
+    left: 5px;
+    right: 5px;
+    background-color: #0e2d35e8;
+    display: none;
+    z-index: 20000;
+    border-radius: 10px;
+    -moz-box-shadow: 0 0 4px #ccc;
+    -webkit-box-shadow: 0 0 4px #ccc;
+    box-shadow: 0 0 4px #ccc;
+    padding: 7px;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+}
+
+.schematicsHelperViewContainerCloseButton {
+    position: fixed;
+    width: 10vmin;
+    height: 10vmin;
+    max-width: 48px;
+    max-height: 48px;
+    background-image: url('/vlabs.assets/img/closeInventory.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    left: 16px;
+    top: 16px;
+    cursor: pointer;
+    z-index: 20010;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+    -webkit-tap-highlight-color: transparent;
+}
+
+.schematicsHelperViewContainerContent {
+    height: 100%;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+    -webkit-tap-highlight-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center; 
+    background-size: contain; 
+}
