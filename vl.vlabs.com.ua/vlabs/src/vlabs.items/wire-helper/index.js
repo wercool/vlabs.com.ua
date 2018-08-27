@@ -77,14 +77,23 @@ export default class WireHelper {
         }
 
 
-        // var lineMaterial = new THREE.LineDashedMaterial( {
-        //     color: 0xfff700,
-        //     dashSize: 0.002,
-        //     gapSize:  0.001,
-        //     transparent: true,
-        //     opacity: 0.75,
-        //     depthTest: true
-        // });
+        var lineMaterial = new THREE.LineBasicMaterial( {
+            color: 0xffffff,
+            linewidth: 1.5,
+            depthTest: false
+        });
+
+        if (this.initObj.sourceRelPos.distanceTo(this.initObj.targetRelPos) > 0.01) {
+            var sourceToTargetThumbsLineGeometry = new THREE.Geometry();
+            sourceToTargetThumbsLineGeometry.vertices.push(
+                this.initObj.sourceRelPos,
+                this.initObj.targetRelPos
+            );
+            this.sourceToTargetThumbsLine = new THREE.Line(sourceToTargetThumbsLineGeometry, lineMaterial);
+            this.initObj.object.add(this.sourceToTargetThumbsLine);
+            this.sourceToTargetThumbsLine.visible = false;
+        }
+
         // if (this.initObj.sourceRelPos.distanceTo(this.sourceThumbSprite.position) > 0.01) {
         //     var sourceThumbLineGeometry = new THREE.Geometry();
         //     sourceThumbLineGeometry.vertices.push(
@@ -164,6 +173,7 @@ export default class WireHelper {
         this.targetThumbSprite.material.opacity = 1.0;
         this.sourceThumbSprite.visible = true;
         this.targetThumbSprite.visible = true;
+        this.sourceToTargetThumbsLine.visible = true;
 
         let self = this;
         this.thumbsDisappearTimeout = setTimeout(() => {
@@ -176,6 +186,7 @@ export default class WireHelper {
             .onComplete(() => {
                 self.sourceThumbSprite.visible = false;
                 self.targetThumbSprite.visible = false;
+                self.sourceToTargetThumbsLine.visible = false;
             })
             .start();
         }, 10000);

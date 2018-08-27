@@ -105,6 +105,8 @@ export default class VlabHVACBaseHeatPump extends VLab {
             this.light1.position.set(3.0, 5.0, 0.0);
             this.vLabScene.add(this.light1);
 
+            // this.vLabScene.fog = new THREE.FogExp2(0x000000, 0.25);
+
             this.shadowsSetup();
 
             //Z-fighting fixes
