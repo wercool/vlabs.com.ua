@@ -11,6 +11,7 @@ import VLabInteractor               from '../../vlabs.core/vlab-interactor';
 
 //VLab Items
 import CarrierTPWEM01              from '../../vlabs.items/hvac/carrierTPWEM01';
+import GasFlow                     from '../../vlabs.items/gas-flow';
 import FlowAlongTube               from '../../vlabs.items/flow-along-tube';
 import DirectionalFlow             from '../../vlabs.items/directional-flow';
 import HeadPhones                  from '../../vlabs.items/headphones';
@@ -415,6 +416,19 @@ export default class VlabHVACBaseAirHandler extends VLab {
             color: 0xffffff,
             iconOpacity: 0.5
         });
+
+
+        this.gasFlow = new GasFlow({
+            context: this,
+            name: 'evaporatorACoilRefrigerantFlow',
+            gasFlowHelperMesh: this.vLabScene.getObjectByName('airHandlerRefrigerantFlow'),
+            // confrontMaterials: [ this.vLabScene.getObjectByName('bryantB225B_heatPumpFanGrid').material ],
+            expansionEffect: true,
+            expansionEffectReversed: true
+        });
+        this.gasFlow.start();
+        this.gasFlow.startAnimation();
+
 
 
         this.initializeActions();

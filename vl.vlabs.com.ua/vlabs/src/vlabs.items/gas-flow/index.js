@@ -93,16 +93,24 @@ export default class GasFlow {
 
     expansionEffectProcessor() {
         if (!this.gasFlowHelperMesh.material.alphaMap) return;
-        // this.alphaMapCanvasContext.clearRect(0, 0, 128, 128);
-        this.alphaMapCanvasContext.fillStyle = '#ffffff';
-        this.alphaMapCanvasContext.fillRect(0, 0, this.shift, 128);
-        this.alphaMapCanvasContext.fillStyle = '#000000';
-        this.alphaMapCanvasContext.fillRect(this.shift, 0, 128, 128);
+        
+        if (this.initObj.expansionEffectReversed == true) {
+            this.alphaMapCanvasContext.fillStyle = '#000000';
+            this.alphaMapCanvasContext.fillRect(0, 0, 128 - this.shift, 128);
+            this.alphaMapCanvasContext.fillStyle = '#ffffff';
+            this.alphaMapCanvasContext.fillRect(128 - this.shift, 0, this.shift, 128);
+        } else {
+            this.alphaMapCanvasContext.fillStyle = '#ffffff';
+            this.alphaMapCanvasContext.fillRect(0, 0, this.shift, 128);
+            this.alphaMapCanvasContext.fillStyle = '#000000';
+            this.alphaMapCanvasContext.fillRect(this.shift, 0, 128, 128);
+        }
 
         this.gasFlowHelperMesh.material.alphaMap.needsUpdate = true;
 
         this.shift += 0.2;
         if (this.shift > 128) this.shift = 0;
+
         this.expansionEffectProcessorTimeout = setTimeout(this.expansionEffectProcessor.bind(this), 50);
     }
 }
