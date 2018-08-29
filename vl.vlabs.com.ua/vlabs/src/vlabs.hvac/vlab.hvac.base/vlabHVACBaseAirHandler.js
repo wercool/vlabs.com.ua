@@ -614,7 +614,10 @@ export default class VlabHVACBaseAirHandler extends VLab {
     }
 
     toggleACoilRefrigerantFlow() {
-        if (this.nature.aCoilRefrigerant == true && this.airBlowerStarted && this.vLabLocator.context.HeatPumpACPower == true) {
+        if (this.nature.aCoilRefrigerant == true 
+         && this.airBlowerStarted 
+         && this.vLabLocator.context.HeatPumpACPower == true
+         && this.nishDoorClosed == false) {
             this.gasFlow.start();
             if (this.nature.aCoilRefrigerantAnimated == true) {
                 this.gasFlow.startAnimation();
@@ -713,6 +716,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
             }
             this.setInteractivesSuppressorsObjects('airHandlerCabinetUpperPanel');
         }
+        this.toggleACoilRefrigerantFlow();
     }
 
     initialPositionCompleted() {
@@ -720,10 +724,12 @@ export default class VlabHVACBaseAirHandler extends VLab {
         this.blowerWheelHousingZoomHelper.setMaterial({depthTest: true});
         this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: true});
         this.controlBoardHK61EA005ZoomHelper.setMaterial({depthTest: true});
+        this.toggleACoilRefrigerantFlow();
     }
 
     carrierTPWEM01WallPositionCompleted() {
         this.positionInFrontOfTheNishActive = false;
+        this.gasFlow.stop();
         this.blowerWheelHousingZoomHelper.setMaterial({depthTest: true});
         this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: true});
         this.controlBoardHK61EA005ZoomHelper.setMaterial({depthTest: true});
@@ -735,8 +741,12 @@ export default class VlabHVACBaseAirHandler extends VLab {
         .to({ z: (this.nishDoorClosed) ? (-Math.PI - Math.PI / 2) : -Math.PI }, 500)
         .easing(TWEEN.Easing.Cubic.InOut)
         .onComplete(() => {
+            var self = this;
             if (caller) caller.vLabInteractor.activate();
             this.nishDoorClosed = !this.nishDoorClosed;
+            setTimeout(() => {
+                self.toggleACoilRefrigerantFlow();
+            }, 250);
 
             if (!this.nishDoorClosed) {
                 this.toggleAirHandlerCabinetPanelsLookThrough();
@@ -749,7 +759,6 @@ export default class VlabHVACBaseAirHandler extends VLab {
                             this.ctrlVoltageFromAirHandlerToHeatPump.start();
                             this.ctrlVFromThermostatToAirHandler.start();
                             this.power110VFromQuickDisconnect.start();
-                            var self = this;
                             this.contolVoltagesAcknowledgmentStepTimeout = setTimeout(()=>{
                                 //Normal mode demo
                                 if (self.vLabLocator.context.tablet.currentActiveTabId == 0) {
@@ -778,7 +787,6 @@ export default class VlabHVACBaseAirHandler extends VLab {
                 this.volatageTransformerHT01CN236ZoomHelper.setMaterial({depthTest: true});
                 this.controlBoardHK61EA005ZoomHelper.setMaterial({depthTest: true});
             }
-
         })
         .start();
     }
