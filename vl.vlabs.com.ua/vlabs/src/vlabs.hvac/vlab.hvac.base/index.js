@@ -102,6 +102,14 @@ class HVACVLabBase {
                                 innerHTML: '<label class="switch"><input type="checkbox" id="SettingsCeilingVentGridsCheckbox"><span class="toggleSlider round"></span></label>'
                             },
                             {
+                                label: 'Air Handler A-Coil refrigerant',
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsAirHandlerRefrigerantCheckbox"><span class="toggleSlider round"></span></label>'
+                            },
+                            {
+                                label: 'Air Handler A-Coil refrigerant animated',
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsAirHandlerRefrigerantAnimatedCheckbox"><span class="toggleSlider round"></span></label>'
+                            },
+                            {
                                 label: 'Air Handler ambient air flow',
                                 innerHTML: '<label class="switch"><input type="checkbox" id="SettingsAirHandlerAirFlowCheckbox"><span class="toggleSlider round"></span></label>'
                             },
@@ -317,6 +325,8 @@ class HVACVLabBase {
         var SettingsShadowsCheckbox = document.getElementById('SettingsShadowsCheckbox');
         var SettingsSoundsCheckbox = document.getElementById('SettingsSoundsCheckbox');
 
+        var SettingsAirHandlerRefrigerantCheckbox = document.getElementById('SettingsAirHandlerRefrigerantCheckbox');
+        var SettingsAirHandlerRefrigerantAnimatedCheckbox = document.getElementById('SettingsAirHandlerRefrigerantAnimatedCheckbox');
         var SettingsCeilingVentGridsCheckbox = document.getElementById('SettingsCeilingVentGridsCheckbox');
         var SettingsAirHandlerAirFlowCheckbox = document.getElementById('SettingsAirHandlerAirFlowCheckbox');
         var SettingsAirHandlerLookThroughPanelsCheckbox = document.getElementById('SettingsAirHandlerLookThroughPanelsCheckbox');
@@ -345,6 +355,11 @@ class HVACVLabBase {
                 }
                 /* Indoor (Air Handler) Location Settings -> Ceiling ventilation grids airflow */
                 if (locationName == 'HVACBaseAirHandler') {
+
+                    this.vLabLocator.locations['HVACBaseAirHandler'].nature.aCoilRefrigerant = SettingsAirHandlerRefrigerantCheckbox.checked;
+                    this.vLabLocator.locations['HVACBaseAirHandler'].nature.aCoilRefrigerantAnimated = SettingsAirHandlerRefrigerantAnimatedCheckbox.checked;
+                    this.vLabLocator.locations['HVACBaseAirHandler'].toggleACoilRefrigerantFlow();
+
                     this.vLabLocator.locations['HVACBaseAirHandler'].nature.ceelingAirVentFlow = SettingsCeilingVentGridsCheckbox.checked;
                     this.vLabLocator.locations['HVACBaseAirHandler'].toggleCeilingVentGridsAirFlow();
 
@@ -389,6 +404,9 @@ class HVACVLabBase {
                 this.locationInitObjs[locationName]['altNature']['sounds'] = SettingsSoundsCheckbox.checked;
                 /* Indoor Location Settings -> Ceiling ventilation grids airflow */
                 if (locationName == 'HVACBaseAirHandler') {
+
+                    this.locationInitObjs['HVACBaseAirHandler']['altNature']['aCoilRefrigerant'] = SettingsAirHandlerRefrigerantCheckbox.checked;
+                    this.locationInitObjs['HVACBaseAirHandler']['altNature']['aCoilRefrigerantAnimated'] = SettingsAirHandlerRefrigerantAnimatedCheckbox.checked;
                     this.locationInitObjs['HVACBaseAirHandler']['altNature']['ceelingAirVentFlow'] = SettingsCeilingVentGridsCheckbox.checked;
                     this.locationInitObjs['HVACBaseAirHandler']['altNature']['airHandlerAirFlow'] = SettingsAirHandlerAirFlowCheckbox.checked;
                     this.locationInitObjs['HVACBaseAirHandler']['altNature']['airHandlerCabinetPanelsLookThrough'] = SettingsAirHandlerLookThroughPanelsCheckbox.checked;
@@ -412,6 +430,8 @@ class HVACVLabBase {
     }
 
     resetSettingsToDefault() {
+        document.getElementById('SettingsAirHandlerRefrigerantCheckbox').checked = false;
+        document.getElementById('SettingsAirHandlerRefrigerantAnimatedCheckbox').checked = false;        
         document.getElementById('SettingsCeilingVentGridsCheckbox').checked = false;
         document.getElementById('SettingsAirHandlerAirFlowCheckbox').checked = false;
         document.getElementById('SettingsHeatPumpAirFlowCheckbox').checked = false;

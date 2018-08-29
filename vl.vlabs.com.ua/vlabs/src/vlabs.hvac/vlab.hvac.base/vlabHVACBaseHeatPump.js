@@ -1096,6 +1096,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.gasFlow = new GasFlow({
             context: this,
             name: 'refrigerantFlow',
+            speed: 0.4,
             gasFlowHelperMesh: this.vLabScene.getObjectByName('refrigerantFlowHelper'),
             confrontMaterials: [ this.vLabScene.getObjectByName('bryantB225B_heatPumpFanGrid').material ],
             expansionEffect: true
@@ -1791,6 +1792,9 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 if (this.scrollCompressorSound.isPlaying) this.scrollCompressorSound.stop();
             }
         }
+        this.toggleRefrigerantFlow1();
+        this.toggleHeatPumpAirFlow();
+        this.toggleDirectionalRefrigerantFlow();
     }
 
     contactorOn(resumed) {

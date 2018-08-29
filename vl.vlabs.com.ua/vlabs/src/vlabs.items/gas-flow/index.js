@@ -53,6 +53,9 @@ export default class GasFlow {
         this.gasFlowHelperMesh.renderOrder = 100;
         this.gasFlowHelperMesh.visible = true;
 
+        if (this.flowAnimation !== undefined) {
+            this.flowAnimation.stop();
+        }
         this.flowAnimation = new TWEEN.Tween(this.gasFlowHelperMesh.material.map)
         .to({ rotation: 0.015 }, 200)
         .repeat(Infinity)
@@ -81,6 +84,7 @@ export default class GasFlow {
     startAnimation() {
         this.gasFlowHelperMesh.material.alphaMap = new THREE.CanvasTexture(this.alphaMapCanvas);
         this.gasFlowHelperMesh.material.needsUpdate = true;
+        if (this.expansionEffectProcessorTimeout !== undefined) clearTimeout(this.expansionEffectProcessorTimeout);
         if (this.initObj.expansionEffect) this.expansionEffectProcessor();
     }
 
@@ -108,7 +112,7 @@ export default class GasFlow {
 
         this.gasFlowHelperMesh.material.alphaMap.needsUpdate = true;
 
-        this.shift += 0.2;
+        this.shift += this.initObj.speed ? this.initObj.speed : 0.2;
         if (this.shift > 128) this.shift = 0;
 
         this.expansionEffectProcessorTimeout = setTimeout(this.expansionEffectProcessor.bind(this), 50);

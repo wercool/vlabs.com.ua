@@ -63,6 +63,8 @@
     ],
     "interactiveObjects": [],
 
+    "aCoilRefrigerant": false,
+    "aCoilRefrigerantAnimated": false,
     "ceelingAirVentFlow": false,
     "airHandlerAirFlow": false,
     "airHandlerCabinetPanelsLookThrough": false,

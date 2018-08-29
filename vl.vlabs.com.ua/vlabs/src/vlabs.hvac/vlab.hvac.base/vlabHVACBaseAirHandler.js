@@ -421,15 +421,13 @@ export default class VlabHVACBaseAirHandler extends VLab {
         this.gasFlow = new GasFlow({
             context: this,
             name: 'evaporatorACoilRefrigerantFlow',
+            speed: 0.4,
             gasFlowHelperMesh: this.vLabScene.getObjectByName('airHandlerRefrigerantFlow'),
             // confrontMaterials: [ this.vLabScene.getObjectByName('bryantB225B_heatPumpFanGrid').material ],
             expansionEffect: true,
             expansionEffectReversed: true
         });
-        this.gasFlow.start();
-        this.gasFlow.startAnimation();
-
-
+        this.toggleACoilRefrigerantFlow();
 
         this.initializeActions();
     }
@@ -548,6 +546,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
     onVLabStopAndHide() {
         this.stoptAirBlower(false);
+        this.gasFlow.stop();
     }
 
     onVLabResumeAndShow(initObj) {
@@ -581,6 +580,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
 
         this.shadowsSetup();
         this.toggleSounds();
+        this.toggleACoilRefrigerantFlow();
         this.toggleCeilingVentGridsAirFlow();
         this.toggleAirHandlerAirFlow();
         this.toggleAirHandlerCabinetPanelsLookThrough();
@@ -610,6 +610,19 @@ export default class VlabHVACBaseAirHandler extends VLab {
         } else {
             this.vLabLocator.context.ambientSound.pause();
             if (this.airBlowerSound.isPlaying) this.airBlowerSound.stop();
+        }
+    }
+
+    toggleACoilRefrigerantFlow() {
+        if (this.nature.aCoilRefrigerant == true && this.airBlowerStarted && this.vLabLocator.context.HeatPumpACPower == true) {
+            this.gasFlow.start();
+            if (this.nature.aCoilRefrigerantAnimated == true) {
+                this.gasFlow.startAnimation();
+            } else {
+                this.gasFlow.stopAnimation();
+            }
+        } else {
+            this.gasFlow.stop();
         }
     }
 
@@ -663,6 +676,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
             }
         }
         if (!resume && (this.vLabLocator.context.activatedMode == 'cool')) this.airBlowerStarted = true;
+        this.toggleACoilRefrigerantFlow();
         this.toggleCeilingVentGridsAirFlow();
         this.toggleAirHandlerAirFlow();
     }
@@ -679,6 +693,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
                 this.airBlowerSound.stop();
             }
         }
+        this.toggleACoilRefrigerantFlow();
         this.toggleCeilingVentGridsAirFlow();
         this.toggleAirHandlerAirFlow();
     }
