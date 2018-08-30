@@ -352,13 +352,11 @@ export default class VLab {
         this.webGLContainer.style.display = 'none';
 
         window.onresize = this.resiezeWebGLContainer.bind(this);
-
         this.webGLRenderer = new THREE.WebGLRenderer({
-            antialias: false,
+            antialias: this.nature.antialias !== undefined ? this.nature.antialias : false,
             powerPreference: 'high-performance',
             precision: 'lowp',
             alpha: false,
-            powerPreference: 'high-performance'
         });
 
         this.webGLRenderer.setClearColor(this.initObj.webGLRendererClearColor ? this.initObj.webGLRendererClearColor : 0x000000);
