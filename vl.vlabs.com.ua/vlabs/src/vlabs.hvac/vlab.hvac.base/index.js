@@ -19,6 +19,9 @@ class HVACVLabBase {
         this.ambientDefaultRoomTemperature = 73.0;
         this.HeatPumpACPower = true;
 
+        this.curTabletTabItem = 0;
+        this.curTabletTabItemStuckInTime = 0;
+
         this.ambientSound = new Audio('./resources/sounds/ambient.mp3');
         this.ambientSound.volume = 0.1;
         this.ambientSound.addEventListener('ended', function() {
@@ -200,7 +203,7 @@ class HVACVLabBase {
                                 completed: false
                             }
                         ],
-                        setModeCallBack: this.setNormalOperatonMode
+                        setModeCallBack: this.setNormalOperationMode
                     },
                     {
                         title: 'Short to ground demo',
@@ -318,6 +321,9 @@ class HVACVLabBase {
         // console.log(initObj.location);
         this.settings.showButton();
         this.tablet.showButton();
+
+        if (this.selectedModeStuckInInterval !== undefined) clearInterval(this.selectedModeStuckInInterval);
+        this.selectedModeStuckInInterval = setInterval(this.selectedModeStuckInProcessor.bind(this), 1000);
     }
 
     settingsClosed() {
@@ -443,7 +449,31 @@ class HVACVLabBase {
         this.settingsClosed();
     }
 
-    setNormalOperatonMode(forced) {
+    selectedModeStuckInProcessor() {
+        if (this.tablet.initObj.content.tabs[this.tablet.currentActiveTabId].items.length == 0) {
+            if (this.selectedModeStuckInInterval !== undefined) clearInterval(this.selectedModeStuckInInterval);
+        }
+
+        this.curTabletTabItemStuckInTime += 1;
+        let tabletTabItem = 0;
+        for (let item of this.tablet.initObj.content.tabs[this.tablet.currentActiveTabId].items) {
+            if (item.completed == false) {
+                if (this.curTabletTabItem == tabletTabItem) {
+                    if (this.curTabletTabItemStuckInTime > 30) {
+                        this.tablet.showTabletShortToast(undefined, true, true);
+                        this.curTabletTabItemStuckInTime = 0;
+                    }
+                } else {
+                    this.curTabletTabItemStuckInTime = 0;
+                }
+                this.curTabletTabItem = tabletTabItem;
+                break;
+            }
+            tabletTabItem++;
+        }
+    }
+
+    setNormalOperationMode(forced) {
         console.log('Normal Operaton Mode');
 
         if (forced == undefined) {
@@ -457,6 +487,10 @@ class HVACVLabBase {
         this.resetProcessors();
 
         this.tablet.resetTabContentItems();
+
+        this.curTabletTabItem = 0;
+        if (this.selectedModeStuckInInterval !== undefined) clearInterval(this.selectedModeStuckInInterval);
+        this.selectedModeStuckInInterval = setInterval(this.selectedModeStuckInProcessor.bind(this), 1000);
 
         this.locationInitObjs['HVACBaseAirHandler']['altNature'] = {};
         this.locationInitObjs['HVACBaseHeatPump']['altNature'] = {};
@@ -500,6 +534,10 @@ class HVACVLabBase {
 
         this.tablet.resetTabContentItems();
 
+        this.curTabletTabItem = 0;
+        if (this.selectedModeStuckInInterval !== undefined) clearInterval(this.selectedModeStuckInInterval);
+        this.selectedModeStuckInInterval = setInterval(this.selectedModeStuckInProcessor.bind(this), 1000);
+
         this.locationInitObjs['HVACBaseAirHandler']['altNature'] = {};
         this.locationInitObjs['HVACBaseHeatPump']['altNature'] = {};
 
@@ -535,7 +573,7 @@ class HVACVLabBase {
             let audio = new Audio('./resources/assistant/snd/advanced-mode-activated.mp3');
             audio.play();
         }
-        this.setNormalOperatonMode(true);
+        this.setNormalOperationMode(true);
         if (this.vLabLocator.locations['HVACBaseHeatPump'] !== undefined) {
             this.vLabLocator.locations['HVACBaseHeatPump'].heatPumpFrameServicePanelTakeOutInteractor.activate();
         } else {
@@ -559,7 +597,7 @@ class HVACVLabBase {
                 let audio = new Audio('./resources/assistant/snd/normal-operation-demo-completed.mp3');
                 audio.play();
             }
-            this.normalModeOperationProcessorTimeOut = setTimeout(this.setNormalOperatonMode.bind(this), 8000);
+            this.normalModeOperationProcessorTimeOut = setTimeout(this.setNormalOperationMode.bind(this), 8000);
         } else {
             this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.curState['roomTemperature'] -= 0.1;
             this.normalModeOperationProcessorTimeOut = setTimeout(this.normalModeOperationProcessor.bind(this), 5000);
