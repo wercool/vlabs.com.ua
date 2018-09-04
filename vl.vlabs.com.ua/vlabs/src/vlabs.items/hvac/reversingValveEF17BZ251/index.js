@@ -45,7 +45,7 @@ export default class ReversingValveEF17BZ251 {
 
                 if (this.pos) {
                     this.model.position.copy(this.pos);
-                } else {r
+                } else {
                     console.error("Reversing Valve EF17BZ251 is not set");
                 }
 

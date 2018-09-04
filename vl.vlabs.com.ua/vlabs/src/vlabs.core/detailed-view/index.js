@@ -149,7 +149,7 @@ export default class DetailedView {
         this.scene = new THREE.Scene();
 
         // Lights
-        var ambient = new THREE.AmbientLight(0xffffff, 0.65);
+        var ambient = new THREE.AmbientLight(0xffffff, this.initObj.ambientLightIntensity !== undefined ? this.initObj.ambientLightIntensity : 0.65);
         this.scene.add(ambient);
         var spotLight1 = new THREE.PointLight(0xffffff, 0.75);
         spotLight1.position.set(0.0, 0.5, 2.0);

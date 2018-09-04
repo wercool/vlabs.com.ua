@@ -10,11 +10,12 @@ import VLabPositioner               from '../../vlabs.core/vlab-positioner';
 import VLabInteractor               from '../../vlabs.core/vlab-interactor';
 
 //VLab Items
-import CarrierTPWEM01              from '../../vlabs.items/hvac/carrierTPWEM01';
-import GasFlow                     from '../../vlabs.items/gas-flow';
-import FlowAlongTube               from '../../vlabs.items/flow-along-tube';
-import DirectionalFlow             from '../../vlabs.items/directional-flow';
-import HeadPhones                  from '../../vlabs.items/headphones';
+import ThermostaticExpansionValveR410A  from '../../vlabs.items/hvac/thermostaticExpansionValveR410A';
+import CarrierTPWEM01                   from '../../vlabs.items/hvac/carrierTPWEM01';
+import GasFlow                          from '../../vlabs.items/gas-flow';
+import FlowAlongTube                    from '../../vlabs.items/flow-along-tube';
+import DirectionalFlow                  from '../../vlabs.items/directional-flow';
+import HeadPhones                       from '../../vlabs.items/headphones';
 
 export default class VlabHVACBaseAirHandler extends VLab {
     constructor(initObj = {}) {
@@ -234,7 +235,30 @@ export default class VlabHVACBaseAirHandler extends VLab {
             self.airBlowerSoundReady = true;
         });
 
+        //Detailed views
+        this.thermostaticExpansionValveR410ADetailedView = new DetailedView({
+            context: this,
+            targetObjectName: "carrier332368TXV",
+            scale: new THREE.Vector3(0.04, 0.04, 0.04),
+            positionDeltas: new THREE.Vector3(0.0, 0.05, 0.0),
+            ambientLightIntensity: 0.75,
+            controls: {
+                minDistance: 0.05,
+                maxDistance: 0.15,
+                minPolarAngle: 0,
+                maxPolarAngle: Math.PI * 2
+            }
+        });
+
         //VLab Items
+        this.ThermostaticExpansionValveR410A = new ThermostaticExpansionValveR410A({
+            context: this,
+            pos: new THREE.Vector3(0.0, 0.0, 0.0),
+            name: null,
+            itemName: "thermostaticExpansionValveR410A",
+            detailedView: this.thermostaticExpansionValveR410ADetailedView
+        });
+
         this.carrierTPWEM01 = new CarrierTPWEM01({
             context: this,
             pos: this.vLabScene.getObjectByName('carrierTPWEM01WallMount').position,
@@ -324,9 +348,13 @@ export default class VlabHVACBaseAirHandler extends VLab {
         this.evaporatorACoilZoomHelper = new ZoomHelper({
             context: this,
             targetObjectName: "evaporatorACoil",
-            minDistance: 0.35,
-            positionDeltas: new THREE.Vector3(0.2, 0.15, 0.2), 
+            minDistance: 0.15,
+            maxDistance: 0.25,
+            positionDeltas: new THREE.Vector3(0.2, 0.2, 0.26), 
             scale: new THREE.Vector3(0.15, 0.15, 0.15),
+            rotation: Math.PI,
+            opacity: 0.75,
+            minPolarAngle: 0.2,
             color: 0xfff495
         });
 
