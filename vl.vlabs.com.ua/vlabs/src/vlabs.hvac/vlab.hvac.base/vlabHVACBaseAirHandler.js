@@ -243,10 +243,11 @@ export default class VlabHVACBaseAirHandler extends VLab {
             positionDeltas: new THREE.Vector3(0.0, 0.05, 0.0),
             ambientLightIntensity: 0.75,
             controls: {
-                minDistance: 0.05,
-                maxDistance: 0.15,
+                minDistance: 0.025,
+                maxDistance: 0.2,
                 minPolarAngle: 0,
-                maxPolarAngle: Math.PI * 2
+                maxPolarAngle: Math.PI * 2,
+                target: new THREE.Vector3(0.0, 0.05, 0.0),
             }
         });
 
