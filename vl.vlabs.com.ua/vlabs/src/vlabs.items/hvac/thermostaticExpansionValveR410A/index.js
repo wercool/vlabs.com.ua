@@ -205,18 +205,20 @@ export default class ThermostaticExpansionValveR410A {
             this.txvRefrigerantHideShowSprite.scale.set(0.005, 0.005, 0.005);
             this.txvRefrigerantHideShowSprite.position.add(new THREE.Vector3(0.0, 0.035, 0.0235));
             this.txvRefrigerantHideShowSprite.mousePressHandler = function() {
-                if (lookThroughSpriteMaterialAlt2.opacity == 0.75) {
-                    lookThroughSpriteMaterialAlt2.opacity = 0.25;
-                    this.txvRefrigerantFlowOutletTube.visible = false;
-                    this.txvRefrigerantFlowStream.visible = false;
-                    this.txvRefrigerantFlowVapor.visible = false;
-                    this.txvRefrigerantFlow.visible = false;
-                } else {
-                    lookThroughSpriteMaterialAlt2.opacity = 0.75;
-                    this.txvRefrigerantFlowOutletTube.visible = true;
-                    this.txvRefrigerantFlowStream.visible = true;
-                    this.txvRefrigerantFlowVapor.visible = true;
-                    this.txvRefrigerantFlow.visible = true;
+                if (this.refrigerantAnimationStarted) {
+                    if (lookThroughSpriteMaterialAlt2.opacity == 0.75) {
+                        lookThroughSpriteMaterialAlt2.opacity = 0.25;
+                        this.txvRefrigerantFlowOutletTube.visible = false;
+                        this.txvRefrigerantFlowStream.visible = false;
+                        this.txvRefrigerantFlowVapor.visible = false;
+                        this.txvRefrigerantFlow.visible = false;
+                    } else {
+                        lookThroughSpriteMaterialAlt2.opacity = 0.75;
+                        this.txvRefrigerantFlowOutletTube.visible = true;
+                        this.txvRefrigerantFlowStream.visible = true;
+                        this.txvRefrigerantFlowVapor.visible = true;
+                        this.txvRefrigerantFlow.visible = true;
+                    }
                 }
             };
             this.model.add(this.txvRefrigerantHideShowSprite);
