@@ -69,7 +69,7 @@ export default class ReversingValveEF17BZ251 {
 
         if (this.context.nature.bumpMaps) {
             Promise.all([
-                textureLoader.load('../vlabs.items/hvac/reversingValveEF17BZ251/maps/brass-bump.jpg')
+                textureLoader.load('../vlabs.items/hvac/reversingValveEF17BZ251/maps/brass-bump.jpg'),
             ])
             .then((result) => {
                 var texture = result[0];
@@ -129,8 +129,22 @@ export default class ReversingValveEF17BZ251 {
         var reversingValveEF17BZ251PlungeCapLookThrough = this.model.parent.getObjectByName("reversingValveEF17BZ251PlungeCapLookThrough");
         reversingValveEF17BZ251PlungeCapLookThrough.visible = false;
 
+        this.reversingValveEF17BZ251CoilCore = this.model.getObjectByName("reversingValveEF17BZ251CoilCore");
+        this.reversingValveEF17BZ251InTubeHihgPressure = this.model.getObjectByName("reversingValveEF17BZ251InTubeHihgPressure");
+        this.reversingValveEF17BZ251InTubeLowPressure = this.model.getObjectByName("reversingValveEF17BZ251InTubeLowPressure");
+
+        this.reversingValveEF17BZ251InTubeHihgPressure.visible = false;
+        this.reversingValveEF17BZ251InTubeLowPressure.visible = false;
+
+        this.reversingValveEF17BZ251PlungeConsole = this.model.getObjectByName("reversingValveEF17BZ251PlungeConsole");
+
+        this.reversingValveEF17BZ251InTubeHihgPressure24VOff = this.model.getObjectByName("reversingValveEF17BZ251InTubeHihgPressure24VOff");
+        this.reversingValveEF17BZ251InTubeLowPressure24VOff = this.model.getObjectByName("reversingValveEF17BZ251InTubeLowPressure24VOff");
+
         Promise.all([
             textureLoader.load('../vlabs.assets/img/look-through.png'),
+            textureLoader.load('../vlabs.items/hvac/reversingValveEF17BZ251/sprites/24VOn.png'),
+            textureLoader.load('../vlabs.items/hvac/reversingValveEF17BZ251/sprites/24VOff.png'),
         ])
         .then((result) => {
             var lookThroughSpriteTexture = result[0];
@@ -192,14 +206,14 @@ export default class ReversingValveEF17BZ251 {
 
             this.reversingValveEF17BZ251SmallValveLookSprite = new THREE.Sprite(lookThroughSpriteMaterial);
             this.reversingValveEF17BZ251SmallValveLookSprite.name = "reversingValveEF17BZ251SmallValveLookSprite";
-            this.reversingValveEF17BZ251SmallValveLookSprite.scale.set(0.02, 0.02, 0.02);
+            this.reversingValveEF17BZ251SmallValveLookSprite.scale.set(0.01, 0.01, 0.01);
             this.reversingValveEF17BZ251SmallValveLookSprite.position.x += 0.0;
-            this.reversingValveEF17BZ251SmallValveLookSprite.position.y += 0.065;
-            this.reversingValveEF17BZ251SmallValveLookSprite.position.z += 0.0;
+            this.reversingValveEF17BZ251SmallValveLookSprite.position.y += 0.04;
+            this.reversingValveEF17BZ251SmallValveLookSprite.position.z += 0.01;
             this.reversingValveEF17BZ251SmallValveLookSprite.mousePressHandler = function() {
                 var reversingValveEF17BZ251SmallValveFixture = this.model.parent.getObjectByName("reversingValveEF17BZ251SmallValveFixture");
                 var reversingValveEF17BZ251SmallValveCylinderP1 = this.model.parent.getObjectByName("reversingValveEF17BZ251SmallValveCylinderP1");
-                var reversingValveEF17BZ251CoilCoreP1 = this.model.parent.getObjectByName("reversingValveEF17BZ251CoilCoreP1");
+                // var reversingValveEF17BZ251CoilCoreP1 = this.model.parent.getObjectByName("reversingValveEF17BZ251CoilCoreP1");
 
                 if (reversingValveEF17BZ251SmallValveCylinderP1.visible) {
                     reversingValveEF17BZ251SmallValveFixture.material.alphaMap = this.reversingValveEF17BZ251SmallValveFixtureAlphaMap;
@@ -207,7 +221,7 @@ export default class ReversingValveEF17BZ251 {
     
                     reversingValveEF17BZ251SmallValveCylinderP1.visible = false;
             
-                    reversingValveEF17BZ251CoilCoreP1.visible = false;
+                    // reversingValveEF17BZ251CoilCoreP1.visible = false;
 
                     this.reversingValveEF17BZ251SmallValveLookSprite.material.opacity = 0.1;
                 } else {
@@ -216,7 +230,7 @@ export default class ReversingValveEF17BZ251 {
     
                     reversingValveEF17BZ251SmallValveCylinderP1.visible = true;
             
-                    reversingValveEF17BZ251CoilCoreP1.visible = true;
+                    // reversingValveEF17BZ251CoilCoreP1.visible = true;
 
                     this.reversingValveEF17BZ251SmallValveLookSprite.material.opacity = 0.45;
                 }
@@ -225,6 +239,36 @@ export default class ReversingValveEF17BZ251 {
 
             this.model.add(this.reversingValveEF17BZ251SmallValveLookSprite);
             this.accessableInteractiveELements.push(this.reversingValveEF17BZ251SmallValveLookSprite);
+
+
+            this.on24VTexture = result[1];
+            this.off24VTexture = result[2];
+            this.onOff24VSpriteMaterial = new THREE.SpriteMaterial({
+                map: this.off24VTexture,
+                color: 0xffffff,
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                opacity: 0.45,
+                rotation: 0.0,
+                depthTest: true,
+                depthWrite: true
+            });
+
+            this.onOff24VSprite = new THREE.Sprite(this.onOff24VSpriteMaterial);
+            this.onOff24VSprite.name = "onOff24VSprite";
+            this.onOff24VSprite.scale.set(0.02, 0.02, 0.02);
+            this.onOff24VSprite.position.add(new THREE.Vector3(0.04, 0.0, -0.028));
+            this.onOff24VSprite.mousePressHandler = function() {
+                if (this.onOff24VSpriteMaterial.map == this.off24VTexture) {
+                    this.onOff24VSpriteMaterial.map = this.on24VTexture;
+                    this.set24VOn();
+                } else {
+                    this.onOff24VSpriteMaterial.map = this.off24VTexture;
+                    this.set24VOff();
+                }
+            };
+            this.model.getObjectByName('reversingValveEF17BZ251Coil').add(this.onOff24VSprite);
+            this.accessableInteractiveELements.push(this.onOff24VSprite);
         })
         .catch(error => {
             console.error(error);
@@ -242,6 +286,7 @@ export default class ReversingValveEF17BZ251 {
         });
         var lowPressureMaterial = new THREE.MeshBasicMaterial({color: 0x046eff});
 
+        // 24V On
         //High Pressure Main line
         var curve = new THREE.CatmullRomCurve3([
             new THREE.Vector3(0.0, 0.0, 0.15),
@@ -251,40 +296,47 @@ export default class ReversingValveEF17BZ251 {
         ]);
         var points = curve.getPoints(50);
         var highPressureLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-        this.highPressureMainLine1 = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
-        this.highPressureMainLine2 = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
-        this.highPressureMainLine2.position.y += 0.002;
-        this.highPressureMainLine2.position.x -= 0.002;
-        this.highPressureMainLine3 = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
-        this.highPressureMainLine3.position.y += 0.004;
-        this.highPressureMainLine3.position.x -= 0.004;
-        this.highPressureMainLine4 = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
-        this.highPressureMainLine4.position.y -= 0.002;
-        this.highPressureMainLine4.position.x -= 0.002;
-        this.highPressureMainLine5 = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
-        this.highPressureMainLine5.position.y -= 0.004;
-        this.highPressureMainLine5.position.x -= 0.004;
+        this.highPressureMainLine1_24On = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine2_24On = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine2_24On.position.y += 0.002;
+        this.highPressureMainLine2_24On.position.x -= 0.002;
+        this.highPressureMainLine3_24On = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine3_24On.position.y += 0.004;
+        this.highPressureMainLine3_24On.position.x -= 0.004;
+        this.highPressureMainLine4_24On = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine4_24On.position.y -= 0.002;
+        this.highPressureMainLine4_24On.position.x -= 0.002;
+        this.highPressureMainLine5_24On = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine5_24On.position.y -= 0.004;
+        this.highPressureMainLine5_24On.position.x -= 0.004;
 
-        this.model.add(this.highPressureMainLine1);
-        this.model.add(this.highPressureMainLine2);
-        this.model.add(this.highPressureMainLine3);
-        this.model.add(this.highPressureMainLine4);
-        this.model.add(this.highPressureMainLine5);
+        this.model.add(this.highPressureMainLine1_24On);
+        this.model.add(this.highPressureMainLine2_24On);
+        this.model.add(this.highPressureMainLine3_24On);
+        this.model.add(this.highPressureMainLine4_24On);
+        this.model.add(this.highPressureMainLine5_24On);
+
+        this.highPressureMainLine1_24On.visible = false;
+        this.highPressureMainLine2_24On.visible = false;
+        this.highPressureMainLine3_24On.visible = false;
+        this.highPressureMainLine4_24On.visible = false;
+        this.highPressureMainLine5_24On.visible = false;
 
         //High Pressure Small line
         var curve = new THREE.CatmullRomCurve3([
             new THREE.Vector3(0.0, 0.0, 0.15),
             new THREE.Vector3(0.0, 0.0087, 0.05),
             new THREE.Vector3(0.0, 0.0193, 0.0493),
-            new THREE.Vector3(0.0, 0.0308, 0.0413),
-            new THREE.Vector3(0.001, 0.0356, 0.005),
+            new THREE.Vector3(0.0005, 0.0308, 0.0413),
+            new THREE.Vector3(0.0, 0.0356, 0.005),
             new THREE.Vector3(0.006, 0.037, 0.0045),
-            new THREE.Vector3(0.007, 0.037, -0.008),
+            new THREE.Vector3(0.0054, 0.037, -0.008),
         ]);
         var points = curve.getPoints(50);
         var highPressureSmallLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-        this.highPressureSmallLine1 = new THREE.Line(highPressureSmallLineGeometry, highPressureLineMaterial);
-        this.model.add(this.highPressureSmallLine1);
+        this.highPressureSmallLine1_24VOn = new THREE.Line(highPressureSmallLineGeometry, highPressureLineMaterial);
+        this.model.add(this.highPressureSmallLine1_24VOn);
+        this.highPressureSmallLine1_24VOn.visible = false;
 
         //High Pressure Intube line
         var curve = new THREE.CatmullRomCurve3([
@@ -294,14 +346,15 @@ export default class ReversingValveEF17BZ251 {
         ]);
         var points = curve.getPoints(20);
         var highPressureInTubeLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-        this.highPressureInTubeLineLine = new THREE.Line(highPressureInTubeLineGeometry, highPressureLineMaterial);
-        this.model.add(this.highPressureInTubeLineLine);
+        this.highPressureInTubeLineLine_24VOn = new THREE.Line(highPressureInTubeLineGeometry, highPressureLineMaterial);
+        this.model.add(this.highPressureInTubeLineLine_24VOn);
+        this.highPressureInTubeLineLine_24VOn.visible = false;
 
         var highPressureInTubeLineEndConeGeometry = new THREE.ConeGeometry(0.004, 0.01, 16, 8);
         highPressureInTubeLineEndConeGeometry.rotateZ(Math.PI / 2);
         var highPressureInTubeLineEndCone = new THREE.Mesh(highPressureInTubeLineEndConeGeometry, highPressureMaterial);
         highPressureInTubeLineEndCone.position.copy(new THREE.Vector3(0.09, -0.002, -0.005));
-        this.highPressureInTubeLineLine.add(highPressureInTubeLineEndCone);
+        this.highPressureInTubeLineLine_24VOn.add(highPressureInTubeLineEndCone);
 
         //Low Pressure Main line
         var curve = new THREE.CatmullRomCurve3([
@@ -313,25 +366,31 @@ export default class ReversingValveEF17BZ251 {
         ]);
         var points = curve.getPoints(50);
         var lowPressureLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-        this.lowPressureMainLine1 = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
-        this.lowPressureMainLine2 = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
-        this.lowPressureMainLine2.position.y += 0.002;
-        this.lowPressureMainLine2.position.z += 0.002;
-        this.lowPressureMainLine3 = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
-        this.lowPressureMainLine3.position.y += 0.004;
-        this.lowPressureMainLine3.position.z += 0.004;
-        this.lowPressureMainLine4 = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
-        this.lowPressureMainLine4.position.y -= 0.002;
-        this.lowPressureMainLine4.position.z += 0.002;
-        this.lowPressureMainLine5 = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
-        this.lowPressureMainLine5.position.y -= 0.004;
-        this.lowPressureMainLine5.position.z += 0.004;
+        this.lowPressureMainLine1_24VOn = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine2_24VOn = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine2_24VOn.position.y += 0.002;
+        this.lowPressureMainLine2_24VOn.position.z += 0.002;
+        this.lowPressureMainLine3_24VOn = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine3_24VOn.position.y += 0.004;
+        this.lowPressureMainLine3_24VOn.position.z += 0.004;
+        this.lowPressureMainLine4_24VOn = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine4_24VOn.position.y -= 0.002;
+        this.lowPressureMainLine4_24VOn.position.z += 0.002;
+        this.lowPressureMainLine5_24VOn = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine5_24VOn.position.y -= 0.004;
+        this.lowPressureMainLine5_24VOn.position.z += 0.004;
 
-        this.model.add(this.lowPressureMainLine1);
-        this.model.add(this.lowPressureMainLine2);
-        this.model.add(this.lowPressureMainLine3);
-        this.model.add(this.lowPressureMainLine4);
-        this.model.add(this.lowPressureMainLine5);
+        this.model.add(this.lowPressureMainLine1_24VOn);
+        this.model.add(this.lowPressureMainLine2_24VOn);
+        this.model.add(this.lowPressureMainLine3_24VOn);
+        this.model.add(this.lowPressureMainLine4_24VOn);
+        this.model.add(this.lowPressureMainLine5_24VOn);
+
+        this.lowPressureMainLine1_24VOn.visible = false;
+        this.lowPressureMainLine2_24VOn.visible = false;
+        this.lowPressureMainLine3_24VOn.visible = false;
+        this.lowPressureMainLine4_24VOn.visible = false;
+        this.lowPressureMainLine5_24VOn.visible = false;
 
         //Low Pressure Intube line
         var curve = new THREE.CatmullRomCurve3([
@@ -341,14 +400,147 @@ export default class ReversingValveEF17BZ251 {
         ]);
         var points = curve.getPoints(20);
         var lowPressureInTubeLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-        this.lowPressureInTubeLineLine = new THREE.Line(lowPressureInTubeLineGeometry, lowPressureLineMaterial);
-        this.model.add(this.lowPressureInTubeLineLine);
+        this.lowPressureInTubeLineLine_24VOn = new THREE.Line(lowPressureInTubeLineGeometry, lowPressureLineMaterial);
+        this.model.add(this.lowPressureInTubeLineLine_24VOn);
+        this.lowPressureInTubeLineLine_24VOn.visible = false;
 
         var lowPressureInTubeLineEndConeGeometry = new THREE.ConeGeometry(0.003, 0.006, 16, 8);
         lowPressureInTubeLineEndConeGeometry.rotateZ(Math.PI / 2);
         var lowPressureInTubeLineEndCone = new THREE.Mesh(lowPressureInTubeLineEndConeGeometry, lowPressureMaterial);
         lowPressureInTubeLineEndCone.position.copy(new THREE.Vector3(-0.1, 0.0, 0.0));
-        this.lowPressureInTubeLineLine.add(lowPressureInTubeLineEndCone);
+        this.lowPressureInTubeLineLine_24VOn.add(lowPressureInTubeLineEndCone);
+
+
+
+
+        // 24V Off
+        //High Pressure Main line
+        var curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0.0, 0.0, 0.15),
+            new THREE.Vector3(-0.005, 0.0, 0.025),
+            new THREE.Vector3(-0.032, 0.0, 0.0),
+            new THREE.Vector3(-0.035, 0.0, -0.15),
+        ]);
+        var points = curve.getPoints(50);
+        var highPressureLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        this.highPressureMainLine1_24Off = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine2_24Off = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine2_24Off.position.y += 0.002;
+        this.highPressureMainLine2_24Off.position.x += 0.002;
+        this.highPressureMainLine3_24Off = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine3_24Off.position.y += 0.004;
+        this.highPressureMainLine3_24Off.position.x += 0.004;
+        this.highPressureMainLine4_24Off = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine4_24Off.position.y -= 0.002;
+        this.highPressureMainLine4_24Off.position.x += 0.002;
+        this.highPressureMainLine5_24Off = new THREE.Line(highPressureLineGeometry, highPressureLineMaterial);
+        this.highPressureMainLine5_24Off.position.y -= 0.004;
+        this.highPressureMainLine5_24Off.position.x += 0.004;
+
+        this.model.add(this.highPressureMainLine1_24Off);
+        this.model.add(this.highPressureMainLine2_24Off);
+        this.model.add(this.highPressureMainLine3_24Off);
+        this.model.add(this.highPressureMainLine4_24Off);
+        this.model.add(this.highPressureMainLine5_24Off);
+
+        this.highPressureMainLine1_24Off.visible = true;
+        this.highPressureMainLine2_24Off.visible = true;
+        this.highPressureMainLine3_24Off.visible = true;
+        this.highPressureMainLine4_24Off.visible = true;
+        this.highPressureMainLine5_24Off.visible = true;
+
+        //Low Pressure Main line
+        var curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0.035, 0.0, -0.15),
+            new THREE.Vector3(0.035, 0.0, 0.0),
+            new THREE.Vector3(0.0175, 0.0, 0.01),
+            new THREE.Vector3(0.0, 0.0, 0.0),
+            new THREE.Vector3(0.0, 0.0, -0.15),
+        ]);
+        var points = curve.getPoints(50);
+        var lowPressureLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        this.lowPressureMainLine1_24VOff = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine2_24VOff = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine2_24VOff.position.y -= 0.002;
+        this.lowPressureMainLine2_24VOff.position.z += 0.002;
+        this.lowPressureMainLine3_24VOff = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine3_24VOff.position.y -= 0.004;
+        this.lowPressureMainLine3_24VOff.position.z += 0.004;
+        this.lowPressureMainLine4_24VOff = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine4_24VOff.position.y += 0.002;
+        this.lowPressureMainLine4_24VOff.position.z += 0.002;
+        this.lowPressureMainLine5_24VOff = new THREE.Line(lowPressureLineGeometry, lowPressureLineMaterial);
+        this.lowPressureMainLine5_24VOff.position.y += 0.004;
+        this.lowPressureMainLine5_24VOff.position.z += 0.004;
+
+        this.model.add(this.lowPressureMainLine1_24VOff);
+        this.model.add(this.lowPressureMainLine2_24VOff);
+        this.model.add(this.lowPressureMainLine3_24VOff);
+        this.model.add(this.lowPressureMainLine4_24VOff);
+        this.model.add(this.lowPressureMainLine5_24VOff);
+
+        this.lowPressureMainLine1_24VOff.visible = true;
+        this.lowPressureMainLine2_24VOff.visible = true;
+        this.lowPressureMainLine3_24VOff.visible = true;
+        this.lowPressureMainLine4_24VOff.visible = true;
+        this.lowPressureMainLine5_24VOff.visible = true;
+
+        //High Pressure Intube line
+        var curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-0.103, 0.0121, -0.0088),
+            new THREE.Vector3(-0.103, -0.002, -0.005),
+            new THREE.Vector3(-0.09, -0.002, -0.005),
+        ]);
+        var points = curve.getPoints(20);
+        var highPressureInTubeLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        this.highPressureInTubeLineLine_24VOff = new THREE.Line(highPressureInTubeLineGeometry, highPressureLineMaterial);
+        this.model.add(this.highPressureInTubeLineLine_24VOff);
+        this.highPressureInTubeLineLine_24VOff.visible = true;
+
+        var highPressureInTubeLineEndConeGeometry = new THREE.ConeGeometry(0.004, 0.01, 16, 8);
+        highPressureInTubeLineEndConeGeometry.rotateZ(-Math.PI / 2);
+        var highPressureInTubeLineEndCone = new THREE.Mesh(highPressureInTubeLineEndConeGeometry, highPressureMaterial);
+        highPressureInTubeLineEndCone.position.copy(new THREE.Vector3(-0.09, -0.002, -0.005));
+        this.highPressureInTubeLineLine_24VOff.add(highPressureInTubeLineEndCone);
+
+        //Low Pressure Intube line
+        var curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0.085, 0.0, 0.0),
+            new THREE.Vector3(0.102, 0.0, 0.0),
+            new THREE.Vector3(0.103, 0.0123, -0.0095),
+        ]);
+        var points = curve.getPoints(20);
+        var lowPressureInTubeLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        this.lowPressureInTubeLineLine_24VOff = new THREE.Line(lowPressureInTubeLineGeometry, lowPressureLineMaterial);
+        this.model.add(this.lowPressureInTubeLineLine_24VOff);
+        this.lowPressureInTubeLineLine_24VOff.visible = true;
+
+        var lowPressureInTubeLineEndConeGeometry = new THREE.ConeGeometry(0.003, 0.006, 16, 8);
+        lowPressureInTubeLineEndConeGeometry.rotateZ(-Math.PI / 2);
+        var lowPressureInTubeLineEndCone = new THREE.Mesh(lowPressureInTubeLineEndConeGeometry, lowPressureMaterial);
+        lowPressureInTubeLineEndCone.position.copy(new THREE.Vector3(0.1, 0.0, 0.0));
+        this.lowPressureInTubeLineLine_24VOff.add(lowPressureInTubeLineEndCone);
+
+        //High Pressure Small line
+        var curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0.0, 0.0, 0.15),
+            new THREE.Vector3(0.0, 0.0087, 0.05),
+            new THREE.Vector3(0.0, 0.0193, 0.0493),
+            new THREE.Vector3(-0.0005, 0.0308, 0.0413),
+            new THREE.Vector3(0.0, 0.0356, 0.005),
+            new THREE.Vector3(-0.006, 0.037, 0.004),
+            new THREE.Vector3(-0.00595, 0.039, 0.003),
+            new THREE.Vector3(-0.0057, 0.0405, 0.0025),
+            new THREE.Vector3(-0.0054, 0.0405, 0.0015),
+            new THREE.Vector3(-0.0055, 0.0405, -0.0025),
+            new THREE.Vector3(-0.0055, 0.036, -0.007),
+            new THREE.Vector3(-0.007, 0.035, -0.008),
+        ]);
+        var points = curve.getPoints(50);
+        var highPressureSmallLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        this.highPressureSmallLine1_24VOff = new THREE.Line(highPressureSmallLineGeometry, highPressureLineMaterial);
+        this.model.add(this.highPressureSmallLine1_24VOff);
+        this.highPressureSmallLine1_24VOff.visible = true;
     }
 
     onReleaseGesture() {
@@ -359,5 +551,91 @@ export default class ReversingValveEF17BZ251 {
                 interactionObjectIntersects[0].object.mousePressHandler.call(this);
             }
         }
+    }
+
+    set24VOn() {
+        this.reversingValveEF17BZ251CoilCore.position.copy(new THREE.Vector3(0.000226, -0.00045, -0.023));
+        this.reversingValveEF17BZ251PlungeConsole.position.copy(new THREE.Vector3(-0.016385, 0.0, 0.000264));
+
+        this.reversingValveEF17BZ251InTubeHihgPressure.visible = true;
+        this.reversingValveEF17BZ251InTubeLowPressure.visible = true;
+
+        this.reversingValveEF17BZ251InTubeHihgPressure24VOff.visible = false;
+        this.reversingValveEF17BZ251InTubeLowPressure24VOff.visible = false;
+
+        this.highPressureMainLine1_24On.visible = true;
+        this.highPressureMainLine2_24On.visible = true;
+        this.highPressureMainLine3_24On.visible = true;
+        this.highPressureMainLine4_24On.visible = true;
+        this.highPressureMainLine5_24On.visible = true;
+
+        this.lowPressureMainLine1_24VOn.visible = true;
+        this.lowPressureMainLine2_24VOn.visible = true;
+        this.lowPressureMainLine3_24VOn.visible = true;
+        this.lowPressureMainLine4_24VOn.visible = true;
+        this.lowPressureMainLine5_24VOn.visible = true;
+
+        this.highPressureSmallLine1_24VOn.visible = true;
+        this.highPressureInTubeLineLine_24VOn.visible = true;
+        this.lowPressureInTubeLineLine_24VOn.visible = true;
+
+        this.highPressureMainLine1_24Off.visible = false;
+        this.highPressureMainLine2_24Off.visible = false;
+        this.highPressureMainLine3_24Off.visible = false;
+        this.highPressureMainLine4_24Off.visible = false;
+        this.highPressureMainLine5_24Off.visible = false;
+
+        this.lowPressureMainLine1_24VOff.visible = false;
+        this.lowPressureMainLine2_24VOff.visible = false;
+        this.lowPressureMainLine3_24VOff.visible = false;
+        this.lowPressureMainLine4_24VOff.visible = false;
+        this.lowPressureMainLine5_24VOff.visible = false;
+
+        this.highPressureInTubeLineLine_24VOff.visible = false;
+        this.lowPressureInTubeLineLine_24VOff.visible = false;
+        this.highPressureSmallLine1_24VOff.visible = false;
+    }
+
+    set24VOff() {
+        this.reversingValveEF17BZ251CoilCore.position.copy(new THREE.Vector3(0.000226, -0.00045, -0.017592));
+        this.reversingValveEF17BZ251PlungeConsole.position.copy(new THREE.Vector3(0.016385, 0.0, 0.000264));
+
+        this.reversingValveEF17BZ251InTubeHihgPressure24VOff.visible = true;
+        this.reversingValveEF17BZ251InTubeLowPressure24VOff.visible = true;
+
+        this.reversingValveEF17BZ251InTubeHihgPressure.visible = false;
+        this.reversingValveEF17BZ251InTubeLowPressure.visible = false;
+
+        this.highPressureMainLine1_24On.visible = false;
+        this.highPressureMainLine2_24On.visible = false;
+        this.highPressureMainLine3_24On.visible = false;
+        this.highPressureMainLine4_24On.visible = false;
+        this.highPressureMainLine5_24On.visible = false;
+
+        this.lowPressureMainLine1_24VOn.visible = false;
+        this.lowPressureMainLine2_24VOn.visible = false;
+        this.lowPressureMainLine3_24VOn.visible = false;
+        this.lowPressureMainLine4_24VOn.visible = false;
+        this.lowPressureMainLine5_24VOn.visible = false;
+
+        this.highPressureSmallLine1_24VOn.visible = false;
+        this.highPressureInTubeLineLine_24VOn.visible = false;
+        this.lowPressureInTubeLineLine_24VOn.visible = false;
+
+        this.highPressureMainLine1_24Off.visible = true;
+        this.highPressureMainLine2_24Off.visible = true;
+        this.highPressureMainLine3_24Off.visible = true;
+        this.highPressureMainLine4_24Off.visible = true;
+        this.highPressureMainLine5_24Off.visible = true;
+
+        this.lowPressureMainLine1_24VOff.visible = true;
+        this.lowPressureMainLine2_24VOff.visible = true;
+        this.lowPressureMainLine3_24VOff.visible = true;
+        this.lowPressureMainLine4_24VOff.visible = true;
+        this.lowPressureMainLine5_24VOff.visible = true;
+
+        this.highPressureInTubeLineLine_24VOff.visible = true;
+        this.lowPressureInTubeLineLine_24VOff.visible = true;
+        this.highPressureSmallLine1_24VOff.visible = true;
     }
 }
