@@ -1,4 +1,4 @@
-const browserify            = require("browserify");
+const browserify            = require('browserify');
 const gulp                  = require('gulp');
 const gulpif                = require('gulp-if');
 const color                 = require('gulp-color');
@@ -66,6 +66,9 @@ gulp.task('build', gulp.series('sync-vlab-assets',
     .pipe(gulpif(initObj.mode == 'prod', uglify()))
     .pipe(gulpif(initObj.mode == 'prod', obfuscator({compact: true, sourceMap: false})))
     .pipe(gulp.dest('./build/' + initObj.vLabName))
+    .on('end', function() {
+        console.log(color('VLab ', 'GREEN') + color(initObj.vLabName, 'BLUE') + color(' build completed ', 'GREEN'));
+    });
 }));
 
 gulp.task('main', function (done) {
@@ -87,11 +90,11 @@ gulp.task('main', function (done) {
     } else {
         errors.push(color('--mode is missing!', 'RED'));
     }
-    if (process.argv.indexOf('--nature-encrypted') > -1 || process.argv.indexOf('prod') > -1) {
-        initObj.naturePlain = false;
-    } else {
+    if (process.argv.indexOf('--nature-plain') > -1) {
         initObj.naturePlain = true;
         console.log(color('Using non-crypted nature file!', 'YELLOW'));
+    } else {
+        initObj.naturePlain = false;
     }
     if (errors.length > 0) {
         for (error of errors) {
