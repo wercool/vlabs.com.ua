@@ -13,6 +13,8 @@ const connect               = require('gulp-connect');
 const cors                  = require('cors');
 const source                = require('vinyl-source-stream');
 const buffer                = require('vinyl-buffer');
+const jsdoc                 = require('gulp-jsdoc3');
+
 var initObj = {};
 
 gulp.task('vlab-sync-files', function(done) {
@@ -117,6 +119,7 @@ gulp.task('watch', function (done) {
     gulp.watch(['./src/vlabs/' + initObj.vLabName + '/**/*.js',
                 './src/vlabs/' + initObj.vLabName + '/**/*.json',
                 './src/vlabs/' + initObj.vLabName + '/**/*.html',
+                './src/vlabs/' + initObj.vLabName + '/**/*.css',
                 './src/vlabs/' + initObj.vLabName + '/**/*.appcache',
                 './src/vlab.fwk/**/*.*',
                 './src/vlab.items/**/*.*',
@@ -140,6 +143,11 @@ gulp.task('server', function(done){
             return [cors()];
         }
     });
+});
+
+gulp.task('doc', function (cb) {
+    gulp.src(['README.txt', './src/**/*.js'], {read: false})
+        .pipe(jsdoc(cb));
 });
 
 gulp.task('default', gulp.series('main', 'build', gulp.parallel('watch', 'server')));

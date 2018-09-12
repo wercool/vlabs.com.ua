@@ -1,0 +1,23 @@
+CACHE MANIFEST
+# chrome://appcache-internals/
+# v.0.0.1
+
+CACHE:
+# global cache
+
+
+
+
+
+# VLab Items
+
+
+
+
+
+
+# VLab specific cache
+
+
+NETWORK:
+*
