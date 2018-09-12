@@ -1,7 +1,8 @@
 import VLab from '../../vlab.fwk/core/vlab';
 
 /* This VLab Scenes */
-import DefaultScene from '../vlab.base/scenes/default.scene';
+import FirstScene   from    './scenes/first.scene';
+import SecondScene  from    './scenes/second.scene';
 
 /**
  * VLab experimental/tutorial class.
@@ -23,12 +24,19 @@ class BaseVLab extends VLab {
     }
 
     /**
-     * VLab bootstrap. Loads and initialisez shared VLab Items, Vlab Scenes, etc...
+     * VLab bootstrap. Loads and initializes Vlab Scenes, VLab Items, other shared VLab elements
      * @async
      * @memberof BaseVLab
      */
     bootstrap() {
-        /* Default scene */
+        /* First scene */
+        this.vLabSceneDispatcher.addScene({
+            class: FirstScene,
+            default: true
+        });
+        this.vLabSceneDispatcher.addScene({
+            class: SecondScene
+        });
 
         console.log(this);
     }

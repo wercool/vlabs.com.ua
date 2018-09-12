@@ -1,12 +1,10 @@
-import { 
-    Scene
- } from 'three';
+import * as THREE from 'three';
 /**
  * VLab Scene.
  * @class
  * @classdesc VLab Scene class serves VLab Scene and it's auxilaries.
  */
-class VLabScene extends Scene {
+class VLabScene extends THREE.Scene {
     /**
      * VLabScene constructor.
      * @constructor
@@ -15,6 +13,5 @@ class VLabScene extends Scene {
     constructor(vLabInstance) {
         this.vLab = vLabInstance;
     }
-
 }
 export default VLabScene;

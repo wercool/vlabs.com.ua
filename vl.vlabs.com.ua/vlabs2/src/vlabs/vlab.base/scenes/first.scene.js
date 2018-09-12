@@ -1,9 +1,9 @@
 import VLabScene from '../../../vlab.fwk/core/vlab.scene';
 
-class DefaultScene extends VLabScene {
+class FirstScene extends VLabScene {
     constructor() {
         super();
     }
 }
 
-export default DefaultScene;
+export default FirstScene;
