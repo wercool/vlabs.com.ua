@@ -19,6 +19,7 @@ class VLab {
         this.initObj = initObj;
 
         this.initObj.naturePassphrase = '<!--VLAB NATURE PASSPHRASE-->';
+        this.prodMode                 = '<!--VLAB PROD MODE-->' == 'true';
     }
     /**
      * VLab initializer.

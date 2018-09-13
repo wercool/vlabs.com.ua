@@ -20,15 +20,15 @@ class VLabSceneDispatcher {
      * Add VLabScene to VLabSceneDispatcher stack.
      * @async
      * @memberof VLabSceneDispatcher
-     * @param {Object} sceneInitObj                         - Scene initialization Object
-     * @param {VLabScene} sceneInitObj.class                - Scene Class
-     * @param {boolean}   sceneInitObj.default              - if defined (=== true) forcedly instantiate VLab Scene / activate forcedly Scene, make it active
+     * @param {Object} initObj                              - Add scene initialization object
+     * @param {VLabScene} initObj.class                     - Scene Class
      */
-    addScene(sceneInitObj) {
-        if (sceneInitObj.default) {
-
-        }
-        console.log(sceneInitObj);
+    addScene(initObj) {
+        let vLabScene = new initObj.class({
+            vLab: this.vLab
+        });
+        this.scenes.push(vLabScene);
+        return vLabScene;
     }
 }
 export default VLabSceneDispatcher;

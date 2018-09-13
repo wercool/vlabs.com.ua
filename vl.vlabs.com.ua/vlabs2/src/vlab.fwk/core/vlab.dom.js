@@ -21,11 +21,36 @@ class VLabDOM {
     /**
      * Setup document HTML DOM element for VLab.
      * * Sets document.title from VLab nature name
+     * * Prevents from go back in browser and reload of a window with VLab
      *
      * @memberof VLabDOM
      */
     setupDocument() {
         document.title = this.vLab.nature.name;
+
+        if (this.vLab.prodMode) {
+            /* Prevent VLab from go back */
+            (function (global) {
+                if(typeof (global) === "undefined")
+                {
+                    throw new Error("window is undefined");
+                }
+                let _hash = "!";
+                global.onhashchange = function () {
+                    if (global.location.hash !== _hash) {
+                        global.location.hash = _hash;
+                    }
+                };
+                global.location.href += "#";
+                global.setTimeout(function () {
+                    global.location.href += "!";
+                }, 50);
+            })(window);
+            window.onbeforeunload = function () {
+                console.log('Prevent VLab from unneeded reload');
+                return false;
+            };
+        }
     }
     /**
      * Setup VLab HTML CSS styles accordingly to VLab nature.
