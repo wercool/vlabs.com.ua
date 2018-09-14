@@ -26,7 +26,7 @@ class VLabDOM {
      * @memberof VLabDOM
      */
     setupDocument() {
-        document.title = this.vLab.nature.name;
+        document.title = this.vLab.nature.name || this.vLab.initObj.name;
 
         if (this.vLab.prodMode) {
             /* Prevent VLab from go back */

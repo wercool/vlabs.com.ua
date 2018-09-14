@@ -1,8 +1,9 @@
 import VLab from '../../vlab.fwk/core/vlab';
 
 /* This VLab Scenes */
-import FirstScene   from    './scenes/first.scene/first.scene';
-import SecondScene  from    './scenes/second.scene/second.scene';
+import FirstScene   from    './scenes/first.scene';
+import SecondScene  from    './scenes/second.scene';
+import ThirdScene   from    './scenes/third.scene';
 
 /**
  * VLab experimental/tutorial class.
@@ -22,7 +23,6 @@ class BaseVLab extends VLab {
         super(initObj);
         super.initialize().then((success) => { this.bootstrap(); }, (error) => { console.error(error); });
     }
-
     /**
      * VLab bootstrap. Loads and initializes Vlab Scenes, VLab Items, other shared VLab elements
      * @async
@@ -31,23 +31,28 @@ class BaseVLab extends VLab {
     bootstrap() {
         /* First scene */
         this.vLabSceneDispatcher.addScene({
-            class: FirstScene
-        })
-        .activate()
-        .then((scene) => {
+            class: FirstScene,
+            natureURL: './scenes/first.scene/resources/vlab.scene.nature.json',
+            default: true
         });
-
         /* Second scene */
         this.vLabSceneDispatcher.addScene({
-            class: SecondScene
-        })
-        .activate();
+            class: SecondScene,
+            natureURL: './scenes/second.scene/resources/vlab.scene.nature.json',
+            autoload: true
+        });
+        /* Third scene */
+        this.vLabSceneDispatcher.addScene({
+            class: ThirdScene,
+            natureURL: './scenes/third.scene/resources/vlab.scene.nature.json',
+            autoload: true
+        });
 
-        console.log(this);
+        // console.log(this);
     }
 }
 
 new BaseVLab({
     name: 'Base VLab2',
-    natureURL: './resources/nature.json'
+    natureURL: './resources/vlab.nature.json'
 });

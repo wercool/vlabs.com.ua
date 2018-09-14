@@ -28,10 +28,20 @@ gulp.task('vlab-sync-files', function(done) {
 });
 
 gulp.task('vlab-nature-process', function () {
-    return gulp.src('./src/vlabs/' + initObj.vLabName + '/resources/*.json')
+    return gulp.src('./src/vlabs/' + initObj.vLabName + '/resources/vlab.nature.json')
     .pipe(replace('<!--VLAB REST API URL-->', initObj.settings.VLabsREST))
     .pipe(gulpif(!initObj.naturePlain, cryptojs({algorithm: 'AES', action: 'encrypt', key: initObj.settings.VLabNaturePassPhrase})))
     .pipe(gulp.dest('./build/' + initObj.vLabName + '/resources'));
+});
+
+gulp.task('vlab-scene-nature-process', function (done) {
+    fs.readdirSync('./src/vlabs/' + initObj.vLabName + '/scenes')
+    .filter(function(sceneDir) {
+        gulp.src('./src/vlabs/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources/vlab.scene.nature.json')
+        .pipe(gulpif(!initObj.naturePlain, cryptojs({algorithm: 'AES', action: 'encrypt', key: initObj.settings.VLabNaturePassPhrase})))
+        .pipe(gulp.dest('./build/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources'));
+    });
+    done();
 });
 
 gulp.task('sync-vlab-assets', function () {
@@ -54,6 +64,7 @@ gulp.task('build', gulp.series('sync-vlab-assets',
                                'sync-vlab-items',
                                'vlab-sync-files',
                                'vlab-nature-process',
+                               'vlab-scene-nature-process',
                                 function transpiling () {
     return browserify('./src/vlabs/' + initObj.vLabName + '/index.js')
     .transform('babelify', {presets: ['@babel/preset-env']})
