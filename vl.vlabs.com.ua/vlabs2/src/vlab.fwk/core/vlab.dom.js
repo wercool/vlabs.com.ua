@@ -60,14 +60,16 @@ class VLabDOM {
      */
     setupStyles() {
         this.addStyle({
-            id: 'globalStyle',
-            href: (this.vLab.nature.styles.global == undefined) ? '../vlab.assets/styles/global.css' : this.vLab.nature.styles.global
+            id: 'globalCSS',
+            href: (this.vLab.nature.styles.global == undefined) ? '../vlab.assets/css/global.css' : this.vLab.nature.styles.global
         }).then(() => {
-            /* Remove default loader */
+            /* Remove default loader, default JS, default CSS */
             let defaultLoader = document.getElementById('loader');
             defaultLoader.parentNode.removeChild(defaultLoader);
-            let defaultLoaderStyle = document.getElementById('loaderStyle');
-            defaultLoaderStyle.parentNode.removeChild(defaultLoaderStyle);
+            let defaultCSS = document.getElementById('defaultCSS');
+            defaultCSS.parentNode.removeChild(defaultCSS);
+            let defaultJS = document.getElementById('defaultJS');
+            defaultJS.parentNode.removeChild(defaultJS);
         });
     }
     /**

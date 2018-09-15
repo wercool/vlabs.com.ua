@@ -9,6 +9,8 @@ const dirsync               = require('gulp-directory-sync');
 const obfuscator            = require('gulp-javascript-obfuscator');
 const sourcemaps            = require('gulp-sourcemaps');
 const uglify                = require('gulp-uglify');
+const cleancss              = require('gulp-clean-css');
+const removelogging         = require("gulp-remove-logging");
 const connect               = require('gulp-connect');
 const cors                  = require('cors');
 const source                = require('vinyl-source-stream');
@@ -60,9 +62,20 @@ gulp.task('sync-vlab-items', function() {
     }));
 });
 
+gulp.task('clean-css', function (done) {
+    if (initObj.mode != 'prod') {
+        done();
+    } else {
+        return gulp.src('./build/**/*.css')
+        .pipe(cleancss())
+        .pipe(gulp.dest('./build'));
+    }
+});
+
 gulp.task('build', gulp.series('sync-vlab-assets', 
                                'sync-vlab-items',
                                'vlab-sync-files',
+                               'clean-css',
                                'vlab-nature-process',
                                'vlab-scene-nature-process',
                                 function transpiling () {
@@ -71,6 +84,7 @@ gulp.task('build', gulp.series('sync-vlab-assets',
     .bundle()
     .pipe(source('bundle.js'))
     .pipe(buffer())
+    .pipe(gulpif(initObj.mode == 'prod', removelogging()))
     .pipe(replace('<!--VLAB NATURE PASSPHRASE-->', (!initObj.naturePlain) ? initObj.settings.VLabNaturePassPhrase : ''))
     .pipe(replace('<!--VLAB AUTH REQUIRED-->', process.argv.indexOf('--noauth') == -1 ? 'true' : 'false'))
     .pipe(replace('<!--VLAB PROD MODE-->', initObj.mode == 'prod' ? 'true' : 'false'))

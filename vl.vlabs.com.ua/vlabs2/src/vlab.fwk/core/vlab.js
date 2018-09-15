@@ -32,7 +32,7 @@ class VLab {
      * @property {Object} nature                       - VLab nature from JSON file
      * @property {string} nature.name                  - VLab name
      * @property {Object} nature.styles                - VLab DOM CSS styles
-     * @property {string} nature.styles.global         - global CSS, overrides /vlab.assets/styles/global.css
+     * @property {string} nature.styles.global         - global CSS, overrides /vlab.assets/css/global.css
      *
      */
     initialize() {

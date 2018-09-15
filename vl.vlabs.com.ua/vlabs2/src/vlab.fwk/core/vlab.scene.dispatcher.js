@@ -30,28 +30,9 @@ class VLabSceneDispatcher {
         let vLabScene = new initObj.class(initObj);
         this.scenes.push(vLabScene);
         if (initObj.default) {
-            this.activateScene(initObj).then(this.processAutoload.bind(this));
+            this.activateScene(initObj).then(this.autoloadScenes.bind(this));
         } else {
-            this.processAutoload();
-        }
-    }
-    /**
-     * Process VLabScene stack autoload.
-     * @memberof VLabSceneDispatcher
-     */
-    processAutoload() {
-        if (this.processAutoloadTimeout) clearTimeout(this.processAutoloadTimeout);
-        for (let vLabScene of this.scenes) {
-            if (vLabScene.loading) {
-                this.processAutoloadTimeout = setTimeout(this.processAutoload.bind(this), 250);
-                return;
-            }
-        }
-        for (let vLabScene of this.scenes) {
-            if (vLabScene.initObj.autoload && !vLabScene.loaded && !vLabScene.loading) {
-                vLabScene.load().then(this.processAutoload.bind(this));
-                return;
-            }
+            this.autoloadScenes();
         }
     }
     /**
@@ -75,6 +56,25 @@ class VLabSceneDispatcher {
                 }
             });
         });
+    }
+    /**
+     * Process VLabScene autoload queue.
+     * @memberof VLabSceneDispatcher
+     */
+    autoloadScenes() {
+        if (this.autoloadScenesTimeout) clearTimeout(this.autoloadScenesTimeout);
+        for (let vLabScene of this.scenes) {
+            if (vLabScene.loading) {
+                this.autoloadScenesTimeout = setTimeout(this.autoloadScenes.bind(this), 250);
+                return;
+            }
+        }
+        for (let vLabScene of this.scenes) {
+            if (vLabScene.initObj.autoload && !vLabScene.loaded && !vLabScene.loading) {
+                vLabScene.load().then(this.autoloadScenes.bind(this));
+                return;
+            }
+        }
     }
 }
 export default VLabSceneDispatcher;
