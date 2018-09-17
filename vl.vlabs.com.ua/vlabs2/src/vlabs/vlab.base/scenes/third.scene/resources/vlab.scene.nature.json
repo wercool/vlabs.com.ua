@@ -1,3 +1,5 @@
 {
+    "name": "Third Scene",
+    "description": "Third scene description...",
     "gltfURL": "./scenes/third.scene/resources/3d/third.scene.glb"
 }

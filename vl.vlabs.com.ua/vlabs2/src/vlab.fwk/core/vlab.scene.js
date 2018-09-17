@@ -1,6 +1,18 @@
 import * as THREE from 'three';
 import GLTFLoader from 'three-gltf-loader';
 import VLab from './vlab';
+
+var VLabSceneAssets = {
+    sceneLoader: null,
+    sceneLoaderContainer: null,
+    sceneLoaderHeader: null,
+    sceneLoaderContent: null,
+    sceneLoadingBarDIV: null,
+    loadingBar: null,
+    sceneAutoLoader: null,
+    sceneAutoLoaderProgress: null,
+    sceneAutoLoaderLabel: null
+};
 /**
  * VLab Scene.
  * @class
@@ -13,6 +25,8 @@ class VLabScene extends THREE.Scene {
      * @param {Object}    initObj                           - VLabScene initialization object
      * @param {VLabScene} initObj.class                     - VLabScene Class
      * @param {string}    initObj.natureURL                 - VLab Scene nature JSON URL (encoded)
+     * @param {boolean}   initObj.default                   - Default VLabScene, will be auto activated
+     * @param {boolean}   initObj.autoload                  - Load VLabScene assets immediately after instantiation if no active loading happens
      */
     constructor(initObj) {
         super();
@@ -28,6 +42,7 @@ class VLabScene extends THREE.Scene {
      *
      * @async
      * @memberof VLabScene
+     * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver
      */
     activate() {
         return new Promise((resolve, reject) => {
@@ -52,40 +67,147 @@ class VLabScene extends THREE.Scene {
     }
     /**
      * VLab Scene loader.
-     *
+     * * Loads VLabScene nature from JSON file, specified in VLabScene constructor initObj
      * @async
      * @memberof VLabScene
+     * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver
      */
     load() {
+        let self = this;
         this.loading = true;
         console.log(this.initObj.class.name + ' load initiated');
         return new Promise((resolve, reject) => {
             this.vLab.getNatureFromURL(this.initObj.natureURL, this.vLab.naturePassphrase)
             .then((nature) => {
                 this.nature = nature;
-
-                /* gltfURL (GL Transmission Format) */
-                if (this.nature.gltfURL) {
-                    var loader = new GLTFLoader();
-                    let self = this;
-                    loader.load(
-                        this.nature.gltfURL,
-                        function (gltf) {
-                            self.loading = false;
-                            self.loaded = true;
-                            console.log(gltf);
-                            resolve();
-                        },
-                        function (xhr) {
-                            console.log(parseInt(xhr.loaded / xhr.total * 100 ) + '% loaded of ' + self.initObj.class.name);
-                        },
-                        function (error) {
-                            console.log('An error happened while loading VLabScene glTF assets:', error);
-                        }
-                    );
-                }
+                this.setupStyles().then(() => {
+                    this.showSceneLoader();
+                    /* Load (GL Transmission Format) from gltfURL */
+                    if (this.nature.gltfURL) {
+                        this.loadZIP(this.nature.gltfURL).then((gltfFile) => {
+                            console.log(gltfFile);
+                        });
+                        var loader = new GLTFLoader();
+                        loader.load(
+                            this.nature.gltfURL,
+                            function (gltf) {
+                                self.loading = false;
+                                self.loaded = true;
+                                VLabSceneAssets.sceneAutoLoader.style.visibility = 'hidden';
+                                VLabSceneAssets.sceneLoaderContainer.style.visibility = 'hidden';
+                                VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'none';
+                                console.log(gltf);
+                                resolve(self);
+                            },
+                            function (xhr) {
+                                let progress = parseInt(xhr.loaded / xhr.total * 100 );
+                                console.log(progress + '% loaded of ' + self.initObj.class.name);
+                                if (self.initObj.autoload) {
+                                    VLabSceneAssets.sceneAutoLoaderProgress.style.width = progress + '%';
+                                    VLabSceneAssets.sceneAutoLoaderLabel.innerHTML = 'Autoloading ' + (self.nature.name || '' + ((self.initObj.default) ? 'default ' : 'next ') + 'scene') + ' ' + progress + '%';
+                                } else {
+                                    VLabSceneAssets.loadingBar.set(parseInt(progress));
+                                }
+                            },
+                            function (error) {
+                                console.log('An error happened while loading VLabScene glTF assets:', error);
+                            }
+                        );
+                    }
+                });
             });
         });
+    }
+    /**
+     * Loads ZIP archived scene file.
+     * @async
+     * @memberof VLabScene
+     * @return { Promise }
+     */
+    loadZIP(url) {
+        return new Promise( function( resolve, reject ) {
+            if ( url.match( /\.zip$/ ) ) {
+                resolve(url);
+            } else {
+                resolve(url);
+            }
+        });
+    }
+    /**
+     * Setup VLab Scene HTML CSS styles accordingly to VLabScene nature.
+     * * Loads style either from VLabScene nature link or default (/vlab.assets/css/scene.css)
+     * @async
+     * @memberof VLabScene
+     */
+    setupStyles() {
+        if (this.nature.style) {
+            return this.vLab.vLabDOM.addStyle({
+                id: this.initObj.class.name + 'CSS',
+                href: this.nature.style
+            });
+        } else {
+            let defaultSceneCSS = document.getElementById('sceneCSS');
+            if (defaultSceneCSS) {
+                return Promise.resolve();
+            } else {
+                return this.vLab.vLabDOM.addStyle({
+                    id: 'sceneCSS',
+                    href: '../vlab.assets/css/scene.css'
+                });
+            }
+        }
+    }
+    /**
+     * Setup (if not yet exists) and show VLab Scene loader splash element.
+     * @memberof VLabScene
+     */
+    showSceneLoader() {
+        if (VLabSceneAssets.sceneLoaderContainer === null) {
+            VLabSceneAssets.sceneLoaderContainer = document.createElement('div');
+            VLabSceneAssets.sceneLoaderContainer.id = 'sceneLoaderContainer';
+            document.body.appendChild(VLabSceneAssets.sceneLoaderContainer);
+            VLabSceneAssets.sceneLoader = document.createElement('div');
+            VLabSceneAssets.sceneLoader.id = 'sceneLoader';
+            VLabSceneAssets.sceneLoaderContainer.appendChild(VLabSceneAssets.sceneLoader);
+            VLabSceneAssets.sceneLoaderHeader = document.createElement('div');
+            VLabSceneAssets.sceneLoaderHeader.id = 'sceneLoaderHeader';
+            VLabSceneAssets.sceneLoader.appendChild(VLabSceneAssets.sceneLoaderHeader);
+            let sceneLoaderHeaderHR = document.createElement('div');
+            sceneLoaderHeaderHR.id = 'sceneLoaderHeaderHR';
+            VLabSceneAssets.sceneLoader.appendChild(sceneLoaderHeaderHR);
+            VLabSceneAssets.sceneLoaderContent = document.createElement('div');
+            VLabSceneAssets.sceneLoaderContent.id = 'sceneLoaderContent';
+            VLabSceneAssets.sceneLoader.appendChild(VLabSceneAssets.sceneLoaderContent);
+            VLabSceneAssets.sceneLoadingBarDIV = document.createElement('div');
+            VLabSceneAssets.sceneLoadingBarDIV.id = 'sceneLoadingBarDIV';
+            VLabSceneAssets.sceneLoadingBarDIV.setAttribute('class', 'ldBar label-center');
+            VLabSceneAssets.sceneLoadingBarDIV.setAttribute('data-preset', 'circle');
+            VLabSceneAssets.sceneLoadingBarDIV.setAttribute('data-stroke', '#c3d7e4');
+            VLabSceneAssets.sceneLoader.appendChild(VLabSceneAssets.sceneLoadingBarDIV);
+            VLabSceneAssets.loadingBar = new ldBar(VLabSceneAssets.sceneLoadingBarDIV);
+
+            /* Autloader */
+            VLabSceneAssets.sceneAutoLoader = document.createElement('div');
+            VLabSceneAssets.sceneAutoLoader.id = 'sceneAutoLoader';
+            VLabSceneAssets.sceneLoaderContainer.appendChild(VLabSceneAssets.sceneAutoLoader);            
+            VLabSceneAssets.sceneAutoLoaderLabel = document.createElement('div');
+            VLabSceneAssets.sceneAutoLoaderLabel.id = 'sceneAutoLoaderLabel';
+            VLabSceneAssets.sceneAutoLoader.appendChild(VLabSceneAssets.sceneAutoLoaderLabel);
+            VLabSceneAssets.sceneAutoLoaderProgress = document.createElement('div');
+            VLabSceneAssets.sceneAutoLoaderProgress.id = 'sceneAutoLoaderProgress';
+            VLabSceneAssets.sceneAutoLoader.appendChild(VLabSceneAssets.sceneAutoLoaderProgress);
+        }
+        if (this.initObj.autoload) {
+            VLabSceneAssets.sceneAutoLoader.style.visibility = 'visible';
+            VLabSceneAssets.sceneLoaderContainer.style.visibility = 'hidden';
+            VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'none';
+        } else {
+            VLabSceneAssets.sceneLoaderContainer.style.visibility = 'visible';
+            VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'auto';
+            VLabSceneAssets.sceneAutoLoader.style.visibility = 'hidden';
+            VLabSceneAssets.sceneLoaderHeader.innerHTML = this.nature.name || 'Loading ' + ((this.initObj.default) ? 'default ' : 'next ') + 'scene';
+            VLabSceneAssets.sceneLoaderContent.innerHTML = this.nature.description || '';
+        }
     }
 }
 export default VLabScene;

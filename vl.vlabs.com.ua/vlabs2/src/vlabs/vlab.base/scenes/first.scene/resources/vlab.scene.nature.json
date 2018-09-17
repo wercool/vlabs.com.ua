@@ -1,3 +1,6 @@
 {
+    "name": "First Scene",
+    "description": "First scene description...",
+    "_style": "./scenes/first.scene/resources/css/vlab.scene.css",
     "gltfURL": "./scenes/first.scene/resources/3d/first.scene.glb"
 }

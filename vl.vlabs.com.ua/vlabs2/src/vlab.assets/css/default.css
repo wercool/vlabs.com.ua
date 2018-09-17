@@ -9,7 +9,6 @@ html, body {
     font-family: 'Courier New', Courier, monospace;
     font-size: 12pt;
 }
-
 #loader {
     position: absolute;
     width: 60px;
@@ -18,21 +17,3 @@ html, body {
     top: calc(50% - 42px);
     z-index: 1;
 }
-
-/* #loader {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    left: calc(50% - 42px);
-    top: calc(50% - 42px);
-    border: 12px solid #e8ffff;
-    border-top: 12px solid #3d78af;
-    border-radius: 50%;
-    animation: loaderSpin 2s linear infinite;
-    z-index: 1;
-}
-
-@keyframes loaderSpin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-} */

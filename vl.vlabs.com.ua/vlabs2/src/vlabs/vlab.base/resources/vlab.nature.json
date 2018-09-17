@@ -1,6 +1,6 @@
 {
     "name": "Base VLab2",
     "styles": {
-        "global": "./resources/css/vlab.global.css"
+        "_global": "./resources/css/vlab.global.css"
     }
 }

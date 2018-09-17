@@ -9,8 +9,8 @@ const dirsync               = require('gulp-directory-sync');
 const obfuscator            = require('gulp-javascript-obfuscator');
 const sourcemaps            = require('gulp-sourcemaps');
 const uglify                = require('gulp-uglify');
+const stripfebug            = require('gulp-strip-debug');
 const cleancss              = require('gulp-clean-css');
-const removelogging         = require("gulp-remove-logging");
 const connect               = require('gulp-connect');
 const cors                  = require('cors');
 const source                = require('vinyl-source-stream');
@@ -84,7 +84,7 @@ gulp.task('build', gulp.series('sync-vlab-assets',
     .bundle()
     .pipe(source('bundle.js'))
     .pipe(buffer())
-    .pipe(gulpif(initObj.mode == 'prod', removelogging()))
+    .pipe(gulpif(initObj.mode == 'prod', stripfebug()))
     .pipe(replace('<!--VLAB NATURE PASSPHRASE-->', (!initObj.naturePlain) ? initObj.settings.VLabNaturePassPhrase : ''))
     .pipe(replace('<!--VLAB AUTH REQUIRED-->', process.argv.indexOf('--noauth') == -1 ? 'true' : 'false'))
     .pipe(replace('<!--VLAB PROD MODE-->', initObj.mode == 'prod' ? 'true' : 'false'))

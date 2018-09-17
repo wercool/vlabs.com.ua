@@ -1,0 +1,86 @@
+#sceneLoaderContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    vertical-align: middle;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+    -webkit-tap-highlight-color: transparent;
+    z-index: 10000;
+}
+#sceneLoader {
+    width: 50%;
+    min-width: 300px;
+    min-height: 200px;
+    background: #143a53cc;
+    -ms-transform: skewX(-5deg); /* IE 9 */
+    -webkit-transform: skewX(-5deg); /* Safari */
+    transform: skewX(-5deg);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 0px 0px 2px 2px #ffffff25; 
+}
+#sceneLoaderHeader {
+    font-size: 16pt;
+    color: #c0d1dd;
+    padding-left: 15px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    text-shadow: 2px 2px #ffffff25;
+}
+#sceneLoaderHeaderHR {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, #5088ad, rgba(255, 255, 255, 0));
+    margin-right: 50px;
+}
+#sceneLoaderContent {
+    font-size: 12pt;
+    padding-left: 15px;
+    padding: 15px;
+}
+#sceneLoadingBarDIV {
+    position: absolute;
+    top: 5px;
+    right: -15px;
+    font-size: 10pt !important;
+    height: 50px !important;
+    -ms-transform: skewX(5deg); /* IE 9 */
+    -webkit-transform: skewX(5deg); /* Safari */
+    transform: skewX(5deg);
+}
+.sceneLoaderUnSkewX {
+    -ms-transform: skewX(5deg); /* IE 9 */
+    -webkit-transform: skewX(5deg); /* Safari */
+    transform: skewX(5deg);
+}
+/* Autoloader */
+#sceneAutoLoader {
+    position: absolute;
+    width: 100%;
+    height: 20px;
+    bottom: 0;
+    background: #143a53cc;
+    opacity: 0.75;
+}
+#sceneAutoLoaderProgress {
+    position: absolute;
+    width: 0%;
+    left: 0;
+    height: 20px;
+    background: #0a2130cc;
+}
+#sceneAutoLoaderLabel {
+    position: absolute;
+    width: 100%;
+    height: 20px;
+    text-align: center;
+    font-size: 10pt;
+    color: #d5daddcc;
+    z-index: 10001;
+}

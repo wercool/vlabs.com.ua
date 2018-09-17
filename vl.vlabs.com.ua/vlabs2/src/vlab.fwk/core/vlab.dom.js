@@ -54,7 +54,7 @@ class VLabDOM {
     }
     /**
      * Setup VLab HTML CSS styles accordingly to VLab nature.
-     * * Loads global style either from VLab nature link or default
+     * * Loads global style either from VLab nature link or default (/vlab.assets/css/global.css)
      * * Removes default loader div and style link from head
      * @memberof VLabDOM
      */

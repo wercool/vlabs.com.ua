@@ -1,8 +1,18 @@
+@font-face {
+  font-family: 'Roboto Condensed';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto Condensed'), local('RobotoCondensed-Regular'),
+       url('./fonts/roboto-condensed/roboto-condensed-v16-cyrillic_latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url('./fonts/roboto-condensed/roboto-condensed-v16-cyrillic_latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
 html, body {
     margin: 0;
     padding: 0;
     overflow: hidden;
     height: 100%;
     width: 100%;
-    background-color: #424242;
+    background-color: #235272;
+    color: #ffffff;
+    font-family: 'Roboto Condensed', sans-serif;
 }
