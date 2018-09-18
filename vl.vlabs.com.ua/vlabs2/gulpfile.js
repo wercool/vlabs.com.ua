@@ -16,6 +16,8 @@ const cors                  = require('cors');
 const source                = require('vinyl-source-stream');
 const buffer                = require('vinyl-buffer');
 const jsdoc                 = require('gulp-jsdoc3');
+const zip                   = require('gulp-zip');
+const del                   = require('del');
 
 var initObj = {};
 
@@ -29,6 +31,23 @@ gulp.task('vlab-sync-files', function(done) {
     }));
 });
 
+gulp.task('vlab-zip-glb', function(done) {
+    if (initObj.mode == 'prod' || initObj.zipGLB) {
+        fs.readdirSync('./src/vlabs/' + initObj.vLabName + '/scenes')
+        .filter(function(sceneDir) {
+            gulp.src('./src/vlabs/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources/3d/' + sceneDir + '.glb')
+            .pipe(zip(sceneDir +'.glb.zip'))
+            .pipe(gulp.dest('./build/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources/3d'));
+
+            del('./build/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources/3d/' + sceneDir + '.glb');
+        });
+        done();
+    } else {
+        done();
+        return;
+    }
+});
+
 gulp.task('vlab-nature-process', function () {
     return gulp.src('./src/vlabs/' + initObj.vLabName + '/resources/vlab.nature.json')
     .pipe(replace('<!--VLAB REST API URL-->', initObj.settings.VLabsREST))
@@ -36,10 +55,21 @@ gulp.task('vlab-nature-process', function () {
     .pipe(gulp.dest('./build/' + initObj.vLabName + '/resources'));
 });
 
+gulp.task('vlab-index-process', function (done) {
+    if (initObj.mode != 'prod') {
+        done();
+    } else {
+        return gulp.src('./build/' + initObj.vLabName + '/index.html')
+        .pipe(replace('mode="dev"', 'mode="prod"'))
+        .pipe(gulp.dest('./build/' + initObj.vLabName));
+    }
+});
+
 gulp.task('vlab-scene-nature-process', function (done) {
     fs.readdirSync('./src/vlabs/' + initObj.vLabName + '/scenes')
     .filter(function(sceneDir) {
         gulp.src('./src/vlabs/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources/vlab.scene.nature.json')
+        .pipe(gulpif((initObj.mode == 'prod' || initObj.zipGLB), replace('.glb', '.glb.zip')))
         .pipe(gulpif(!initObj.naturePlain, cryptojs({algorithm: 'AES', action: 'encrypt', key: initObj.settings.VLabNaturePassPhrase})))
         .pipe(gulp.dest('./build/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources'));
     });
@@ -75,7 +105,9 @@ gulp.task('clean-css', function (done) {
 gulp.task('build', gulp.series('sync-vlab-assets', 
                                'sync-vlab-items',
                                'vlab-sync-files',
+                               'vlab-zip-glb',
                                'clean-css',
+                               'vlab-index-process',
                                'vlab-nature-process',
                                'vlab-scene-nature-process',
                                 function transpiling () {
@@ -94,6 +126,13 @@ gulp.task('build', gulp.series('sync-vlab-assets',
     .pipe(gulpif(initObj.mode == 'prod', obfuscator({compact: true, sourceMap: false})))
     .pipe(gulp.dest('./build/' + initObj.vLabName))
     .on('end', function() {
+        if (initObj.mode == 'prod') {
+            gulp.src('./build/' + initObj.vLabName + '/bundle.js')
+            .pipe(zip('bundle.js.zip'))
+            .pipe(gulp.dest('./build/' + initObj.vLabName));
+
+            del('./build/' + initObj.vLabName + '/bundle.js');
+        }
         console.log(color('VLab ', 'GREEN') + color(initObj.vLabName, 'BLUE') + color(' build completed ', 'GREEN'));
     });
 }));
@@ -122,6 +161,11 @@ gulp.task('main', function (done) {
         console.log(color('Using non-crypted nature file!', 'YELLOW'));
     } else {
         initObj.naturePlain = false;
+    }
+    if (process.argv.indexOf('--zip-glb') > -1) {
+        initObj.zipGLB = true;
+    } else {
+        initObj.zipGLB = false;
     }
     if (errors.length > 0) {
         for (error of errors) {

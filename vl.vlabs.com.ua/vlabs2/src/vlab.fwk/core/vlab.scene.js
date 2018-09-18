@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import GLTFLoader from 'three-gltf-loader';
+import { ZipLoader } from '../utils/ZipLoader';
 import VLab from './vlab';
 
 var VLabSceneAssets = {
@@ -36,6 +37,8 @@ class VLabScene extends THREE.Scene {
         this.loading = false;
         this.loaded = false;
         this.active = false;
+
+        this.loadingManager = new THREE.LoadingManager();
     }
     /**
      * VLab Scene activator.
@@ -85,34 +88,28 @@ class VLabScene extends THREE.Scene {
                     /* Load (GL Transmission Format) from gltfURL */
                     if (this.nature.gltfURL) {
                         this.loadZIP(this.nature.gltfURL).then((gltfFile) => {
-                            console.log(gltfFile);
-                        });
-                        var loader = new GLTFLoader();
-                        loader.load(
-                            this.nature.gltfURL,
-                            function (gltf) {
-                                self.loading = false;
-                                self.loaded = true;
-                                VLabSceneAssets.sceneAutoLoader.style.visibility = 'hidden';
-                                VLabSceneAssets.sceneLoaderContainer.style.visibility = 'hidden';
-                                VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'none';
-                                console.log(gltf);
-                                resolve(self);
-                            },
-                            function (xhr) {
-                                let progress = parseInt(xhr.loaded / xhr.total * 100 );
-                                console.log(progress + '% loaded of ' + self.initObj.class.name);
-                                if (self.initObj.autoload) {
-                                    VLabSceneAssets.sceneAutoLoaderProgress.style.width = progress + '%';
-                                    VLabSceneAssets.sceneAutoLoaderLabel.innerHTML = 'Autoloading ' + (self.nature.name || '' + ((self.initObj.default) ? 'default ' : 'next ') + 'scene') + ' ' + progress + '%';
-                                } else {
-                                    VLabSceneAssets.loadingBar.set(parseInt(progress));
+                            var loader = new GLTFLoader(self.loadingManager);
+                            loader.load(
+                                gltfFile,
+                                function onLoad(gltf) {
+                                    self.loading = false;
+                                    self.loaded = true;
+                                    VLabSceneAssets.sceneAutoLoader.style.visibility = 'hidden';
+                                    VLabSceneAssets.sceneLoaderContainer.style.visibility = 'hidden';
+                                    VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'none';
+                                    console.log(gltf);
+                                    resolve(self);
+                                },
+                                function onProgress(xhr) {
+                                    let progress = parseInt(xhr.loaded / xhr.total * 100 );
+                                    console.log(progress + '% loaded of ' + self.initObj.class.name);
+                                    self.refreshLoaderIndicator(progress);
+                                },
+                                function onError(error) {
+                                    console.log('An error happened while loading VLabScene glTF assets:', error);
                                 }
-                            },
-                            function (error) {
-                                console.log('An error happened while loading VLabScene glTF assets:', error);
-                            }
-                        );
+                            );
+                        });
                     }
                 });
             });
@@ -125,13 +122,37 @@ class VLabScene extends THREE.Scene {
      * @return { Promise }
      */
     loadZIP(url) {
-        return new Promise( function( resolve, reject ) {
-            if ( url.match( /\.zip$/ ) ) {
-                resolve(url);
+        let self = this;
+        return new Promise(function(resolve, reject) {
+            if (url.match(/\.zip$/)) {
+                new ZipLoader().load(
+                        url,
+                        function (xhr) {
+                            let progress = parseInt(xhr.loaded / xhr.total * 100 );
+                            console.log(progress + '% loaded of ' + self.initObj.class.name);
+                            self.refreshLoaderIndicator(progress);
+                        },
+                    ).then(function(zip) {
+                        self.loadingManager.setURLModifier(zip.urlResolver);
+                        resolve(zip.find(/\.(gltf|glb)$/i)[0]);
+                    });
             } else {
                 resolve(url);
             }
         });
+    }
+    /**
+     * Refreshes VLabScene loader indicator.
+     * @async
+     * @memberof VLabScene
+     */
+    refreshLoaderIndicator(progress) {
+        if (this.initObj.autoload) {
+            VLabSceneAssets.sceneAutoLoaderProgress.style.width = progress + '%';
+            VLabSceneAssets.sceneAutoLoaderLabel.innerHTML = 'Autoloading ' + (this.nature.name || '' + ((this.initObj.default) ? 'default ' : 'next ') + 'scene') + ' ' + progress + '%';
+        } else {
+            VLabSceneAssets.loadingBar.set(parseInt(progress));
+        }
     }
     /**
      * Setup VLab Scene HTML CSS styles accordingly to VLabScene nature.

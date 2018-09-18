@@ -70,6 +70,8 @@ class VLabDOM {
             defaultCSS.parentNode.removeChild(defaultCSS);
             let defaultJS = document.getElementById('defaultJS');
             defaultJS.parentNode.removeChild(defaultJS);
+            let ZipLoaderJS = document.getElementById('ZipLoaderJS');
+            if (ZipLoaderJS) ZipLoaderJS.parentNode.removeChild(ZipLoaderJS);
         });
     }
     /**

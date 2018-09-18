@@ -33,16 +33,36 @@ window.onload = function() {
                         loader.setAttribute('data-stroke', '#c3d7e4');
                         var loadingBar = new ldBar(loader);
 
-                        var oReq = new XMLHttpRequest();
-                        oReq.addEventListener('progress', function(event) {
-                            var percentComplete = event.loaded / event.total * 100;
-                            loadingBar.set(parseInt(percentComplete));
-                        });
-                        oReq.addEventListener('load', function(event) {
-                            eval(oReq.response);
-                        });
-                        oReq.open('GET', './bundle.js');
-                        oReq.send();
+                        if (document.getElementById('defaultJS').getAttribute('mode') == 'prod') {
+                            var ZipLoaderJS = document.createElement('script');
+                            ZipLoaderJS.type = 'text/javascript';
+                            ZipLoaderJS.id = 'ZipLoaderJS';
+                            ZipLoaderJS.src = '../vlab.assets/js/ZipLoader.min.js';
+                            document.getElementsByTagName('head')[0].appendChild(ZipLoaderJS);
+                            ZipLoaderJS.onload = function() {
+                                var loader = new ZipLoader('./bundle.js.zip');
+                                loader.on('progress', function(event) {
+                                    var percentComplete = event.loaded / event.total * 100;
+                                    loadingBar.set(parseInt(percentComplete));
+                                });
+                                loader.on('load', function(event) {
+                                    eval(loader.extractAsText('bundle.js'));
+                                    loader.clear();
+                                });
+                                loader.load();
+                            }
+                        } else {
+                            var oReq = new XMLHttpRequest();
+                            oReq.addEventListener('progress', function(event) {
+                                var percentComplete = event.loaded / event.total * 100;
+                                loadingBar.set(parseInt(percentComplete));
+                            });
+                            oReq.addEventListener('load', function(event) {
+                                eval(oReq.response);
+                            });
+                            oReq.open('GET', './bundle.js');
+                            oReq.send();
+                        }
                     };
                 };
             } else {
