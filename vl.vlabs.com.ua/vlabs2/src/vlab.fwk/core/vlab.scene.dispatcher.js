@@ -22,14 +22,14 @@ class VLabSceneDispatcher {
      * @param {Object}    initObj                           - VLabScene initialization object
      * @param {VLabScene} initObj.class                     - VLabScene Class
      * @param {string}    initObj.natureURL                 - VLab Scene nature JSON URL (encoded)
-     * @param {boolean}   initObj.default                   - Default VLabScene, will be auto activated
+     * @param {boolean}   initObj.initial                   - Initial VLabScene, will be auto activated
      * @param {boolean}   initObj.autoload                  - Load VLabScene assets immediately after instantiation if no active loading happens
      */
     addScene(initObj) {
         initObj.vLab = this.vLab;
         let vLabScene = new initObj.class(initObj);
         this.scenes.push(vLabScene);
-        if (initObj.default) {
+        if (initObj.initial) {
             this.activateScene(initObj).then(this.autoloadScenes.bind(this));
         } else {
             this.autoloadScenes();

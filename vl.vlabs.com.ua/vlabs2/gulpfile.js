@@ -32,7 +32,7 @@ gulp.task('vlab-sync-files', function(done) {
 });
 
 gulp.task('vlab-zip-glb', function(done) {
-    if (initObj.mode == 'prod' || initObj.zipGLB) {
+    if (initObj.zipGLB) {
         fs.readdirSync('./src/vlabs/' + initObj.vLabName + '/scenes')
         .filter(function(sceneDir) {
             gulp.src('./src/vlabs/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources/3d/' + sceneDir + '.glb')
@@ -69,7 +69,7 @@ gulp.task('vlab-scene-nature-process', function (done) {
     fs.readdirSync('./src/vlabs/' + initObj.vLabName + '/scenes')
     .filter(function(sceneDir) {
         gulp.src('./src/vlabs/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources/vlab.scene.nature.json')
-        .pipe(gulpif((initObj.mode == 'prod' || initObj.zipGLB), replace('.glb', '.glb.zip')))
+        .pipe(gulpif(initObj.zipGLB, replace('.glb', '.glb.zip')))
         .pipe(gulpif(!initObj.naturePlain, cryptojs({algorithm: 'AES', action: 'encrypt', key: initObj.settings.VLabNaturePassPhrase})))
         .pipe(gulp.dest('./build/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources'));
     });

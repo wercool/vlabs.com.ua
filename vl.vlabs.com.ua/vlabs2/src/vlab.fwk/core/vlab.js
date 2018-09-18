@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import * as HTTPUtils from '../utils/http.utils';
 import VLabDOM from './vlab.dom';
 import VLabSceneDispatcher from './vlab.scene.dispatcher';
@@ -20,6 +21,7 @@ class VLab {
 
         this.naturePassphrase         = '<!--VLAB NATURE PASSPHRASE-->';
         this.prodMode                 = '<!--VLAB PROD MODE-->' == 'true';
+        console.log('THREE.WebGLRenderer', THREE.REVISION);
     }
     /**
      * VLab initializer.

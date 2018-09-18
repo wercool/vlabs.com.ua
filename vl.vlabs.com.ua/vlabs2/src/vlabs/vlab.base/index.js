@@ -33,7 +33,7 @@ class BaseVLab extends VLab {
         this.vLabSceneDispatcher.addScene({
             class: FirstScene,
             natureURL: './scenes/first.scene/resources/vlab.scene.nature.json',
-            default: true
+            initial: true
         });
         /* Second scene */
         this.vLabSceneDispatcher.addScene({

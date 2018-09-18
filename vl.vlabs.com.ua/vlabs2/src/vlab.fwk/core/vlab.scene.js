@@ -26,7 +26,7 @@ class VLabScene extends THREE.Scene {
      * @param {Object}    initObj                           - VLabScene initialization object
      * @param {VLabScene} initObj.class                     - VLabScene Class
      * @param {string}    initObj.natureURL                 - VLab Scene nature JSON URL (encoded)
-     * @param {boolean}   initObj.default                   - Default VLabScene, will be auto activated
+     * @param {boolean}   initObj.initial                   - Initial VLabScene, will be auto activated
      * @param {boolean}   initObj.autoload                  - Load VLabScene assets immediately after instantiation if no active loading happens
      */
     constructor(initObj) {
@@ -101,7 +101,7 @@ class VLabScene extends THREE.Scene {
                                     resolve(self);
                                 },
                                 function onProgress(xhr) {
-                                    let progress = parseInt(xhr.loaded / xhr.total * 100 );
+                                    let progress = parseInt(xhr.loaded / xhr.total * 100);
                                     console.log(progress + '% loaded of ' + self.initObj.class.name);
                                     self.refreshLoaderIndicator(progress);
                                 },
@@ -128,7 +128,7 @@ class VLabScene extends THREE.Scene {
                 new ZipLoader().load(
                         url,
                         function (xhr) {
-                            let progress = parseInt(xhr.loaded / xhr.total * 100 );
+                            let progress = parseInt(xhr.loaded / xhr.total * 100);
                             console.log(progress + '% loaded of ' + self.initObj.class.name);
                             self.refreshLoaderIndicator(progress);
                         },
@@ -149,7 +149,7 @@ class VLabScene extends THREE.Scene {
     refreshLoaderIndicator(progress) {
         if (this.initObj.autoload) {
             VLabSceneAssets.sceneAutoLoaderProgress.style.width = progress + '%';
-            VLabSceneAssets.sceneAutoLoaderLabel.innerHTML = 'Autoloading ' + (this.nature.name || '' + ((this.initObj.default) ? 'default ' : 'next ') + 'scene') + ' ' + progress + '%';
+            VLabSceneAssets.sceneAutoLoaderLabel.innerHTML = 'Autoloading ' + (this.nature.name || '' + ((this.initObj.initial) ? 'initial ' : 'next ') + 'scene') + ' ' + progress + '%';
         } else {
             VLabSceneAssets.loadingBar.set(parseInt(progress));
         }
@@ -226,7 +226,7 @@ class VLabScene extends THREE.Scene {
             VLabSceneAssets.sceneLoaderContainer.style.visibility = 'visible';
             VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'auto';
             VLabSceneAssets.sceneAutoLoader.style.visibility = 'hidden';
-            VLabSceneAssets.sceneLoaderHeader.innerHTML = this.nature.name || 'Loading ' + ((this.initObj.default) ? 'default ' : 'next ') + 'scene';
+            VLabSceneAssets.sceneLoaderHeader.innerHTML = this.nature.name || 'Loading ' + ((this.initObj.initial) ? 'initial ' : 'next ') + 'scene';
             VLabSceneAssets.sceneLoaderContent.innerHTML = this.nature.description || '';
         }
     }
