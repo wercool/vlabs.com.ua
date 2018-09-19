@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import * as HTTPUtils from '../utils/http.utils';
 import VLabDOM from './vlab.dom';
+import VLabEventDispatcher from './vlab.event.dispatcher';
 import VLabSceneDispatcher from './vlab.scene.dispatcher';
 
 /**
@@ -18,19 +19,23 @@ class VLab {
      */
     constructor(initObj = {}) {
         this.initObj = initObj;
-
+        /**
+         * THREE.Clock
+         * @inner
+         */
         this.clock = new THREE.Clock();
 
         this.getNaturePassphrase        = () => { return  '<!--VLAB NATURE PASSPHRASE-->' };
         this.getProdMode                = () => { return  '<!--VLAB PROD MODE-->' == 'true' };
-        console.log('THREE.WebGLRenderer', THREE.REVISION);
     }
     /**
      * VLab initializer.
      * * Verifies initObj
      * * Loads VLab nature
      * * Instantiates VLabDOM
+     * * Instantiates VLabEventDispatcher
      * * Instantiates VLabSceneDispatcher
+     * * Instantiates THREE.WebGLRenderer and configures it
      *
      * @async
      * @memberof VLab
@@ -42,15 +47,17 @@ class VLab {
             if (this.initObj.name == undefined)      initObjAbnormals.push('this.initObj.name is not set');
             if (this.initObj.natureURL == undefined) initObjAbnormals.push('this.initObj.natureURL is not set');
             if (initObjAbnormals.length == 0) {
-                this.getNatureFromURL(this.initObj.natureURL, this.getNaturePassphrase())
+                HTTPUtils.getJSONFromURL(this.initObj.natureURL, this.getNaturePassphrase())
                 .then((nature) => {
                     /**
                      * VLab nature
                      * @inner
-                     * @property {Object} nature                       - VLab nature from JSON file from constructor initObj.natureURL
-                     * @property {string} nature.name                  - VLab name
-                     * @property {Object} nature.styles                - VLab DOM CSS styles
-                     * @property {string} nature.styles.global         - global CSS, overrides /vlab.assets/css/global.css
+                     * @property {Object} nature                                    - VLab nature from JSON file from constructor initObj.natureURL
+                     * @property {string} nature.name                               - VLab name
+                     * @property {Object} [nature.styles]                           - VLab CSS styles
+                     * @property {string} [nature.styles.global]                    - global CSS, overrides /vlab.assets/css/global.css
+                     * @property {Object} [nature.WebGLRendererParameters]          - THREE.WebGLRenderer parameters and presets
+                     * 
                      */
                     this.nature = nature;
                     /**
@@ -58,13 +65,26 @@ class VLab {
                      * @inner
                      */
                     this.DOM = new VLabDOM(this);
-                    /**
-                     * VLab SceneDispatcher
-                     * @inner
-                     */
-                    this.SceneDispatcher = new VLabSceneDispatcher(this);
-
-                    resolve({});
+                    this.DOM.initialize().then(() => {
+                        /**
+                         * VLab EventDispatcher
+                         * @inner
+                         */
+                        this.EventDispatcher = new VLabEventDispatcher(this);
+                        /**
+                         * VLab SceneDispatcher
+                         * @inner
+                         */
+                        this.SceneDispatcher = new VLabSceneDispatcher(this);
+                        /**
+                         * Instantiates THREE.WebGLRenderer and configures it accordingly
+                         */
+                        this.setupWebGLRenderer();
+                        /**
+                         * resolves initialization Promise
+                         */
+                        resolve({});
+                    });
                 })
                 .catch((error) => { reject(error); });
             } else {
@@ -76,14 +96,20 @@ class VLab {
         });
     }
     /**
-     * Actually loads, decrypts, if configured in GULP, nature JSON file from URL.
+     * Instantiates THREE.WebGLRenderer.
+     * * Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters
      *
-     * @async
      * @memberof VLab
-     * @returns {Promise | JSON}            - JSON of nature file in Promise resolver
+     *
      */
-    getNatureFromURL(url, passphrase) {
-        return HTTPUtils.getJSONFromURL(url, passphrase.length > 0 ? passphrase : undefined);
+    setupWebGLRenderer() {
+        /**
+         * THREE.WebGLRenderer
+         * https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
+         * @inner
+         */
+        this.WebGLRenderer = new THREE.WebGLRenderer({});
+        this.WebGLRenderer.domElement = null;
     }
 }
 export default VLab;

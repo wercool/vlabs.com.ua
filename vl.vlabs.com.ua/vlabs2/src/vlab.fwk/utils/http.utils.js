@@ -7,7 +7,7 @@ export function getJSONFromURL(url, passphrase) {
             const contentType = response.headers.get('Content-Type') || '';
 
             if (contentType.includes('application/json')) {
-                if (passphrase) {
+                if (passphrase.length > 0) {
                     return new Promise((resolve) => {
                         resolve(
                             response.text().then(encryptedResponseBody => {

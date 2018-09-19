@@ -16,3 +16,14 @@ html, body {
     color: #ffffff;
     font-family: 'Roboto Condensed', sans-serif;
 }
+#vLabContainer {
+    background-color: inherit;
+    width: 100%;
+    height: 100%;
+}
+#webGLContainer {
+    background-color: inherit;
+    width: 100%;
+    height: 100%;
+    float: left;
+}

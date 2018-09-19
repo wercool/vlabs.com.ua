@@ -20,6 +20,7 @@ class VLabSceneDispatcher {
      * Add VLabScene to VLabSceneDispatcher stack.
      * @memberof VLabSceneDispatcher
      * @param {Object}    initObj                           - VLabScene initialization object
+     * @param {VLab}      initObj.vLab                      - VLab instance
      * @param {VLabScene} initObj.class                     - VLabScene Class
      * @param {string}    initObj.natureURL                 - VLab Scene nature JSON URL (encoded)
      * @param {boolean}   initObj.initial                   - Initial VLabScene, will be auto activated
@@ -37,6 +38,8 @@ class VLabSceneDispatcher {
     }
     /**
      * Activates VLabScene.
+     * * Sets this.vLab.WebGLRenderer.domElement to activated VLabScene canvas
+     * * Sets this.vLab.WebGLRenderer.context to activated VLabScene canvas context
      * @async
      * @memberof VLabSceneDispatcher
      * @param {Object}    initObj                           - Scene activation object
@@ -51,6 +54,8 @@ class VLabSceneDispatcher {
             this.scenes.forEach((vLabScene) => {
                 if (vLabScene.constructor == initObj.class) {
                     vLabScene.activate().then(() => {
+                        this.vLab.WebGLRenderer.domElement = vLabScene.canvas;
+                        this.vLab.WebGLRenderer.context = vLabScene.canvas.getContext('webgl');
                         vLabScene.onActivated();
                         resolve(vLabScene);
                     });

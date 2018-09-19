@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import * as HTTPUtils from '../utils/http.utils';
 import GLTFLoader from 'three-gltf-loader';
 import { ZipLoader } from '../utils/ZipLoader';
 import * as ObjUtils from '../utils/object.utils';
@@ -27,7 +28,8 @@ class VLabScene extends THREE.Scene {
      * 
      * @constructor
      * @param {Object}    initObj                           - VLabScene initialization object
-     * @param {VLabScene} initObj.class                     - VLabScene Class
+     * @param {VLab}      initObj.vLab                      - VLab instance
+     * @param {VLabScene} initObj.class                     - Distinct VLabScene Class
      * @param {string}    initObj.natureURL                 - VLab Scene nature JSON URL (encoded)
      * @param {boolean}   initObj.initial                   - Initial VLabScene, will be auto activated
      * @param {boolean}   initObj.autoload                  - Load VLabScene assets immediately after instantiation if no active loading happens
@@ -35,12 +37,30 @@ class VLabScene extends THREE.Scene {
     constructor(initObj) {
         super();
         this.initObj = initObj;
+        /**
+         * VLab instance
+         * @inner
+         */
         this.vLab = this.initObj.vLab;
-
+        /**
+         * Set to true while scene file is loading, default false
+         * @inner
+         */
         this.loading = false;
+        /**
+         * Set to true when scene filed is loaded, default false
+         * @inner
+         */
         this.loaded = false;
+        /**
+         * Set to true when scene is active scene, default false
+         * @inner
+         */
         this.active = false;
-
+        /**
+         * THREE.LoadingManager instance
+         * @inner
+         */
         this.loadingManager = new THREE.LoadingManager();
     }
     /**
@@ -52,6 +72,20 @@ class VLabScene extends THREE.Scene {
      */
     activate() {
         return new Promise((resolve, reject) => {
+            if (!this.canvas) {
+                /**
+                 * HTMLCanvasElement
+                 * @inner
+                 */
+                this.canvas = document.createElement('canvas');
+                this.canvas.id = this.initObj.class.name + 'Canvas';
+                this.canvas.addEventListener('contextmenu', function(event) {
+                    if (event.button == 2) {
+                        event.preventDefault();
+                    }
+                });
+                this.vLab.DOM.webGLContainer.appendChild(this.canvas);
+            }
             if (!this.loaded) {
                 this.load().then(() => {
                     this.active = true;
@@ -69,6 +103,7 @@ class VLabScene extends THREE.Scene {
      * @memberof VLabScene
      */
     deactivate() {
+        if (this.canvas) this.canvas.style.display = 'none';
         this.active = false;
     }
     /**
@@ -77,7 +112,7 @@ class VLabScene extends THREE.Scene {
      * @memberof VLabScene
      * @abstract
      */
-    onActivated() { console.error(this.constructor.name + ' onActivated abstract method not implemented'); }
+    onActivated() { console.warn(this.constructor.name + ' onActivated abstract method not implemented'); }
     /**
      * Conforms material with VLab based on material.userData extra object.
      * 
@@ -181,7 +216,7 @@ class VLabScene extends THREE.Scene {
         this.loading = true;
         console.log(this.initObj.class.name + ' load initiated');
         return new Promise((resolve, reject) => {
-            this.vLab.getNatureFromURL(this.initObj.natureURL, this.vLab.getNaturePassphrase())
+            HTTPUtils.getJSONFromURL(this.initObj.natureURL, this.vLab.getNaturePassphrase())
             .then((nature) => {
                 /**
                  * VLabScene nature
@@ -217,7 +252,7 @@ class VLabScene extends THREE.Scene {
                                     self.refreshLoaderIndicator(progress);
                                 },
                                 function onError(error) {
-                                    console.log('An error happened while loading VLabScene glTF assets:', error);
+                                    console.error('An error happened while loading VLabScene glTF assets:', error);
                                 }
                             );
                         });
