@@ -28,7 +28,7 @@ class VLabDOM {
     setupDocument() {
         document.title = this.vLab.nature.name || this.vLab.initObj.name;
 
-        if (this.vLab.prodMode) {
+        if (this.vLab.getProdMode()) {
             /* Prevent VLab from go back */
             (function (global) {
                 if(typeof (global) === "undefined")
@@ -84,6 +84,8 @@ class VLabDOM {
      */
     addStyle(styleObj) {
         return new Promise(function(resolve, reject) {
+            let style = document.getElementById(styleObj.id);
+            if (style) resolve();
             /* Loads global style either from VLab nature link or default */
             let styleLink = document.createElement('link');
             styleLink.id = styleObj.id || StringUtils.getRandomString(5);

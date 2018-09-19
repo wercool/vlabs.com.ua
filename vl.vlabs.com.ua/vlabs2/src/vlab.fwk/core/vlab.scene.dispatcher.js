@@ -50,7 +50,8 @@ class VLabSceneDispatcher {
             });
             this.scenes.forEach((vLabScene) => {
                 if (vLabScene.constructor == initObj.class) {
-                    vLabScene.activate().then(() => { 
+                    vLabScene.activate().then(() => {
+                        vLabScene.onActivated();
                         resolve(vLabScene);
                     });
                 }

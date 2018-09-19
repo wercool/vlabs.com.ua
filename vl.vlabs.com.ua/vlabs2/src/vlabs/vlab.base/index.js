@@ -21,34 +21,34 @@ class BaseVLab extends VLab {
      */
     constructor(initObj = {}) {
         super(initObj);
-        super.initialize().then((success) => { this.bootstrap(); }, (error) => { console.error(error); });
+        super.initialize().then((iniObj) => { this.bootstrap(iniObj); }, (error) => { console.error(error); });
     }
     /**
      * VLab bootstrap. Loads and initializes Vlab Scenes, VLab Items, other shared VLab elements
      * @async
      * @memberof BaseVLab
      */
-    bootstrap() {
+    bootstrap(iniObj) {
         /* First scene */
-        this.vLabSceneDispatcher.addScene({
+        this.SceneDispatcher.addScene({
             class: FirstScene,
             natureURL: './scenes/first.scene/resources/vlab.scene.nature.json',
             initial: true
         });
         /* Second scene */
-        this.vLabSceneDispatcher.addScene({
+        this.SceneDispatcher.addScene({
             class: SecondScene,
             natureURL: './scenes/second.scene/resources/vlab.scene.nature.json',
             autoload: true
         });
         /* Third scene */
-        this.vLabSceneDispatcher.addScene({
+        this.SceneDispatcher.addScene({
             class: ThirdScene,
             natureURL: './scenes/third.scene/resources/vlab.scene.nature.json',
             autoload: true
         });
 
-        // console.log(this);
+        console.log(this);
     }
 }
 
