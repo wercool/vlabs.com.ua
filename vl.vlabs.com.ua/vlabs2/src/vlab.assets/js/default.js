@@ -33,7 +33,7 @@ window.onload = function() {
                         loader.setAttribute('data-stroke', '#c3d7e4');
                         var loadingBar = new ldBar(loader);
 
-                        if (document.getElementById('defaultJS').getAttribute('mode') == 'prod') {
+                        if (document.getElementById('defaultJS').getAttribute('bundle') == 'zip') {
                             var ZipLoaderJS = document.createElement('script');
                             ZipLoaderJS.id = 'ZipLoaderJS';
                             ZipLoaderJS.type = 'text/javascript';
