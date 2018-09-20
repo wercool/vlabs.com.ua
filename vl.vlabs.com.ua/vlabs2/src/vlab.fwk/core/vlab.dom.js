@@ -72,13 +72,21 @@ class VLabDOM {
                 let ZipLoaderJS = document.getElementById('ZipLoaderJS');
                 if (ZipLoaderJS) ZipLoaderJS.parentNode.removeChild(ZipLoaderJS);
     
-                /* Setup default DOM */
+                /**
+                 * VLab DOM container <div id='vLabContainer'>
+                 * #vLabContainer in /vlab.assets/css/global.css 
+                 * @inner
+                 */
                 this.container = document.createElement('div');
                 this.container.id = 'vLabContainer';
                 if(document.body != null) {
                     document.body.appendChild(this.container);
                 }
-    
+                /**
+                 * THREE.WebGLRenderer DOM container <div id='webGLContainer'>
+                 * #webGLContainer in /vlab.assets/css/global.css 
+                 * @inner
+                 */
                 this.webGLContainer = document.createElement('div');
                 this.webGLContainer.id = 'webGLContainer';
                 this.container.appendChild(this.webGLContainer);

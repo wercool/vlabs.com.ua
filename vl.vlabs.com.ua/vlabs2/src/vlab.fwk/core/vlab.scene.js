@@ -27,12 +27,14 @@ class VLabScene extends THREE.Scene {
      * VLabScene constructor.
      * 
      * @constructor
-     * @param {Object}    initObj                           - VLabScene initialization object
-     * @param {VLab}      initObj.vLab                      - VLab instance
-     * @param {VLabScene} initObj.class                     - Distinct VLabScene Class
-     * @param {string}    initObj.natureURL                 - VLab Scene nature JSON URL (encoded)
-     * @param {boolean}   initObj.initial                   - Initial VLabScene, will be auto activated
-     * @param {boolean}   initObj.autoload                  - Load VLabScene assets immediately after instantiation if no active loading happens
+     * @param {Object}              initObj                           - VLabScene initialization object
+     * @param {VLab}                initObj.vLab                      - VLab instance
+     * @param {VLabScene}           initObj.class                     - Distinct VLabScene Class
+     * @param {string}              [initObj.natureURL]               - VLab Scene nature JSON URL (encoded)
+     * @param {boolean}             [initObj.initial]                 - Initial VLabScene, will be auto activated
+     * @param {boolean}             [initObj.autoload]                - Load VLabScene assets immediately after instantiation if no active loading happens
+     * @param {HTMLDivElement}      [initObj.auxWebGLContainer]       - Auxilary WebGL container for THREE.WebGLRenderer domElement <canvas> reside
+     * @param {boolean}             [initObj.loaded]                  - VLabScene considered loaded
      */
     constructor(initObj) {
         super();
@@ -49,9 +51,10 @@ class VLabScene extends THREE.Scene {
         this.loading = false;
         /**
          * Set to true when scene filed is loaded, default false
+         * Sets to initObj.loaded if defined
          * @inner
          */
-        this.loaded = false;
+        this.loaded = this.initObj.loaded !== undefined ? this.initObj.loaded : false;
         /**
          * Set to true when scene is active scene, default false
          * @inner
@@ -62,6 +65,12 @@ class VLabScene extends THREE.Scene {
          * @inner
          */
         this.loadingManager = new THREE.LoadingManager();
+        /**
+         * This current THREE.PerspectiveCamera instance
+         * @inner
+         */
+        this.currentCamera = new THREE.PerspectiveCamera(45, this.vLab.DOM.webGLContainer.clientWidth / this.vLab.DOM.webGLContainer.clientHeight, 1, 1000);
+        this.add(this.currentCamera);
     }
     /**
      * VLab Scene activator.
@@ -74,7 +83,7 @@ class VLabScene extends THREE.Scene {
         return new Promise((resolve, reject) => {
             if (!this.canvas) {
                 /**
-                 * HTMLCanvasElement
+                 * HTMLCanvasElement to render VLabs scene on
                  * @inner
                  */
                 this.canvas = document.createElement('canvas');
@@ -84,7 +93,11 @@ class VLabScene extends THREE.Scene {
                         event.preventDefault();
                     }
                 });
-                this.vLab.DOM.webGLContainer.appendChild(this.canvas);
+                if (this.initObj.auxWebGLContainer !== undefined) {
+                    this.initObj.auxWebGLContainer.appendChild(this.canvas);
+                } else {
+                    this.vLab.DOM.webGLContainer.appendChild(this.canvas);
+                }
             }
             if (!this.loaded) {
                 this.load().then(() => {
@@ -224,6 +237,8 @@ class VLabScene extends THREE.Scene {
                  * @property {Object} nature                    - VLab Scene nature loaded from constructor initObj.natureURL
                  * @property {string} nature.title              - VLab Scene title
                  * @property {string} nature.description        - VLab Scene description
+                 * @property {Object} [nature.WebGLRendererParameters]                          - THREE.WebGLRenderer VLabScene specific parameters and presets
+                 * @property {Object} [nature.WebGLRendererParameters.resolutionFactor]         - THREE.WebGLRenderer VLabScene specific resolution factor
                  */
                 this.nature = nature;
 
@@ -238,8 +253,7 @@ class VLabScene extends THREE.Scene {
                                 function onLoad(gltf) {
                                     self.loading = false;
                                     self.loaded = true;
-                                    VLabSceneAssets.sceneAutoLoader.style.visibility = 'hidden';
-                                    VLabSceneAssets.sceneLoaderContainer.style.visibility = 'hidden';
+                                    VLabSceneAssets.sceneLoaderContainer.style.display = 'none';
                                     VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'none';
                                     self.processGLTF(gltf).then(() => {
                                         delete self.loadingManager;
@@ -336,7 +350,7 @@ class VLabScene extends THREE.Scene {
         if (VLabSceneAssets.sceneLoaderContainer === null) {
             VLabSceneAssets.sceneLoaderContainer = document.createElement('div');
             VLabSceneAssets.sceneLoaderContainer.id = 'sceneLoaderContainer';
-            document.body.appendChild(VLabSceneAssets.sceneLoaderContainer);
+            this.vLab.DOM.container.insertAdjacentElement('afterbegin', VLabSceneAssets.sceneLoaderContainer);
             VLabSceneAssets.sceneLoader = document.createElement('div');
             VLabSceneAssets.sceneLoader.id = 'sceneLoader';
             VLabSceneAssets.sceneLoaderContainer.appendChild(VLabSceneAssets.sceneLoader);
@@ -368,16 +382,22 @@ class VLabScene extends THREE.Scene {
             VLabSceneAssets.sceneAutoLoaderProgress.id = 'sceneAutoLoaderProgress';
             VLabSceneAssets.sceneAutoLoader.appendChild(VLabSceneAssets.sceneAutoLoaderProgress);
         }
+
+        VLabSceneAssets.sceneLoaderContainer.style.display = 'flex';
+
         if (this.initObj.autoload) {
-            VLabSceneAssets.sceneAutoLoader.style.visibility = 'visible';
-            VLabSceneAssets.sceneLoaderContainer.style.visibility = 'hidden';
+            VLabSceneAssets.sceneAutoLoaderProgress.style.width = '0%';
+            VLabSceneAssets.sceneAutoLoaderLabel.innerHTML = '';
+            VLabSceneAssets.sceneLoader.style.display = 'none';
+            VLabSceneAssets.sceneAutoLoader.style.display = 'inline';
             VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'none';
         } else {
-            VLabSceneAssets.sceneLoaderContainer.style.visibility = 'visible';
-            VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'auto';
-            VLabSceneAssets.sceneAutoLoader.style.visibility = 'hidden';
             VLabSceneAssets.sceneLoaderHeader.innerHTML = this.nature.title || 'Loading ' + ((this.initObj.initial) ? 'initial ' : 'next ') + 'scene';
             VLabSceneAssets.sceneLoaderContent.innerHTML = this.nature.description || '';
+            VLabSceneAssets.loadingBar.set(0);
+            VLabSceneAssets.sceneLoader.style.display = 'inline';
+            VLabSceneAssets.sceneAutoLoader.style.display = 'none';
+            VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'auto';
         }
     }
 }

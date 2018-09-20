@@ -11,6 +11,12 @@ class VLabEventDispatcher {
      */
     constructor(vLab) {
         this.vLab = vLab;
+
+        window.onresize = this.onWindowResize.bind(this);
+    }
+
+    onWindowResize(event) {
+        this.vLab.resizeWebGLRenderer();
     }
 }
 export default VLabEventDispatcher;

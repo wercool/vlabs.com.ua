@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import VLabScene from "./vlab.scene";
 
 /**
@@ -15,6 +16,11 @@ class VLabSceneDispatcher {
         this.vLab = vLabInstance;
 
         this.scenes = [];
+        /**
+         * This current VLabScene
+         * @inner
+         */
+        this.currentVLabScene = new THREE.Scene();
     }
     /**
      * Add VLabScene to VLabSceneDispatcher stack.
@@ -56,7 +62,9 @@ class VLabSceneDispatcher {
                     vLabScene.activate().then(() => {
                         this.vLab.WebGLRenderer.domElement = vLabScene.canvas;
                         this.vLab.WebGLRenderer.context = vLabScene.canvas.getContext('webgl');
+                        this.vLab.resizeWebGLRenderer();
                         vLabScene.onActivated();
+                        this.currentVLabScene = vLabScene;
                         resolve(vLabScene);
                     });
                 }

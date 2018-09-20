@@ -39,7 +39,6 @@ class VLab {
      *
      * @async
      * @memberof VLab
-     *
      */
     initialize() {
         return new Promise((resolve, reject) => {
@@ -52,14 +51,17 @@ class VLab {
                     /**
                      * VLab nature
                      * @inner
-                     * @property {Object} nature                                    - VLab nature from JSON file from constructor initObj.natureURL
-                     * @property {string} nature.name                               - VLab name
-                     * @property {Object} [nature.styles]                           - VLab CSS styles
-                     * @property {string} [nature.styles.global]                    - global CSS, overrides /vlab.assets/css/global.css
-                     * @property {Object} [nature.WebGLRendererParameters]          - THREE.WebGLRenderer parameters and presets
+                     * @property {Object} nature                                                    - VLab nature from JSON file from constructor initObj.natureURL
+                     * @property {string} nature.name                                               - VLab name
+                     * @property {Object} [nature.styles]                                           - VLab CSS styles
+                     * @property {string} [nature.styles.global]                                    - global CSS, overrides /vlab.assets/css/global.css
+                     * @property {Object} [nature.WebGLRendererParameters]                          - THREE.WebGLRenderer parameters and presets
+                     * @property {Object} [nature.WebGLRendererParameters.resolutionFactor]         - THREE.WebGLRenderer resolution factor
                      * 
                      */
                     this.nature = nature;
+
+
                     /**
                      * VLab DOM manager
                      * @inner
@@ -80,6 +82,10 @@ class VLab {
                          * Instantiates THREE.WebGLRenderer and configures it accordingly
                          */
                         this.setupWebGLRenderer();
+
+
+                        this.render();
+
                         /**
                          * resolves initialization Promise
                          */
@@ -90,7 +96,7 @@ class VLab {
             } else {
                 if (initObjAbnormals.length > 0) {
                     console.error('VLab incorrectly initialized!');
-                    console.log(initObjAbnormals);
+                    reject(initObjAbnormals);
                 }
             }
         });
@@ -100,7 +106,6 @@ class VLab {
      * * Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters
      *
      * @memberof VLab
-     *
      */
     setupWebGLRenderer() {
         /**
@@ -110,6 +115,46 @@ class VLab {
          */
         this.WebGLRenderer = new THREE.WebGLRenderer({});
         this.WebGLRenderer.domElement = null;
+    }
+    /**
+     * Resizes THREE.WebGLRenderer.
+     *
+     * @memberof VLab
+     */
+    resizeWebGLRenderer() {
+        let resolutionFactor = 1.0;
+        if (this.nature.WebGLRendererParameters) {
+            if (this.nature.WebGLRendererParameters.resolutionFactor) {
+                resolutionFactor = this.nature.WebGLRendererParameters.resolutionFactor;
+            }
+        }
+        if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters) {
+            if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.resolutionFactor) {
+                resolutionFactor = this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.resolutionFactor;
+            }
+        }
+        this.WebGLRenderer.setSize(this.DOM.webGLContainer.clientWidth  * resolutionFactor, 
+                                   this.DOM.webGLContainer.clientHeight * resolutionFactor,
+                                   false);
+        if (this.WebGLRenderer.domElement) {
+            this.WebGLRenderer.domElement.style.width  = this.DOM.webGLContainer.clientWidth  + 'px';
+            this.WebGLRenderer.domElement.style.height = this.DOM.webGLContainer.clientHeight + 'px';
+        }
+    }
+    /**
+     * Renders SceneDispatcher active VLabScene with THREE.WebGLRenderer.
+     *
+     * @memberof VLab
+     */
+    render() {
+        if (this.WebGLRenderer.domElement !== null) {
+            this.WebGLRenderer.clear();
+            this.webGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
+            requestAnimationFrame(this.render.bind(this));
+        } else {
+            console.log('waiting for WebGLRenderer.domElement');
+            setTimeout(this.render.bind(this), 250);
+        }
     }
 }
 export default VLab;

@@ -2,5 +2,8 @@
     "name": "Base VLab2",
     "styles": {
         "#global": "./resources/css/vlab.global.css"
+    },
+    "WebGLRendererParameters": {
+        "resolutionFactor": 1.0
     }
 }
