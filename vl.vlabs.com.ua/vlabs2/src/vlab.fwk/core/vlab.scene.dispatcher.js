@@ -53,6 +53,8 @@ class VLabSceneDispatcher {
      * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver
      */
     activateScene(initObj) {
+        this.vLab.renderPause = true;
+        this.vLab.DOM.webGLContainer.style.visibility = 'hidden';
         return new Promise((resolve, reject) => {
             this.scenes.forEach((vLabScene) => {
                 vLabScene.deactivate();
@@ -60,11 +62,11 @@ class VLabSceneDispatcher {
             this.scenes.forEach((vLabScene) => {
                 if (vLabScene.constructor == initObj.class) {
                     vLabScene.activate().then(() => {
-                        this.vLab.WebGLRenderer.domElement = vLabScene.canvas;
-                        this.vLab.WebGLRenderer.context = vLabScene.canvas.getContext('webgl');
+                        this.currentVLabScene = vLabScene;
+                        this.vLab.renderPause = false;
+                        this.vLab.DOM.webGLContainer.style.visibility = 'visible';
                         this.vLab.resizeWebGLRenderer();
                         vLabScene.onActivated();
-                        this.currentVLabScene = vLabScene;
                         resolve(vLabScene);
                     });
                 }

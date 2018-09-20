@@ -25,6 +25,12 @@ class VLab {
          */
         this.clock = new THREE.Clock();
 
+        /**
+         * render pause
+         * @inner
+         */
+        this.renderPause = true;
+
         this.getNaturePassphrase        = () => { return  '<!--VLAB NATURE PASSPHRASE-->' };
         this.getProdMode                = () => { return  '<!--VLAB PROD MODE-->' == 'true' };
     }
@@ -83,7 +89,6 @@ class VLab {
                          */
                         this.setupWebGLRenderer();
 
-
                         this.render();
 
                         /**
@@ -109,12 +114,27 @@ class VLab {
      */
     setupWebGLRenderer() {
         /**
+         * HTMLCanvasElement to render current VLabScene
+         * @inner
+         */
+        this.WebGLRendererCanvas = document.createElement('canvas');
+        this.WebGLRendererCanvas.id = 'vLabWebGLRendererCanvas';
+        this.WebGLRendererCanvas.addEventListener('contextmenu', function(event) {
+            if (event.button == 2) {
+                event.preventDefault();
+            }
+        });
+        /**
          * THREE.WebGLRenderer
          * https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
          * @inner
          */
-        this.WebGLRenderer = new THREE.WebGLRenderer({});
-        this.WebGLRenderer.domElement = null;
+        this.WebGLRenderer = new THREE.WebGLRenderer({
+            canvas: this.WebGLRendererCanvas
+        });
+        //TODO: this.WebGLRenderer.setClearColor
+        this.WebGLRenderer.setClearColor(0x00ff00);
+        this.DOM.webGLContainer.appendChild(this.WebGLRenderer.domElement);
     }
     /**
      * Resizes THREE.WebGLRenderer.
@@ -140,6 +160,10 @@ class VLab {
             this.WebGLRenderer.domElement.style.width  = this.DOM.webGLContainer.clientWidth  + 'px';
             this.WebGLRenderer.domElement.style.height = this.DOM.webGLContainer.clientHeight + 'px';
         }
+        if (this.SceneDispatcher.currentVLabScene.currentCamera) {
+            this.SceneDispatcher.currentVLabScene.currentCamera.aspect = (this.DOM.webGLContainer.clientWidth / this.DOM.webGLContainer.clientHeight);
+            this.SceneDispatcher.currentVLabScene.currentCamera.updateProjectionMatrix();
+        }
     }
     /**
      * Renders SceneDispatcher active VLabScene with THREE.WebGLRenderer.
@@ -147,12 +171,12 @@ class VLab {
      * @memberof VLab
      */
     render() {
-        if (this.WebGLRenderer.domElement !== null) {
+        if (!this.renderPause) {
             this.WebGLRenderer.clear();
-            this.webGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
+            this.WebGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
             requestAnimationFrame(this.render.bind(this));
         } else {
-            console.log('waiting for WebGLRenderer.domElement');
+            console.log('render paused...');
             setTimeout(this.render.bind(this), 250);
         }
     }

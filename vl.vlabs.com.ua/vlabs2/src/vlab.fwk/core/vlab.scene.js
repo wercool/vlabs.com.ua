@@ -33,7 +33,6 @@ class VLabScene extends THREE.Scene {
      * @param {string}              [initObj.natureURL]               - VLab Scene nature JSON URL (encoded)
      * @param {boolean}             [initObj.initial]                 - Initial VLabScene, will be auto activated
      * @param {boolean}             [initObj.autoload]                - Load VLabScene assets immediately after instantiation if no active loading happens
-     * @param {HTMLDivElement}      [initObj.auxWebGLContainer]       - Auxilary WebGL container for THREE.WebGLRenderer domElement <canvas> reside
      * @param {boolean}             [initObj.loaded]                  - VLabScene considered loaded
      */
     constructor(initObj) {
@@ -70,6 +69,7 @@ class VLabScene extends THREE.Scene {
          * @inner
          */
         this.currentCamera = new THREE.PerspectiveCamera(45, this.vLab.DOM.webGLContainer.clientWidth / this.vLab.DOM.webGLContainer.clientHeight, 1, 1000);
+        this.currentCamera.position.copy(new THREE.Vector3(0.0, 1.0, -2.0));
         this.add(this.currentCamera);
     }
     /**
@@ -81,24 +81,6 @@ class VLabScene extends THREE.Scene {
      */
     activate() {
         return new Promise((resolve, reject) => {
-            if (!this.canvas) {
-                /**
-                 * HTMLCanvasElement to render VLabs scene on
-                 * @inner
-                 */
-                this.canvas = document.createElement('canvas');
-                this.canvas.id = this.initObj.class.name + 'Canvas';
-                this.canvas.addEventListener('contextmenu', function(event) {
-                    if (event.button == 2) {
-                        event.preventDefault();
-                    }
-                });
-                if (this.initObj.auxWebGLContainer !== undefined) {
-                    this.initObj.auxWebGLContainer.appendChild(this.canvas);
-                } else {
-                    this.vLab.DOM.webGLContainer.appendChild(this.canvas);
-                }
-            }
             if (!this.loaded) {
                 this.load().then(() => {
                     this.active = true;
@@ -116,7 +98,6 @@ class VLabScene extends THREE.Scene {
      * @memberof VLabScene
      */
     deactivate() {
-        if (this.canvas) this.canvas.style.display = 'none';
         this.active = false;
     }
     /**
@@ -213,6 +194,8 @@ class VLabScene extends THREE.Scene {
                     break;
                 }
             });
+            //TODO: manage scene cameras
+            self.add(self.currentCamera);
             resolve();
         });
     }
