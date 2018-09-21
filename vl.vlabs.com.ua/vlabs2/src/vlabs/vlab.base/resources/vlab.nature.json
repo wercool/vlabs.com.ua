@@ -4,6 +4,7 @@
         "#global": "./resources/css/vlab.global.css"
     },
     "WebGLRendererParameters": {
-        "resolutionFactor": 1.0
+        "resolutionFactor": 1.0,
+        "clearColor": "0x6d6d6d"
     }
 }

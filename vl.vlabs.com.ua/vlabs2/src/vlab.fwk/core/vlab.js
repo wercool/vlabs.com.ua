@@ -107,61 +107,88 @@ class VLab {
         });
     }
     /**
-     * Instantiates THREE.WebGLRenderer.
+     * Instantiates main THREE.WebGLRenderer if not yet instantiated.
+     * * Appends this.WebGLRenderer.domElement (this.WebGLRendererCanvas) to this.DOM.webGLContainer
      * * Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters
+     * * Configures THREE.WebGLRenderer according to this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters
+     *   if this.SceneDispatcher.currentVLabScene.nature is defined
      *
      * @memberof VLab
      */
     setupWebGLRenderer() {
-        /**
-         * HTMLCanvasElement to render current VLabScene
-         * @inner
-         */
-        this.WebGLRendererCanvas = document.createElement('canvas');
-        this.WebGLRendererCanvas.id = 'vLabWebGLRendererCanvas';
-        this.WebGLRendererCanvas.addEventListener('contextmenu', function(event) {
-            if (event.button == 2) {
-                event.preventDefault();
+        if (this.WebGLRenderer === undefined) {
+            /**
+             * HTMLCanvasElement to render current VLabScene
+             * @inner
+             */
+            this.WebGLRendererCanvas = document.createElement('canvas');
+            this.WebGLRendererCanvas.id = 'vLabWebGLRendererCanvas';
+            this.WebGLRendererCanvas.classList.add('hidden');
+            this.WebGLRendererCanvas.addEventListener('contextmenu', function(event) {
+                if (event.button == 2) {
+                    event.preventDefault();
+                }
+            });
+            /**
+             * THREE.WebGLRenderer
+             * https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
+             * @inner
+             */
+            this.WebGLRenderer = new THREE.WebGLRenderer({
+                canvas: this.WebGLRendererCanvas
+            });
+            this.WebGLRenderer.setPixelRatio(1.0);
+            if (this.getProdMode()) {
+                this.WebGLRenderer.context.getShaderInfoLog = function () { return '' };
+                this.WebGLRenderer.context.getProgramInfoLog = function () { return '' };
             }
-        });
-        /**
-         * THREE.WebGLRenderer
-         * https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
-         * @inner
+
+            this.DOM.webGLContainer.appendChild(this.WebGLRenderer.domElement);
+        }
+
+        /* Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters */
+        if (this.nature.WebGLRendererParameters) {
+            if (this.nature.WebGLRendererParameters.clearColor)
+                this.WebGLRenderer.setClearColor(parseInt(this.nature.WebGLRendererParameters.clearColor));
+        }
+        /** Configures THREE.WebGLRenderer according to this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters
+         *  if this.SceneDispatcher.currentVLabScene.nature is defined
          */
-        this.WebGLRenderer = new THREE.WebGLRenderer({
-            canvas: this.WebGLRendererCanvas
-        });
-        //TODO: this.WebGLRenderer.setClearColor
-        this.WebGLRenderer.setClearColor(0x00ff00);
-        this.DOM.webGLContainer.appendChild(this.WebGLRenderer.domElement);
+        if (this.SceneDispatcher.currentVLabScene.nature) {
+            if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters) {
+                if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.clearColor)
+                    this.WebGLRenderer.setClearColor(parseInt(this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.clearColor));
+            }
+        }
     }
     /**
      * Resizes THREE.WebGLRenderer.
-     *
+     * * Sets WebGLRenderer size according to this.nature.WebGLRendererParameters.resolutionFactor if defined
+     * * Overrides WebGLRenderer size according to this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.resolutionFactor if defined
+     * * Update this.SceneDispatcher.currentVLabScene.currentCamera aspect according to WebGLRenderer size
      * @memberof VLab
      */
     resizeWebGLRenderer() {
         let resolutionFactor = 1.0;
+        /* Cheks if this.nature.WebGLRendererParameters.resolutionFactor if defined */
         if (this.nature.WebGLRendererParameters) {
             if (this.nature.WebGLRendererParameters.resolutionFactor) {
                 resolutionFactor = this.nature.WebGLRendererParameters.resolutionFactor;
             }
         }
+        /* Overrides WebGLRenderer size according to this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.resolutionFactor if defined */
         if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters) {
             if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.resolutionFactor) {
                 resolutionFactor = this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.resolutionFactor;
             }
         }
+        /* Sets WebGLRenderer size according to this.nature.WebGLRendererParameters.resolutionFactor if defined */
         this.WebGLRenderer.setSize(this.DOM.webGLContainer.clientWidth  * resolutionFactor, 
                                    this.DOM.webGLContainer.clientHeight * resolutionFactor,
                                    false);
-        if (this.WebGLRenderer.domElement) {
-            this.WebGLRenderer.domElement.style.width  = this.DOM.webGLContainer.clientWidth  + 'px';
-            this.WebGLRenderer.domElement.style.height = this.DOM.webGLContainer.clientHeight + 'px';
-        }
+        /* Update this.SceneDispatcher.currentVLabScene.currentCamera aspect according to WebGLRenderer size */
         if (this.SceneDispatcher.currentVLabScene.currentCamera) {
-            this.SceneDispatcher.currentVLabScene.currentCamera.aspect = (this.DOM.webGLContainer.clientWidth / this.DOM.webGLContainer.clientHeight);
+            this.SceneDispatcher.currentVLabScene.currentCamera.aspect = (this.WebGLRendererCanvas.clientWidth / this.WebGLRendererCanvas.clientHeight);
             this.SceneDispatcher.currentVLabScene.currentCamera.updateProjectionMatrix();
         }
     }
@@ -176,8 +203,8 @@ class VLab {
             this.WebGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
             requestAnimationFrame(this.render.bind(this));
         } else {
-            console.log('render paused...');
             setTimeout(this.render.bind(this), 250);
+            console.log('render paused...');
         }
     }
 }

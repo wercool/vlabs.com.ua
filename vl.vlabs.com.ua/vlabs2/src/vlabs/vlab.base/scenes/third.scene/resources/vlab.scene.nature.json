@@ -1,5 +1,8 @@
 {
     "title": "Third Scene",
     "description": "Third scene description...",
-    "gltfURL": "./scenes/third.scene/resources/3d/third.scene.glb"
+    "gltfURL": "./scenes/third.scene/resources/3d/third.scene.glb",
+    "WebGLRendererParameters": {
+        "clearColor": "0x91b1b5"
+    }
 }

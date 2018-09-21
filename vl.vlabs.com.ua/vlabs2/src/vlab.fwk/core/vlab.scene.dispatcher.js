@@ -29,14 +29,14 @@ class VLabSceneDispatcher {
      * @param {VLab}      initObj.vLab                      - VLab instance
      * @param {VLabScene} initObj.class                     - VLabScene Class
      * @param {string}    initObj.natureURL                 - VLab Scene nature JSON URL (encoded)
-     * @param {boolean}   initObj.initial                   - Initial VLabScene, will be auto activated
+     * @param {boolean}   initObj.active                    - If set to true VLabsScene will be activated
      * @param {boolean}   initObj.autoload                  - Load VLabScene assets immediately after instantiation if no active loading happens
      */
     addScene(initObj) {
         initObj.vLab = this.vLab;
         let vLabScene = new initObj.class(initObj);
         this.scenes.push(vLabScene);
-        if (initObj.initial) {
+        if (initObj.active) {
             this.activateScene(initObj).then(this.autoloadScenes.bind(this));
         } else {
             this.autoloadScenes();
@@ -53,8 +53,8 @@ class VLabSceneDispatcher {
      * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver
      */
     activateScene(initObj) {
+        let self = this;
         this.vLab.renderPause = true;
-        this.vLab.DOM.webGLContainer.style.visibility = 'hidden';
         return new Promise((resolve, reject) => {
             this.scenes.forEach((vLabScene) => {
                 vLabScene.deactivate();
@@ -63,10 +63,14 @@ class VLabSceneDispatcher {
                 if (vLabScene.constructor == initObj.class) {
                     vLabScene.activate().then(() => {
                         this.currentVLabScene = vLabScene;
-                        this.vLab.renderPause = false;
-                        this.vLab.DOM.webGLContainer.style.visibility = 'visible';
+                        console.log(this.currentVLabScene);
+                        this.vLab.setupWebGLRenderer();
                         this.vLab.resizeWebGLRenderer();
                         vLabScene.onActivated();
+                        setTimeout(() => {
+                            self.vLab.WebGLRendererCanvas.classList.remove('hidden');
+                            self.vLab.renderPause = false;
+                        }, 250);
                         resolve(vLabScene);
                     });
                 }
@@ -91,6 +95,17 @@ class VLabSceneDispatcher {
                 return;
             }
         }
+    }
+    /**
+     * Get number of not yet loaded autoload VLabScene.
+     * @memberof VLabSceneDispatcher
+     */
+    getNotYetLoadedAutoload() {
+        let notYetAutloaded = 0;
+        this.scenes.forEach((vLabScene) => {
+            notYetAutloaded += (vLabScene.initObj.autoload && !vLabScene.loaded) ? 1 : 0;
+        });
+        return notYetAutloaded;
     }
 }
 export default VLabSceneDispatcher;

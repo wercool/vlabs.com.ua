@@ -68,8 +68,9 @@ class VLabScene extends THREE.Scene {
          * This current THREE.PerspectiveCamera instance
          * @inner
          */
-        this.currentCamera = new THREE.PerspectiveCamera(45, this.vLab.DOM.webGLContainer.clientWidth / this.vLab.DOM.webGLContainer.clientHeight, 1, 1000);
-        this.currentCamera.position.copy(new THREE.Vector3(0.0, 1.0, -2.0));
+        this.currentCamera = new THREE.PerspectiveCamera(45, this.vLab.WebGLRendererCanvas.clientWidth / this.vLab.WebGLRendererCanvas.clientHeight, 1, 1000);
+        this.currentCamera.position.copy(new THREE.Vector3(0.0, 1.0, -5.0));
+        this.currentCamera.lookAt(new THREE.Vector3(0.0, 0.0, 0.0));
         this.add(this.currentCamera);
     }
     /**
@@ -163,7 +164,7 @@ class VLabScene extends THREE.Scene {
             if (object3d.userData.PointLight) {
                 let color = parseInt(object3d.userData.color ? '0x' + object3d.userData.color : '0xffffff');
                 let intensity = parseFloat(object3d.userData.intensity ? object3d.userData.intensity : 1.0);
-                let distance = parseFloat(object3d.userData.distance ? object3d.userData.distance : 1.0);
+                let distance = parseFloat(object3d.userData.distance ? object3d.userData.distance : 0.0);
                 let decay = parseFloat(object3d.userData.decay ? object3d.userData.decay : 1.0);
                 let _PointLight = new THREE.PointLight(color, intensity, distance, decay);
                 _PointLight.position.copy(object3d.position);
@@ -236,8 +237,7 @@ class VLabScene extends THREE.Scene {
                                 function onLoad(gltf) {
                                     self.loading = false;
                                     self.loaded = true;
-                                    VLabSceneAssets.sceneLoaderContainer.style.display = 'none';
-                                    VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'none';
+                                    self.handleLoadComplete();
                                     self.processGLTF(gltf).then(() => {
                                         delete self.loadingManager;
                                         resolve(self);
@@ -325,6 +325,23 @@ class VLabScene extends THREE.Scene {
         }
     }
     /**
+     * Handle VLabSceneAssets.
+     * 
+     * @memberof VLabScene
+     */
+    handleLoadComplete() {
+        if (this.vLab.SceneDispatcher.getNotYetLoadedAutoload() == 0) {
+            this.vLab.DOM.container.removeChild(VLabSceneAssets.sceneLoaderContainer);
+            for (let VLabSceneAsset in VLabSceneAssets) {
+                VLabSceneAssets[VLabSceneAsset] = null;
+            }
+        } else {
+            VLabSceneAssets.sceneLoader.classList.toggle('hidden');
+            VLabSceneAssets.sceneAutoLoader.style.display = 'inline';
+            VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'none';
+        }
+    }
+    /**
      * Setup (if not yet exists) and show VLab Scene loader splash element.
      * 
      * @memberof VLabScene
@@ -369,18 +386,19 @@ class VLabScene extends THREE.Scene {
         VLabSceneAssets.sceneLoaderContainer.style.display = 'flex';
 
         if (this.initObj.autoload) {
-            VLabSceneAssets.sceneAutoLoaderProgress.style.width = '0%';
-            VLabSceneAssets.sceneAutoLoaderLabel.innerHTML = '';
-            VLabSceneAssets.sceneLoader.style.display = 'none';
+            VLabSceneAssets.sceneLoader.classList.add('hidden');
             VLabSceneAssets.sceneAutoLoader.style.display = 'inline';
             VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'none';
+            VLabSceneAssets.sceneAutoLoaderProgress.style.width = '0%';
+            VLabSceneAssets.sceneAutoLoaderLabel.innerHTML = '';
         } else {
-            VLabSceneAssets.sceneLoaderHeader.innerHTML = this.nature.title || 'Loading ' + ((this.initObj.initial) ? 'initial ' : 'next ') + 'scene';
-            VLabSceneAssets.sceneLoaderContent.innerHTML = this.nature.description || '';
             VLabSceneAssets.loadingBar.set(0);
             VLabSceneAssets.sceneLoader.style.display = 'inline';
+            VLabSceneAssets.sceneLoader.classList.remove('hidden');
             VLabSceneAssets.sceneAutoLoader.style.display = 'none';
             VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'auto';
+            VLabSceneAssets.sceneLoaderHeader.innerHTML = this.nature.title || 'Loading ' + ((this.initObj.initial) ? 'initial ' : 'next ') + 'scene';
+            VLabSceneAssets.sceneLoaderContent.innerHTML = this.nature.description || '';
         }
     }
 }

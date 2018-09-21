@@ -17,7 +17,9 @@ html, body {
     font-family: 'Roboto Condensed', sans-serif;
 }
 #vLabContainer {
-    background-color: inherit;
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
     z-index: 1;
@@ -25,6 +27,11 @@ html, body {
 #webGLContainer {
     width: 100%;
     height: 100%;
-    float: left;
     z-index: 2;
+}
+/* Classes with transitions */
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 1s, opacity 1s linear;
 }
