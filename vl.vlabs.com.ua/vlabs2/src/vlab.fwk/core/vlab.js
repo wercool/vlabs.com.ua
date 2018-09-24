@@ -108,7 +108,7 @@ class VLab {
     }
     /**
      * Instantiates main THREE.WebGLRenderer if not yet instantiated.
-     * * Appends this.WebGLRenderer.domElement (this.WebGLRendererCanvas) to this.DOM.webGLContainer
+     * * Appends this.WebGLRenderer.domElement (this.WebGLRendererCanvas) to this.DOM.WebGLContainer
      * * Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters
      * * Configures THREE.WebGLRenderer according to this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters
      *   if this.SceneDispatcher.currentVLabScene.nature is defined
@@ -122,13 +122,9 @@ class VLab {
              * @inner
              */
             this.WebGLRendererCanvas = document.createElement('canvas');
-            this.WebGLRendererCanvas.id = 'vLabWebGLRendererCanvas';
+            this.WebGLRendererCanvas.id = 'WebGLRendererCanvas';
             this.WebGLRendererCanvas.classList.add('hidden');
-            this.WebGLRendererCanvas.addEventListener('contextmenu', function(event) {
-                if (event.button == 2) {
-                    event.preventDefault();
-                }
-            });
+            this.EventDispatcher.addWebGLRendererCanvasEventListeners();
             /**
              * THREE.WebGLRenderer
              * https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
@@ -143,7 +139,7 @@ class VLab {
                 this.WebGLRenderer.context.getProgramInfoLog = function () { return '' };
             }
 
-            this.DOM.webGLContainer.appendChild(this.WebGLRenderer.domElement);
+            this.DOM.WebGLContainer.appendChild(this.WebGLRenderer.domElement);
         }
 
         /* Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters */
@@ -177,14 +173,16 @@ class VLab {
             }
         }
         /* Overrides WebGLRenderer size according to this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.resolutionFactor if defined */
-        if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters) {
-            if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.resolutionFactor) {
-                resolutionFactor = this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.resolutionFactor;
+        if (this.SceneDispatcher.currentVLabScene.nature) {
+            if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters) {
+                if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.resolutionFactor) {
+                    resolutionFactor = this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.resolutionFactor;
+                }
             }
         }
         /* Sets WebGLRenderer size according to this.nature.WebGLRendererParameters.resolutionFactor if defined */
-        this.WebGLRenderer.setSize(this.DOM.webGLContainer.clientWidth  * resolutionFactor, 
-                                   this.DOM.webGLContainer.clientHeight * resolutionFactor,
+        this.WebGLRenderer.setSize(this.DOM.WebGLContainer.clientWidth  * resolutionFactor, 
+                                   this.DOM.WebGLContainer.clientHeight * resolutionFactor,
                                    false);
         /* Update this.SceneDispatcher.currentVLabScene.currentCamera aspect according to WebGLRenderer size */
         if (this.SceneDispatcher.currentVLabScene.currentCamera) {
@@ -193,7 +191,7 @@ class VLab {
         }
     }
     /**
-     * Renders SceneDispatcher active VLabScene with THREE.WebGLRenderer.
+     * Renders SceneDispatcher active VLabScene with this.WebGLRenderer type of THREE.WebGLRenderer.
      *
      * @memberof VLab
      */

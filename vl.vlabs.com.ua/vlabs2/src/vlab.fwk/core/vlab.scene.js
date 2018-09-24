@@ -67,6 +67,7 @@ class VLabScene extends THREE.Scene {
         /**
          * This current THREE.PerspectiveCamera instance
          * @inner
+         * @todo setup camera accroding to nature defined / not defined
          */
         this.currentCamera = new THREE.PerspectiveCamera(45, this.vLab.WebGLRendererCanvas.clientWidth / this.vLab.WebGLRendererCanvas.clientHeight, 1, 1000);
         this.currentCamera.position.copy(new THREE.Vector3(0.0, 1.0, -5.0));
@@ -82,24 +83,25 @@ class VLabScene extends THREE.Scene {
      */
     activate() {
         return new Promise((resolve, reject) => {
-            if (!this.loaded) {
-                this.load().then(() => {
-                    this.active = true;
-                    resolve(this);
-                });
-            } else {
+            this.load().then(() => {
+                this.subscribe();
                 this.active = true;
                 resolve(this);
-            }
+            });
         });
     }
     /**
      * VLab Scene deactivator.
-     *
+     * @async
      * @memberof VLabScene
+     * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver
      */
     deactivate() {
-        this.active = false;
+        return new Promise((resolve, reject) => {
+            this.unsubscribe();
+            this.active = false;
+            resolve(this);
+        });
     }
     /**
      * VLab Scene onActivated abstract function.
@@ -108,6 +110,47 @@ class VLabScene extends THREE.Scene {
      * @abstract
      */
     onActivated() { console.warn(this.constructor.name + ' onActivated abstract method not implemented'); }
+    /**
+     * VLab Scene onDeactivated abstract function.
+     *
+     * @memberof VLabScene
+     * @abstract
+     */
+    onDeactivated() { console.warn(this.constructor.name + ' onDeactivated abstract method not implemented'); }
+    /**
+     * VLab Scene default event subscriber, could be override in VLabScene inheritor.
+     *
+     * @memberof VLabScene
+     * @abstract
+     */
+    subscribe() {
+        this.vLab.EventDispatcher.subscribe({
+            subscriber: this,
+            events: {
+                WebGLRendererCanvas: {
+                    mousedown: this.onDefaultEventListener
+                }
+            }
+        });
+    }
+    /**
+     * VLab Scene default event unsubscriber, could be override in VLabScene inheritor.
+     *
+     * @memberof VLabScene
+     * @abstract
+     */
+    unsubscribe() {
+    }
+    /**
+     * VLab Scene default event listener.
+     *
+     * @memberof VLabScene
+     * @abstract
+     * @todo implement default event router
+     */
+    onDefaultEventListener(event) {
+        console.log('onDefaultEventListener', event);
+    }
     /**
      * Conforms material with VLab based on material.userData extra object.
      * 
@@ -179,6 +222,7 @@ class VLabScene extends THREE.Scene {
      * @async
      * @memberof VLabScene
      * @return { Promise }
+     * @todo manage scene cameras
      */
     processGLTF(gltf) {
         this.name = gltf.scene.name;
@@ -195,7 +239,6 @@ class VLabScene extends THREE.Scene {
                     break;
                 }
             });
-            //TODO: manage scene cameras
             self.add(self.currentCamera);
             resolve();
         });
@@ -209,6 +252,9 @@ class VLabScene extends THREE.Scene {
      * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver
      */
     load() {
+        if (this.loaded) {
+            return Promise.resolve(this);
+        }
         let self = this;
         this.loading = true;
         console.log(this.initObj.class.name + ' load initiated');
@@ -325,7 +371,7 @@ class VLabScene extends THREE.Scene {
         }
     }
     /**
-     * Handle VLabSceneAssets.
+     * Handle VLabSceneAssets when load completed.
      * 
      * @memberof VLabScene
      */

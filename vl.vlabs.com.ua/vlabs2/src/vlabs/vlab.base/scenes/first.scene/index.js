@@ -8,6 +8,7 @@ class FirstScene extends VLabScene {
     //     console.log(this.name + ' activated');
     //     console.log(this);
     // }
+
 }
 
 export default FirstScene;

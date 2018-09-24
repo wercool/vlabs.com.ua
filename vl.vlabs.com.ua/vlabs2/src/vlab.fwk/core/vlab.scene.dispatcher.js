@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import VLab from './vlab';
 import VLabScene from "./vlab.scene";
 
 /**
@@ -57,13 +58,14 @@ class VLabSceneDispatcher {
         this.vLab.renderPause = true;
         return new Promise((resolve, reject) => {
             this.scenes.forEach((vLabScene) => {
-                vLabScene.deactivate();
+                vLabScene.deactivate().then((vLabScene) => {
+                    vLabScene.onDeactivated();
+                });
             });
             this.scenes.forEach((vLabScene) => {
                 if (vLabScene.constructor == initObj.class) {
-                    vLabScene.activate().then(() => {
+                    vLabScene.activate().then((vLabScene) => {
                         this.currentVLabScene = vLabScene;
-                        console.log(this.currentVLabScene);
                         this.vLab.setupWebGLRenderer();
                         this.vLab.resizeWebGLRenderer();
                         vLabScene.onActivated();

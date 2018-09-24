@@ -1,4 +1,6 @@
 import * as StringUtils         from '../utils/string.utils';
+import VLab from './vlab';
+
 /**
  * VLab DOM generator.
  * @class
@@ -73,23 +75,23 @@ class VLabDOM {
                 if (ZipLoaderJS) ZipLoaderJS.parentNode.removeChild(ZipLoaderJS);
     
                 /**
-                 * VLab DOM container <div id='vLabContainer'>
-                 * #vLabContainer in /vlab.assets/css/global.css 
+                 * VLab DOM container <div id='VLabContainer'>
+                 * #VLabContainer in /vlab.assets/css/global.css 
                  * @inner
                  */
                 this.container = document.createElement('div');
-                this.container.id = 'vLabContainer';
+                this.container.id = 'VLabContainer';
                 if(document.body != null) {
                     document.body.appendChild(this.container);
                 }
                 /**
-                 * THREE.WebGLRenderer DOM container <div id='webGLContainer'>
-                 * #webGLContainer in /vlab.assets/css/global.css 
+                 * THREE.WebGLRenderer DOM container <div id='WebGLContainer'>
+                 * #WebGLContainer in /vlab.assets/css/global.css 
                  * @inner
                  */
-                this.webGLContainer = document.createElement('div');
-                this.webGLContainer.id = 'webGLContainer';
-                this.container.appendChild(this.webGLContainer);
+                this.WebGLContainer = document.createElement('div');
+                this.WebGLContainer.id = 'WebGLContainer';
+                this.container.appendChild(this.WebGLContainer);
 
                 resolve();
             });
