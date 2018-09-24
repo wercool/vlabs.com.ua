@@ -18,17 +18,17 @@ class VLabEventDispatcher {
 
         this.eventSubscribers = {
             window: {
-                resize:     {},
-                keydown:    {}
+                resize:     [],
+                keydown:    []
             },
             WebGLRendererCanvas: {
-                mousedown:      {},
-                mouseup:        {},
-                mousemove:      {},
-                wheel:          {},
-                touchstart:     {},
-                touchend:       {},
-                touchmove:      {}
+                mousedown:      [],
+                mouseup:        [],
+                mousemove:      [],
+                wheel:          [],
+                touchstart:     [],
+                touchend:       [],
+                touchmove:      []
             }
         };
 
@@ -39,6 +39,7 @@ class VLabEventDispatcher {
      * VLabEventDispatcher event subscription.
      * @memberof VLabEventDispatcher
      * @param {Object} subscrObj                      - Subscription object
+     * @todo subscrObj processing
      */
     subscribe(subscrObj) {
         if (subscrObj['subscriber']) {
@@ -46,15 +47,12 @@ class VLabEventDispatcher {
                 for (let eventGroupName in subscrObj['events']) {
                     for (let eventType in subscrObj['events'][eventGroupName]) {
                         let eventCallBack = subscrObj['events'][eventGroupName][eventType];
-                        this.eventSubscribers[eventGroupName][eventType] = {
-                            callback: eventCallBack,
-                            subscriber: subscrObj['subscriber']
-                        };
+                        // console.log(this.eventSubscribers[eventGroupName][eventType][subscrObj['subscriber']][eventCallBack]);
                     }
                 }
             }
         }
-        console.log(this.eventSubscribers);
+        // console.log(this.eventSubscribers);
     }
     /**
      * VLabEventDispatcher event unsubscription.

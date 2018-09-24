@@ -58,13 +58,13 @@ class BaseVLab extends VLab {
         //     });
         // }, 5000);
 
-        // let self = this;
-        // setTimeout(() => {
-        //     /* Third scene */
-        //     self.SceneDispatcher.activateScene({
-        //         class: ThirdScene
-        //     });
-        // }, 5000);
+        let self = this;
+        setTimeout(() => {
+            /* Third scene */
+            self.SceneDispatcher.activateScene({
+                class: ThirdScene
+            });
+        }, 5000);
 
         console.log(this);
     }
