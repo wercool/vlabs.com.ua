@@ -7,8 +7,15 @@ class FirstScene extends VLabScene {
     // onActivated() {
     //     console.log(this.name + ' activated');
     //     console.log(this);
-    // }
 
+    //     // this.subscribe({
+    //     //     events: {
+    //     //         WebGLRendererCanvas: {
+    //     //             wheel:  this.onDefaultEventListener,
+    //     //         }
+    //     //     }
+    //     // });
+    // }
 }
 
 export default FirstScene;

@@ -1,4 +1,5 @@
 import VLab from './vlab';
+import VLabScene from './vlab.scene';
 
 /**
  * VLab Event Dispatcher.
@@ -15,20 +16,23 @@ class VLabEventDispatcher {
      */
     constructor(vLab) {
         this.vLab = vLab;
-
+        /**
+         * Event subscribers stack object
+         * @inner
+         */
         this.eventSubscribers = {
             window: {
-                resize:     [],
-                keydown:    []
+                resize:     {},
+                keydown:    {}
             },
             WebGLRendererCanvas: {
-                mousedown:      [],
-                mouseup:        [],
-                mousemove:      [],
-                wheel:          [],
-                touchstart:     [],
-                touchend:       [],
-                touchmove:      []
+                mousedown:      {},
+                mouseup:        {},
+                mousemove:      {},
+                wheel:          {},
+                touchstart:     {},
+                touchend:       {},
+                touchmove:      {}
             }
         };
 
@@ -38,29 +42,55 @@ class VLabEventDispatcher {
     /**
      * VLabEventDispatcher event subscription.
      * @memberof VLabEventDispatcher
-     * @param {Object} subscrObj                      - Subscription object
-     * @todo subscrObj processing
+     * @param {Object}      eventSubscrObj                           - Subscription object
+     * @param {Object}      eventSubscrObj.subscriber                - Subscriber object
+     * @param {Object}      eventSubscrObj.events                    - Event groups subscriber subscribing on
      */
-    subscribe(subscrObj) {
-        if (subscrObj['subscriber']) {
-            if (subscrObj['events']) {
-                for (let eventGroupName in subscrObj['events']) {
-                    for (let eventType in subscrObj['events'][eventGroupName]) {
-                        let eventCallBack = subscrObj['events'][eventGroupName][eventType];
-                        // console.log(this.eventSubscribers[eventGroupName][eventType][subscrObj['subscriber']][eventCallBack]);
+    subscribe(eventSubscrObj) {
+        if (eventSubscrObj['subscriber']) {
+            if (eventSubscrObj['events']) {
+                for (let eventGroupName in eventSubscrObj['events']) {
+                    for (let eventType in eventSubscrObj['events'][eventGroupName]) {
+                        let eventCallBack = eventSubscrObj['events'][eventGroupName][eventType];
+                        this.eventSubscribers[eventGroupName][eventType][eventSubscrObj['subscriber'].name] = {
+                            subscriber: eventSubscrObj['subscriber'],
+                            callback:   eventCallBack
+                        }
                     }
                 }
             }
         }
-        // console.log(this.eventSubscribers);
+        console.log(this.eventSubscribers);
     }
     /**
      * VLabEventDispatcher event unsubscription.
      * @memberof VLabEventDispatcher
-     * @param {Object} unSubscrObj                      - Unsubscription object of subscriber
+     * @param {Object}      eventSubscrObj                           - Unsubscription object
+     * @param {Object}      eventSubscrObj.subscriber                - Subscriber object
+     * @param {Object}      eventSubscrObj.events                    - Event groups subscriber unsubscribing
      */
-    unsubscribe(unSubscrObj) {
-        console.log(unSubscrObj);
+    unsubscribe(eventUnSubscrObj) {
+        if (eventUnSubscrObj['subscriber']) {
+            if (eventUnSubscrObj['events']) {
+                for (let eventGroupName in eventUnSubscrObj['events']) {
+                    for (let eventType in eventUnSubscrObj['events'][eventGroupName]) {
+                        delete this.eventSubscribers[eventGroupName][eventType][eventUnSubscrObj['subscriber'].name];
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * VLabEventDispatcher event notifier. Notifes subscribers about event fired
+     * @memberof VLabEventDispatcher
+     * @param {Event} event
+     */
+    notifySubscribers(event) {
+        if (this.eventSubscribers[event.target.id]) {
+            for (let eventSubscriberName in this.eventSubscribers[event.target.id][event.type]) {
+                this.eventSubscribers[event.target.id][event.type][eventSubscriberName].callback.call(this.eventSubscribers[event.target.id][event.type][eventSubscriberName].subscriber, event);
+            }
+        }
     }
     /**
      * VLabEventDispatcher constructor.
@@ -86,27 +116,36 @@ class VLabEventDispatcher {
     /* Window event handlers */
     onWindowResize(event) {
         this.vLab.resizeWebGLRenderer();
+        this.notifySubscribers(event);
     }
     onWindowKeyDown(event) {
+        this.notifySubscribers(event);
     }
     /* Mouse event handlers */
     onWebGLRendererCanvasMouseDown(event) {
+        this.notifySubscribers(event);
     }
     onWebGLRendererCanvasMouseUp(event) {
+        this.notifySubscribers(event);
     }
     onWebGLRendererCanvasMouseMove(event) {
+        this.notifySubscribers(event);
     }
     onWebGLRendererCanvasMouseWheel(event) {
+        this.notifySubscribers(event);
     }
     /* Touch event handlers */
     onWebGLRendererCanvasTouchStart(event) {
         event.preventDefault();
+        this.notifySubscribers(event);
     }
     onWebGLRendererCanvasTouchEnd(event) {
         event.preventDefault();
+        this.notifySubscribers(event);
     }
     onWebGLRendererCanvasTouchMove(event) {
         event.preventDefault();
+        this.notifySubscribers(event);
     }
 }
 export default VLabEventDispatcher;

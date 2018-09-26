@@ -4,6 +4,20 @@
     "_style": "./scenes/first.scene/resources/css/vlab.scene.css",
     "gltfURL": "./scenes/first.scene/resources/3d/first.scene.glb",
     "WebGLRendererParameters": {
+        "resolutionFactor": 1.0,
         "clearColor": "0x849299"
+    },
+    "cameras": {
+        "default": {
+            "type": "PerspectiveCamera",
+            "name": "Camera",
+            "fov": 50,
+            "position": "new THREE.Vector3(0.0, 1.0, -5.0)"
+        }
+    },
+    "controls": {
+        "default": {
+            "type": "orbit"
+        }
     }
 }

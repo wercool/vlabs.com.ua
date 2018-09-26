@@ -4,6 +4,7 @@ import GLTFLoader from 'three-gltf-loader';
 import { ZipLoader } from '../utils/ZipLoader';
 import * as ObjUtils from '../utils/object.utils';
 import VLab from './vlab';
+import VLabSceneManager from './vlab.scene.manager';
 
 var VLabSceneAssets = {
     sceneLoader: null,
@@ -20,7 +21,7 @@ var VLabSceneAssets = {
  * VLab Scene.
  * 
  * @class
- * @classdesc VLab Scene class serves VLab Scene and it's auxilaries.
+ * @classdesc VLabScene class serves VLab Scene world load process, loading nature file, activating, deactivating.
  */
 class VLabScene extends THREE.Scene {
     /**
@@ -34,6 +35,7 @@ class VLabScene extends THREE.Scene {
      * @param {boolean}             [initObj.initial]                 - Initial VLabScene, will be auto activated
      * @param {boolean}             [initObj.autoload]                - Load VLabScene assets immediately after instantiation if no active loading happens
      * @param {boolean}             [initObj.loaded]                  - VLabScene considered loaded
+     * @param {Object}              [initObj.eventSubscrObj]          - Scene specific event subscription object, if not defined this.defaultSubscrObj will be used
      */
     constructor(initObj) {
         super();
@@ -43,6 +45,16 @@ class VLabScene extends THREE.Scene {
          * @inner
          */
         this.vLab = this.initObj.vLab;
+        /**
+         * Set name of VLabScene name to it's contructor name
+         * @inner
+         */
+        this.name = this.constructor.name;
+        /**
+         * VLabSceneManager instance for this VLab Scene
+         * @inner
+         */
+        this.manager = new VLabSceneManager(this);
         /**
          * Set to true while scene file is loading, default false
          * @inner
@@ -65,14 +77,28 @@ class VLabScene extends THREE.Scene {
          */
         this.loadingManager = new THREE.LoadingManager();
         /**
-         * This current THREE.PerspectiveCamera instance
+         * Default event subscription object
          * @inner
-         * @todo setup camera accroding to nature defined / not defined
          */
-        this.currentCamera = new THREE.PerspectiveCamera(45, this.vLab.WebGLRendererCanvas.clientWidth / this.vLab.WebGLRendererCanvas.clientHeight, 1, 1000);
-        this.currentCamera.position.copy(new THREE.Vector3(0.0, 1.0, -5.0));
-        this.currentCamera.lookAt(new THREE.Vector3(0.0, 0.0, 0.0));
-        this.add(this.currentCamera);
+        this.eventSubscrObj = this.initObj.eventSubscrObj !== undefined ? this.initObj.eventSubscrObj : {
+            subscriber: this.manager,
+            events: {
+                WebGLRendererCanvas: {
+                    mousedown:  this.manager.onDefaultEventListener,
+                    mouseup:    this.manager.onDefaultEventListener,
+                    mousemove:  this.manager.onDefaultEventListener,
+                    touchstart: this.manager.onDefaultEventListener,
+                    touchend:   this.manager.onDefaultEventListener,
+                    touchmove:  this.manager.onDefaultEventListener,
+                }
+            }
+        };
+        /**
+         * This current Scene camera; THREE.PerspectiveCamera instance by default
+         * Configured in this.manager.configure()
+         * @inner
+         */
+        this.currentCamera = new THREE.PerspectiveCamera(50, this.vLab.WebGLRendererCanvas.clientWidth / this.vLab.WebGLRendererCanvas.clientHeight, 0.1, 100);
     }
     /**
      * VLab Scene activator.
@@ -85,8 +111,10 @@ class VLabScene extends THREE.Scene {
         return new Promise((resolve, reject) => {
             this.load().then(() => {
                 this.subscribe();
-                this.active = true;
-                resolve(this);
+                this.manager.activate().then(() => {
+                    this.active = true;
+                    resolve(this);
+                });
             });
         });
     }
@@ -109,47 +137,38 @@ class VLabScene extends THREE.Scene {
      * @memberof VLabScene
      * @abstract
      */
-    onActivated() { console.warn(this.constructor.name + ' onActivated abstract method not implemented'); }
+    onActivated() { console.warn(this.name + ' onActivated abstract method not implemented'); }
     /**
      * VLab Scene onDeactivated abstract function.
      *
      * @memberof VLabScene
      * @abstract
      */
-    onDeactivated() { console.warn(this.constructor.name + ' onDeactivated abstract method not implemented'); }
+    onDeactivated() { console.warn(this.name + ' onDeactivated abstract method not implemented'); }
     /**
-     * VLab Scene default event subscriber, could be override in VLabScene inheritor.
+     * VLab Scene default event subscriber, could be overridden in VLabScene inheritor.
      *
      * @memberof VLabScene
      * @abstract
      */
-    subscribe() {
-        this.vLab.EventDispatcher.subscribe({
-            subscriber: this,
-            events: {
-                WebGLRendererCanvas: {
-                    mousedown: this.onDefaultEventListener
+    subscribe(eventSubscrObj) {
+        if (eventSubscrObj !== undefined) {
+            for (let eventGroupName in eventSubscrObj['events']) {
+                for (let eventType in eventSubscrObj['events'][eventGroupName]) {
+                   this.eventSubscrObj['events'][eventGroupName][eventType] = eventSubscrObj['events'][eventGroupName][eventType];
                 }
             }
-        });
+        }
+        this.vLab.EventDispatcher.subscribe(this.eventSubscrObj);
     }
     /**
-     * VLab Scene default event unsubscriber, could be override in VLabScene inheritor.
+     * VLab Scene default event unsubscriber, could be overridden in VLabScene inheritor.
      *
      * @memberof VLabScene
      * @abstract
      */
     unsubscribe() {
-    }
-    /**
-     * VLab Scene default event listener.
-     *
-     * @memberof VLabScene
-     * @abstract
-     * @todo implement default event router
-     */
-    onDefaultEventListener(event) {
-        console.log('onDefaultEventListener', event);
+        this.vLab.EventDispatcher.unsubscribe(this.eventSubscrObj);
     }
     /**
      * Conforms material with VLab based on material.userData extra object.
@@ -267,8 +286,18 @@ class VLabScene extends THREE.Scene {
                  * @property {Object} nature                    - VLab Scene nature loaded from constructor initObj.natureURL
                  * @property {string} nature.title              - VLab Scene title
                  * @property {string} nature.description        - VLab Scene description
+                 * @property {string} [nature.style]            - VLab Scene specific CSS file relative URL
+                 * @property {string} [nature.gltfURL]          - VLab Scene glTF (.gltf|.glb) world in glTF format
                  * @property {Object} [nature.WebGLRendererParameters]                          - THREE.WebGLRenderer VLabScene specific parameters and presets
-                 * @property {Object} [nature.WebGLRendererParameters.resolutionFactor]         - THREE.WebGLRenderer VLabScene specific resolution factor
+                 * @property {number} [nature.WebGLRendererParameters.resolutionFactor]         - THREE.WebGLRenderer VLabScene specific resolution factor
+                 * @property {string} [nature.WebGLRendererParameters.clearColor]               - THREE.WebGLRenderer clear color
+                 * @property {Object} [nature.cameras]                      - Scene cameras object
+                 * @property {Object} [nature.cameras.default]              - Scene default camera configurer object
+                 * @property {string} [nature.cameras.default.type]                 - Scene default camera type {PerspectiveCamera}
+                 * @property {string} [nature.cameras.default.name]                 - Scene default camera name
+                 * @property {number} [nature.cameras.default.fov]                  - Scene default camera field of view
+                 * @property {string} [nature.cameras.default.position]             - Scene default camera position; THREE.Vector3; evalutated
+                 * 
                  */
                 this.nature = nature;
 
@@ -305,7 +334,7 @@ class VLabScene extends THREE.Scene {
         });
     }
     /**
-     * Loads ZIP archived scene file.
+     * Loads ZIP archived scene file if file name ended with .zip, else return non-modified url.
      * 
      * @async
      * @memberof VLabScene

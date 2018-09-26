@@ -184,6 +184,8 @@ class VLab {
         this.WebGLRenderer.setSize(this.DOM.WebGLContainer.clientWidth  * resolutionFactor, 
                                    this.DOM.WebGLContainer.clientHeight * resolutionFactor,
                                    false);
+        this.WebGLRenderer.domElement.style.width  = this.DOM.WebGLContainer.clientWidth  + 'px';
+        this.WebGLRenderer.domElement.style.height = this.DOM.WebGLContainer.clientHeight + 'px';
         /* Update this.SceneDispatcher.currentVLabScene.currentCamera aspect according to WebGLRenderer size */
         if (this.SceneDispatcher.currentVLabScene.currentCamera) {
             this.SceneDispatcher.currentVLabScene.currentCamera.aspect = (this.WebGLRendererCanvas.clientWidth / this.WebGLRendererCanvas.clientHeight);
