@@ -5,18 +5,8 @@ import { ZipLoader } from '../utils/ZipLoader';
 import * as ObjUtils from '../utils/object.utils';
 import VLab from './vlab';
 import VLabSceneManager from './vlab.scene.manager';
+import VLabOrbitControls from '../aux/vlab.orbit.controls';
 
-var VLabSceneAssets = {
-    sceneLoader: null,
-    sceneLoaderContainer: null,
-    sceneLoaderHeader: null,
-    sceneLoaderContent: null,
-    sceneLoadingBarDIV: null,
-    loadingBar: null,
-    sceneAutoLoader: null,
-    sceneAutoLoaderProgress: null,
-    sceneAutoLoaderLabel: null
-};
 /**
  * VLab Scene.
  * 
@@ -94,11 +84,18 @@ class VLabScene extends THREE.Scene {
             }
         };
         /**
-         * This current Scene camera; THREE.PerspectiveCamera instance by default
-         * Configured in this.manager.configure()
+         * This current Scene camera; default is THREE.PerspectiveCamera instance
+         * configured later at {@link VLabSceneManager#configure}
          * @inner
          */
         this.currentCamera = new THREE.PerspectiveCamera(50, this.vLab.WebGLRendererCanvas.clientWidth / this.vLab.WebGLRendererCanvas.clientHeight, 0.1, 100);
+        this.add(this.currentCamera);
+        /**
+         * This current Scene controls; default is {@link VLabOrbitControls} instance
+         * configured later at {@link VLabSceneManager#configure}
+         * @inner
+         */
+        this.currentControls = new VLabOrbitControls(this);
     }
     /**
      * VLab Scene activator.
@@ -171,7 +168,7 @@ class VLabScene extends THREE.Scene {
         this.vLab.EventDispatcher.unsubscribe(this.eventSubscrObj);
     }
     /**
-     * Conforms material with VLab based on material.userData extra object.
+     * Conforms material with VLab using material.userData
      * 
      * @memberof VLabScene
      * @argument {THREE.MeshStandardMaterial} material                - MeshStandardMaterial if glTF is loaded
@@ -203,7 +200,7 @@ class VLabScene extends THREE.Scene {
         }
     }
     /**
-     * Conforms THREE.Mesh with VLab based on material.userData extra object..
+     * Conforms THREE.Mesh with VLab
      * 
      * @memberof VLabScene
      */
@@ -212,26 +209,46 @@ class VLabScene extends THREE.Scene {
             mesh.material = this.conformMaterial(mesh.material);
             mesh.material.userData = {};
         }
+        if (mesh.parent.constructor.name == 'Scene') {
+            this.add(mesh.clone());
+        }
     }
     /**
-     * Conforms THREE.Object3D with VLab based on material.userData extra object..
+     * Conforms THREE.Object3D with VLab based on object3d.userData
      * 
      * @memberof VLabScene
      * @argument {THREE.Object3D} object3d
      * @argument {Object} object3d.userData
-     * @argument {String} object3d.userData.PointLight                - PointLight
+     * PointLight
+     * @argument {String} [object3d.userData.PointLight]                - PointLight
+     * @argument {number} [object3d.userData.color]                     - PointLight color '0x' + color; default '0xffffff'
+     * @argument {number} [object3d.userData.intensity]                 - PointLight intensity; default 1.0
+     * @argument {number} [object3d.userData.distance]                  - PointLight distance; default 0.0
+     * @argument {number} [object3d.userData.decay]                     - PointLight decay; default 1.0
+     * PerspectiveCamera
+     * @argument {number} [object3d.userData.PerspectiveCamera]                     - PerspectiveCamera
+     * @argument {number} [object3d.userData.default]                               - default PerspectiveCamera, this.currentCamera.position will be copied from this object3d position
      */
     conformObject3D(object3d) {
-        if (Object.keys(object3d.userData).length> 0) {
+        if (Object.keys(object3d.userData).length > 0) {
+            /* Lights */
             if (object3d.userData.PointLight) {
                 let color = parseInt(object3d.userData.color ? '0x' + object3d.userData.color : '0xffffff');
                 let intensity = parseFloat(object3d.userData.intensity ? object3d.userData.intensity : 1.0);
                 let distance = parseFloat(object3d.userData.distance ? object3d.userData.distance : 0.0);
                 let decay = parseFloat(object3d.userData.decay ? object3d.userData.decay : 1.0);
                 let _PointLight = new THREE.PointLight(color, intensity, distance, decay);
+                _PointLight.name = object3d.name;
                 _PointLight.position.copy(object3d.position);
                 this.add(_PointLight);
-                this.remove(object3d);
+            }
+            /* Cameras */
+            if (object3d.userData.PerspectiveCamera) {
+                if (object3d.userData.default) {
+                    if (this.nature.cameras.default) {
+                        this.nature.cameras.default['position'] = object3d.position;
+                    }
+                }
             }
         }
     }
@@ -244,11 +261,9 @@ class VLabScene extends THREE.Scene {
      * @todo manage scene cameras
      */
     processGLTF(gltf) {
-        this.name = gltf.scene.name;
-        this.children = gltf.scene.children;
         let self = this;
         return new Promise(function(resolve, reject) {
-            self.traverse((child) => {
+            gltf.scene.traverse((child) => {
                 switch (child.type) {
                     case 'Mesh':
                         self.conformMesh(child);
@@ -258,14 +273,13 @@ class VLabScene extends THREE.Scene {
                     break;
                 }
             });
-            self.add(self.currentCamera);
             resolve();
         });
     }
     /**
      * VLab Scene loader.
      * 
-     * * Loads VLabScene nature from JSON file, specified in VLabScene constructor initObj
+     * * Loads {@link VLabScene#nature} from JSON file, specified in VLabScene constructor initObj
      * @async
      * @memberof VLabScene
      * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver
@@ -297,6 +311,10 @@ class VLabScene extends THREE.Scene {
                  * @property {string} [nature.cameras.default.name]                 - Scene default camera name
                  * @property {number} [nature.cameras.default.fov]                  - Scene default camera field of view
                  * @property {string} [nature.cameras.default.position]             - Scene default camera position; THREE.Vector3; evalutated
+                 * @property {string} [nature.cameras.default.target]               - Scene default camera target (camera looks at target); THREE.Vector3; evalutated
+                 * @property {Object} [nature.controls]                      - Scene controls object
+                 * @property {Object} [nature.controls.default]              - Scene default controls configurer object
+                 * @property {string} [nature.controls.default.type]         - Scene default controls type [orbit {@link VLabOrbitControls}]
                  * 
                  */
                 this.nature = nature;
@@ -315,7 +333,8 @@ class VLabScene extends THREE.Scene {
                                     self.handleLoadComplete();
                                     self.processGLTF(gltf).then(() => {
                                         delete self.loadingManager;
-                                        resolve(self);
+                                        gltf = null;
+                                        resolve();
                                     });
                                 },
                                 function onProgress(xhr) {
@@ -368,10 +387,10 @@ class VLabScene extends THREE.Scene {
      */
     refreshLoaderIndicator(progress) {
         if (this.initObj.autoload) {
-            VLabSceneAssets.sceneAutoLoaderProgress.style.width = progress + '%';
-            VLabSceneAssets.sceneAutoLoaderLabel.innerHTML = 'Autoloading ' + (this.nature.title || '' + ((this.initObj.initial) ? 'initial ' : 'next ') + 'scene') + ' ' + progress + '%';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoaderProgress.style.width = progress + '%';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoaderLabel.innerHTML = 'Autoloading ' + (this.nature.title || '' + ((this.initObj.initial) ? 'initial ' : 'next ') + 'scene') + ' ' + progress + '%';
         } else {
-            VLabSceneAssets.loadingBar.set(parseInt(progress));
+            this.vLab.DOMManager.VLabSceneSharedAssets.loadingBar.set(parseInt(progress));
         }
     }
     /**
@@ -383,7 +402,7 @@ class VLabScene extends THREE.Scene {
      */
     setupStyles() {
         if (this.nature.style) {
-            return this.vLab.DOM.addStyle({
+            return this.vLab.DOMManager.addStyle({
                 id: this.initObj.class.name + 'CSS',
                 href: this.nature.style
             });
@@ -392,7 +411,7 @@ class VLabScene extends THREE.Scene {
             if (defaultSceneCSS) {
                 return Promise.resolve();
             } else {
-                return this.vLab.DOM.addStyle({
+                return this.vLab.DOMManager.addStyle({
                     id: 'sceneCSS',
                     href: '../vlab.assets/css/scene.css'
                 });
@@ -400,20 +419,20 @@ class VLabScene extends THREE.Scene {
         }
     }
     /**
-     * Handle VLabSceneAssets when load completed.
+     * Handle this.vLab.DOMManager.VLabSceneSharedAssets when load completed.
      * 
      * @memberof VLabScene
      */
     handleLoadComplete() {
         if (this.vLab.SceneDispatcher.getNotYetLoadedAutoload() == 0) {
-            this.vLab.DOM.container.removeChild(VLabSceneAssets.sceneLoaderContainer);
-            for (let VLabSceneAsset in VLabSceneAssets) {
-                VLabSceneAssets[VLabSceneAsset] = null;
+            this.vLab.DOMManager.container.removeChild(this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContainer);
+            for (let VLabSceneAsset in this.vLab.DOMManager.VLabSceneSharedAssets) {
+                this.vLab.DOMManager.VLabSceneSharedAssets[VLabSceneAsset] = null;
             }
         } else {
-            VLabSceneAssets.sceneLoader.classList.toggle('hidden');
-            VLabSceneAssets.sceneAutoLoader.style.display = 'inline';
-            VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'none';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoader.classList.toggle('hidden');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoader.style.display = 'inline';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContainer.style.pointerEvents = 'none';
         }
     }
     /**
@@ -422,58 +441,58 @@ class VLabScene extends THREE.Scene {
      * @memberof VLabScene
      */
     showSceneLoader() {
-        if (VLabSceneAssets.sceneLoaderContainer === null) {
-            VLabSceneAssets.sceneLoaderContainer = document.createElement('div');
-            VLabSceneAssets.sceneLoaderContainer.id = 'sceneLoaderContainer';
-            this.vLab.DOM.container.insertAdjacentElement('afterbegin', VLabSceneAssets.sceneLoaderContainer);
-            VLabSceneAssets.sceneLoader = document.createElement('div');
-            VLabSceneAssets.sceneLoader.id = 'sceneLoader';
-            VLabSceneAssets.sceneLoaderContainer.appendChild(VLabSceneAssets.sceneLoader);
-            VLabSceneAssets.sceneLoaderHeader = document.createElement('div');
-            VLabSceneAssets.sceneLoaderHeader.id = 'sceneLoaderHeader';
-            VLabSceneAssets.sceneLoader.appendChild(VLabSceneAssets.sceneLoaderHeader);
+        if (this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContainer === null) {
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContainer = document.createElement('div');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContainer.id = 'sceneLoaderContainer';
+            this.vLab.DOMManager.container.insertAdjacentElement('afterbegin', this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContainer);
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoader = document.createElement('div');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoader.id = 'sceneLoader';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContainer.appendChild(this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoader);
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderHeader = document.createElement('div');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderHeader.id = 'sceneLoaderHeader';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoader.appendChild(this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderHeader);
             let sceneLoaderHeaderHR = document.createElement('div');
             sceneLoaderHeaderHR.id = 'sceneLoaderHeaderHR';
-            VLabSceneAssets.sceneLoader.appendChild(sceneLoaderHeaderHR);
-            VLabSceneAssets.sceneLoaderContent = document.createElement('div');
-            VLabSceneAssets.sceneLoaderContent.id = 'sceneLoaderContent';
-            VLabSceneAssets.sceneLoader.appendChild(VLabSceneAssets.sceneLoaderContent);
-            VLabSceneAssets.sceneLoadingBarDIV = document.createElement('div');
-            VLabSceneAssets.sceneLoadingBarDIV.id = 'sceneLoadingBarDIV';
-            VLabSceneAssets.sceneLoadingBarDIV.setAttribute('class', 'ldBar label-center');
-            VLabSceneAssets.sceneLoadingBarDIV.setAttribute('data-preset', 'circle');
-            VLabSceneAssets.sceneLoadingBarDIV.setAttribute('data-stroke', '#c3d7e4');
-            VLabSceneAssets.sceneLoader.appendChild(VLabSceneAssets.sceneLoadingBarDIV);
-            VLabSceneAssets.loadingBar = new ldBar(VLabSceneAssets.sceneLoadingBarDIV);
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoader.appendChild(sceneLoaderHeaderHR);
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContent = document.createElement('div');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContent.id = 'sceneLoaderContent';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoader.appendChild(this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContent);
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoadingBarDIV = document.createElement('div');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoadingBarDIV.id = 'sceneLoadingBarDIV';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoadingBarDIV.setAttribute('class', 'ldBar label-center');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoadingBarDIV.setAttribute('data-preset', 'circle');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoadingBarDIV.setAttribute('data-stroke', '#c3d7e4');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoader.appendChild(this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoadingBarDIV);
+            this.vLab.DOMManager.VLabSceneSharedAssets.loadingBar = new ldBar(this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoadingBarDIV);
 
             /* Autloader */
-            VLabSceneAssets.sceneAutoLoader = document.createElement('div');
-            VLabSceneAssets.sceneAutoLoader.id = 'sceneAutoLoader';
-            VLabSceneAssets.sceneLoaderContainer.appendChild(VLabSceneAssets.sceneAutoLoader);            
-            VLabSceneAssets.sceneAutoLoaderLabel = document.createElement('div');
-            VLabSceneAssets.sceneAutoLoaderLabel.id = 'sceneAutoLoaderLabel';
-            VLabSceneAssets.sceneAutoLoader.appendChild(VLabSceneAssets.sceneAutoLoaderLabel);
-            VLabSceneAssets.sceneAutoLoaderProgress = document.createElement('div');
-            VLabSceneAssets.sceneAutoLoaderProgress.id = 'sceneAutoLoaderProgress';
-            VLabSceneAssets.sceneAutoLoader.appendChild(VLabSceneAssets.sceneAutoLoaderProgress);
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoader = document.createElement('div');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoader.id = 'sceneAutoLoader';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContainer.appendChild(this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoader);            
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoaderLabel = document.createElement('div');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoaderLabel.id = 'sceneAutoLoaderLabel';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoader.appendChild(this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoaderLabel);
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoaderProgress = document.createElement('div');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoaderProgress.id = 'sceneAutoLoaderProgress';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoader.appendChild(this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoaderProgress);
         }
 
-        VLabSceneAssets.sceneLoaderContainer.style.display = 'flex';
+        this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContainer.style.display = 'flex';
 
         if (this.initObj.autoload) {
-            VLabSceneAssets.sceneLoader.classList.add('hidden');
-            VLabSceneAssets.sceneAutoLoader.style.display = 'inline';
-            VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'none';
-            VLabSceneAssets.sceneAutoLoaderProgress.style.width = '0%';
-            VLabSceneAssets.sceneAutoLoaderLabel.innerHTML = '';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoader.classList.add('hidden');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoader.style.display = 'inline';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContainer.style.pointerEvents = 'none';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoaderProgress.style.width = '0%';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoaderLabel.innerHTML = '';
         } else {
-            VLabSceneAssets.loadingBar.set(0);
-            VLabSceneAssets.sceneLoader.style.display = 'inline';
-            VLabSceneAssets.sceneLoader.classList.remove('hidden');
-            VLabSceneAssets.sceneAutoLoader.style.display = 'none';
-            VLabSceneAssets.sceneLoaderContainer.style.pointerEvents = 'auto';
-            VLabSceneAssets.sceneLoaderHeader.innerHTML = this.nature.title || 'Loading ' + ((this.initObj.initial) ? 'initial ' : 'next ') + 'scene';
-            VLabSceneAssets.sceneLoaderContent.innerHTML = this.nature.description || '';
+            this.vLab.DOMManager.VLabSceneSharedAssets.loadingBar.set(0);
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoader.style.display = 'inline';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoader.classList.remove('hidden');
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneAutoLoader.style.display = 'none';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContainer.style.pointerEvents = 'auto';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderHeader.innerHTML = this.nature.title || 'Loading ' + ((this.initObj.initial) ? 'initial ' : 'next ') + 'scene';
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderContent.innerHTML = this.nature.description || '';
         }
     }
 }

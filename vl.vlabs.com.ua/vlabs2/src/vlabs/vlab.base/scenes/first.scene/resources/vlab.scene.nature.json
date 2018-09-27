@@ -12,7 +12,8 @@
             "type": "PerspectiveCamera",
             "name": "Camera",
             "fov": 50,
-            "position": "new THREE.Vector3(0.0, 1.0, -5.0)"
+            "position": "new THREE.Vector3(0.0, 1.0, -5.0)",
+            "target": "new THREE.Vector3(0.0, 0.5, 0.0)"
         }
     },
     "controls": {

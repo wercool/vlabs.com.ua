@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as HTTPUtils from '../utils/http.utils';
-import VLabDOM from './vlab.dom';
+import VLabDOMManager from './vlab.dom.manager';
 import VLabEventDispatcher from './vlab.event.dispatcher';
 import VLabSceneDispatcher from './vlab.scene.dispatcher';
 
@@ -38,7 +38,7 @@ class VLab {
      * VLab initializer.
      * * Verifies initObj
      * * Loads VLab nature
-     * * Instantiates VLabDOM
+     * * Instantiates VLabDOMManager
      * * Instantiates VLabEventDispatcher
      * * Instantiates VLabSceneDispatcher
      * * Instantiates THREE.WebGLRenderer and configures it
@@ -69,18 +69,18 @@ class VLab {
 
 
                     /**
-                     * VLab DOM manager
+                     * VLab DOMManager manager {@link VLabDOMManager} instance
                      * @inner
                      */
-                    this.DOM = new VLabDOM(this);
-                    this.DOM.initialize().then(() => {
+                    this.DOMManager = new VLabDOMManager(this);
+                    this.DOMManager.initialize().then(() => {
                         /**
-                         * VLab EventDispatcher
+                         * VLab EventDispatcher {@link VLabEventDispatcher} instance
                          * @inner
                          */
                         this.EventDispatcher = new VLabEventDispatcher(this);
                         /**
-                         * VLab SceneDispatcher
+                         * VLab SceneDispatcher {@link VLabSceneDispatcher} instance
                          * @inner
                          */
                         this.SceneDispatcher = new VLabSceneDispatcher(this);
@@ -108,7 +108,7 @@ class VLab {
     }
     /**
      * Instantiates main THREE.WebGLRenderer if not yet instantiated.
-     * * Appends this.WebGLRenderer.domElement (this.WebGLRendererCanvas) to this.DOM.WebGLContainer
+     * * Appends this.WebGLRenderer.domElement (this.WebGLRendererCanvas) to this.DOMManager.WebGLContainer
      * * Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters
      * * Configures THREE.WebGLRenderer according to this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters
      *   if this.SceneDispatcher.currentVLabScene.nature is defined
@@ -127,7 +127,7 @@ class VLab {
             this.EventDispatcher.addWebGLRendererCanvasEventListeners();
             /**
              * THREE.WebGLRenderer
-             * https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
+             * {@link https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer}
              * @inner
              */
             this.WebGLRenderer = new THREE.WebGLRenderer({
@@ -139,7 +139,7 @@ class VLab {
                 this.WebGLRenderer.context.getProgramInfoLog = function () { return '' };
             }
 
-            this.DOM.WebGLContainer.appendChild(this.WebGLRenderer.domElement);
+            this.DOMManager.WebGLContainer.appendChild(this.WebGLRenderer.domElement);
         }
 
         /* Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters */
@@ -181,11 +181,11 @@ class VLab {
             }
         }
         /* Sets WebGLRenderer size according to this.nature.WebGLRendererParameters.resolutionFactor if defined */
-        this.WebGLRenderer.setSize(this.DOM.WebGLContainer.clientWidth  * resolutionFactor, 
-                                   this.DOM.WebGLContainer.clientHeight * resolutionFactor,
+        this.WebGLRenderer.setSize(this.DOMManager.WebGLContainer.clientWidth  * resolutionFactor, 
+                                   this.DOMManager.WebGLContainer.clientHeight * resolutionFactor,
                                    false);
-        this.WebGLRenderer.domElement.style.width  = this.DOM.WebGLContainer.clientWidth  + 'px';
-        this.WebGLRenderer.domElement.style.height = this.DOM.WebGLContainer.clientHeight + 'px';
+        this.WebGLRenderer.domElement.style.width  = this.DOMManager.WebGLContainer.clientWidth  + 'px';
+        this.WebGLRenderer.domElement.style.height = this.DOMManager.WebGLContainer.clientHeight + 'px';
         /* Update this.SceneDispatcher.currentVLabScene.currentCamera aspect according to WebGLRenderer size */
         if (this.SceneDispatcher.currentVLabScene.currentCamera) {
             this.SceneDispatcher.currentVLabScene.currentCamera.aspect = (this.WebGLRendererCanvas.clientWidth / this.WebGLRendererCanvas.clientHeight);
@@ -204,7 +204,6 @@ class VLab {
             requestAnimationFrame(this.render.bind(this));
         } else {
             setTimeout(this.render.bind(this), 250);
-            console.log('render paused...');
         }
     }
 }

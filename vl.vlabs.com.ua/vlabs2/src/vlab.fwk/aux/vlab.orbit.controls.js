@@ -6,40 +6,22 @@ import * as THREE from 'three';
  * @classdesc VLab Orbit Controls class handles VLab camera orbiting, dollying (zooming), and panning.
  * Orbit - left mouse / touch: one finger move
  * Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
- * Pan - right mouse, or arrow keys / touch: three finteg swipe
+ * Pan - right mouse, or arrow keys / touch: three finter swipe
  */
-class VLabOrbitContols {
+class VLabOrbitControls {
     /**
-     * VLabOrbitContols constructor.
+     * VLabOrbitControls constructor.
      * @constructor
-     * @param {VLab} vLab                         - VLab instance
+     * @param {VLabScene} vLabScene                         - VLabScene instance
      */
-    constructor(vLab) {
-        this.vLab = vLab;
-
-        this.vLab.EventDispatcher.subscribe({
-            subscriber: this,
-            events: {
-                WebGLRendererCanvas: {
-                    mousedown:  this.onDefaultEventListener,
-                    mouseup:    this.onDefaultEventListener,
-                    mousemove:  this.onDefaultEventListener,
-                    touchstart: this.onDefaultEventListener,
-                    touchend:   this.onDefaultEventListener,
-                    touchmove:   this.onDefaultEventListener,
-                }
-            }
-        });
+    constructor(vLabScene) {
+        this.vLabScene = vLabScene;
     }
-    /**
-     * VLabOrbitContols default event listener.
-     *
-     * @memberof VLabOrbitContols
-     * @abstract
-     * @todo implement default event router
-     */
-    onDefaultEventListener(event) {
-        console.log('onDefaultEventListener', event);
+    mousedownHandler(event) {
+        console.log('VLabOrbitControls', event.type);
+    }
+    mouseupHandler(event) {
+        console.log('VLabOrbitControls', event.type);
     }
 }
-export default VLabOrbitContols;
+export default VLabOrbitControls;

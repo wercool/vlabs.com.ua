@@ -45,7 +45,7 @@ class BaseVLab extends VLab {
         this.SceneDispatcher.addScene({
             class: ThirdScene,
             natureURL: './scenes/third.scene/resources/vlab.scene.nature.json',
-            autoload: true
+            autoload: false
         });
 
         // let self = this;
@@ -58,13 +58,13 @@ class BaseVLab extends VLab {
         //     });
         // }, 5000);
 
-        let self = this;
-        setTimeout(() => {
-            /* Third scene */
-            self.SceneDispatcher.activateScene({
-                class: ThirdScene
-            });
-        }, 5000);
+        // let self = this;
+        // setTimeout(() => {
+        //     /* Third scene */
+        //     self.SceneDispatcher.activateScene({
+        //         class: ThirdScene
+        //     });
+        // }, 10000);
 
         // setTimeout(() => {
         //     /* First scene */

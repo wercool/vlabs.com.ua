@@ -2,11 +2,11 @@ import * as StringUtils         from '../utils/string.utils';
 import VLab from './vlab';
 
 /**
- * VLab DOM generator.
+ * VLab DOM manager.
  * @class
- * @classdesc VLabDOM class generates HTML DOM assemblies for VLab.
+ * @classdesc VLabDOMManager class generates, manages HTML DOM assemblies for VLab.
  */
-class VLabDOM {
+class VLabDOMManager {
     /**
      * VLabDOM constructor.
      * @constructor
@@ -30,7 +30,7 @@ class VLabDOM {
      * * Prevents from go back in browser and reload of a window with VLab
      * * Loads global style either from VLab nature link or default (/vlab.assets/css/global.css)
      * * Removes default loader div and style link from head
-     * @memberof VLabDOM
+     * @memberof VLabDOMManager
      * @async
      */
     initialize() {
@@ -92,6 +92,21 @@ class VLabDOM {
                 this.WebGLContainer = document.createElement('div');
                 this.WebGLContainer.id = 'WebGLContainer';
                 this.container.appendChild(this.WebGLContainer);
+                /**
+                 * Shared assets for VLabScene
+                 * @inner
+                 */
+                this.VLabSceneSharedAssets = {
+                    sceneLoader: null,
+                    sceneLoaderContainer: null,
+                    sceneLoaderHeader: null,
+                    sceneLoaderContent: null,
+                    sceneLoadingBarDIV: null,
+                    loadingBar: null,
+                    sceneAutoLoader: null,
+                    sceneAutoLoaderProgress: null,
+                    sceneAutoLoaderLabel: null
+                };
 
                 resolve();
             });
@@ -99,7 +114,7 @@ class VLabDOM {
     }
     /**
      * Adds style to <head>
-     * @memberof VLabDOM
+     * @memberof VLabDOMManager
      * @async
      * @param {Object} styleObj                         - Style object
      * @param {string} styleObj.id                      - Style 'id' property
@@ -125,4 +140,4 @@ class VLabDOM {
         });
     }
 }
-export default VLabDOM;
+export default VLabDOMManager;

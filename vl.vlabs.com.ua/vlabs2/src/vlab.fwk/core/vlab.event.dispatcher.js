@@ -60,7 +60,6 @@ class VLabEventDispatcher {
                 }
             }
         }
-        console.log(this.eventSubscribers);
     }
     /**
      * VLabEventDispatcher event unsubscription.

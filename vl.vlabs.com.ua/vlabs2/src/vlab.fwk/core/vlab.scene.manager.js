@@ -26,7 +26,7 @@ class VLabSceneManager {
          */
         this.name = this.vLabScene.name + 'Manager';
         /**
-         * VLabScene initially configured from VLab Scene nature
+         * VLabScene initially configured from {@link VLabScene#nature}
          * @inner
          */
         this.configured = false;
@@ -45,14 +45,14 @@ class VLabSceneManager {
         });
     }
     /**
-     * VLab Scene configurator with VLabScene nature.
+     * Configures VLab Scene with {@link VLabScene#nature}.
      * @async
      * @memberof VLabSceneManager
      */
     configure() {
         return new Promise((resolve, reject) => {
             if (this.configured) resolve();
-
+            /* Configure VLabScene currentCamera from VLabScene nature */
             if (this.vLabScene.nature.cameras) {
                 if (this.vLabScene.nature.cameras.default) {
                     this.vLabScene.currentCamera.name = this.vLabScene.nature.cameras.default.name;
@@ -62,9 +62,22 @@ class VLabSceneManager {
                                 this.vLabScene.currentCamera.fov = this.vLabScene.nature.cameras.default.fov;
                             if (this.vLabScene.nature.cameras.default.position)
                                 this.vLabScene.currentCamera.position.copy(eval(this.vLabScene.nature.cameras.default.position));
+                            if (this.vLabScene.nature.cameras.default.target)
+                                this.vLabScene.currentCamera.lookAt(eval(this.vLabScene.nature.cameras.default.target));
+                            else
+                                this.currentCamera.lookAt(new THREE.Vector3(0.0, this.vLabScene.currentCamera.position.y, 0.0));
                         break;
                     }
-                    this.vLabScene.currentCamera.lookAt(new THREE.Vector3(0.0, this.vLabScene.currentCamera.position.y, 0.0));
+                }
+            }
+            /* Configure VLabScene currentControls from VLabScene nature */
+            if (this.vLabScene.nature.controls) {
+                if (this.vLabScene.nature.controls.default) {
+                    switch (this.vLabScene.nature.controls.default.type) {
+                        case 'orbit':
+
+                        break;
+                    }
                 }
             }
 
@@ -77,10 +90,12 @@ class VLabSceneManager {
      *
      * @memberof VLabSceneManager
      * @abstract
-     * @todo implement default event router
      */
     onDefaultEventListener(event) {
         // console.log('onDefaultEventListener', event);
+        if (this.vLabScene.currentControls[event.type + 'Handler']) {
+            this.vLabScene.currentControls[event.type + 'Handler'].call(this.vLabScene.currentControls, event);
+        }
     }
 }
 export default VLabSceneManager;
