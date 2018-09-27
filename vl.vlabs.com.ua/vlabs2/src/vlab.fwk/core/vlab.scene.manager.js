@@ -40,6 +40,8 @@ class VLabSceneManager {
     activate() {
         return new Promise((resolve, reject) => {
             this.configure().then(() => {
+                this.vLabScene.currentControls.enabled = true;
+                this.vLabScene.currentControls.update();
                 resolve();
             });
         });
@@ -60,12 +62,9 @@ class VLabSceneManager {
                         case 'PerspectiveCamera':
                             if (this.vLabScene.nature.cameras.default.fov)
                                 this.vLabScene.currentCamera.fov = this.vLabScene.nature.cameras.default.fov;
-                            if (this.vLabScene.nature.cameras.default.position)
+                            if (this.vLabScene.nature.cameras.default.position 
+                             && this.vLabScene.currentCamera.position.equals(new THREE.Vector3()))
                                 this.vLabScene.currentCamera.position.copy(eval(this.vLabScene.nature.cameras.default.position));
-                            if (this.vLabScene.nature.cameras.default.target)
-                                this.vLabScene.currentCamera.lookAt(eval(this.vLabScene.nature.cameras.default.target));
-                            else
-                                this.currentCamera.lookAt(new THREE.Vector3(0.0, this.vLabScene.currentCamera.position.y, 0.0));
                         break;
                     }
                 }
@@ -75,7 +74,20 @@ class VLabSceneManager {
                 if (this.vLabScene.nature.controls.default) {
                     switch (this.vLabScene.nature.controls.default.type) {
                         case 'orbit':
-
+                            if (this.vLabScene.currentControls.constructor.name !== 'VLabOrbitControls') {
+                                console.warn('Implement switch VLabScene default controls');
+                            }
+                            if (this.vLabScene.nature.controls.default.target) {
+                                if (this.vLabScene.nature.controls.default.target.vector3) {
+                                    this.vLabScene.currentControls.target = eval(this.vLabScene.nature.controls.default.target);
+                                }
+                                if (this.vLabScene.nature.controls.default.target.object) {
+                                    let sceneTargetObject = this.vLabScene.getObjectByName(this.vLabScene.nature.controls.default.target.object);
+                                    if (sceneTargetObject) {
+                                        this.vLabScene.currentControls.target = sceneTargetObject.position.clone();
+                                    }
+                                }
+                            }
                         break;
                     }
                 }
@@ -92,7 +104,8 @@ class VLabSceneManager {
      * @abstract
      */
     onDefaultEventListener(event) {
-        // console.log('onDefaultEventListener', event);
+        // console.log(event);
+        // Invoke existing VLabControls event handlers
         if (this.vLabScene.currentControls[event.type + 'Handler']) {
             this.vLabScene.currentControls[event.type + 'Handler'].call(this.vLabScene.currentControls, event);
         }

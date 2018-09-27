@@ -96,6 +96,7 @@ class VLabScene extends THREE.Scene {
          * @inner
          */
         this.currentControls = new VLabOrbitControls(this);
+        this.currentControls.target = new THREE.Vector3(0.0, this.currentCamera.position.y, 0.0);
     }
     /**
      * VLab Scene activator.
@@ -179,38 +180,37 @@ class VLabScene extends THREE.Scene {
      * @returns { MeshBasicMaterial | MeshLambertMaterial | MeshPhongMaterial | MeshStandardMaterial }
      */
     conformMaterial(material) {
+        let existingMaterial = undefined;
+        this.traverse((child) => {
+            if (child.material) {
+                if (child.material.name === material.name) {
+                    existingMaterial = child.material;
+                }
+            }
+        });
+        if (existingMaterial !== undefined) return existingMaterial;
+
         if (Object.keys(material.userData).length> 0) {
             if (material.userData.MeshBasicMaterial) {
                 let _MeshBasicMaterial = new THREE.MeshBasicMaterial();
                 _MeshBasicMaterial = ObjUtils.assign(_MeshBasicMaterial, material);
+                _MeshBasicMaterial.type = 'MeshBasicMaterial';
                 return _MeshBasicMaterial;
             }
             if (material.userData.MeshLambertMaterial) {
                 let _MeshLambertMaterial = new THREE.MeshLambertMaterial();
                 _MeshLambertMaterial = ObjUtils.assign(_MeshLambertMaterial, material);
+                _MeshLambertMaterial.type = 'MeshLambertMaterial';
                 return _MeshLambertMaterial;
             }
             if (material.userData.MeshPhongMaterial) {
                 let _MeshPhongMaterial = new THREE.MeshPhongMaterial();
                 _MeshPhongMaterial = ObjUtils.assign(_MeshPhongMaterial, material);
+                _MeshPhongMaterial.type = 'MeshPhongMaterial';
                 return _MeshPhongMaterial;
             }
         } else {
             return material;
-        }
-    }
-    /**
-     * Conforms THREE.Mesh with VLab
-     * 
-     * @memberof VLabScene
-     */
-    conformMesh(mesh) {
-        if (mesh.material) {
-            mesh.material = this.conformMaterial(mesh.material);
-            mesh.material.userData = {};
-        }
-        if (mesh.parent.constructor.name == 'Scene') {
-            this.add(mesh.clone());
         }
     }
     /**
@@ -266,11 +266,18 @@ class VLabScene extends THREE.Scene {
             gltf.scene.traverse((child) => {
                 switch (child.type) {
                     case 'Mesh':
-                        self.conformMesh(child);
+                        if (child.parent.constructor.name == 'Scene') {
+                            self.add(child.clone());
+                        }
                     break;
                     case 'Object3D':
                         self.conformObject3D(child);
                     break;
+                }
+            });
+            self.traverse((child) => {
+                if (child.material) {
+                    child.material = self.conformMaterial(child.material);
                 }
             });
             resolve();
@@ -311,10 +318,12 @@ class VLabScene extends THREE.Scene {
                  * @property {string} [nature.cameras.default.name]                 - Scene default camera name
                  * @property {number} [nature.cameras.default.fov]                  - Scene default camera field of view
                  * @property {string} [nature.cameras.default.position]             - Scene default camera position; THREE.Vector3; evalutated
-                 * @property {string} [nature.cameras.default.target]               - Scene default camera target (camera looks at target); THREE.Vector3; evalutated
-                 * @property {Object} [nature.controls]                      - Scene controls object
-                 * @property {Object} [nature.controls.default]              - Scene default controls configurer object
-                 * @property {string} [nature.controls.default.type]         - Scene default controls type [orbit {@link VLabOrbitControls}]
+                 * @property {Object} [nature.controls]                         - Scene controls object
+                 * @property {Object} [nature.controls.default]                 - Scene default controls configurer object
+                 * @property {string} [nature.controls.default.type]            - Scene default controls type [orbit {@link VLabOrbitControls}]
+                 * @property {Object} [nature.controls.default.target]          - Scene default controls target for [orbit {@link VLabOrbitControls}]
+                 * @property {string} [nature.controls.default.target.vector3]  - Scene default controls target position THREE.Vector3; evaluated
+                 * @property {string} [nature.controls.default.target.object]   - Scene default controls target position will be cloned from VLabScene.getObjectByName(object) position
                  * 
                  */
                 this.nature = nature;
