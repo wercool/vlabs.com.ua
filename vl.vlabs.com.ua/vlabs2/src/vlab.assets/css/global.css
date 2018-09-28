@@ -41,7 +41,12 @@ html, body {
 }
 /* Classes with transitions */
 .hidden {
-  visibility: hidden;
-  opacity: 0;
-  transition: visibility 0s 1s, opacity 1s linear;
+    visibility: hidden;
+    opacity: 0.0;
+    transition: visibility 1s, opacity 1s linear;
+}
+.visible {
+    visibility: visible;
+    opacity: 1.0;
+    transition: visibility 0s, opacity 1s linear;
 }

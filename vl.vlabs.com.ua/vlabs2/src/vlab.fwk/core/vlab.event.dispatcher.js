@@ -85,9 +85,11 @@ class VLabEventDispatcher {
      * @param {Event} event
      */
     notifySubscribers(event) {
-        if (this.eventSubscribers[event.target.id]) {
-            for (let eventSubscriberName in this.eventSubscribers[event.target.id][event.type]) {
-                this.eventSubscribers[event.target.id][event.type][eventSubscriberName].callback.call(this.eventSubscribers[event.target.id][event.type][eventSubscriberName].subscriber, event);
+        if (!this.vLab.renderPaused) {
+            if (this.eventSubscribers[event.target.id]) {
+                for (let eventSubscriberName in this.eventSubscribers[event.target.id][event.type]) {
+                    this.eventSubscribers[event.target.id][event.type][eventSubscriberName].callback.call(this.eventSubscribers[event.target.id][event.type][eventSubscriberName].subscriber, event);
+                }
             }
         }
     }

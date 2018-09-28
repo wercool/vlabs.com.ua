@@ -29,7 +29,7 @@ class VLab {
          * render pause
          * @inner
          */
-        this.renderPause = true;
+        this.renderPaused = true;
 
         this.getNaturePassphrase        = () => { return  '<!--VLAB NATURE PASSPHRASE-->' };
         this.getProdMode                = () => { return  '<!--VLAB PROD MODE-->' == 'true' };
@@ -198,7 +198,7 @@ class VLab {
      * @memberof VLab
      */
     render() {
-        if (!this.renderPause) {
+        if (!this.renderPaused) {
             this.WebGLRenderer.clear();
             this.WebGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
             requestAnimationFrame(this.render.bind(this));

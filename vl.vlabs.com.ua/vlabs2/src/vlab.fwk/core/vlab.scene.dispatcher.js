@@ -55,28 +55,32 @@ class VLabSceneDispatcher {
      */
     activateScene(initObj) {
         let self = this;
-        this.vLab.renderPause = true;
+        this.vLab.renderPaused = true;
         return new Promise((resolve, reject) => {
             this.scenes.forEach((vLabScene) => {
                 vLabScene.deactivate().then((vLabScene) => {
                     vLabScene.onDeactivated();
                 });
             });
-            this.scenes.forEach((vLabScene) => {
+            for (let vLabScene of this.scenes) {
                 if (vLabScene.constructor == initObj.class) {
+                    self.vLab.WebGLRendererCanvas.classList.remove('visible');
+                    self.vLab.WebGLRendererCanvas.classList.add('hidden');
                     vLabScene.activate().then((vLabScene) => {
-                        this.currentVLabScene = vLabScene;
-                        this.vLab.setupWebGLRenderer();
-                        this.vLab.resizeWebGLRenderer();
+                        self.currentVLabScene = vLabScene;
+                        self.vLab.setupWebGLRenderer();
+                        self.vLab.resizeWebGLRenderer();
                         vLabScene.onActivated();
+                        self.vLab.renderPaused = false;
                         setTimeout(() => {
                             self.vLab.WebGLRendererCanvas.classList.remove('hidden');
-                            self.vLab.renderPause = false;
+                            self.vLab.WebGLRendererCanvas.classList.add('visible');
+                            resolve(vLabScene);
                         }, 250);
-                        resolve(vLabScene);
                     });
+                    break;
                 }
-            });
+            }
         });
     }
     /**
@@ -93,7 +97,7 @@ class VLabSceneDispatcher {
         }
         for (let vLabScene of this.scenes) {
             if (vLabScene.initObj.autoload && !vLabScene.loaded && !vLabScene.loading) {
-                vLabScene.load().then(this.autoloadScenes.bind(this));
+                vLabScene.manager.load().then(this.autoloadScenes.bind(this));
                 return;
             }
         }
@@ -102,7 +106,7 @@ class VLabSceneDispatcher {
      * Get number of not yet loaded autoload VLabScene.
      * @memberof VLabSceneDispatcher
      */
-    getNotYetLoadedAutoload() {
+    getNotYetLoadedAutoloads() {
         let notYetAutloaded = 0;
         this.scenes.forEach((vLabScene) => {
             notYetAutloaded += (vLabScene.initObj.autoload && !vLabScene.loaded) ? 1 : 0;

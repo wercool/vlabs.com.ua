@@ -1,10 +1,10 @@
 #sceneLoaderContainer {
-    width: 100%;
-    height: 100%;
     display: none;
     position: absolute;
     left: 0;
     top: 0;
+    width: 100%;
+    height: 100%;
     justify-content: center;
     align-items: center;
     vertical-align: middle;
@@ -15,79 +15,77 @@
     -webkit-tap-highlight-color: transparent;
     z-index: 10000;
 }
+:root {
+    --scene-loader-skewX: -0.0deg;
+}
 #sceneLoader {
-    width: 50%;
+    max-width: 50%;
     min-width: 300px;
     min-height: 200px;
     display: none;
-    background: #326383cc;
-    -ms-transform: skewX(-5deg); /* IE 9 */
-    -webkit-transform: skewX(-5deg); /* Safari */
-    transform: skewX(-5deg);
-    border-top-left-radius: 10px;
-    border-top-right-radius: 30px;
-    border-bottom-right-radius: 10px;
+    background: #326383c5;
+    -ms-transform: skewX(var(--scene-loader-skewX)); /* IE 9 */
+    -webkit-transform: skewX(var(--scene-loader-skewX)); /* Safari */
+    transform: skewX(var(--scene-loader-skewX));
+    /* border-top-left-radius: 5px; */
+    border-top-right-radius: 21px;
+    border-bottom-left-radius: 21px;
+    /* border-bottom-right-radius: 5px; */
     box-shadow: 0px 0px 2px 2px #ffffff25;
+}
+#sceneLoadingBarDIV {
+    position: absolute;
+    top: -3px;
+    right: -22px;
+    font-size: 9pt !important;
+    height: 50px !important;
 }
 #sceneLoaderHeader {
     font-size: 16pt;
     color: #c0d1dd;
     padding-left: 15px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    text-shadow: 2px 2px #ffffff25;
+    padding-top: 6px;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px #ffffff;
 }
 #sceneLoaderHeaderHR {
     border: 0;
     height: 1px;
     background-image: linear-gradient(to right, #5088ad, rgba(255, 255, 255, 0));
-    margin-right: 50px;
+    margin-right: 25px;
 }
 #sceneLoaderContent {
     font-size: 12pt;
     padding-left: 15px;
     padding: 15px;
 }
-#sceneLoadingBarDIV {
-    position: absolute;
-    top: 5px;
-    right: -15px;
-    font-size: 10pt !important;
-    height: 50px !important;
-    -ms-transform: skewX(5deg); /* IE 9 */
-    -webkit-transform: skewX(5deg); /* Safari */
-    transform: skewX(5deg);
-}
 .sceneLoaderUnSkewX {
-    -ms-transform: skewX(5deg); /* IE 9 */
-    -webkit-transform: skewX(5deg); /* Safari */
-    transform: skewX(5deg);
+    -ms-transform: skewX(calc(-1 * var(--scene-loader-skewX))); /* IE 9 */
+    -webkit-transform: skewX(calc(-1 * var(--scene-loader-skewX))); /* Safari */
+    transform: skewX(calc(-1 * var(--scene-loader-skewX)));
 }
 /* Autoloader */
 #sceneAutoLoader {
     position: absolute;
     width: 100%;
-    height: 20px;
+    height: 18px;
     display: none;
     bottom: 0;
     overflow: hidden;
-    background: #143a53cc;
+    background-image: radial-gradient(rgba(255, 255, 255, 0), #182427cc, rgba(255, 255, 255, 0));
     opacity: 0.75;
 }
 #sceneAutoLoaderProgress {
-    position: absolute;
     width: 0%;
     left: 0;
-    height: 20px;
-    background: #0a2130cc;
+    height: 5px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), #9ec3ee);
 }
 #sceneAutoLoaderLabel {
-    position: absolute;
     width: 100%;
-    height: 20px;
     text-align: center;
     font-size: 9pt;
+    padding-top: 1px;
     color: #d5daddcc;
-    padding: 2px;
     z-index: 10001;
 }
