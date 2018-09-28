@@ -175,7 +175,7 @@ class VLabDOMManager {
             this.VLabSceneSharedAssets.sceneLoader.appendChild(this.VLabSceneSharedAssets.sceneLoaderContent);
             this.VLabSceneSharedAssets.sceneLoadingBarDIV = document.createElement('div');
             this.VLabSceneSharedAssets.sceneLoadingBarDIV.id = 'sceneLoadingBarDIV';
-            this.VLabSceneSharedAssets.sceneLoadingBarDIV.setAttribute('class', 'ldBar label-center sceneLoaderUnSkewX');
+            this.VLabSceneSharedAssets.sceneLoadingBarDIV.setAttribute('class', 'ldBar label-center');
             this.VLabSceneSharedAssets.sceneLoadingBarDIV.setAttribute('data-preset', 'circle');
             this.VLabSceneSharedAssets.sceneLoadingBarDIV.setAttribute('data-stroke', '#c3d7e4');
             this.VLabSceneSharedAssets.sceneLoader.appendChild(this.VLabSceneSharedAssets.sceneLoadingBarDIV);
@@ -219,7 +219,7 @@ class VLabDOMManager {
      * @see {@link VLabScene#load}
      */
     refreshSceneLoaderIndicator(vLabScene, progress) {
-        if (vLabScene.initObj.autoload) {
+        if (vLabScene.initObj.autoload && this.vLab.SceneDispatcher.sceneIsBeingActivated != vLabScene) {
             this.VLabSceneSharedAssets.sceneAutoLoaderProgress.style.width = progress + '%';
             this.VLabSceneSharedAssets.sceneAutoLoaderLabel.innerHTML = 'Autoloading ' + (vLabScene.nature.title ? vLabScene.nature.title : 'scene') + ' ' + progress + '%';
         } else {
@@ -239,7 +239,7 @@ class VLabDOMManager {
                 this.VLabSceneSharedAssets[VLabSceneAsset] = null;
             }
         } else {
-            this.VLabSceneSharedAssets.sceneLoader.classList.toggle('hidden');
+            this.VLabSceneSharedAssets.sceneLoader.classList.add('hidden');
             this.VLabSceneSharedAssets.sceneAutoLoader.style.display = 'inline';
             this.VLabSceneSharedAssets.sceneLoaderContainer.style.pointerEvents = 'none';
         }

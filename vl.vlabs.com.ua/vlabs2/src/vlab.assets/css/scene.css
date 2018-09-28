@@ -15,22 +15,17 @@
     -webkit-tap-highlight-color: transparent;
     z-index: 10000;
 }
-:root {
-    --scene-loader-skewX: -0.0deg;
-}
 #sceneLoader {
-    max-width: 50%;
+    position: relative;
+    width: 80%;
+    max-width: 600px;
     min-width: 300px;
+    max-height: 90%;
     min-height: 200px;
     display: none;
     background: #326383c5;
-    -ms-transform: skewX(var(--scene-loader-skewX)); /* IE 9 */
-    -webkit-transform: skewX(var(--scene-loader-skewX)); /* Safari */
-    transform: skewX(var(--scene-loader-skewX));
-    /* border-top-left-radius: 5px; */
     border-top-right-radius: 21px;
     border-bottom-left-radius: 21px;
-    /* border-bottom-right-radius: 5px; */
     box-shadow: 0px 0px 2px 2px #ffffff25;
 }
 #sceneLoadingBarDIV {
@@ -43,7 +38,7 @@
 #sceneLoaderHeader {
     font-size: 16pt;
     color: #c0d1dd;
-    padding-left: 15px;
+    padding-left: 10px;
     padding-top: 6px;
     margin-bottom: 10px;
     text-shadow: 1px 1px #ffffff;
@@ -55,14 +50,12 @@
     margin-right: 25px;
 }
 #sceneLoaderContent {
+    max-height: 450px;
+    overflow-y: auto;
     font-size: 12pt;
-    padding-left: 15px;
-    padding: 15px;
-}
-.sceneLoaderUnSkewX {
-    -ms-transform: skewX(calc(-1 * var(--scene-loader-skewX))); /* IE 9 */
-    -webkit-transform: skewX(calc(-1 * var(--scene-loader-skewX))); /* Safari */
-    transform: skewX(calc(-1 * var(--scene-loader-skewX)));
+    margin: 10px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
 }
 /* Autoloader */
 #sceneAutoLoader {
@@ -72,8 +65,7 @@
     display: none;
     bottom: 0;
     overflow: hidden;
-    background-image: radial-gradient(rgba(255, 255, 255, 0), #182427cc, rgba(255, 255, 255, 0));
-    opacity: 0.75;
+    background-image: linear-gradient(rgba(255, 255, 255, 0), #182427cc);
 }
 #sceneAutoLoaderProgress {
     width: 0%;

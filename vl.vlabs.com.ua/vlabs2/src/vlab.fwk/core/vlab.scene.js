@@ -124,7 +124,7 @@ class VLabScene extends THREE.Scene {
      */
     activate() {
         return new Promise((resolve, reject) => {
-            this.manager.load().then(() => {
+            this.manager.load(true).then(() => {
                 this.manager.configure().then(() => {
                     this.subscribe();
                     this.currentControls.enabled = true;

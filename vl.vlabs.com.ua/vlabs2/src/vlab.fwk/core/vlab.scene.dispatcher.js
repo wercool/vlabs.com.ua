@@ -22,6 +22,11 @@ class VLabSceneDispatcher {
          * @inner
          */
         this.currentVLabScene = new THREE.Scene();
+        /**
+         * VLabScene instance currently is beeing activated
+         * @inner
+         */
+        this.sceneIsBeingActivated = null;
     }
     /**
      * Add VLabScene to VLabSceneDispatcher stack.
@@ -64,7 +69,7 @@ class VLabSceneDispatcher {
             });
             for (let vLabScene of this.scenes) {
                 if (vLabScene.constructor == initObj.class) {
-                    self.vLab.WebGLRendererCanvas.classList.remove('visible');
+                    self.sceneIsBeingActivated = vLabScene;
                     self.vLab.WebGLRendererCanvas.classList.add('hidden');
                     vLabScene.activate().then((vLabScene) => {
                         self.currentVLabScene = vLabScene;
@@ -74,7 +79,7 @@ class VLabSceneDispatcher {
                         self.vLab.renderPaused = false;
                         setTimeout(() => {
                             self.vLab.WebGLRendererCanvas.classList.remove('hidden');
-                            self.vLab.WebGLRendererCanvas.classList.add('visible');
+                            self.sceneIsBeingActivated = null;
                             resolve(vLabScene);
                         }, 250);
                     });

@@ -51,11 +51,12 @@ class VLabSceneManager {
      * * Loads {@link VLabScene#nature} from JSON file, specified in VLabScene constructor initObj
      * @async
      * @memberof VLabSceneManager
+     * @param {boolean} activation                          - VLabScene load initiated from {@link vLabScene#activate}
      * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver
      */
-    load() {
+    load(activation) {
         if (this.vLabScene.loaded) return Promise.resolve(this);
-        if (this.vLabScene.loading) this.vLabScene.initObj.autoload = false;
+        if (this.vLabScene.loading || activation) this.vLabScene.initObj.autoload = false;
         this.vLabScene.loading = true;
         console.log(this.vLabScene.name + ' load initiated');
         let self = this;
