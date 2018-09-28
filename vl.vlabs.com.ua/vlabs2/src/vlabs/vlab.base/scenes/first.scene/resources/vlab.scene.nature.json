@@ -24,7 +24,10 @@
             }
         }
     },
-    "interactables": {
-        
-    }
+    "interactables": [
+        {
+            "name": "Sphere2",
+            "preselecatble": true
+        }
+    ]
 }

@@ -39,13 +39,13 @@ class BaseVLab extends VLab {
         this.SceneDispatcher.addScene({
             class: SecondScene,
             natureURL: './scenes/second.scene/resources/vlab.scene.nature.json',
-            autoload: true
+            autoload: false
         });
         /* Third scene */
         this.SceneDispatcher.addScene({
             class: ThirdScene,
             natureURL: './scenes/third.scene/resources/vlab.scene.nature.json',
-            autoload: true
+            autoload: false
         });
 
 

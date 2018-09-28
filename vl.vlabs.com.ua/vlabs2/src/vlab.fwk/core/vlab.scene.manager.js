@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import VLab from './vlab';
+import VLabSceneInteractable from './vlab.scene.interactable'
 import * as HTTPUtils from '../utils/http.utils';
 import GLTFLoader from 'three-gltf-loader';
 import { ZipLoader } from '../utils/ZipLoader';
@@ -20,12 +21,12 @@ class VLabSceneManager {
      */
     constructor(vLabScene) {
         /**
-         * VLabScene instance
+         * VLabScene instance reference
          * @inner
          */
         this.vLabScene = vLabScene;
         /**
-         * VLab instance
+         * VLab instance reference
          * @inner
          */
         this.vLab = this.vLabScene.vLab;
@@ -44,6 +45,66 @@ class VLabSceneManager {
          * @inner
          */
         this.loadingManager = new THREE.LoadingManager();
+    }
+    /**
+     * Configures VLab Scene with {@link VLabScene#nature}.
+     * @async
+     * @memberof VLabSceneManager
+     */
+    configure() {
+        return new Promise((resolve, reject) => {
+            if (this.configured) resolve();
+            /* Configure VLabScene currentCamera from VLabScene nature */
+            if (this.vLabScene.nature.cameras) {
+                if (this.vLabScene.nature.cameras.default) {
+                    this.vLabScene.currentCamera.name = this.vLabScene.nature.cameras.default.name;
+                    switch (this.vLabScene.nature.cameras.default.type) {
+                        case 'PerspectiveCamera':
+                            if (this.vLabScene.nature.cameras.default.fov)
+                                this.vLabScene.currentCamera.fov = this.vLabScene.nature.cameras.default.fov;
+                            if (this.vLabScene.nature.cameras.default.position 
+                             && this.vLabScene.currentCamera.position.equals(new THREE.Vector3()))
+                                this.vLabScene.currentCamera.position.copy(eval(this.vLabScene.nature.cameras.default.position));
+                        break;
+                    }
+                }
+            }
+            /* Configure VLabScene currentControls from VLabScene nature */
+            if (this.vLabScene.nature.controls) {
+                if (this.vLabScene.nature.controls.default) {
+                    switch (this.vLabScene.nature.controls.default.type) {
+                        case 'orbit':
+                            if (this.vLabScene.currentControls.constructor.name !== 'VLabOrbitControls') {
+                                console.warn('Implement switch VLabScene default controls');
+                            }
+                            if (this.vLabScene.nature.controls.default.target) {
+                                if (this.vLabScene.nature.controls.default.target.vector3) {
+                                    this.vLabScene.currentControls.target = eval(this.vLabScene.nature.controls.default.target);
+                                }
+                                if (this.vLabScene.nature.controls.default.target.object) {
+                                    let sceneTargetObject = this.vLabScene.getObjectByName(this.vLabScene.nature.controls.default.target.object);
+                                    if (sceneTargetObject) {
+                                        this.vLabScene.currentControls.target = sceneTargetObject.position.clone();
+                                    }
+                                }
+                            }
+                        break;
+                    }
+                }
+            }
+            /* Configure VLabScene interactables from VLabScene nature */
+            if (this.vLabScene.nature.interactables) {
+                this.vLabScene.nature.interactables.forEach(interactableNatureObj => {
+                    this.vLabScene.interactables[interactableNatureObj.name] = new VLabSceneInteractable({
+                        vLabScene: this.vLabScene,
+                        interactable: interactableNatureObj
+                    });
+                });
+            }
+
+            this.configured = true;
+            resolve();
+        });
     }
     /**
      * VLab Scene loader.
@@ -246,57 +307,6 @@ class VLabSceneManager {
         } else {
             return material;
         }
-    }
-    /**
-     * Configures VLab Scene with {@link VLabScene#nature}.
-     * @async
-     * @memberof VLabSceneManager
-     */
-    configure() {
-        return new Promise((resolve, reject) => {
-            if (this.configured) resolve();
-            /* Configure VLabScene currentCamera from VLabScene nature */
-            if (this.vLabScene.nature.cameras) {
-                if (this.vLabScene.nature.cameras.default) {
-                    this.vLabScene.currentCamera.name = this.vLabScene.nature.cameras.default.name;
-                    switch (this.vLabScene.nature.cameras.default.type) {
-                        case 'PerspectiveCamera':
-                            if (this.vLabScene.nature.cameras.default.fov)
-                                this.vLabScene.currentCamera.fov = this.vLabScene.nature.cameras.default.fov;
-                            if (this.vLabScene.nature.cameras.default.position 
-                             && this.vLabScene.currentCamera.position.equals(new THREE.Vector3()))
-                                this.vLabScene.currentCamera.position.copy(eval(this.vLabScene.nature.cameras.default.position));
-                        break;
-                    }
-                }
-            }
-            /* Configure VLabScene currentControls from VLabScene nature */
-            if (this.vLabScene.nature.controls) {
-                if (this.vLabScene.nature.controls.default) {
-                    switch (this.vLabScene.nature.controls.default.type) {
-                        case 'orbit':
-                            if (this.vLabScene.currentControls.constructor.name !== 'VLabOrbitControls') {
-                                console.warn('Implement switch VLabScene default controls');
-                            }
-                            if (this.vLabScene.nature.controls.default.target) {
-                                if (this.vLabScene.nature.controls.default.target.vector3) {
-                                    this.vLabScene.currentControls.target = eval(this.vLabScene.nature.controls.default.target);
-                                }
-                                if (this.vLabScene.nature.controls.default.target.object) {
-                                    let sceneTargetObject = this.vLabScene.getObjectByName(this.vLabScene.nature.controls.default.target.object);
-                                    if (sceneTargetObject) {
-                                        this.vLabScene.currentControls.target = sceneTargetObject.position.clone();
-                                    }
-                                }
-                            }
-                        break;
-                    }
-                }
-            }
-
-            this.configured = true;
-            resolve();
-        });
     }
     /**
      * Setup VLab Scene HTML CSS styles accordingly to VLabScene nature.

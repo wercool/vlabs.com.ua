@@ -193,7 +193,7 @@ class VLab {
         }
     }
     /**
-     * Renders SceneDispatcher active VLabScene with this.WebGLRenderer type of THREE.WebGLRenderer.
+     * Renders SceneDispatcher current VLabScene with this.WebGLRenderer type of THREE.WebGLRenderer.
      *
      * @memberof VLab
      */

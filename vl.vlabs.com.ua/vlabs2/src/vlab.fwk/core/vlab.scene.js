@@ -84,7 +84,7 @@ class VLabScene extends THREE.Scene {
          */
         this.active = false;
         /**
-         * Default event subscription object
+         * Default event subscription object; {@link VLabEventDispatcher#eventSubscribers}
          * @inner
          */
         this.eventSubscrObj = this.initObj.eventSubscrObj !== undefined ? this.initObj.eventSubscrObj : {
@@ -109,11 +109,37 @@ class VLabScene extends THREE.Scene {
         this.add(this.currentCamera);
         /**
          * This current Scene controls; default is {@link VLabOrbitControls} instance
-         * configured later at {@link VLabSceneManager#configure}
+         * could be configured later at {@link VLabSceneManager#configure} from VLabScene nature
          * @inner
+         * @implements {VLabControls}
          */
         this.currentControls = new VLabOrbitControls(this);
         this.currentControls.target = new THREE.Vector3(0.0, this.currentCamera.position.y, 0.0);
+        /**
+         * VLabScene objects able to be interacted with
+         * @inner
+         * @property {string}                sceneObjectName              - VLabScene interactable object name
+         * @property {VLabSceneInteractable} vLabSceneInteractable        - Instance of VLabSceneInteractable tied to VLabScene object (inheritor of THREE.Object3D taken from VLabScene by sceneObjectName); indentified as interactables[sceneObjectName]
+         */
+        this.interactables = {};
+        /**
+         * Current WebGLRendererCanvas mouse / touch coordinates; set from {@link VLabEventDispatcher}
+         * @inner
+         * @type {THREE.Vector2}
+         */
+        this.eventCoords = new THREE.Vector2();
+        /**
+         * Checks intersections with this.interactables
+         * @inner
+         * @type {THREE.Raycaster}
+         */
+        this.interactablesRaycaster = new THREE.Raycaster();
+        /**
+         * Conditional partial stack of this.interactables {@link VLabSceneInteractable} which have to be checked for intersection in this.interactablesRaycaster
+         * @inner
+         * @type {Array}
+         */
+        this.intersectableInteractables = [];
     }
     /**
      * VLab Scene activator.
@@ -188,17 +214,47 @@ class VLabScene extends THREE.Scene {
         this.vLab.EventDispatcher.unsubscribe(this.eventSubscrObj);
     }
     /**
-     * VLab Scene default event listener.
+     * VLab Scene default event handler / router.
      *
      * @memberof VLabSceneManager
      * @abstract
      */
     onDefaultEventHandler(event) {
         // console.log(event);
-        // Invoke existing VLabControls event handlers
+        this.dispatchCurrentControlsEventHandlers(event);
+        this.intersectableInteractables = [];
+        this.dispatchInteractablesEventHandlers(event);
+        this.interactablesRaycasterIntersect();
+    }
+    /**
+     * VLab Scene currentControls event-driven invocation.
+     * Dispatch existing VLabControls onDefaultEventHandler
+     * @memberof VLabSceneManager
+     * @abstract
+     */
+    dispatchCurrentControlsEventHandlers(event) {
         if (this.currentControls[event.type + 'Handler']) {
             this.currentControls[event.type + 'Handler'].call(this.currentControls, event);
         }
+    }
+    /**
+     * VLab Scene interactables event-driven invocation
+     * Invokes existing interactables onDefaultEventHandler
+     * @memberof VLabSceneManager
+     * @abstract
+     */
+    dispatchInteractablesEventHandlers(event) {
+        for (let interactableName in this.interactables) {
+            this.interactables[interactableName].onDefaultEventHandler.call(this.interactables[interactableName], event);
+        }
+    }
+    /**
+     * Intersect intersectableInteractables with interactablesRaycaster
+     * @memberof VLabSceneManager
+     * @abstract
+     */
+    interactablesRaycasterIntersect() {
+        console.log(this.intersectableInteractables);
     }
 }
 export default VLabScene;

@@ -124,12 +124,15 @@ class VLabEventDispatcher {
     }
     /* Mouse event handlers */
     onWebGLRendererCanvasMouseDown(event) {
+        this.vLab.SceneDispatcher.currentVLabScene.eventCoords.set(event.x, event.y);
         this.notifySubscribers(event);
     }
     onWebGLRendererCanvasMouseUp(event) {
+        this.vLab.SceneDispatcher.currentVLabScene.eventCoords.set(event.x, event.y);
         this.notifySubscribers(event);
     }
     onWebGLRendererCanvasMouseMove(event) {
+        this.vLab.SceneDispatcher.currentVLabScene.eventCoords.set(event.x, event.y);
         this.notifySubscribers(event);
     }
     onWebGLRendererCanvasMouseWheel(event) {
@@ -137,6 +140,7 @@ class VLabEventDispatcher {
     }
     /* Touch event handlers */
     onWebGLRendererCanvasTouchStart(event) {
+        this.vLab.SceneDispatcher.currentVLabScene.eventCoords.set(event.touches[0].clientX, event.touches[0].clientY);
         event.preventDefault();
         this.notifySubscribers(event);
     }
@@ -145,6 +149,7 @@ class VLabEventDispatcher {
         this.notifySubscribers(event);
     }
     onWebGLRendererCanvasTouchMove(event) {
+        this.vLab.SceneDispatcher.currentVLabScene.eventCoords.set(event.touches[0].clientX, event.touches[0].clientY);
         event.preventDefault();
         this.notifySubscribers(event);
     }
