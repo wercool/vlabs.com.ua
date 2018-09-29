@@ -21,17 +21,23 @@ class VLab {
         this.initObj = initObj;
         /**
          * THREE.Clock
-         * @inner
+         * @public
          */
         this.clock = new THREE.Clock();
-
         /**
          * render pause
-         * @inner
+         * @public
          */
         this.renderPaused = true;
-
+        /**
+         * VLAB NATURE PASSPHRASE @type {string}
+         * @public
+         */
         this.getNaturePassphrase        = () => { return  '<!--VLAB NATURE PASSPHRASE-->' };
+        /**
+         * Development of production mode @type {boolean}
+         * @public
+         */
         this.getProdMode                = () => { return  '<!--VLAB PROD MODE-->' == 'true' };
     }
     /**
@@ -56,7 +62,7 @@ class VLab {
                 .then((nature) => {
                     /**
                      * VLab nature
-                     * @inner
+                     * @public
                      * @property {Object} nature                                                    - VLab nature from JSON file from constructor initObj.natureURL
                      * @property {string} nature.name                                               - VLab name
                      * @property {Object} [nature.styles]                                           - VLab CSS styles
@@ -70,18 +76,18 @@ class VLab {
 
                     /**
                      * VLab DOMManager manager {@link VLabDOMManager} instance
-                     * @inner
+                     * @public
                      */
                     this.DOMManager = new VLabDOMManager(this);
                     this.DOMManager.initialize().then(() => {
                         /**
                          * VLab EventDispatcher {@link VLabEventDispatcher} instance
-                         * @inner
+                         * @public
                          */
                         this.EventDispatcher = new VLabEventDispatcher(this);
                         /**
                          * VLab SceneDispatcher {@link VLabSceneDispatcher} instance
-                         * @inner
+                         * @public
                          */
                         this.SceneDispatcher = new VLabSceneDispatcher(this);
                         /**
@@ -119,7 +125,7 @@ class VLab {
         if (this.WebGLRenderer === undefined) {
             /**
              * HTMLCanvasElement to render current VLabScene
-             * @inner
+             * @public
              */
             this.WebGLRendererCanvas = document.createElement('canvas');
             this.WebGLRendererCanvas.id = 'WebGLRendererCanvas';
@@ -128,7 +134,7 @@ class VLab {
             /**
              * THREE.WebGLRenderer
              * {@link https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer}
-             * @inner
+             * @public
              */
             this.WebGLRenderer = new THREE.WebGLRenderer({
                 canvas: this.WebGLRendererCanvas

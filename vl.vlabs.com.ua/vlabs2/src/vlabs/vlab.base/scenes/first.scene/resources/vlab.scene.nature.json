@@ -28,6 +28,10 @@
         {
             "name": "Sphere2",
             "preselecatble": true
+        },
+        {
+            "name": "Suzanne",
+            "preselecatble": true
         }
     ]
 }

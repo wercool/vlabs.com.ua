@@ -18,7 +18,7 @@ class VLabEventDispatcher {
         this.vLab = vLab;
         /**
          * Event subscribers stack object
-         * @inner
+         * @public
          */
         this.eventSubscribers = {
             window: {

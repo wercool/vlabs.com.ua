@@ -15,12 +15,12 @@ class VLabDOMManager {
     constructor(vLab) {
         /**
          * VLab instance reference
-         * @inner
+         * @public
          */
         this.vLab = vLab;
         /**
          * VLab DOM CSS styles
-         * @inner
+         * @public
          */
         this.styles = {};
     }
@@ -79,7 +79,7 @@ class VLabDOMManager {
                  * VLab DOM container <div id='VLabContainer'>
                  * #VLabContainer in /vlab.assets/css/global.css 
                  * 
-                 * @inner
+                 * @public
                  */
                 this.container = document.createElement('div');
                 this.container.id = 'VLabContainer';
@@ -89,14 +89,14 @@ class VLabDOMManager {
                 /**
                  * THREE.WebGLRenderer DOM container <div id='WebGLContainer'>
                  * #WebGLContainer in /vlab.assets/css/global.css 
-                 * @inner
+                 * @public
                  */
                 this.WebGLContainer = document.createElement('div');
                 this.WebGLContainer.id = 'WebGLContainer';
                 this.container.appendChild(this.WebGLContainer);
                 /**
                  * Shared assets for VLabScene
-                 * @inner
+                 * @public
                  */
                 this.VLabSceneSharedAssets = {
                     sceneLoader: null,

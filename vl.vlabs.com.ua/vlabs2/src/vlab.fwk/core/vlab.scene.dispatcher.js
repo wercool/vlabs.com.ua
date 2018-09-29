@@ -19,12 +19,12 @@ class VLabSceneDispatcher {
         this.scenes = [];
         /**
          * This current VLabScene
-         * @inner
+         * @public
          */
         this.currentVLabScene = new THREE.Scene();
         /**
          * VLabScene instance currently is beeing activated
-         * @inner
+         * @public
          */
         this.sceneIsBeingActivated = null;
     }

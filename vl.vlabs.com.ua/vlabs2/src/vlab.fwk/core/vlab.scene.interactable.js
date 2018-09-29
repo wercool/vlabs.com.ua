@@ -21,12 +21,12 @@ class VLabSceneInteractable {
     constructor(initObj) {
         /**
          * VLabScene instance reference
-         * @inner
+         * @public
          */
         this.vLabScene = undefined;
         /**
          * VLabScene interactable object reference, retrieved as this.vLabScene.getObjectByName(initObj.interactable.name)
-         * @inner
+         * @public
          */
         this.vLabSceneObject = undefined;
 

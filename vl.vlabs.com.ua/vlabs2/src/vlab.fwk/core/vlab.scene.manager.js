@@ -22,27 +22,27 @@ class VLabSceneManager {
     constructor(vLabScene) {
         /**
          * VLabScene instance reference
-         * @inner
+         * @public
          */
         this.vLabScene = vLabScene;
         /**
          * VLab instance reference
-         * @inner
+         * @public
          */
         this.vLab = this.vLabScene.vLab;
         /**
          * VLabSceneManager instance name
-         * @inner
+         * @public
          */
         this.name = this.vLabScene.name + 'Manager';
         /**
          * VLabScene initially configured from {@link VLabScene#nature}
-         * @inner
+         * @public
          */
         this.configured = false;
         /**
          * THREE.LoadingManager instance
-         * @inner
+         * @public
          */
         this.loadingManager = new THREE.LoadingManager();
     }
