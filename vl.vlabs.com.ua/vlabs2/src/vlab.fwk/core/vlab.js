@@ -208,6 +208,10 @@ class VLab {
             this.WebGLRenderer.clear();
             this.WebGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
             requestAnimationFrame(this.render.bind(this));
+            this.EventDispatcher.notifySubscribers({
+                type: 'rendered',
+                target: this.WebGLRendererCanvas
+            });
         } else {
             setTimeout(this.render.bind(this), 250);
         }

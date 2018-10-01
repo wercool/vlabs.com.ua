@@ -32,7 +32,8 @@ class VLabEventDispatcher {
                 wheel:          {},
                 touchstart:     {},
                 touchend:       {},
-                touchmove:      {}
+                touchmove:      {},
+                rendered:       {}
             }
         };
 

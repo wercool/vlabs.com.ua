@@ -97,6 +97,7 @@ class VLabScene extends THREE.Scene {
                     touchstart: this.onDefaultEventHandler,
                     touchend:   this.onDefaultEventHandler,
                     touchmove:  this.onDefaultEventHandler,
+                    rendered:   this.onDefaultEventHandler,
                 }
             }
         };
@@ -129,6 +130,12 @@ class VLabScene extends THREE.Scene {
          */
         this.eventCoords = new THREE.Vector2();
         /**
+         * 2D coordinates of the mouse / touch, in normalized device coordinates (NDC)---X and Y components should be between -1 and 1.; see {@link https://threejs.org/docs/index.html#api/en/core/Raycaster.setFromCamera}
+         * @public
+         * @type {THREE.Vector2}
+         */
+        this.eventCoordsNormalized = new THREE.Vector2();
+        /**
          * Checks intersections with this.interactables
          * @public
          * @type {THREE.Raycaster}
@@ -140,6 +147,12 @@ class VLabScene extends THREE.Scene {
          * @type {Array}
          */
         this.intersectableInteractables = [];
+        /**
+         * Conditional partial stack of this.interactables {@link VLabSceneInteractable} which have been intersected with this.interactablesRaycaster
+         * @public
+         * @type {Array}
+         */
+        this.intersectedInteractables = [];
     }
     /**
      * VLab Scene activator.
@@ -222,10 +235,9 @@ class VLabScene extends THREE.Scene {
      */
     onDefaultEventHandler(event) {
         // console.log(event);
-        this.dispatchCurrentControlsEventHandlers(event);
-        this.intersectableInteractables = [];
-        this.dispatchInteractablesEventHandlers(event);
-        this.intersectInteractablesWithInteractablesRaycaster();
+        this.dispatchCurrentControlsDefaultEventHandler(event);
+        this.processInteractables(event);
+        this.dispatchInteractablesDefaulEventHandlers(event);
     }
     /**
      * VLab Scene currentControls event-driven invocation.
@@ -233,10 +245,8 @@ class VLabScene extends THREE.Scene {
      * @memberof VLabScene
      * @abstract
      */
-    dispatchCurrentControlsEventHandlers(event) {
-        if (this.currentControls[event.type + 'Handler']) {
-            this.currentControls[event.type + 'Handler'].call(this.currentControls, event);
-        }
+    dispatchCurrentControlsDefaultEventHandler(event) {
+        this.currentControls.onDefaultEventHandler(event);
     }
     /**
      * VLab Scene interactables event-driven invocation
@@ -244,18 +254,66 @@ class VLabScene extends THREE.Scene {
      * @memberof VLabScene
      * @abstract
      */
-    dispatchInteractablesEventHandlers(event) {
+    dispatchInteractablesDefaulEventHandlers(event) {
         for (let interactableName in this.interactables) {
             this.interactables[interactableName].onDefaultEventHandler.call(this.interactables[interactableName], event);
         }
     }
     /**
+     * VLab Scene interactables processing
+     * VLab Scene interactables event-driven invocation, invokes existing interactables onDefaultEventHandler
+     * Peirce each of this.intersectableInteractables with this.interactablesRaycaster in {@link VLabScene#intersectInteractablesWithInteractablesRaycaster}; only first pierced Interactable taking into processing by default
+     * Dispatch {@link VLabSceneInteractable#intersectedHandler} if exists and if Interactable has been pierced with this.interactablesRaycaster
+     * @memberof VLabScene
+     * @abstract
+     */
+    processInteractables(event) {
+        if(event.type !== 'rendered') {
+            this.intersectableInteractables = [];
+            for (let interactableName in this.interactables) {
+                if (this.interactables[interactableName].intersectable) {
+                    this.intersectableInteractables.push(this.interactables[interactableName].vLabSceneObject);
+                }
+            }
+
+            this.intersectedInteractables = [];
+            this.intersectInteractablesWithInteractablesRaycaster();
+
+            let intersectedInteractable = null;
+            if (this.intersectedInteractables.length > 0) {
+                intersectedInteractable = this.interactables[this.intersectedInteractables[0].object.name];
+                intersectedInteractable.intersectionHandler({
+                    original: event,
+                    intersection: this.intersectedInteractables[0]
+                });
+            }
+            for (let interactableName in this.interactables) {
+                if (this.interactables[interactableName] !== intersectedInteractable) {
+                    this.interactables[interactableName].nointersectionHandler({
+                        original: event
+                    });
+                }
+            }
+        }
+    }
+    /**
      * Pierce intersectableInteractables with interactablesRaycaster
+     * Fill this.intersectedInteractables with THREE.Scene objects that have been pierced by this.interactablesRaycaster casted from this.eventCoordsNormalized
      * @memberof VLabScene
      * @abstract
      */
     intersectInteractablesWithInteractablesRaycaster() {
-        console.log(this.intersectableInteractables);
+        // console.log(this.intersectableInteractables);
+        if (this.intersectableInteractables.length > 0) {
+            /**
+             * VLabOrbitControls
+             */
+            if (this.currentControls.constructor == VLabOrbitControls) {
+                this.eventCoordsNormalized.set((this.eventCoords.x / this.vLab.WebGLRendererCanvas.clientWidth) * 2 - 1, 1 - (this.eventCoords.y / this.vLab.WebGLRendererCanvas.clientHeight) * 2);
+            }
+            this.interactablesRaycaster.setFromCamera(this.eventCoordsNormalized, this.currentCamera);
+            this.intersectedInteractables = this.interactablesRaycaster.intersectObjects(this.intersectableInteractables);
+        }
     }
 }
 export default VLabScene;

@@ -27,10 +27,12 @@
     "interactables": [
         {
             "name": "Sphere2",
+            "intersectable": true,
             "preselecatble": true
         },
         {
             "name": "Suzanne",
+            "intersectable": false,
             "preselecatble": true
         }
     ]

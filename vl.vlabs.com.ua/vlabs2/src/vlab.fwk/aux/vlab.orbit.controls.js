@@ -52,6 +52,11 @@ class VLabOrbitControls extends VLabControls {
         this.spherical = new THREE.Spherical();
         this.sphericalDelta = new THREE.Spherical();
     }
+    /**
+     * VLabControls update abstract function implementation.
+     *
+     * @memberof VLabOrbitControls {@link VLabControls#update}
+     */
     update() {
         var offset = new THREE.Vector3();
         // camera.up is the orbit axis
