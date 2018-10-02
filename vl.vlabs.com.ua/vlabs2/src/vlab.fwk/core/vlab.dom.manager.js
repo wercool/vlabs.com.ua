@@ -1,4 +1,6 @@
 import * as StringUtils         from '../utils/string.utils';
+import Stats from 'stats-js';
+import RendererStats from 'three-webgl-stats';
 import VLab from './vlab';
 
 /**
@@ -109,6 +111,30 @@ class VLabDOMManager {
                     sceneAutoLoaderProgress: null,
                     sceneAutoLoaderLabel: null
                 };
+                /**
+                 * Setup simple statistics
+                 */
+                if (this.vLab.nature.simpleStats !== undefined) {
+                    this.simpleStats = new Stats();
+                    this.simpleStats.domElement.id = 'simpleStats';
+                    this.simpleStats.domElement.style.position = 'absolute';
+                    this.simpleStats.domElement.style.left = '0px';
+                    this.simpleStats.domElement.style.top = '0px';
+                    this.container.appendChild(this.simpleStats.domElement);
+                    if (this.vLab.nature.simpleStats === false) this.simpleStats.domElement.style.display = 'none';
+                }
+                /**
+                 * Setup WebGLRenderer statistics
+                 */
+                if (this.vLab.nature.rendererStats !== undefined) {
+                    this.rendererStats = new RendererStats();
+                    this.rendererStats.domElement.style.position = 'absolute';
+                    this.rendererStats.domElement.style.top = '0px';
+                    this.rendererStats.domElement.style.right = '0px';
+                    this.container.appendChild(this.rendererStats.domElement);
+                    if (this.vLab.nature.rendererStats === false) this.rendererStats.domElement.style.display = 'none';
+                }
+
 
                 resolve();
             });

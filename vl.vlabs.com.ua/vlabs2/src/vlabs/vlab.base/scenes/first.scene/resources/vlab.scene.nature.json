@@ -28,12 +28,19 @@
         {
             "name": "Sphere2",
             "intersectable": true,
-            "preselecatble": true
+            "preselectable": true,
+            "selectable": true
         },
         {
             "name": "Suzanne",
             "intersectable": false,
-            "preselecatble": true
+            "preselectable": true,
+            "selectable": true
+        },
+        {
+            "name": "BigSphere",
+            "intersectable": true,
+            "preselectable": true
         }
     ]
 }

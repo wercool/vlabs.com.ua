@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import VLab from './vlab';
 import VLabSceneManager from './vlab.scene.manager';
+import VLabSceneInteractable from './vlab.scene.interactable';
 import VLabOrbitControls from '../aux/vlab.orbit.controls';
 
 /**
@@ -49,6 +50,7 @@ class VLabScene extends THREE.Scene {
          * @property {Object} [nature.controls.default.target]          - Scene default controls target for [orbit {@link VLabOrbitControls}]
          * @property {string} [nature.controls.default.target.vector3]  - Scene default controls target position THREE.Vector3; evaluated
          * @property {string} [nature.controls.default.target.object]   - Scene default controls target position will be cloned from VLabScene.getObjectByName(object) position
+         * @property {Array}  [nature.interactables]                    - Scene Interactable
          * 
          */
         this.nature = {};
@@ -91,13 +93,13 @@ class VLabScene extends THREE.Scene {
             subscriber: this,
             events: {
                 WebGLRendererCanvas: {
-                    mousedown:  this.onDefaultEventHandler,
-                    mouseup:    this.onDefaultEventHandler,
-                    mousemove:  this.onDefaultEventHandler,
-                    touchstart: this.onDefaultEventHandler,
-                    touchend:   this.onDefaultEventHandler,
-                    touchmove:  this.onDefaultEventHandler,
-                    rendered:   this.onDefaultEventHandler,
+                    mousedown:      this.onDefaultEventHandler,
+                    mouseup:        this.onDefaultEventHandler,
+                    mousemove:      this.onDefaultEventHandler,
+                    touchstart:     this.onDefaultEventHandler,
+                    touchend:       this.onDefaultEventHandler,
+                    touchmove:      this.onDefaultEventHandler,
+                    framerequest:   this.onDefaultEventHandler,
                 }
             }
         };
@@ -130,7 +132,7 @@ class VLabScene extends THREE.Scene {
          */
         this.eventCoords = new THREE.Vector2();
         /**
-         * 2D coordinates of the mouse / touch, in normalized device coordinates (NDC)---X and Y components should be between -1 and 1.; see {@link https://threejs.org/docs/index.html#api/en/core/Raycaster.setFromCamera}
+         * 2D coordinates of the mouse / touch, in normalized device coordinates (NDC)---X and Y components should be between -1 and 1.; @see https://threejs.org/docs/index.html#api/en/core/Raycaster.setFromCamera
          * @public
          * @type {THREE.Vector2}
          */
@@ -153,6 +155,18 @@ class VLabScene extends THREE.Scene {
          * @type {Array}
          */
         this.intersectedInteractables = [];
+        /**
+         * Conditional partial stack of this.interactables {@link VLabSceneInteractable} which have been pre-selected at {@link VLabSceneInteractable#preselect}
+         * @public
+         * @type {Array}
+         */
+        this.preSelectedInteractables = [];
+        /**
+         * Conditional partial stack of this.interactables {@link VLabSceneInteractable} which have been selected
+         * @public
+         * @type {Array}
+         */
+        this.selectedInteractables = [];
     }
     /**
      * VLab Scene activator.
@@ -260,6 +274,18 @@ class VLabScene extends THREE.Scene {
         }
     }
     /**
+     * Add instance of VLabSceneInteractable into this.interactables
+     * @param {Object}              interactableObj
+     * @param {string}              interactableObj.name
+     * @memberof VLabScene
+     */
+    addInteractable(interactableObj) {
+        this.interactables[interactableObj.name] = new VLabSceneInteractable({
+            vLabScene: this,
+            interactable: interactableObj
+        });
+    }
+    /**
      * VLab Scene interactables processing
      * VLab Scene interactables event-driven invocation, invokes existing interactables onDefaultEventHandler
      * Peirce each of this.intersectableInteractables with this.interactablesRaycaster in {@link VLabScene#intersectInteractablesWithInteractablesRaycaster}; only first pierced Interactable taking into processing by default
@@ -268,7 +294,7 @@ class VLabScene extends THREE.Scene {
      * @abstract
      */
     processInteractables(event) {
-        if(event.type !== 'rendered') {
+        if(event.type !== 'framerequest') {
             this.intersectableInteractables = [];
             for (let interactableName in this.interactables) {
                 if (this.interactables[interactableName].intersectable) {

@@ -3,6 +3,7 @@ import * as HTTPUtils from '../utils/http.utils';
 import VLabDOMManager from './vlab.dom.manager';
 import VLabEventDispatcher from './vlab.event.dispatcher';
 import VLabSceneDispatcher from './vlab.scene.dispatcher';
+import { EffectComposer, RenderPass, OutlinePass } from "postprocessing";
 
 /**
  * VLab base class.
@@ -90,12 +91,9 @@ class VLab {
                          * @public
                          */
                         this.SceneDispatcher = new VLabSceneDispatcher(this);
-                        /**
-                         * Instantiates THREE.WebGLRenderer and configures it accordingly
-                         */
-                        this.setupWebGLRenderer();
 
-                        this.render();
+                        this.setupWebGLRenderer();
+                        this.requestAnimationFrame();
 
                         /**
                          * resolves initialization Promise
@@ -133,7 +131,7 @@ class VLab {
             this.EventDispatcher.addWebGLRendererCanvasEventListeners();
             /**
              * THREE.WebGLRenderer
-             * {@link https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer}
+             * @see https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
              * @public
              */
             this.WebGLRenderer = new THREE.WebGLRenderer({
@@ -146,6 +144,26 @@ class VLab {
             }
 
             this.DOMManager.WebGLContainer.appendChild(this.WebGLRenderer.domElement);
+        }
+
+        if (this.nature.WebGLRendererParameters) {
+            if (this.nature.WebGLRendererParameters.effectComposer) {
+                /**
+                 * Postprocessing EffectComposer
+                 * @see https://www.npmjs.com/package/postprocessing
+                 * @inner
+                 * @public
+                 */
+                if (this.effectComposer === undefined) {
+                    this.effectComposer = new EffectComposer(this.WebGLRenderer);
+                }
+                if (this.renderPass !== undefined) {
+                    this.effectComposer.removePass(this.renderPass);
+                }
+                this.renderPass = new RenderPass(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
+                this.renderPass.renderToScreen = true;
+                this.effectComposer.addPass(this.renderPass);
+            }
         }
 
         /* Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters */
@@ -199,21 +217,39 @@ class VLab {
         }
     }
     /**
-     * Renders SceneDispatcher current VLabScene with this.WebGLRenderer type of THREE.WebGLRenderer.
+     * window.requestAnimationFrame 
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
+     * Renders current VLabScene from SceneDispatcher with this.render().
+     *
+     * @memberof VLab
+     */
+    requestAnimationFrame() {
+        if (!this.renderPaused) {
+            if (this.nature.simpleStats) this.DOMManager.simpleStats.begin();
+            this.EventDispatcher.notifySubscribers({
+                type: 'framerequest',
+                target: this.WebGLRendererCanvas
+            });
+            this.render();
+            if (this.nature.simpleStats) this.DOMManager.simpleStats.end();
+            if (this.nature.rendererStats) this.DOMManager.rendererStats.update(this.WebGLRenderer);
+            requestAnimationFrame(this.requestAnimationFrame.bind(this));
+        } else {
+            setTimeout(this.requestAnimationFrame.bind(this), 250);
+        }
+    }
+    /**
+     * Actually renders current VLabScene from SceneDispatcher.
      *
      * @memberof VLab
      */
     render() {
-        if (!this.renderPaused) {
+        // console.log(this.SceneDispatcher.currentVLabScene.preSelectedInteractables);
+        if (this.effectComposer) {
+            this.effectComposer.render();
+        } else {
             this.WebGLRenderer.clear();
             this.WebGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
-            requestAnimationFrame(this.render.bind(this));
-            this.EventDispatcher.notifySubscribers({
-                type: 'rendered',
-                target: this.WebGLRendererCanvas
-            });
-        } else {
-            setTimeout(this.render.bind(this), 250);
         }
     }
 }

@@ -26,14 +26,14 @@ class VLabEventDispatcher {
                 keydown:    {}
             },
             WebGLRendererCanvas: {
-                mousedown:      {},
-                mouseup:        {},
-                mousemove:      {},
-                wheel:          {},
-                touchstart:     {},
-                touchend:       {},
-                touchmove:      {},
-                rendered:       {}
+                mousedown:          {},
+                mouseup:            {},
+                mousemove:          {},
+                wheel:              {},
+                touchstart:         {},
+                touchend:           {},
+                touchmove:          {},
+                framerequest:       {}
             }
         };
 

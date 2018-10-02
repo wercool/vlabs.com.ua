@@ -41,8 +41,10 @@
     "crypto-js": "^3.1.9-1",
     "jszip": "^3.1.5",
     "postprocessing": "^4.10.0",
+    "stats-js": "^1.0.0-alpha1",
     "three": "^0.96.0",
     "three-gltf-loader": "^1.96.0",
+    "three-webgl-stats": "^1.0.5",
     "three-ziploader": "0.0.1"
   }
 }

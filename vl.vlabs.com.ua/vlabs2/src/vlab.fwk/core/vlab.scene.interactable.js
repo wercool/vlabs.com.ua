@@ -41,12 +41,22 @@ class VLabSceneInteractable {
          */
         this.intersection = null;
         /**
-         * If true mouseover and touchstart will preselect this.vLabSceneObject
+         * If true then this will be added to the {@link VLabScene#preSelectedInteractables}
          * @public
          */
-        this.preselecatble = false;
+        this.preselectable = false;
         /**
-         * If true then will be rendered as "selected" {@link VLabScene#processInteractables}
+         * If true then this is in the {@link VLabScene#preSelectedInteractables}
+         * @public
+         */
+        this.preselected = false;
+        /**
+         * If true then will be rendered as "selected" {@link VLabScene#selectedInteractables}
+         * @public
+         */
+        this.selectable = false;
+        /**
+         * If true then will be rendered as "selected" {@link VLabScene#selectedInteractables}
          * @public
          */
         this.selected = false;
@@ -67,13 +77,37 @@ class VLabSceneInteractable {
         if (initObj.interactable.sceneObject !== undefined) {
             this.vLabSceneObject = initObj.interactable.sceneObject;
         }
-        if (initObj.interactable.preselecatble !== undefined) {
-            this.preselecatble = initObj.interactable.preselecatble;
-        }
         if (initObj.interactable.intersectable !== undefined) {
             this.intersectable = initObj.interactable.intersectable;
         }
+        if (initObj.interactable.preselectable !== undefined) {
+            this.preselectable = initObj.interactable.preselectable;
+        }
+        if (initObj.interactable.selectable !== undefined) {
+            this.selectable = initObj.interactable.selectable;
+        }
         this.vLabScene.interactables[this.vLabSceneObject.name] = this;
+    }
+    /**
+     * Preselects this VLabSceneInteractable
+     * Adds this instance to {@link VLabScene#preSelectedInteractables}
+     */
+    preselect() {
+        if (this.preselectable && !this.preselected) {
+            this.vLabScene.preSelectedInteractables.push(this);
+            this.preselected = true;
+        }
+    }
+    /**
+     * Deselcts pre-selected this VLabSceneInteractable
+     * Remove this instance to {@link VLabScene#preSelectedInteractables}
+     */
+    dePreselect() {
+        if (this.preselected) {
+            let indexOfThisPreselected = this.vLabScene.preSelectedInteractables.indexOf(this);
+            this.vLabScene.preSelectedInteractables.splice(indexOfThisPreselected, 1);
+            this.preselected = false;
+        }
     }
     /**
      * VLabSceneInteractable default event handler / router; could be overridden in inheritor.
@@ -100,6 +134,7 @@ class VLabSceneInteractable {
      */
     intersectionHandler(event) {
         this.intersection = event.intersection;
+        this.preselect();
     }
     /**
      * Default no-intersection handler
@@ -109,6 +144,7 @@ class VLabSceneInteractable {
      */
     nointersectionHandler(event) {
         this.intersection = null;
+        this.dePreselect();
     }
     /**
      * Default mousedown event.type handler

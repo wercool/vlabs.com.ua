@@ -5,6 +5,9 @@
     },
     "WebGLRendererParameters": {
         "resolutionFactor": 1.0,
-        "clearColor": "0x6d6d6d"
-    }
+        "clearColor": "0x6d6d6d",
+        "effectComposer": true
+    },
+    "simpleStats": true,
+    "rendererStats": true
 }

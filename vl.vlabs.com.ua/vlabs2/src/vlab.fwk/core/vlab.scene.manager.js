@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import VLab from './vlab';
-import VLabSceneInteractable from './vlab.scene.interactable'
+import VLabScene from './vlab.scene';
 import * as HTTPUtils from '../utils/http.utils';
 import GLTFLoader from 'three-gltf-loader';
 import { ZipLoader } from '../utils/ZipLoader';
@@ -95,10 +95,7 @@ class VLabSceneManager {
             /* Configure VLabScene interactables from VLabScene nature */
             if (this.vLabScene.nature.interactables) {
                 this.vLabScene.nature.interactables.forEach(interactableNatureObj => {
-                    this.vLabScene.interactables[interactableNatureObj.name] = new VLabSceneInteractable({
-                        vLabScene: this.vLabScene,
-                        interactable: interactableNatureObj
-                    });
+                    this.vLabScene.addInteractable(interactableNatureObj);
                 });
             }
 
