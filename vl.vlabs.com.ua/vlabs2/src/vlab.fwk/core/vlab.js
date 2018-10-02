@@ -135,7 +135,9 @@ class VLab {
              * @public
              */
             this.WebGLRenderer = new THREE.WebGLRenderer({
-                canvas: this.WebGLRendererCanvas
+                canvas: this.WebGLRendererCanvas,
+                powerPreference: 'high-performance',
+                precision: 'lowp'
             });
             this.WebGLRenderer.setPixelRatio(1.0);
             if (this.getProdMode()) {
@@ -145,29 +147,31 @@ class VLab {
 
             this.DOMManager.WebGLContainer.appendChild(this.WebGLRenderer.domElement);
         }
-
-        if (this.nature.WebGLRendererParameters) {
-            if (this.nature.WebGLRendererParameters.effectComposer) {
-                /**
-                 * Postprocessing EffectComposer
-                 * @see https://www.npmjs.com/package/postprocessing
-                 * @inner
-                 * @public
-                 */
-                if (this.effectComposer === undefined) {
-                    this.effectComposer = new EffectComposer(this.WebGLRenderer);
-                }
-                if (this.renderPass !== undefined) {
-                    this.effectComposer.removePass(this.renderPass);
-                }
-                this.renderPass = new RenderPass(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
-                this.renderPass.renderToScreen = true;
-                this.effectComposer.addPass(this.renderPass);
-            }
-        }
-
         /* Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters */
         if (this.nature.WebGLRendererParameters) {
+            if (this.nature.WebGLRendererParameters.effectComposer) {
+                if (this.SceneDispatcher.currentVLabScene) {
+                    this.resizeWebGLRenderer();
+                    /**
+                     * Postprocessing EffectComposer
+                     * @see https://www.npmjs.com/package/postprocessing
+                     * @inner
+                     * @public
+                     */
+                    this.effectComposer = new EffectComposer(this.WebGLRenderer);
+
+                    this.renderPass = new RenderPass(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
+                    this.renderPass.renderToScreen = true;
+                    this.effectComposer.addPass(this.renderPass);
+
+                    this.outlinePass = new OutlinePass(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera, {
+                        edgeStrength: 2.0,
+                        visibleEdgeColor: 0xffff00,
+                        hiddenEdgeColor: 0xffff00,
+                    });
+                    this.outlinePass.renderToScreen = false;
+                }
+            }
             if (this.nature.WebGLRendererParameters.clearColor)
                 this.WebGLRenderer.setClearColor(parseInt(this.nature.WebGLRendererParameters.clearColor));
         }
@@ -233,24 +237,24 @@ class VLab {
             this.render();
             if (this.nature.simpleStats) this.DOMManager.simpleStats.end();
             if (this.nature.rendererStats) this.DOMManager.rendererStats.update(this.WebGLRenderer);
-            requestAnimationFrame(this.requestAnimationFrame.bind(this));
         } else {
             setTimeout(this.requestAnimationFrame.bind(this), 250);
         }
     }
     /**
-     * Actually renders current VLabScene from SceneDispatcher.
+     * Actually renders current VLabScene from SceneDispatcher with or without postprocessing (EffectComposer).
      *
      * @memberof VLab
      */
     render() {
         // console.log(this.SceneDispatcher.currentVLabScene.preSelectedInteractables);
+        this.WebGLRenderer.clear();
         if (this.effectComposer) {
             this.effectComposer.render();
         } else {
-            this.WebGLRenderer.clear();
             this.WebGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
         }
+        requestAnimationFrame(this.requestAnimationFrame.bind(this));
     }
 }
 export default VLab;

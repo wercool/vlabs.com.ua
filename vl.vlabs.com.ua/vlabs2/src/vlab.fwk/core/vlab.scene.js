@@ -297,8 +297,10 @@ class VLabScene extends THREE.Scene {
         if(event.type !== 'framerequest') {
             this.intersectableInteractables = [];
             for (let interactableName in this.interactables) {
-                if (this.interactables[interactableName].intersectable) {
-                    this.intersectableInteractables.push(this.interactables[interactableName].vLabSceneObject);
+                if (this.interactables[interactableName].vLabSceneObject) {
+                    if (this.interactables[interactableName].intersectable) {
+                        this.intersectableInteractables.push(this.interactables[interactableName].vLabSceneObject);
+                    }
                 }
             }
 
@@ -320,6 +322,7 @@ class VLabScene extends THREE.Scene {
                     });
                 }
             }
+            this.manager.processInteractablesSelections();
         }
     }
     /**

@@ -12,7 +12,7 @@
             "type": "PerspectiveCamera",
             "name": "Camera",
             "fov": 50,
-            "position": "new THREE.Vector3(0.0, 1.0, -6.0)"
+            "position": "new THREE.Vector3(0.0, 2.0, -6.0)"
         }
     },
     "controls": {
@@ -33,12 +33,17 @@
         },
         {
             "name": "Suzanne",
-            "intersectable": false,
+            "intersectable": true,
             "preselectable": true,
             "selectable": true
         },
         {
             "name": "BigSphere",
+            "intersectable": true,
+            "preselectable": true
+        },
+        {
+            "name": "Suzanne2",
             "intersectable": true,
             "preselectable": true
         }

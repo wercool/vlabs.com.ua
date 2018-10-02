@@ -45,6 +45,17 @@ class VLabSceneManager {
          * @public
          */
         this.loadingManager = new THREE.LoadingManager();
+        /**
+         * Simple outline material
+         * @public
+         */
+        this.simpleOutlineMaterial = new THREE.MeshBasicMaterial({
+            color: 0xffff00,
+            side: THREE.BackSide,
+            blending: THREE.NoBlending,
+            depthTest: true,
+            depthWrite: true
+        });
     }
     /**
      * Configures VLab Scene with {@link VLabScene#nature}.
@@ -102,6 +113,58 @@ class VLabSceneManager {
             this.configured = true;
             resolve();
         });
+    }
+    /**
+     * Process VLabSceneInteractable(s) selections
+     */
+    processInteractablesSelections() {
+        let outlinedInteractables = [];
+        /**
+         * Selections
+         */
+        this.vLabScene.selectedInteractables.forEach((selectedInteractable) => {
+                outlinedInteractables.push(selectedInteractable);
+            });
+        /**
+         * Preselections
+         */
+        this.vLabScene.preSelectedInteractables.forEach((preSelectedInteractable) => {
+            outlinedInteractables.push(preSelectedInteractable);
+        });
+
+        outlinedInteractables = outlinedInteractables.filter(function(item, pos) {
+            return outlinedInteractables.indexOf(item) == pos;
+        });
+
+        if (this.vLab.effectComposer) {
+            if (outlinedInteractables.length > 0) {
+                let outlinedInteractablesSceneObjects = [];
+                outlinedInteractables.forEach((outlinedInteractable) => {
+                    if (outlinedInteractable.vLabSceneObject)
+                        outlinedInteractablesSceneObjects.push(outlinedInteractable.vLabSceneObject);
+                });
+                this.vLab.outlinePass.setSelection(outlinedInteractablesSceneObjects);
+                if (!this.vLab.outlinePass.renderToScreen) {
+                    this.vLab.effectComposer.addPass(this.vLab.outlinePass);
+                    this.vLab.renderPass.renderToScreen = false;
+                    this.vLab.outlinePass.renderToScreen = true;
+                }
+            } else {
+                if (this.vLab.outlinePass.renderToScreen) {
+                    this.vLab.outlinePass.clearSelection();
+                    this.vLab.effectComposer.removePass(this.vLab.outlinePass);
+                    this.vLab.outlinePass.renderToScreen = false;
+                    this.vLab.renderPass.renderToScreen = true;
+                }
+            }
+        } else {
+            for (let interactableName in this.vLabScene.interactables) {
+                this.vLabScene.interactables[interactableName].clearOutline();
+            }
+            outlinedInteractables.forEach((outlinedInteractable) => {
+                outlinedInteractable.outline();
+            })
+        }
     }
     /**
      * VLab Scene loader.
@@ -275,30 +338,33 @@ class VLabSceneManager {
         let existingMaterial = undefined;
         this.vLabScene.traverse((child) => {
             if (child.material) {
-                if (child.material.name === material.name) {
+                if (child.material.name === material.name && Object.keys(child.material.userData).length == 0) {
                     existingMaterial = child.material;
                 }
             }
         });
         if (existingMaterial !== undefined) return existingMaterial;
 
-        if (Object.keys(material.userData).length> 0) {
+        if (Object.keys(material.userData).length > 0) {
             if (material.userData.MeshBasicMaterial) {
                 let _MeshBasicMaterial = new THREE.MeshBasicMaterial();
                 _MeshBasicMaterial = ObjUtils.assign(_MeshBasicMaterial, material);
                 _MeshBasicMaterial.type = 'MeshBasicMaterial';
+                _MeshBasicMaterial.userData = {};
                 return _MeshBasicMaterial;
             }
             if (material.userData.MeshLambertMaterial) {
                 let _MeshLambertMaterial = new THREE.MeshLambertMaterial();
                 _MeshLambertMaterial = ObjUtils.assign(_MeshLambertMaterial, material);
                 _MeshLambertMaterial.type = 'MeshLambertMaterial';
+                _MeshLambertMaterial.userData = {};
                 return _MeshLambertMaterial;
             }
             if (material.userData.MeshPhongMaterial) {
                 let _MeshPhongMaterial = new THREE.MeshPhongMaterial();
                 _MeshPhongMaterial = ObjUtils.assign(_MeshPhongMaterial, material);
                 _MeshPhongMaterial.type = 'MeshPhongMaterial';
+                _MeshPhongMaterial.userData = {};
                 return _MeshPhongMaterial;
             }
         } else {

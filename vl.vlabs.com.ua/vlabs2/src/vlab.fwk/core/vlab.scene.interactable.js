@@ -60,6 +60,10 @@ class VLabSceneInteractable {
          * @public
          */
         this.selected = false;
+        /**
+         * Simple outline (if EffectComposer is not in use) helper mesh
+         */
+        this.outlineHelperMesh = undefined;
 
         this.initialize(initObj);
     }
@@ -86,14 +90,28 @@ class VLabSceneInteractable {
         if (initObj.interactable.selectable !== undefined) {
             this.selectable = initObj.interactable.selectable;
         }
-        this.vLabScene.interactables[this.vLabSceneObject.name] = this;
+        if (this.vLabSceneObject) {
+            this.vLabScene.interactables[this.vLabSceneObject.name] = this;
+        }
+    }
+    /**
+     * Selects this VLabSceneInteractable
+     * Adds this instance to {@link VLabScene#selectedInteractables}
+     */
+    select() {
+        if (this.selectable && !this.selected) {
+            if (this.preselectable && this.preselected || !this.preselectable) {
+                this.vLabScene.selectedInteractables.push(this);
+                this.selected = true;
+            }
+        }
     }
     /**
      * Preselects this VLabSceneInteractable
      * Adds this instance to {@link VLabScene#preSelectedInteractables}
      */
     preselect() {
-        if (this.preselectable && !this.preselected) {
+        if (this.preselectable && !this.preselected && !this.selected) {
             this.vLabScene.preSelectedInteractables.push(this);
             this.preselected = true;
         }
@@ -147,13 +165,22 @@ class VLabSceneInteractable {
         this.dePreselect();
     }
     /**
+     * Default framerequest event.type handler
+     *
+     * @memberof VLabSceneInteractable
+     * @abstract
+     */
+    framerequestHandler(event) {
+        // console.log(this.intersection);
+    }
+    /**
      * Default mousedown event.type handler
      *
      * @memberof VLabSceneInteractable
      * @abstract
      */
     mousedownHandler(event) {
-        // console.log(this.intersection);
+        this.select();
     }
     /**
      * Default mousemove event.type handler
@@ -162,7 +189,7 @@ class VLabSceneInteractable {
      * @abstract
      */
     mousemoveHandler(event) {
-        // console.log(this.vLabSceneObject.name, this.intersection);
+
     }
     /**
      * Default touchstart event.type handler
@@ -171,7 +198,34 @@ class VLabSceneInteractable {
      * @abstract
      */
     touchstartHandler(event) {
-        // console.log(this.vLabSceneObject.name, this.intersection);
+        this.select();
+    }
+    /**
+     * Shows simple outline based on this.vLabSceneObject.geometry
+     */
+    outline() {
+        if (this.outlineHelperMesh == undefined) this.addOutlineHelperMesh();
+        this.outlineHelperMesh.visible = true;
+    }
+    /**
+     * Hides simple outline based on this.vLabSceneObject.geometry
+     */
+    clearOutline() {
+        if (this.outlineHelperMesh != undefined) {
+            this.outlineHelperMesh.visible = false;
+        }
+    }
+    /**
+     * Adds simple outline based on this.vLabSceneObject.geometry as THREE.Mesh to this.vLabSceneObject
+     */
+    addOutlineHelperMesh() {
+        if (this.vLabSceneObject) {
+            this.outlineHelperMesh = new THREE.Mesh(this.vLabSceneObject.geometry, this.vLabScene.manager.simpleOutlineMaterial);
+            this.outlineHelperMesh.name = this.vLabSceneObject.name + '_OUTLINE';
+            this.outlineHelperMesh.scale.multiplyScalar(1.05);
+            this.outlineHelperMesh.visible = false;
+            this.vLabSceneObject.add(this.outlineHelperMesh);
+        }
     }
 }
 export default VLabSceneInteractable;
