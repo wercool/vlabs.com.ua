@@ -1,4 +1,6 @@
+/* Scene loader */
 #sceneLoaderContainer {
+    z-index: 10000;
     display: none;
     position: absolute;
     left: 0;
@@ -13,7 +15,6 @@
     -ms-user-select: none;      /* IE 10+ */
     user-select: none;          /* Likely future */ 
     -webkit-tap-highlight-color: transparent;
-    z-index: 10000;
 }
 #sceneLoader {
     position: relative;

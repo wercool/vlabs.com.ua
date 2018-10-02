@@ -1,0 +1,17 @@
+.interactableToolTip {
+    z-index: 3;
+    color: rgba(255, 255, 255, 0.75);
+    position: absolute;
+    display: block;
+    padding: 10px;
+    max-width: 400px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    background-color:rgba(12, 12, 12, 0.8);
+    pointer-events: none;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+}

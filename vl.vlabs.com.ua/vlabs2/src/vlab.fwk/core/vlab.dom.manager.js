@@ -1,4 +1,4 @@
-import * as StringUtils         from '../utils/string.utils';
+import * as StringUtils from '../utils/string.utils';
 import Stats from 'stats-js';
 import RendererStats from 'three-webgl-stats';
 import VLab from './vlab';
@@ -120,6 +120,7 @@ class VLabDOMManager {
                     this.simpleStats.domElement.style.position = 'absolute';
                     this.simpleStats.domElement.style.left = '0px';
                     this.simpleStats.domElement.style.top = '0px';
+                    this.simpleStats.domElement.style.zIndex = 3;
                     this.container.appendChild(this.simpleStats.domElement);
                     if (this.vLab.nature.simpleStats === false) this.simpleStats.domElement.style.display = 'none';
                 }
@@ -131,6 +132,7 @@ class VLabDOMManager {
                     this.rendererStats.domElement.style.position = 'absolute';
                     this.rendererStats.domElement.style.top = '0px';
                     this.rendererStats.domElement.style.right = '0px';
+                    this.rendererStats.domElement.style.zIndex = 3;
                     this.container.appendChild(this.rendererStats.domElement);
                     if (this.vLab.nature.rendererStats === false) this.rendererStats.domElement.style.display = 'none';
                 }
@@ -141,7 +143,7 @@ class VLabDOMManager {
         });
     }
     /**
-     * Adds style to <head>
+     * Adds style to the <head>
      * @memberof VLabDOMManager
      * @async
      * @param {Object} styleObj                         - Style object
@@ -151,20 +153,22 @@ class VLabDOMManager {
     addStyle(styleObj) {
         return new Promise(function(resolve, reject) {
             let style = document.getElementById(styleObj.id);
-            if (style) resolve();
-            /* Loads global style either from VLab nature link or default */
-            let styleLink = document.createElement('link');
-            styleLink.id = styleObj.id || StringUtils.getRandomString(5);
-            styleLink.type = 'text/css';
-            styleLink.rel = 'stylesheet';
-            styleLink.href = styleObj.href;
-            document.getElementsByTagName('head')[0].appendChild(styleLink);
-            styleLink.onload = function() {
+            if (style !== null) {
                 resolve();
-            };
-            styleLink.onerror = function() {
-                reject();
-            };
+            } else {
+                let styleLink = document.createElement('link');
+                styleLink.id = styleObj.id || StringUtils.getRandomString(5);
+                styleLink.type = 'text/css';
+                styleLink.rel = 'stylesheet';
+                styleLink.href = styleObj.href;
+                document.getElementsByTagName('head')[0].appendChild(styleLink);
+                styleLink.onload = function() {
+                    resolve();
+                };
+                styleLink.onerror = function() {
+                    reject();
+                };
+            }
         });
     }
     /**

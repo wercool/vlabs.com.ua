@@ -1,4 +1,6 @@
+import "@babel/polyfill";
 import * as THREE from 'three';
+import * as TWEEN from 'tween.js';
 import * as HTTPUtils from '../utils/http.utils';
 import VLabDOMManager from './vlab.dom.manager';
 import VLabEventDispatcher from './vlab.event.dispatcher';
@@ -30,6 +32,11 @@ class VLab {
          * @public
          */
         this.renderPaused = true;
+        /**
+         * Current FPS
+         * @public
+         */
+        this.fps = 60;
         /**
          * VLAB NATURE PASSPHRASE @type {string}
          * @public
@@ -93,6 +100,7 @@ class VLab {
                         this.SceneDispatcher = new VLabSceneDispatcher(this);
 
                         this.setupWebGLRenderer();
+
                         this.requestAnimationFrame();
 
                         /**
@@ -149,9 +157,26 @@ class VLab {
         }
         /* Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters */
         if (this.nature.WebGLRendererParameters) {
+            if (this.nature.WebGLRendererParameters.clearColor)
+                this.WebGLRenderer.setClearColor(parseInt(this.nature.WebGLRendererParameters.clearColor));
+        }
+        /** Configures THREE.WebGLRenderer according to this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters
+         *  if this.SceneDispatcher.currentVLabScene.nature is defined
+         */
+        if (this.SceneDispatcher.currentVLabScene.nature) {
+            if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters) {
+                if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.clearColor)
+                    this.WebGLRenderer.setClearColor(parseInt(this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.clearColor));
+            }
+        }
+    }
+    /**
+     * Instantiates EffectComposer if not yet instantiated.
+     */
+    setupEffectComposer() {
+        if (this.nature.WebGLRendererParameters) {
             if (this.nature.WebGLRendererParameters.effectComposer) {
                 if (this.SceneDispatcher.currentVLabScene) {
-                    this.resizeWebGLRenderer();
                     /**
                      * Postprocessing EffectComposer
                      * @see https://www.npmjs.com/package/postprocessing
@@ -171,17 +196,6 @@ class VLab {
                     });
                     this.outlinePass.renderToScreen = false;
                 }
-            }
-            if (this.nature.WebGLRendererParameters.clearColor)
-                this.WebGLRenderer.setClearColor(parseInt(this.nature.WebGLRendererParameters.clearColor));
-        }
-        /** Configures THREE.WebGLRenderer according to this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters
-         *  if this.SceneDispatcher.currentVLabScene.nature is defined
-         */
-        if (this.SceneDispatcher.currentVLabScene.nature) {
-            if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters) {
-                if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.clearColor)
-                    this.WebGLRenderer.setClearColor(parseInt(this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.clearColor));
             }
         }
     }
@@ -227,7 +241,7 @@ class VLab {
      *
      * @memberof VLab
      */
-    requestAnimationFrame() {
+    requestAnimationFrame(time) {
         if (!this.renderPaused) {
             if (this.nature.simpleStats) this.DOMManager.simpleStats.begin();
             this.EventDispatcher.notifySubscribers({
@@ -235,6 +249,7 @@ class VLab {
                 target: this.WebGLRendererCanvas
             });
             this.render();
+            TWEEN.update(time);
             if (this.nature.simpleStats) this.DOMManager.simpleStats.end();
             if (this.nature.rendererStats) this.DOMManager.rendererStats.update(this.WebGLRenderer);
         } else {
@@ -247,13 +262,13 @@ class VLab {
      * @memberof VLab
      */
     render() {
-        // console.log(this.SceneDispatcher.currentVLabScene.preSelectedInteractables);
         this.WebGLRenderer.clear();
         if (this.effectComposer) {
             this.effectComposer.render();
         } else {
             this.WebGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
         }
+        this.fps = 1 / this.clock.getDelta();
         requestAnimationFrame(this.requestAnimationFrame.bind(this));
     }
 }

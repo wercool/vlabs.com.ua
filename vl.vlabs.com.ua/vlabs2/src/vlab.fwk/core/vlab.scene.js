@@ -157,12 +157,14 @@ class VLabScene extends THREE.Scene {
         this.intersectedInteractables = [];
         /**
          * Conditional partial stack of this.interactables {@link VLabSceneInteractable} which have been pre-selected at {@link VLabSceneInteractable#preselect}
+         * In normal flow (without force pre-selection) it will be always only 1 pre-selected VLabSceneInteractable in this array
          * @public
          * @type {Array}
          */
         this.preSelectedInteractables = [];
         /**
          * Conditional partial stack of this.interactables {@link VLabSceneInteractable} which have been selected
+         * In normal flow (without force selection) it will be always only 1 pre-selected VLabSceneInteractable in this array
          * @public
          * @type {Array}
          */
@@ -183,6 +185,7 @@ class VLabScene extends THREE.Scene {
                     this.currentControls.enabled = true;
                     this.currentControls.update();
                     this.active = true;
+                    this.manager.performance.performanceManagerInterval = setInterval(this.manager.performanceManager.bind(this.manager), 1000);
                     resolve(this);
                 });
             });
@@ -199,6 +202,7 @@ class VLabScene extends THREE.Scene {
         return new Promise((resolve, reject) => {
             this.unsubscribe();
             this.active = false;
+            clearInterval(this.manager.performance.performanceManagerInterval);
             resolve(this);
         });
     }
@@ -250,7 +254,7 @@ class VLabScene extends THREE.Scene {
     onDefaultEventHandler(event) {
         // console.log(event);
         this.dispatchCurrentControlsDefaultEventHandler(event);
-        this.processInteractables(event);
+        this.interactWithInteractables(event);
         this.dispatchInteractablesDefaulEventHandlers(event);
     }
     /**
@@ -264,7 +268,7 @@ class VLabScene extends THREE.Scene {
     }
     /**
      * VLab Scene interactables event-driven invocation
-     * Invokes existing interactables onDefaultEventHandler
+     * VLab Scene interactables event-driven invocation, invokes existing interactables onDefaultEventHandler
      * @memberof VLabScene
      * @abstract
      */
@@ -278,22 +282,28 @@ class VLabScene extends THREE.Scene {
      * @param {Object}              interactableObj
      * @param {string}              interactableObj.name
      * @memberof VLabScene
+     * @async
      */
     addInteractable(interactableObj) {
-        this.interactables[interactableObj.name] = new VLabSceneInteractable({
-            vLabScene: this,
-            interactable: interactableObj
+        return new Promise((resolve, reject) => {
+            this.interactables[interactableObj.name] = new VLabSceneInteractable({
+                vLabScene: this,
+                interactable: interactableObj
+            });
+            this.interactables[interactableObj.name].initialize()
+            .then((vLabSceneInteractable) => {
+                resolve(vLabSceneInteractable)
+            });
         });
     }
     /**
-     * VLab Scene interactables processing
-     * VLab Scene interactables event-driven invocation, invokes existing interactables onDefaultEventHandler
+     * VLab Scene interactables processing (interactions), react only on user actions
      * Peirce each of this.intersectableInteractables with this.interactablesRaycaster in {@link VLabScene#intersectInteractablesWithInteractablesRaycaster}; only first pierced Interactable taking into processing by default
      * Dispatch {@link VLabSceneInteractable#intersectedHandler} if exists and if Interactable has been pierced with this.interactablesRaycaster
      * @memberof VLabScene
      * @abstract
      */
-    processInteractables(event) {
+    interactWithInteractables(event) {
         if(event.type !== 'framerequest') {
             this.intersectableInteractables = [];
             for (let interactableName in this.interactables) {

@@ -3,7 +3,7 @@ import VLab from './vlab';
 import VLabScene from './vlab.scene';
 import * as HTTPUtils from '../utils/http.utils';
 import GLTFLoader from 'three-gltf-loader';
-import { ZipLoader } from '../utils/ZipLoader';
+import { ZipLoader } from '../utils/zip.loader';
 import * as ObjUtils from '../utils/object.utils';
 
 /**
@@ -49,13 +49,36 @@ class VLabSceneManager {
          * Simple outline material
          * @public
          */
-        this.simpleOutlineMaterial = new THREE.MeshBasicMaterial({
+        this.simpleOutlineMaterial = new THREE.MeshLambertMaterial({
             color: 0xffff00,
             side: THREE.BackSide,
-            blending: THREE.NoBlending,
+            transparent: true,
+            opacity: 0.75,
+            emissive: new THREE.Color(1.0, 1.0, 0.0),
             depthTest: true,
             depthWrite: true
         });
+        /**
+         * Simple outline selected material
+         * @public
+         */
+        this.simpleOutlineSelectedMaterial = new THREE.MeshLambertMaterial({
+            color: 0x00ff00,
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0.75,
+            emissive: new THREE.Color(0.0, 1.0, 0.0),
+            depthTest: true,
+            depthWrite: true
+        });
+        /**
+         * Performance Object
+         * @public
+         */
+        this.performance = {
+            performanceManagerInterval: null,
+            lowFPSDetected: 0
+        };
     }
     /**
      * Configures VLab Scene with {@link VLabScene#nature}.
@@ -105,8 +128,8 @@ class VLabSceneManager {
             }
             /* Configure VLabScene interactables from VLabScene nature */
             if (this.vLabScene.nature.interactables) {
-                this.vLabScene.nature.interactables.forEach(interactableNatureObj => {
-                    this.vLabScene.addInteractable(interactableNatureObj);
+                this.vLabScene.nature.interactables.forEach(async (interactableNatureObj) => {
+                    await this.vLabScene.addInteractable(interactableNatureObj);
                 });
             }
 
@@ -118,32 +141,33 @@ class VLabSceneManager {
      * Process VLabSceneInteractable(s) selections
      */
     processInteractablesSelections() {
-        let outlinedInteractables = [];
+        let preselectedInteractables = [];
+        let selectedInteractables = [];
         /**
          * Selections
          */
         this.vLabScene.selectedInteractables.forEach((selectedInteractable) => {
-                outlinedInteractables.push(selectedInteractable);
-            });
+            selectedInteractables.push(selectedInteractable);
+        });
         /**
          * Preselections
          */
         this.vLabScene.preSelectedInteractables.forEach((preSelectedInteractable) => {
-            outlinedInteractables.push(preSelectedInteractable);
+            preselectedInteractables.push(preSelectedInteractable);
         });
 
-        outlinedInteractables = outlinedInteractables.filter(function(item, pos) {
-            return outlinedInteractables.indexOf(item) == pos;
-        });
+        for (let interactableName in this.vLabScene.interactables) {
+            this.vLabScene.interactables[interactableName].clearOutline();
+        }
 
         if (this.vLab.effectComposer) {
-            if (outlinedInteractables.length > 0) {
-                let outlinedInteractablesSceneObjects = [];
-                outlinedInteractables.forEach((outlinedInteractable) => {
-                    if (outlinedInteractable.vLabSceneObject)
-                        outlinedInteractablesSceneObjects.push(outlinedInteractable.vLabSceneObject);
+            if (preselectedInteractables.length > 0) {
+                let preselectedInteractablesSceneObjects = [];
+                preselectedInteractables.forEach((preselectedInteractable) => {
+                    if (preselectedInteractable.vLabSceneObject)
+                        preselectedInteractablesSceneObjects.push(preselectedInteractable.vLabSceneObject);
                 });
-                this.vLab.outlinePass.setSelection(outlinedInteractablesSceneObjects);
+                this.vLab.outlinePass.setSelection(preselectedInteractablesSceneObjects);
                 if (!this.vLab.outlinePass.renderToScreen) {
                     this.vLab.effectComposer.addPass(this.vLab.outlinePass);
                     this.vLab.renderPass.renderToScreen = false;
@@ -158,13 +182,13 @@ class VLabSceneManager {
                 }
             }
         } else {
-            for (let interactableName in this.vLabScene.interactables) {
-                this.vLabScene.interactables[interactableName].clearOutline();
-            }
-            outlinedInteractables.forEach((outlinedInteractable) => {
-                outlinedInteractable.outline();
-            })
+            preselectedInteractables.forEach((preselectedInteractable) => {
+                preselectedInteractable.outline();
+            });
         }
+        selectedInteractables.forEach((selectedInteractable) => {
+            selectedInteractable.outlineSelected();
+        });
     }
     /**
      * VLab Scene loader.
@@ -394,6 +418,27 @@ class VLabSceneManager {
                     href: '../vlab.assets/css/scene.css'
                 });
             }
+        }
+    }
+    /**
+     * Performance manager
+     */
+    performanceManager() {
+        if (this.vLab.fps < 20) {
+            if (this.performance.lowFPSDetected > 5) {
+                /**
+                 * No EffectComposer at low FPS
+                 */
+                if (this.vLab.effectComposer) {
+                    this.vLab.effectComposer = null;
+                    this.processInteractablesSelections();
+                }
+                this.performance.lowFPSDetected = 0;
+                return;
+            }
+            this.performance.lowFPSDetected += 1;
+        } else {
+            this.performance.lowFPSDetected = 0;
         }
     }
 }

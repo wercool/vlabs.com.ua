@@ -25,6 +25,7 @@ html, body {
 ::-webkit-scrollbar-track
 {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
     border-radius: 10px;
     background-color: transparent;
 }
@@ -32,21 +33,26 @@ html, body {
 {
     border-radius: 10px;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,.3);
     background-color: transparent;
 }
 /* VLab Core HTML elements by ID */
 #VLabContainer {
     position: absolute;
+    z-index: 1;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
 }
 #WebGLContainer {
+    z-index: 2;
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
-    z-index: 2;
+    overflow: hidden;
 }
 #WebGLRendererCanvas {
     -webkit-touch-callout: none;

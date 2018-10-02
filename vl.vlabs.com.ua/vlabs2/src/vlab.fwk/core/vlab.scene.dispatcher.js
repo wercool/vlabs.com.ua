@@ -75,6 +75,7 @@ class VLabSceneDispatcher {
                         self.currentVLabScene = vLabScene;
                         self.vLab.setupWebGLRenderer();
                         self.vLab.resizeWebGLRenderer();
+                        self.vLab.setupEffectComposer();
                         vLabScene.onActivated();
                         self.vLab.renderPaused = false;
                         setTimeout(() => {
