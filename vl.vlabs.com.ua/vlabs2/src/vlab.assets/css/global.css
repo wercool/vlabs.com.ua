@@ -38,8 +38,8 @@ html, body {
 }
 /* VLab Core HTML elements by ID */
 #VLabContainer {
-    position: absolute;
     z-index: 1;
+    position: absolute;
     left: 0;
     top: 0;
     width: 100%;

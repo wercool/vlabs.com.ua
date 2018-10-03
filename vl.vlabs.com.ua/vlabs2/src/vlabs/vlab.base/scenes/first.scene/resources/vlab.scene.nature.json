@@ -30,7 +30,15 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": true,
-            "tooltip": "<i>Sphere2</i>"
+            "tooltip": "<i>Sphere2</i>",
+            "menu": [
+                {
+                    "label": "Take",
+                    "icon": "<i class=\"material-icons interactableMenuIcon\">pan_tool</i>",
+                    "enabled": true,
+                    "action": ""
+                }
+            ]
         },
         {
             "name": "Suzanne",

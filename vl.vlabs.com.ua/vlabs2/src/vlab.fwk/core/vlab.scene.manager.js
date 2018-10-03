@@ -424,7 +424,7 @@ class VLabSceneManager {
      * Performance manager
      */
     performanceManager() {
-        if (this.vLab.fps < 20) {
+        if (this.vLab.fps < 30) {
             if (this.performance.lowFPSDetected > 5) {
                 /**
                  * No EffectComposer at low FPS

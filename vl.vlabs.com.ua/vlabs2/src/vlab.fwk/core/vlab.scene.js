@@ -164,7 +164,7 @@ class VLabScene extends THREE.Scene {
         this.preSelectedInteractables = [];
         /**
          * Conditional partial stack of this.interactables {@link VLabSceneInteractable} which have been selected
-         * In normal flow (without force selection) it will be always only 1 pre-selected VLabSceneInteractable in this array
+         * In normal flow (without force selection) it will be always only 1 selected VLabSceneInteractable in this array
          * @public
          * @type {Array}
          */
@@ -297,7 +297,7 @@ class VLabScene extends THREE.Scene {
         });
     }
     /**
-     * VLab Scene interactables processing (interactions), react only on user actions
+     * VLab Scene interactables processing (interactions), reacts only on user actions
      * Peirce each of this.intersectableInteractables with this.interactablesRaycaster in {@link VLabScene#intersectInteractablesWithInteractablesRaycaster}; only first pierced Interactable taking into processing by default
      * Dispatch {@link VLabSceneInteractable#intersectedHandler} if exists and if Interactable has been pierced with this.interactablesRaycaster
      * @memberof VLabScene

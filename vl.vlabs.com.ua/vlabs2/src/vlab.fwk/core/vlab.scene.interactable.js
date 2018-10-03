@@ -21,6 +21,15 @@ class VLabSceneInteractable {
      * @param {boolean}             [initObj.interactable.preselecatble]        - If true mouseover and touchstart will preselect this.vLabSceneObject 
      * @param {boolean}             [initObj.interactable.selectable]           - If true mousedown and touchstart will select this.vLabSceneObject if it is preselectable and already preselected or if it is not preselectable
      * @param {HTML}                [initObj.interactable.tooltip]              - If defined and != "" then will be shown in {@linkg VLabSceneInteractable#preselect}
+     * @param {[Object]}            [initObj.interactable.menu]                 - Array of menu items
+     * @param {Object}              [initObj.interactable.menu.item]            - Menu item
+     * @param {string}              [initObj.interactable.menu.item.label]      - Menu item label (HTML)
+     * @param {string}              [initObj.interactable.menu.item.icon]       - Menu item icon (HTML)
+     * @param {boolean}             [initObj.interactable.menu.item.enabled]    - Menu item enabled
+     * @param {?}                   [initObj.interactable.menu.item.action]     - Menu item action
+     * @param {Object}              [interactable.style]                        - CSS style for particular VLabScene Interactable
+     * @param {string}              [interactable.style.id]                     - CSS style link id
+     * @param {string}              [interactable.style.href]                   - CSS style link href
      *
      */
     constructor(initObj) {
@@ -82,7 +91,7 @@ class VLabSceneInteractable {
          */
         this.outlineHelperMeshTWEEN = undefined;
         /**
-         * Tooltip to be shown in {@linkg VLabSceneInteractable#preselect}
+         * Tooltip to be shown in {@link VLabSceneInteractable#preselect}
          * @default empty
          */
         this.tooltip = '';
@@ -90,6 +99,14 @@ class VLabSceneInteractable {
          * Tooltip DIV
          */
         this.tooltipContainer = undefined;
+        /**
+         * Menu to be shown in {@link VLabSceneInteractable#select}
+         */
+        this.menu = [];
+        /**
+         * Menu DIV
+         */
+        this.menuContainer = undefined;
     }
     /**
      * Initialize VLabSceneInteractable.
@@ -103,8 +120,8 @@ class VLabSceneInteractable {
         if (initObj) this.initObj = initObj;
         return new Promise((resolve, reject) => {
             this.vLabScene.vLab.DOMManager.addStyle({
-                id: 'interactableCSS',
-                href: '../vlab.assets/css/interactable.css'
+                id: (this.initObj.interactable.style && this.initObj.interactable.style.id !== undefined) ? this.initObj.interactable.style.id : 'interactableCSS',
+                href: (this.initObj.interactable.style && this.initObj.interactable.style.href !== undefined) ? this.initObj.interactable.style.href : '../vlab.assets/css/interactable.css'
             }).then(() => {
                 if (this.initObj.interactable.name !== undefined) {
                     this.setVLabSceneObject(this.vLabScene.getObjectByName(this.initObj.interactable.name));
@@ -123,6 +140,9 @@ class VLabSceneInteractable {
                 }
                 if (this.initObj.interactable.tooltip !== undefined) {
                     this.tooltip = this.initObj.interactable.tooltip;
+                }
+                if (this.initObj.interactable.menu !== undefined) {
+                    this.menu = this.initObj.interactable.menu;
                 }
                 resolve(this);
             });
@@ -148,6 +168,8 @@ class VLabSceneInteractable {
                     this.selected = true;
                     this.dePreselect();
                 }
+            } else if (this.selectable && this.selected) {
+                this.showMenu();
             }
         } else {
             this.deSelect();
@@ -164,6 +186,7 @@ class VLabSceneInteractable {
                 let indexOfThisSelected = this.vLabScene.selectedInteractables.indexOf(this);
                 this.vLabScene.selectedInteractables.splice(indexOfThisSelected, 1);
                 this.selected = false;
+                this.hideMenu();
             }
         }
         this.dePreselect();
@@ -197,6 +220,13 @@ class VLabSceneInteractable {
             this.hideTooltip();
         }
     }
+    /**
+     * 
+     * 
+     * Event Handlers
+     * 
+     * 
+     */
     /**
      * VLabSceneInteractable default event handler / router; could be overridden in inheritor.
      *
@@ -249,6 +279,14 @@ class VLabSceneInteractable {
         this.select();
     }
     /**
+     * Default mouseup event.type handler
+     *
+     * @memberof VLabSceneInteractable
+     * @abstract
+     */
+    mouseupHandler(event) {
+    }
+    /**
      * Default mousemove event.type handler
      *
      * @memberof VLabSceneInteractable
@@ -256,6 +294,9 @@ class VLabSceneInteractable {
      */
     mousemoveHandler(event) {
         this.preselect();
+        if (!this.intersection) {
+            this.hideMenu();
+        }
     }
     /**
      * Default touchstart event.type handler
@@ -265,7 +306,7 @@ class VLabSceneInteractable {
      */
     touchstartHandler(event) {
         if (this.intersection) {
-            if (this.preselectable && !this.preselected) {
+            if (this.preselectable && !this.preselected && !this.selected) {
                 this.preselect();
             } else {
                 this.select();
@@ -274,6 +315,33 @@ class VLabSceneInteractable {
             this.deSelect();
         }
     }
+    /**
+     * Default touchend event.type handler
+     *
+     * @memberof VLabSceneInteractable
+     * @abstract
+     */
+    touchendHandler(event) {
+        // console.log(this.vLabSceneObject.name, this.selected);
+    }
+    /**
+     * Default touchmove event.type handler
+     *
+     * @memberof VLabSceneInteractable
+     * @abstract
+     */
+    touchmoveHandler(event) {
+        if (!this.intersection) {
+            this.hideMenu();
+        }
+    }
+    /**
+     * 
+     * 
+     * Behavior auxilary functions
+     * 
+     * 
+     */
     /**
      * Shows simple outline based on this.vLabSceneObject.geometry
      */
@@ -317,22 +385,56 @@ class VLabSceneInteractable {
         }
     }
     /**
+     * Show menu
+     */
+    showMenu() {
+        if (this.menu.length > 0  && !this.menuContainer) {
+            this.menuContainer = document.createElement('div');
+            this.menuContainer.id = this.vLabSceneObject.name + '_MENU';
+            this.menuContainer.className = 'interactableMenu';
+            this.vLabScene.vLab.DOMManager.WebGLContainer.appendChild(this.menuContainer);
+            let menuCoords = THREEUtils.toScreenPosition(this.vLabScene.vLab, this.vLabSceneObject);
+            this.menuContainer.style.left = menuCoords.x.toFixed(0) + 'px';
+            this.menuContainer.style.top  = menuCoords.y.toFixed(0) + 'px';
+
+            this.menu.forEach((menuItemObj) => {
+                let menuItem = document.createElement('div');
+                menuItem.className = 'interactableMenuItem';
+                menuItem.innerHTML = menuItemObj.icon + menuItemObj.label;
+                menuItem.onmousedown = menuItem.ontouchstart = function(event) { console.log(event.target); }
+                this.menuContainer.appendChild(menuItem);
+            });
+
+        } else if (this.menuContainer) {
+
+        }
+    }
+    /**
+     * Hide menu
+     */
+    hideMenu() {
+        if (this.menuContainer) {
+            this.vLabScene.vLab.DOMManager.WebGLContainer.removeChild(this.menuContainer);
+            this.menuContainer = null;
+        }
+    }
+    /**
      * Show tooltip
      */
     showTooltip() {
         if (this.tooltip != '' && !this.tooltipContainer) {
             this.tooltipContainer = document.createElement('div');
-            this.tooltipContainer.id = this.vLabSceneObject.name + 'TOOLTIP';
-            this.tooltipContainer.className = 'interactableToolTip';
+            this.tooltipContainer.id = this.vLabSceneObject.name + '_TOOLTIP';
+            this.tooltipContainer.className = 'interactableTooltip';
             this.vLabScene.vLab.DOMManager.WebGLContainer.appendChild(this.tooltipContainer);
-            let toolTipCoords = THREEUtils.toScreenPosition(this.vLabScene.vLab, this.vLabSceneObject);
-            this.tooltipContainer.style.left = toolTipCoords.x.toFixed(0) + 'px';
-            this.tooltipContainer.style.top  = toolTipCoords.y.toFixed(0) + 'px';
+            let tooltipCoords = THREEUtils.toScreenPosition(this.vLabScene.vLab, this.vLabSceneObject);
+            this.tooltipContainer.style.left = tooltipCoords.x.toFixed(0) + 'px';
+            this.tooltipContainer.style.top  = tooltipCoords.y.toFixed(0) + 'px';
             this.tooltipContainer.innerHTML = this.tooltip;
         } else if (this.tooltipContainer) {
-            let toolTipCoords = THREEUtils.toScreenPosition(this.vLabScene.vLab, this.vLabSceneObject);
-            this.tooltipContainer.style.left = toolTipCoords.x.toFixed(0) + 'px';
-            this.tooltipContainer.style.top  = toolTipCoords.y.toFixed(0) + 'px';
+            let tooltipCoords = THREEUtils.toScreenPosition(this.vLabScene.vLab, this.vLabSceneObject);
+            this.tooltipContainer.style.left = tooltipCoords.x.toFixed(0) + 'px';
+            this.tooltipContainer.style.top  = tooltipCoords.y.toFixed(0) + 'px';
         }
     }
     /**

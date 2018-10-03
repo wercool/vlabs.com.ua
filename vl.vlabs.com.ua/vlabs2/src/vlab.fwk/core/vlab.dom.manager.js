@@ -63,83 +63,88 @@ class VLabDOMManager {
                 };
             }
             this.addStyle({
-                id: 'globalCSS',
-                href: (this.vLab.nature.styles) ? this.vLab.nature.styles.global ? this.vLab.nature.styles.global : '../vlab.assets/css/global.css' : '../vlab.assets/css/global.css'
+                id: 'materialIconsCSS',
+                href: '../vlab.assets/css/fonts/material-icons/material-icons.css'
             }).then(() => {
-                /* Remove default loader, default JS, default CSS */
-                let defaultLoader = document.getElementById('loader');
-                defaultLoader.parentNode.removeChild(defaultLoader);
-                let defaultCSS = document.getElementById('defaultCSS');
-                defaultCSS.parentNode.removeChild(defaultCSS);
-                let defaultJS = document.getElementById('defaultJS');
-                defaultJS.parentNode.removeChild(defaultJS);
-                let ZipLoaderJS = document.getElementById('ZipLoaderJS');
-                if (ZipLoaderJS) ZipLoaderJS.parentNode.removeChild(ZipLoaderJS);
-    
-                /**
-                 * 
-                 * VLab DOM container <div id='VLabContainer'>
-                 * #VLabContainer in /vlab.assets/css/global.css 
-                 * 
-                 * @public
-                 */
-                this.container = document.createElement('div');
-                this.container.id = 'VLabContainer';
-                if(document.body != null) {
-                    document.body.appendChild(this.container);
-                }
-                /**
-                 * THREE.WebGLRenderer DOM container <div id='WebGLContainer'>
-                 * #WebGLContainer in /vlab.assets/css/global.css 
-                 * @public
-                 */
-                this.WebGLContainer = document.createElement('div');
-                this.WebGLContainer.id = 'WebGLContainer';
-                this.container.appendChild(this.WebGLContainer);
-                /**
-                 * Shared assets for VLabScene
-                 * @public
-                 */
-                this.VLabSceneSharedAssets = {
-                    sceneLoader: null,
-                    sceneLoaderContainer: null,
-                    sceneLoaderHeader: null,
-                    sceneLoaderContent: null,
-                    sceneLoadingBarDIV: null,
-                    loadingBar: null,
-                    sceneAutoLoader: null,
-                    sceneAutoLoaderProgress: null,
-                    sceneAutoLoaderLabel: null
-                };
-                /**
-                 * Setup simple statistics
-                 */
-                if (this.vLab.nature.simpleStats !== undefined) {
-                    this.simpleStats = new Stats();
-                    this.simpleStats.domElement.id = 'simpleStats';
-                    this.simpleStats.domElement.style.position = 'absolute';
-                    this.simpleStats.domElement.style.left = '0px';
-                    this.simpleStats.domElement.style.top = '0px';
-                    this.simpleStats.domElement.style.zIndex = 3;
-                    this.container.appendChild(this.simpleStats.domElement);
-                    if (this.vLab.nature.simpleStats === false) this.simpleStats.domElement.style.display = 'none';
-                }
-                /**
-                 * Setup WebGLRenderer statistics
-                 */
-                if (this.vLab.nature.rendererStats !== undefined) {
-                    this.rendererStats = new RendererStats();
-                    this.rendererStats.domElement.style.position = 'absolute';
-                    this.rendererStats.domElement.style.top = '0px';
-                    this.rendererStats.domElement.style.right = '0px';
-                    this.rendererStats.domElement.style.zIndex = 3;
-                    this.container.appendChild(this.rendererStats.domElement);
-                    if (this.vLab.nature.rendererStats === false) this.rendererStats.domElement.style.display = 'none';
-                }
+                this.addStyle({
+                    id: 'globalCSS',
+                    href: (this.vLab.nature.styles) ? this.vLab.nature.styles.global ? this.vLab.nature.styles.global : '../vlab.assets/css/global.css' : '../vlab.assets/css/global.css'
+                }).then(() => {
+                    /* Remove default loader, default JS, default CSS */
+                    let defaultLoader = document.getElementById('loader');
+                    defaultLoader.parentNode.removeChild(defaultLoader);
+                    let defaultCSS = document.getElementById('defaultCSS');
+                    defaultCSS.parentNode.removeChild(defaultCSS);
+                    let defaultJS = document.getElementById('defaultJS');
+                    defaultJS.parentNode.removeChild(defaultJS);
+                    let ZipLoaderJS = document.getElementById('ZipLoaderJS');
+                    if (ZipLoaderJS) ZipLoaderJS.parentNode.removeChild(ZipLoaderJS);
+        
+                    /**
+                     * 
+                     * VLab DOM container <div id='VLabContainer'>
+                     * #VLabContainer in /vlab.assets/css/global.css 
+                     * 
+                     * @public
+                     */
+                    this.container = document.createElement('div');
+                    this.container.id = 'VLabContainer';
+                    if(document.body != null) {
+                        document.body.appendChild(this.container);
+                    }
+                    /**
+                     * THREE.WebGLRenderer DOM container <div id='WebGLContainer'>
+                     * #WebGLContainer in /vlab.assets/css/global.css 
+                     * @public
+                     */
+                    this.WebGLContainer = document.createElement('div');
+                    this.WebGLContainer.id = 'WebGLContainer';
+                    this.container.appendChild(this.WebGLContainer);
+                    /**
+                     * Shared assets for VLabScene
+                     * @public
+                     */
+                    this.VLabSceneSharedAssets = {
+                        sceneLoader: null,
+                        sceneLoaderContainer: null,
+                        sceneLoaderHeader: null,
+                        sceneLoaderContent: null,
+                        sceneLoadingBarDIV: null,
+                        loadingBar: null,
+                        sceneAutoLoader: null,
+                        sceneAutoLoaderProgress: null,
+                        sceneAutoLoaderLabel: null
+                    };
+                    /**
+                     * Setup simple statistics
+                     */
+                    if (this.vLab.nature.simpleStats !== undefined) {
+                        this.simpleStats = new Stats();
+                        this.simpleStats.domElement.id = 'simpleStats';
+                        this.simpleStats.domElement.style.position = 'absolute';
+                        this.simpleStats.domElement.style.left = '0px';
+                        this.simpleStats.domElement.style.top = '0px';
+                        this.simpleStats.domElement.style.zIndex = 3;
+                        this.container.appendChild(this.simpleStats.domElement);
+                        if (this.vLab.nature.simpleStats === false) this.simpleStats.domElement.style.display = 'none';
+                    }
+                    /**
+                     * Setup WebGLRenderer statistics
+                     */
+                    if (this.vLab.nature.rendererStats !== undefined) {
+                        this.rendererStats = new RendererStats();
+                        this.rendererStats.domElement.style.position = 'absolute';
+                        this.rendererStats.domElement.style.top = '0px';
+                        this.rendererStats.domElement.style.right = '0px';
+                        this.rendererStats.domElement.style.zIndex = 3;
+                        this.container.appendChild(this.rendererStats.domElement);
+                        if (this.vLab.nature.rendererStats === false) this.rendererStats.domElement.style.display = 'none';
+                    }
 
 
-                resolve();
-            });
+                    resolve();
+                });
+            })
         });
     }
     /**
