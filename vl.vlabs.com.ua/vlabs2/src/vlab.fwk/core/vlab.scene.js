@@ -60,7 +60,7 @@ class VLabScene extends THREE.Scene {
          */
         this.vLab = this.initObj.vLab;
         /**
-         * Set name of VLabScene name to it's contructor name
+         * Set name of VLabScene name to it's constructor name
          * @public
          */
         this.name = this.constructor.name;

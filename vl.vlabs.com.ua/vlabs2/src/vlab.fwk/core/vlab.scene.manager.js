@@ -4,7 +4,7 @@ import VLabScene from './vlab.scene';
 import * as HTTPUtils from '../utils/http.utils';
 import GLTFLoader from 'three-gltf-loader';
 import { ZipLoader } from '../utils/zip.loader';
-import * as ObjUtils from '../utils/object.utils';
+import * as ObjectUtils from '../utils/object.utils';
 
 /**
  * VLab Scene Manager.
@@ -372,21 +372,21 @@ class VLabSceneManager {
         if (Object.keys(material.userData).length > 0) {
             if (material.userData.MeshBasicMaterial) {
                 let _MeshBasicMaterial = new THREE.MeshBasicMaterial();
-                _MeshBasicMaterial = ObjUtils.assign(_MeshBasicMaterial, material);
+                _MeshBasicMaterial = ObjectUtils.assign(_MeshBasicMaterial, material);
                 _MeshBasicMaterial.type = 'MeshBasicMaterial';
                 _MeshBasicMaterial.userData = {};
                 return _MeshBasicMaterial;
             }
             if (material.userData.MeshLambertMaterial) {
                 let _MeshLambertMaterial = new THREE.MeshLambertMaterial();
-                _MeshLambertMaterial = ObjUtils.assign(_MeshLambertMaterial, material);
+                _MeshLambertMaterial = ObjectUtils.assign(_MeshLambertMaterial, material);
                 _MeshLambertMaterial.type = 'MeshLambertMaterial';
                 _MeshLambertMaterial.userData = {};
                 return _MeshLambertMaterial;
             }
             if (material.userData.MeshPhongMaterial) {
                 let _MeshPhongMaterial = new THREE.MeshPhongMaterial();
-                _MeshPhongMaterial = ObjUtils.assign(_MeshPhongMaterial, material);
+                _MeshPhongMaterial = ObjectUtils.assign(_MeshPhongMaterial, material);
                 _MeshPhongMaterial.type = 'MeshPhongMaterial';
                 _MeshPhongMaterial.userData = {};
                 return _MeshPhongMaterial;

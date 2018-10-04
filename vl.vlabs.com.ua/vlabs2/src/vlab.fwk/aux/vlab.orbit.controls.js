@@ -105,20 +105,31 @@ class VLabOrbitControls extends VLabControls {
         this.scale = 1.0;
         this.panOffset.set(0, 0, 0);
     }
+    /**
+     * Sets this.state = this.STATE.NONE
+     *
+     * @memberof VLabOrbitControls
+     */
+    depress () {
+        this.state = this.STATE.NONE;
+    }
     /** 
      * rotating across whole screen goes 360 degrees around
+     * @memberof VLabOrbitControls
      */
     rotateLeft(angle) {
         this.sphericalDelta.theta -= angle;
     }
     /**
      * rotating up and down along whole screen attempts to go 360, but limited to 180
+     * @memberof VLabOrbitControls
      */
     rotateUp(angle) {
         this.sphericalDelta.phi -= angle;
     }
     /**
      * mousedown event type handler, invoked from {@link VLabSceneManager#onDefaultEventListener}
+     * @memberof VLabOrbitControls
      */
     mousedownHandler(event) {
         if (this.enabled) {
@@ -134,12 +145,14 @@ class VLabOrbitControls extends VLabControls {
     }
     /**
      * mouseup event type handler, invoked from {@link VLabSceneManager#onDefaultEventListener}
+     * @memberof VLabOrbitControls
      */
     mouseupHandler(event) {
         this.state = this.STATE.NONE;
     }
     /**
      * mousemove event type handler, invoked from {@link VLabSceneManager#onDefaultEventListener}
+     * @memberof VLabOrbitControls
      */
     mousemoveHandler(event) {
         if (this.enabled) {
@@ -159,6 +172,7 @@ class VLabOrbitControls extends VLabControls {
     }
     /**
      * touchstart event type handler, invoked from {@link VLabSceneManager#onDefaultEventListener}
+     * @memberof VLabOrbitControls
      */
     touchstartHandler(event) {
         if (this.enabled) {
@@ -175,12 +189,14 @@ class VLabOrbitControls extends VLabControls {
     }
     /**
      * touchend event type handler, invoked from {@link VLabSceneManager#onDefaultEventListener}
+     * @memberof VLabOrbitControls
      */
     touchendHandler(event) {
         this.state = this.STATE.NONE;
     }
     /**
      * touchmove event type handler, invoked from {@link VLabSceneManager#onDefaultEventListener}
+     * @memberof VLabOrbitControls
      */
     touchmoveHandler(event) {
         if (this.enabled) {

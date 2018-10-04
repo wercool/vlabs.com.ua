@@ -18,7 +18,14 @@ class VLabControls {
      * @memberof VLabControls
      * @abstract
      */
-    update() { console.warn('update abstract method not implemented in ' + this.contructor.name); }
+    update() { console.warn('update() abstract method not implemented in ' + this.constructor.name); }
+    /**
+     * VLabControls depress abstract function. Usually this method is called when other elements overlay and suppress MouseEvents on VLabScene
+     *
+     * @memberof VLabControls
+     * @abstract
+     */
+    depress() { console.warn('depress() abstract method not implemented in ' + this.constructor.name); }
     /**
      * VLabControls default event handler / router; could be overridden in inheritor.
      *

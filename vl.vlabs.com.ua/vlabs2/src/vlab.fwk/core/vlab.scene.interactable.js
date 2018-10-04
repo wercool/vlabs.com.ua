@@ -1,6 +1,7 @@
 import * as THREE from 'three';
-import * as TWEEN from 'tween.js';
+import * as TWEEN from '@tweenjs/tween.js';
 import * as THREEUtils from '../utils/three.utils';
+import * as ObjectUtils from '../utils/object.utils';
 import VLabScene from './vlab.scene';
 /**
  * VLabScene Interactable base class.
@@ -15,7 +16,7 @@ class VLabSceneInteractable {
      * @param {Object}              initObj                                     - VLabSceneInteractable initialization object
      * @param {VLabScene}           initObj.vLabScene                           - VLabScene
      * @param {Object}              initObj.interactable                        - VLab Scene nature interactables object
-     * @param {string}              [initObj.interactable.name]                 - VLab Scene object name; presumed could be set later
+     * @param {string}              [initObj.interactable.name]                 - VLab Scene object name
      * @param {Object}              [initObj.interactable.sceneObject]          - VLab Scene object reference
      * @param {boolean}             [initObj.interactable.intersectable]        - If true then will be checked for intersection in {@link VLabScene#intersectInteractablesWithInteractablesRaycaster}
      * @param {boolean}             [initObj.interactable.preselecatble]        - If true mouseover and touchstart will preselect this.vLabSceneObject 
@@ -96,6 +97,11 @@ class VLabSceneInteractable {
          */
         this.tooltip = '';
         /**
+         * Is mouse any button pressed
+         * @default false
+         */
+        this.mouseIsPressed = false;
+        /**
          * Tooltip DIV
          */
         this.tooltipContainer = undefined;
@@ -148,6 +154,10 @@ class VLabSceneInteractable {
             });
         });
     }
+    /**
+     * Sets vLabSceneObject and actually adds this instance of VLabSceneInteractable to {@link VLabScene#interactables}; vLabSceneObject.name used as a key for {@link VLabScene#interactables}
+     * @memberof VLabSceneInteractable
+     */
     setVLabSceneObject(vLabSceneObject) {
         if (vLabSceneObject) {
             this.vLabSceneObject = vLabSceneObject;
@@ -277,6 +287,8 @@ class VLabSceneInteractable {
      */
     mousedownHandler(event) {
         this.select();
+        this.hideTooltip();
+        this.mouseIsPressed = true;
     }
     /**
      * Default mouseup event.type handler
@@ -285,6 +297,10 @@ class VLabSceneInteractable {
      * @abstract
      */
     mouseupHandler(event) {
+        this.mouseIsPressed = false;
+        if (this.preselected) {
+            this.showTooltip();
+        }
     }
     /**
      * Default mousemove event.type handler
@@ -385,28 +401,41 @@ class VLabSceneInteractable {
         }
     }
     /**
+     * 
+     * 
+     * Menu functions
+     * 
+     */
+    /**
      * Show menu
      */
     showMenu() {
         if (this.menu.length > 0  && !this.menuContainer) {
+            /**
+             * Depress current VLabControls
+             */
+            this.vLabScene.currentControls.depress();
+
             this.menuContainer = document.createElement('div');
             this.menuContainer.id = this.vLabSceneObject.name + '_MENU';
             this.menuContainer.className = 'interactableMenu';
             this.vLabScene.vLab.DOMManager.WebGLContainer.appendChild(this.menuContainer);
             let menuCoords = THREEUtils.toScreenPosition(this.vLabScene.vLab, this.vLabSceneObject);
             this.menuContainer.style.left = menuCoords.x.toFixed(0) + 'px';
-            this.menuContainer.style.top  = menuCoords.y.toFixed(0) + 'px';
+            this.menuContainer.style.top = menuCoords.y.toFixed(0) + 'px';
 
-            this.menu.forEach((menuItemObj) => {
-                let menuItem = document.createElement('div');
-                menuItem.className = 'interactableMenuItem';
-                menuItem.innerHTML = menuItemObj.icon + menuItemObj.label;
-                menuItem.onmousedown = menuItem.ontouchstart = function(event) { console.log(event.target); }
-                this.menuContainer.appendChild(menuItem);
+            this.menu.forEach((menuItem) => {
+                let menuItemDIV = document.createElement('div');
+                menuItemDIV.menuItem = menuItem;
+                menuItemDIV.className = 'interactableMenuItem';
+                menuItemDIV.innerHTML = menuItem.icon + menuItem.label;
+                if (menuItem.enabled !== undefined && !menuItem.enabled) {
+                    menuItemDIV.style.opacity = 0.1;
+                } else {
+                    menuItemDIV.onmousedown = menuItemDIV.ontouchstart = this.processMenuAction.bind(this);
+                }
+                this.menuContainer.appendChild(menuItemDIV);
             });
-
-        } else if (this.menuContainer) {
-
         }
     }
     /**
@@ -419,22 +448,103 @@ class VLabSceneInteractable {
         }
     }
     /**
+     * Processes menu item action; eval(event.target.menuItem.action) or call event.target.menuItem.action in event.target.menuItem.context
+     */
+    processMenuAction(event) {
+        if (typeof event.target.menuItem.action == 'string') {
+            eval(event.target.menuItem.action);
+        } else {
+            if (event.target.menuItem.context) {
+                event.target.menuItem.action.call(event.target.menuItem.context);
+            } else {
+                console.warn('Menu Item [' + event.target.menuItem.label + '] has no context defined and will be removed from menu');
+                this.removeMenuItem(event.target.menuItem);
+            }
+        }
+        this.hideMenu();
+    }
+    /**
+     * Updates or add (if none of this.menu items has the same label as menuItemObj) new menuItem to this.menu
+     */
+    updateMenuWithMenuItem(menuItemObj) {
+        let existingMenuItemIndex = this.getExistingMenuItemIndex(menuItemObj);
+        /**
+         * Menu Item exists; will be overwritten by menuItemObj
+         */
+        if (existingMenuItemIndex !== undefined) {
+            this.menu[existingMenuItemIndex] = ObjectUtils.merge(this.menu[existingMenuItemIndex], menuItemObj);
+        } else {
+        /**
+         * New Menu Item; will be pushed to this.menu
+         */
+            this.menu.push(menuItemObj);
+        }
+    }
+    /**
+     * Updates or add (if none of this.menu items has the same label as menuItemObj) new menuItem to this.menu
+     * @param {Object | string} menuItemObj     - Menu Item Object or Menu Item Label
+     */
+    removeMenuItem(menuItemObj) {
+        if (typeof menuItemObj == 'string') {
+            menuItemObj = { label: menuItemObj };
+        }
+        let existingMenuItemIndex = this.getExistingMenuItemIndex(menuItemObj);
+        if (existingMenuItemIndex !== undefined) {
+            this.menu.splice(existingMenuItemIndex, 1);
+        }
+    }
+    /**
+     * Enables / Disables menu item
+     * @param {Object | string} menuItemObj     - Menu Item Object or Menu Item Label
+     * @param {boolean} state                   - Menu Item enabled / disabled
+     */
+    setMenuItemEnabled(menuItemObj, state) {
+        if (state !== undefined) {
+            if (typeof menuItemObj == 'string') {
+                menuItemObj = { label: menuItemObj };
+            }
+            let existingMenuItemIndex = this.getExistingMenuItemIndex(menuItemObj);
+            if (existingMenuItemIndex !== undefined) {
+                this.menu[existingMenuItemIndex].enabled = state;
+            }
+        }
+    }
+    /**
+     * Get menu existing item index
+     * @default undefined
+     */
+    getExistingMenuItemIndex(menuItemObj) {
+        let existingMenuItemIndex = undefined;
+        let menuItemIndex = 0;
+        this.menu.forEach((menuItem) => {
+            if (menuItem.label == menuItemObj.label) {
+                existingMenuItemIndex = menuItemIndex;
+            }
+            menuItemIndex++;
+        });
+        return existingMenuItemIndex;
+    }
+    /**
+     * 
+     * Tooltip functions
+     * 
+     */
+    /**
      * Show tooltip
      */
     showTooltip() {
-        if (this.tooltip != '' && !this.tooltipContainer) {
+        if (this.tooltip != '' && !this.tooltipContainer && !this.mouseIsPressed) {
             this.tooltipContainer = document.createElement('div');
             this.tooltipContainer.id = this.vLabSceneObject.name + '_TOOLTIP';
             this.tooltipContainer.className = 'interactableTooltip';
             this.vLabScene.vLab.DOMManager.WebGLContainer.appendChild(this.tooltipContainer);
             let tooltipCoords = THREEUtils.toScreenPosition(this.vLabScene.vLab, this.vLabSceneObject);
-            this.tooltipContainer.style.left = tooltipCoords.x.toFixed(0) + 'px';
-            this.tooltipContainer.style.top  = tooltipCoords.y.toFixed(0) + 'px';
+            this.tooltipContainer.style.left = (tooltipCoords.x > 0 ? tooltipCoords.x.toFixed(0) : 0) + 'px';
+            this.tooltipContainer.style.top = (tooltipCoords.y > 0 ? tooltipCoords.y.toFixed(0) : 0) + 'px';
             this.tooltipContainer.innerHTML = this.tooltip;
-        } else if (this.tooltipContainer) {
-            let tooltipCoords = THREEUtils.toScreenPosition(this.vLabScene.vLab, this.vLabSceneObject);
-            this.tooltipContainer.style.left = tooltipCoords.x.toFixed(0) + 'px';
-            this.tooltipContainer.style.top  = tooltipCoords.y.toFixed(0) + 'px';
+            if (this.tooltipContainer.clientHeight > this.tooltipContainer.clientWidth * 3) {
+                this.tooltipContainer.style.left = (tooltipCoords.x.toFixed(0) - this.tooltipContainer.clientWidth * 3) + 'px';
+            }
         }
     }
     /**

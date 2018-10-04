@@ -1,11 +1,12 @@
-import "@babel/polyfill";
+import '@babel/polyfill';
 import * as THREE from 'three';
-import * as TWEEN from 'tween.js';
 import * as HTTPUtils from '../utils/http.utils';
 import VLabDOMManager from './vlab.dom.manager';
 import VLabEventDispatcher from './vlab.event.dispatcher';
 import VLabSceneDispatcher from './vlab.scene.dispatcher';
 import { EffectComposer, RenderPass, OutlinePass } from "postprocessing";
+
+var TWEEN = require('@tweenjs/tween.js');
 
 /**
  * VLab base class.
