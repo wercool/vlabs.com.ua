@@ -60,6 +60,21 @@
             "preselectable": true
         },
         {
+            "name": "Suzanne1",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "menu": [
+                {
+                    "label": "Take",
+                    "icon": "<i class=\"material-icons\">pan_tool</i>",
+                    "enabled": true,
+                    "action": "this.take()",
+                    "args": null
+                }
+            ]
+        },
+        {
             "name": "Suzanne2",
             "intersectable": true,
             "preselectable": true,

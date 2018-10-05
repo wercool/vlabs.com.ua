@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import VLab from './vlab';
 import VLabScene from "./vlab.scene";
+import VLabSceneInteractable from './vlab.scene.interactable';
 
 /**
  * VLab Scene Dispatcher.
@@ -27,6 +28,11 @@ class VLabSceneDispatcher {
          * @public
          */
         this.sceneIsBeingActivated = null;
+        /**
+         * VLabScene instance of {@link VLabSceneInteractable} taken after {@link VLabSceneInteractable#take}
+         * @public
+         */
+        this.takenInteractable = null;
     }
     /**
      * Add VLabScene to VLabSceneDispatcher stack.
@@ -118,6 +124,144 @@ class VLabSceneDispatcher {
             notYetAutloaded += (vLabScene.initObj.autoload && !vLabScene.loaded) ? 1 : 0;
         });
         return notYetAutloaded;
+    }
+    /**
+     * Process taken process Interactable
+     * Removes vLabSceneObject from VLabScene and attaches it to {@link VLabScene#currentCamera}
+     * Replaces vLabSceneObject materials (including all children) with MeshBasicMaterial
+     * Removes 'Take' menu item
+     * Adds 'Put back' menu item with putObj as args
+     * let putObj = {
+     *  parent: this.vLabSceneObject.parent,
+     *  position: this.vLabSceneObject.position.clone(),
+     *  quaternion: this.vLabSceneObject.quaternion.clone(),
+     *  scale:  this.vLabSceneObject.scale.clone(),
+     *  materials: list of objects; key = vLabSceneObject->sibling->uuid, value = vLabSceneObject->sibling->material
+     * };
+     * 
+     * @param {VLabSceneInteractable} takenInteractable 
+     */
+    setTakenInteractable(takenInteractable) {
+        this.takenInteractable = takenInteractable;
+
+        this.takenInteractable.vLabSceneObject.visible = false;
+
+        let beforeTakenMaterials = {};
+        this.takenInteractable.vLabSceneObject.traverse((sibling) => {
+            if (sibling.type == 'Mesh') {
+                beforeTakenMaterials[sibling.uuid] = sibling.material;
+
+                let takenObjectMaterial = new THREE.MeshBasicMaterial();
+                takenObjectMaterial.map = sibling.material.map;
+                sibling.material = takenObjectMaterial;
+                sibling.material.needsUpdate = true;
+            }
+        });
+
+        let putObj = {
+            parent: this.takenInteractable.vLabSceneObject.parent,
+            position: this.takenInteractable.vLabSceneObject.position.clone(),
+            quaternion: this.takenInteractable.vLabSceneObject.quaternion.clone(),
+            scale:  this.takenInteractable.vLabSceneObject.scale.clone(),
+            materials: beforeTakenMaterials
+        };
+
+        this.takenInteractable.vLabSceneObject.parent.remove();
+        this.currentVLabScene.currentCamera.add(this.takenInteractable.vLabSceneObject);
+
+        this.takenInteractable.vLabSceneObject.visible = true;
+
+        this.takenInteractable.removeMenuItem('Take');
+
+        this.takenInteractable.updateMenuWithMenuItem({
+            label: 'Put back',
+            icon: '<i class="material-icons">undo</i>',
+            enabled: true,
+            action: this.takenInteractable.put,
+            context: this.takenInteractable,
+            args: putObj
+        }, true);
+
+this.takenInteractable.vLabSceneObject.geometry.computeBoundingSphere();
+// console.log(this.vLabSceneObject.geometry.boundingSphere);
+this.takenInteractable.vLabSceneObject.scale.multiplyScalar(0.025);
+this.takenInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, -0.06, -0.15));
+// console.log(this.vLabSceneObject.geometry.boundingSphere);
+// console.log(this.vLabScene.currentCamera);
+
+        this.scenes.forEach((vLabScene) => {
+            for (let interactableName in vLabScene.interactables) {
+                let menuItemId = 0;
+                vLabScene.interactables[interactableName].menu.forEach((menuItem) => {
+                    if (menuItem.label == 'Take') {
+                        vLabScene.interactables[interactableName].menu[menuItemId].enabled = false;
+                    }
+                    menuItemId++;
+                });
+            }
+        });
+    }
+    /**
+     * Process put process Interactable
+     * Puts vLabSceneObject to where it was before taken with take().
+     * Removes vLabSceneObject from {@link VLabScene#currentCamera} and attaches it back to putObj.parent with putObj.position, putObj.quaternion, putObj.scale
+     * Restores material from putObj.material
+     * @param {Object} putObj
+     * let putObj = {
+     *  parent: this.vLabSceneObject.parent,
+     *  position: this.vLabSceneObject.position.clone(),
+     *  quaternion: this.vLabSceneObject.quaternion.clone(),
+     *  scale:  this.vLabSceneObject.scale.clone(),
+     *  materials: list of objects; key = vLabSceneObject->sibling->uuid, value = vLabSceneObject->sibling->material
+     * };
+     */
+    putTakenInteractable(putObj) {
+        this.takenInteractable.vLabSceneObject.visible = false;
+
+        this.currentVLabScene.currentCamera.remove(this.takenInteractable.vLabSceneObject);
+
+        if (putObj.position) this.takenInteractable.vLabSceneObject.position.copy(putObj.position);
+        if (putObj.quaternion) this.takenInteractable.vLabSceneObject.quaternion.copy(putObj.quaternion);
+        if (putObj.scale) this.takenInteractable.vLabSceneObject.scale.copy(putObj.scale);
+        if (putObj.materials) {
+            this.takenInteractable.vLabSceneObject.traverse((sibling) => {
+                if (sibling.type == 'Mesh') {
+                    sibling.material = putObj.materials[sibling.uuid];
+                    sibling.material.needsUpdate = true;
+                }
+            });
+        }
+        if (putObj.parent) {
+            putObj.parent.add(this.takenInteractable.vLabSceneObject);
+        } else {
+            this.vLabScene.add(this.takenInteractable.vLabSceneObject);
+        }
+
+        this.takenInteractable.vLabSceneObject.visible = true;
+
+        this.takenInteractable.removeMenuItem('Put back');
+
+        this.takenInteractable.updateMenuWithMenuItem({
+            label: 'Take',
+            icon: '<i class="material-icons">pan_tool</i>',
+            enabled: true,
+            action: this.takenInteractable.take,
+            context: this.takenInteractable
+        }, true);
+
+        this.takenInteractable = null;
+
+        this.scenes.forEach((vLabScene) => {
+            for (let interactableName in vLabScene.interactables) {
+                let menuItemId = 0;
+                vLabScene.interactables[interactableName].menu.forEach((menuItem) => {
+                    if (menuItem.label == 'Take') {
+                        vLabScene.interactables[interactableName].menu[menuItemId].enabled = true;
+                    }
+                    menuItemId++;
+                });
+            }
+        });
     }
 }
 export default VLabSceneDispatcher;

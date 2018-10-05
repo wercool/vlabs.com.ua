@@ -167,15 +167,18 @@ class VLabSceneInteractable {
         }
     }
     /**
-     * Takes vLabSceneObject to VLab Control Panel.
-     * Removes vLabSceneObject from VLabScene and attaches it to {@link VLabScene#currentCamera}
+     * Calls {@link VLabSceneDispatcher#putTakenInteractable}
      * @abstract
-     * @todo implement attachment to camera
+     */
+    put(putObj) {
+        this.vLabScene.vLab.SceneDispatcher.putTakenInteractable(putObj);
+    }
+    /**
+     * Calls {@link VLabSceneDispatcher#setTakenInteractable}
+     * @abstract
      */
     take() {
-        this.vLabSceneObject.parent.remove();
-        this.vLabScene.currentCamera.add(this.vLabSceneObject);
-        console.log(this.vLabScene.currentCamera);
+        this.vLabScene.vLab.SceneDispatcher.setTakenInteractable(this);
     }
     /**
      * Selects this VLabSceneInteractable
@@ -447,8 +450,12 @@ class VLabSceneInteractable {
 
             this.vLabScene.vLab.DOMManager.WebGLContainer.appendChild(this.menuContainer);
             let menuCoords = THREEUtils.toScreenPosition(this.vLabScene.vLab, this.vLabSceneObject);
-            this.menuContainer.style.left = menuCoords.x.toFixed(0) + 'px';
-            this.menuContainer.style.top = menuCoords.y.toFixed(0) + 'px';
+            let xPosDelta = this.vLabScene.vLab.DOMManager.WebGLContainer.clientWidth - (menuCoords.x + this.menuContainer.clientWidth);
+            let yPosDelta = this.vLabScene.vLab.DOMManager.WebGLContainer.clientHeight - (menuCoords.y + this.menuContainer.clientHeight);
+            let xPos = menuCoords.x + (xPosDelta < 0 ? xPosDelta : 0);
+            let yPos = menuCoords.y + (yPosDelta < 0 ? yPosDelta : 0);
+            this.menuContainer.style.left = (xPos > 0 ? xPos : 0).toFixed(0) + 'px';
+            this.menuContainer.style.top = (yPos > 0 ? yPos : 0).toFixed(0) + 'px';
         }
     }
     /**
@@ -480,7 +487,7 @@ class VLabSceneInteractable {
     /**
      * Updates or add (if none of this.menu items has the same label as menuItemObj) new menuItem to this.menu
      */
-    updateMenuWithMenuItem(menuItemObj) {
+    updateMenuWithMenuItem(menuItemObj, top) {
         let existingMenuItemIndex = this.getExistingMenuItemIndex(menuItemObj);
         /**
          * Menu Item exists; will be overwritten by menuItemObj
@@ -491,7 +498,11 @@ class VLabSceneInteractable {
         /**
          * New Menu Item; will be pushed to this.menu
          */
-            this.menu.push(menuItemObj);
+            if (top == true) {
+                this.menu.unshift(menuItemObj);
+            } else {
+                this.menu.push(menuItemObj);
+            }
         }
     }
     /**
@@ -553,12 +564,18 @@ class VLabSceneInteractable {
             this.tooltipContainer.className = 'interactableTooltip';
             this.vLabScene.vLab.DOMManager.WebGLContainer.appendChild(this.tooltipContainer);
             let tooltipCoords = THREEUtils.toScreenPosition(this.vLabScene.vLab, this.vLabSceneObject);
-            this.tooltipContainer.style.left = (tooltipCoords.x > 0 ? tooltipCoords.x.toFixed(0) : 0) + 'px';
-            this.tooltipContainer.style.top = (tooltipCoords.y > 0 ? tooltipCoords.y.toFixed(0) : 0) + 'px';
+
             this.tooltipContainer.innerHTML = this.tooltip;
+
+            let xPosDelta = this.vLabScene.vLab.DOMManager.WebGLContainer.clientWidth - (tooltipCoords.x + this.tooltipContainer.clientWidth);
+            let yPosDelta = this.vLabScene.vLab.DOMManager.WebGLContainer.clientHeight - (tooltipCoords.y + this.tooltipContainer.clientHeight);
+            let xPos = tooltipCoords.x + (xPosDelta < 0 ? xPosDelta : 0);
+            let yPos = tooltipCoords.y + (yPosDelta < 0 ? yPosDelta : 0);
             if (this.tooltipContainer.clientHeight > this.tooltipContainer.clientWidth * 3) {
-                this.tooltipContainer.style.left = (tooltipCoords.x.toFixed(0) - this.tooltipContainer.clientWidth * 3) + 'px';
+                xPos -= this.tooltipContainer.clientWidth * 3;
             }
+            this.tooltipContainer.style.left = (xPos > 0 ? xPos : 0).toFixed(0) + 'px';
+            this.tooltipContainer.style.top = (yPos > 0 ? yPos : 0).toFixed(0) + 'px';
         }
     }
     /**
