@@ -34,9 +34,17 @@
             "menu": [
                 {
                     "label": "Take",
-                    "icon": "<i class=\"material-icons interactableMenuIcon\">pan_tool</i>",
+                    "icon": "<i class=\"material-icons\">pan_tool</i>",
                     "enabled": true,
-                    "action": "this.vLabScene.Sphere2TestAction(this)"
+                    "action": "this.take()",
+                    "args": null
+                },
+                {
+                    "label": "Sphere2TestAction",
+                    "icon": "",
+                    "enabled": true,
+                    "action": "this.vLabScene.Sphere2TestAction({ interactable : this })",
+                    "args": null
                 }
             ]
         },

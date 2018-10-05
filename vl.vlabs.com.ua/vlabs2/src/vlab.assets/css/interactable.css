@@ -14,10 +14,12 @@
     user-select: none;          /* Likely future */
 }
 .interactableMenuItem {
-    clear: both;
     display: flex;
+    margin-top: auto;
+    clear: both;
     min-width: 80px;
-    padding: 5px;
+    line-height: 40px;
+    padding-right: 10px;
     pointer-events: auto;
     border-radius: 4px;
     -webkit-user-select: none;  /* Chrome all / Safari all */
@@ -30,7 +32,11 @@
     background-color: rgba(68, 68, 68);
 }
 .interactableMenuIcon {
+    height: 30px;
     margin-right: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    color: #00ff00;
 }
 .interactableTooltip {
     z-index: 4;

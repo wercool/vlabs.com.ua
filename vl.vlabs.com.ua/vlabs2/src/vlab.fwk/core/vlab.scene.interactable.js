@@ -27,7 +27,8 @@ class VLabSceneInteractable {
      * @param {string}              [initObj.interactable.menu.item.label]      - Menu item label (HTML)
      * @param {string}              [initObj.interactable.menu.item.icon]       - Menu item icon (HTML)
      * @param {boolean}             [initObj.interactable.menu.item.enabled]    - Menu item enabled
-     * @param {?}                   [initObj.interactable.menu.item.action]     - Menu item action
+     * @param {string | function}   [initObj.interactable.menu.item.action]     - Menu item action
+     * @param {Object}              [initObj.interactable.menu.item.args]       - Menu item action args
      * @param {Object}              [interactable.style]                        - CSS style for particular VLabScene Interactable
      * @param {string}              [interactable.style.id]                     - CSS style link id
      * @param {string}              [interactable.style.href]                   - CSS style link href
@@ -164,6 +165,17 @@ class VLabSceneInteractable {
             this.vLabScene.interactables[this.vLabSceneObject.name] = this;
             this.addOutlineHelperMesh();
         }
+    }
+    /**
+     * Takes vLabSceneObject to VLab Control Panel.
+     * Removes vLabSceneObject from VLabScene and attaches it to {@link VLabScene#currentCamera}
+     * @abstract
+     * @todo implement attachment to camera
+     */
+    take() {
+        this.vLabSceneObject.parent.remove();
+        this.vLabScene.currentCamera.add(this.vLabSceneObject);
+        console.log(this.vLabScene.currentCamera);
     }
     /**
      * Selects this VLabSceneInteractable
@@ -408,6 +420,7 @@ class VLabSceneInteractable {
      */
     /**
      * Show menu
+     * Executes menu action
      */
     showMenu() {
         if (this.menu.length > 0  && !this.menuContainer) {
@@ -419,23 +432,23 @@ class VLabSceneInteractable {
             this.menuContainer = document.createElement('div');
             this.menuContainer.id = this.vLabSceneObject.name + '_MENU';
             this.menuContainer.className = 'interactableMenu';
+
+            this.menu.forEach((menuItem) => {
+                let menuItemDIV = document.createElement('div');
+                menuItemDIV.className = 'interactableMenuItem';
+                menuItemDIV.innerHTML = '<div class="interactableMenuIcon">' + (menuItem.icon ? menuItem.icon : '<i class=\"material-icons\">code</i>') + '</div>' + menuItem.label;
+                if (menuItem.enabled !== undefined && !menuItem.enabled) {
+                    menuItemDIV.style.opacity = 0.1;
+                } else {
+                    menuItemDIV.onmousedown = menuItemDIV.ontouchstart = this.callMenuAction.bind(this, menuItem);
+                }
+                this.menuContainer.appendChild(menuItemDIV);
+            });
+
             this.vLabScene.vLab.DOMManager.WebGLContainer.appendChild(this.menuContainer);
             let menuCoords = THREEUtils.toScreenPosition(this.vLabScene.vLab, this.vLabSceneObject);
             this.menuContainer.style.left = menuCoords.x.toFixed(0) + 'px';
             this.menuContainer.style.top = menuCoords.y.toFixed(0) + 'px';
-
-            this.menu.forEach((menuItem) => {
-                let menuItemDIV = document.createElement('div');
-                menuItemDIV.menuItem = menuItem;
-                menuItemDIV.className = 'interactableMenuItem';
-                menuItemDIV.innerHTML = menuItem.icon + menuItem.label;
-                if (menuItem.enabled !== undefined && !menuItem.enabled) {
-                    menuItemDIV.style.opacity = 0.1;
-                } else {
-                    menuItemDIV.onmousedown = menuItemDIV.ontouchstart = this.processMenuAction.bind(this);
-                }
-                this.menuContainer.appendChild(menuItemDIV);
-            });
         }
     }
     /**
@@ -448,17 +461,18 @@ class VLabSceneInteractable {
         }
     }
     /**
-     * Processes menu item action; eval(event.target.menuItem.action) or call event.target.menuItem.action in event.target.menuItem.context
+     * Calls menu item action; eval(event.target.menuItem.action) or call event.target.menuItem.action in event.target.menuItem.context
      */
-    processMenuAction(event) {
-        if (typeof event.target.menuItem.action == 'string') {
-            eval(event.target.menuItem.action);
+    callMenuAction(menuItem) {
+        if (typeof menuItem.action == 'string') {
+            eval(menuItem.action);
         } else {
-            if (event.target.menuItem.context) {
-                event.target.menuItem.action.call(event.target.menuItem.context);
+            if (menuItem.context) {
+                let actionArgs = ObjectUtils.merge({ interactable: this }, menuItem.args ? menuItem.args : {} );
+                menuItem.action.call(menuItem.context, actionArgs);
             } else {
-                console.warn('Menu Item [' + event.target.menuItem.label + '] has no context defined and will be removed from menu');
-                this.removeMenuItem(event.target.menuItem);
+                console.warn('Menu Item [' + menuItem.label + '] has no context defined and will be removed from menu');
+                this.removeMenuItem(menuItem);
             }
         }
         this.hideMenu();

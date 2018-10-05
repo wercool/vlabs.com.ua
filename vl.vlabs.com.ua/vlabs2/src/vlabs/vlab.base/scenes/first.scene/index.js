@@ -21,21 +21,26 @@ class FirstScene extends VLabScene {
     // Sphere2EventHandler(event) {
     //     console.log(this);
     // }
-    Sphere2TestAction(Sphere2SceneInteractable) {
+    Sphere2TestAction(actionParams) {
         console.log('Sphere2TestAction');
-        Sphere2SceneInteractable.updateMenuWithMenuItem({
-            label: 'Take',
+        console.log('actionParams' , actionParams);
+        console.log('this', this);
+        actionParams.interactable.updateMenuWithMenuItem({
+            label: 'Sphere2TestAction',
             action: this.Sphere2AltTestAction,
             context: this
         });
     }
-    Sphere2AltTestAction(Sphere2SceneInteractable) {
+    Sphere2AltTestAction(actionParams) {
         console.log('Sphere2AltTestAction');
-        // Sphere2SceneInteractable.updateMenuWithMenuItem({
-        //     label: 'Take',
-        //     action: this.Sphere2TestAction,
-        //     // context: this
-        // });
+        console.log('actionParams' , actionParams);
+        console.log('this', this);
+        actionParams.interactable.updateMenuWithMenuItem({
+            label: 'Sphere2TestAction',
+            action: this.Sphere2TestAction,
+            context: this,
+            args: { test: 'test...'}
+        });
     }
 }
 

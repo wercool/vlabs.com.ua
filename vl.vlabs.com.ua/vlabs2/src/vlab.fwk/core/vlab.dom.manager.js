@@ -62,10 +62,14 @@ class VLabDOMManager {
                     return false;
                 };
             }
+            let materialIconsCSSFontPreloader = document.createElement('div');
+            materialIconsCSSFontPreloader.className = 'material-icons';
+            materialIconsCSSFontPreloader.innerHTML = 'fiber_manual_record';
             this.addStyle({
                 id: 'materialIconsCSS',
                 href: '../vlab.assets/css/fonts/material-icons/material-icons.css'
             }).then(() => {
+                document.body.appendChild(materialIconsCSSFontPreloader);
                 this.addStyle({
                     id: 'globalCSS',
                     href: (this.vLab.nature.styles) ? this.vLab.nature.styles.global ? this.vLab.nature.styles.global : '../vlab.assets/css/global.css' : '../vlab.assets/css/global.css'
@@ -79,7 +83,9 @@ class VLabDOMManager {
                     defaultJS.parentNode.removeChild(defaultJS);
                     let ZipLoaderJS = document.getElementById('ZipLoaderJS');
                     if (ZipLoaderJS) ZipLoaderJS.parentNode.removeChild(ZipLoaderJS);
-        
+
+                    document.body.removeChild(materialIconsCSSFontPreloader);
+
                     /**
                      * 
                      * VLab DOM container <div id='VLabContainer'>
