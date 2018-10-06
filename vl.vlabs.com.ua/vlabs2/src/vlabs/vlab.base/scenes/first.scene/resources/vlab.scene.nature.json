@@ -27,11 +27,19 @@
     "interactables": [
         {
             "name": "Sphere2",
+            "visibility": true,
             "intersectable": true,
             "preselectable": true,
             "selectable": true,
             "tooltip": "<i>Sphere2</i>",
             "menu": [
+                {
+                    "label": "Hold selection",
+                    "icon": "<i class=\"material-icons\">filter_tilt_shift</i>",
+                    "enabled": true,
+                    "action": "this.select({hold: true})",
+                    "args": null
+                },
                 {
                     "label": "Take",
                     "icon": "<i class=\"material-icons\">pan_tool</i>",

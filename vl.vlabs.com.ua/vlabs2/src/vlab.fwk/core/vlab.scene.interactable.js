@@ -18,6 +18,7 @@ class VLabSceneInteractable {
      * @param {Object}              initObj.interactable                        - VLab Scene nature interactables object
      * @param {string}              [initObj.interactable.name]                 - VLab Scene object name
      * @param {Object}              [initObj.interactable.sceneObject]          - VLab Scene object reference
+     * @param {boolean}             [initObj.interactable.visibility]           - VLab Scene object visibility
      * @param {boolean}             [initObj.interactable.intersectable]        - If true then will be checked for intersection in {@link VLabScene#intersectInteractablesWithInteractablesRaycaster}
      * @param {boolean}             [initObj.interactable.preselecatble]        - If true mouseover and touchstart will preselect this.vLabSceneObject 
      * @param {boolean}             [initObj.interactable.selectable]           - If true mousedown and touchstart will select this.vLabSceneObject if it is preselectable and already preselected or if it is not preselectable
@@ -84,6 +85,14 @@ class VLabSceneInteractable {
          * @default false
          */
         this.selected = false;
+        /**
+         * Selection inner object
+         */
+        this.selection = {};
+        /**
+         * Is this is a taken object in VLab
+         */
+        this.taken = false;
         /**
          * Simple outline (if EffectComposer is not in use) helper mesh
          */
@@ -164,7 +173,15 @@ class VLabSceneInteractable {
             this.vLabSceneObject = vLabSceneObject;
             this.vLabScene.interactables[this.vLabSceneObject.name] = this;
             this.addOutlineHelperMesh();
+            this.setVisibility();
         }
+    }
+    /**
+     * Makes VLabSceneInteractable.vLabSceneObject.visible = visibility; if defined
+     * @param {boolean} visibility
+     */
+    setVisibility(visibility) {
+        this.vLabSceneObject.visible = (visibility !== undefined) ? visibility : ((this.initObj.interactable.visibility !== undefined) ? this.initObj.interactable.visibility : true);
     }
     /**
      * Calls {@link VLabSceneDispatcher#putTakenInteractable}
@@ -183,9 +200,39 @@ class VLabSceneInteractable {
     /**
      * Selects this VLabSceneInteractable
      * Adds this instance to {@link VLabScene#selectedInteractables}
+     * @param {Object} selectionObj 
+     * selectionObj = {
+     * [ hold: true, true: selection would be kept until next VLabSceneInteractable be selected
+     *   ...
+     * ]
+     * };
      * @abstract
      */
-    select() {
+    select(selectionObj) {
+        /**
+         * Selection
+         */
+        if (selectionObj != undefined) {
+            this.selection =  ObjectUtils.merge(this.selection, selectionObj);
+
+            if (this.selection.hold == true) {
+                this.updateMenuWithMenuItem({
+                    label: 'Hold selection',
+                    icon: '<i class="material-icons" style="color: #ffff00;">cancel</i>',
+                    action: 'this.select({hold: false})'
+                });
+            } else {
+                this.updateMenuWithMenuItem({
+                    label: 'Hold selection',
+                    icon: '<i class="material-icons">filter_tilt_shift</i>',
+                    action: 'this.select({hold: true})'
+                });
+            }
+            return;
+        }
+        /**
+         * Intersection
+         */
         if (this.intersection) {
             if (this.selectable && !this.selected) {
                 if (this.preselectable && this.preselected || !this.preselectable) {
@@ -194,9 +241,27 @@ class VLabSceneInteractable {
                     this.dePreselect();
                 }
             } else if (this.selectable && this.selected) {
+                if (this.menuContainer && this.menu[0]) {
+                    /**
+                     * Hold Selection is at the menu[0]
+                     */
+                    if (this.menu[0].label == 'Hold selection') {
+                        this.selection.hold = true;
+                        this.updateMenuWithMenuItem({
+                            label: 'Hold selection',
+                            icon: '<i class="material-icons" style="color: #ffff00;">cancel</i>',
+                            action: 'this.select({hold: false})'
+                        });
+                        this.hideMenu();
+                        return;
+                    }
+                }
                 this.showMenu();
             }
         } else {
+            /**
+             * No intersection
+             */
             this.deSelect();
         }
     }
@@ -207,13 +272,15 @@ class VLabSceneInteractable {
      */
     deSelect() {
         if (this.selected) {
-            if (!this.preselected) {
-                let indexOfThisSelected = this.vLabScene.selectedInteractables.indexOf(this);
-                this.vLabScene.selectedInteractables.splice(indexOfThisSelected, 1);
-                this.selected = false;
-                this.hideMenu();
+            if (!this.selection.hold) {
+                if (!this.preselected) {
+                    let indexOfThisSelected = this.vLabScene.selectedInteractables.indexOf(this);
+                    this.vLabScene.selectedInteractables.splice(indexOfThisSelected, 1);
+                    this.selected = false;
+                }
             }
         }
+        this.hideMenu();
         this.dePreselect();
     }
     /**
@@ -364,6 +431,13 @@ class VLabSceneInteractable {
     touchmoveHandler(event) {
         if (!this.intersection) {
             this.hideMenu();
+            this.hideTooltip();
+        } else {
+            if (!this.preselected) {
+                this.hideTooltip();
+            } else {
+                this.showTooltip();
+            }
         }
     }
     /**
@@ -495,10 +569,16 @@ class VLabSceneInteractable {
         if (existingMenuItemIndex !== undefined) {
             this.menu[existingMenuItemIndex] = ObjectUtils.merge(this.menu[existingMenuItemIndex], menuItemObj);
         } else {
-        /**
-         * New Menu Item; will be pushed to this.menu
-         */
+            /**
+             * New Menu Item; will be pushed to this.menu
+             */
             if (top == true) {
+                if (this.menu[0]) {
+                    if (this.menu[0].label == 'Hold selection' && menuItemObj.label != 'Put back') {
+                        this.menu.splice(1, 0, menuItemObj);
+                        return;
+                    }
+                }
                 this.menu.unshift(menuItemObj);
             } else {
                 this.menu.push(menuItemObj);
