@@ -70,6 +70,11 @@ class VLabScene extends THREE.Scene {
          */
         this.manager = new VLabSceneManager(this);
         /**
+         * VLabScene clock
+         * @public
+         */
+        this.clock = new THREE.Clock();
+        /**
          * Set to true while scene file is loading, default false
          * @public
          */
@@ -279,7 +284,7 @@ class VLabScene extends THREE.Scene {
     }
     /**
      * Add instance of VLabSceneInteractable into this.interactables
-     * @param {Object}              interactableObj
+     * @param {Object}              interactableObj initObj of {@link VLabSceneInteractable}
      * @param {string}              interactableObj.name
      * @memberof VLabScene
      * @async
@@ -314,17 +319,40 @@ class VLabScene extends THREE.Scene {
                 }
             }
 
-            this.intersectedInteractables = [];
             this.intersectInteractablesWithInteractablesRaycaster();
 
-            let intersectedInteractable = null;
+            let intersectedInteractable = undefined;
             if (this.intersectedInteractables.length > 0) {
+                /**
+                 * 
+                 * @see {@link {https://threejs.org/docs/#api/en/core/Raycaster.intersectObjects}}
+                 * intersetcion[0] object taken into account
+                 * 
+                 * 
+                 */
                 intersectedInteractable = this.interactables[this.intersectedInteractables[0].object.name];
+                /**
+                 * Dispatch intersectionHandler
+                 */
                 intersectedInteractable.intersectionHandler({
                     original: event,
                     intersection: this.intersectedInteractables[0]
                 });
+            } else {
+                /**
+                 * Deselect intersectedInteractables if no intersections in short period of interactions
+                 */
+                if(event.type == 'mousedown') {
+                    if (this.clock.getDelta() < 0.3) this.deselectInteractables();
+                }
+                if (event.type == 'touchstart') {
+                    if (this.clock.getDelta() < 0.5)  this.deselectInteractables();
+                }
             }
+
+            /**
+             * Dispatch nointersectionHandler for all other VLabSceneInteractable except ( intersectedInteractable )
+             */
             for (let interactableName in this.interactables) {
                 if (this.interactables[interactableName] !== intersectedInteractable) {
                     this.interactables[interactableName].nointersectionHandler({
@@ -342,7 +370,7 @@ class VLabScene extends THREE.Scene {
      * @abstract
      */
     intersectInteractablesWithInteractablesRaycaster() {
-        // console.log(this.intersectableInteractables);
+        this.intersectedInteractables = [];
         if (this.intersectableInteractables.length > 0) {
             /**
              * VLabOrbitControls
@@ -352,6 +380,14 @@ class VLabScene extends THREE.Scene {
             }
             this.interactablesRaycaster.setFromCamera(this.eventCoordsNormalized, this.currentCamera);
             this.intersectedInteractables = this.interactablesRaycaster.intersectObjects(this.intersectableInteractables);
+        }
+    }
+    /**
+     * Deselects all of this.interactables
+     */
+    deselectInteractables() {
+        for (let interactableName in this.interactables) {
+            this.interactables[interactableName].deSelect(true);
         }
     }
 }

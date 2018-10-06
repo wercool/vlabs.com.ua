@@ -107,11 +107,6 @@ class VLabSceneInteractable {
          */
         this.tooltip = '';
         /**
-         * Is mouse any button pressed
-         * @default false
-         */
-        this.mouseIsPressed = false;
-        /**
          * Tooltip DIV
          */
         this.tooltipContainer = undefined;
@@ -218,7 +213,7 @@ class VLabSceneInteractable {
             if (this.selection.hold == true) {
                 this.updateMenuWithMenuItem({
                     label: 'Hold selection',
-                    icon: '<i class="material-icons" style="color: #ffff00;">cancel</i>',
+                    icon: '<i class="material-icons" style="color: #ffffff;">filter_tilt_shift</i>',
                     action: 'this.select({hold: false})'
                 });
             } else {
@@ -236,26 +231,34 @@ class VLabSceneInteractable {
         if (this.intersection) {
             if (this.selectable && !this.selected) {
                 if (this.preselectable && this.preselected || !this.preselectable) {
+                    let currentlySelectedInteractable = this.vLabScene.manager.getCurrentlySelectedInteractable();
+                    if (currentlySelectedInteractable) currentlySelectedInteractable.deSelect();
+
                     this.vLabScene.selectedInteractables.push(this);
                     this.selected = true;
                     this.dePreselect();
                 }
             } else if (this.selectable && this.selected) {
-                if (this.menuContainer && this.menu[0]) {
-                    /**
-                     * Hold Selection is at the menu[0]
-                     */
-                    if (this.menu[0].label == 'Hold selection') {
-                        this.selection.hold = true;
-                        this.updateMenuWithMenuItem({
-                            label: 'Hold selection',
-                            icon: '<i class="material-icons" style="color: #ffff00;">cancel</i>',
-                            action: 'this.select({hold: false})'
-                        });
-                        this.hideMenu();
-                        return;
-                    }
-                }
+                /**
+                 * 
+                 * Auto Hold Selection
+                 * 
+                 */
+                // if (this.menuContainer && this.menu[0]) {
+                //     /**
+                //      * Hold Selection is at the menu[0]
+                //      */
+                //     if (this.menu[0].label == 'Hold selection') {
+                //         this.selection.hold = true;
+                //         this.updateMenuWithMenuItem({
+                //             label: 'Hold selection',
+                //             icon: '<i class="material-icons" style="color: #ffffff;">filter_tilt_shift</i>',
+                //             action: 'this.select({hold: false})'
+                //         });
+                //         this.hideMenu();
+                //         return;
+                //     }
+                // }
                 this.showMenu();
             }
         } else {
@@ -266,19 +269,16 @@ class VLabSceneInteractable {
         }
     }
     /**
-     * Deselects this VLabSceneInteractable
+     * Deselects @conditionally this VLabSceneInteractable
      * Removes this instance from {@link VLabScene#selectedInteractables}
+     * Sets @conditionally this.selected = false
      * @abstract
      */
-    deSelect() {
-        if (this.selected) {
-            if (!this.selection.hold) {
-                if (!this.preselected) {
-                    let indexOfThisSelected = this.vLabScene.selectedInteractables.indexOf(this);
-                    this.vLabScene.selectedInteractables.splice(indexOfThisSelected, 1);
-                    this.selected = false;
-                }
-            }
+    deSelect(insistently) {
+        if (this.selected  && ((!this.selection.hold && this.vLabScene.intersectedInteractables.length > 0) || (!this.selection.hold && insistently == true))) {
+            let indexOfThisSelected = this.vLabScene.selectedInteractables.indexOf(this);
+            this.vLabScene.selectedInteractables.splice(indexOfThisSelected, 1);
+            this.selected = false;
         }
         this.hideMenu();
         this.dePreselect();
@@ -368,9 +368,13 @@ class VLabSceneInteractable {
      * @abstract
      */
     mousedownHandler(event) {
-        this.select();
-        this.hideTooltip();
-        this.mouseIsPressed = true;
+        /**
+         * do not react on middle mouse down
+         */
+        if(event.button != 1) {
+            this.select();
+            this.hideTooltip();
+        }
     }
     /**
      * Default mouseup event.type handler
@@ -379,7 +383,6 @@ class VLabSceneInteractable {
      * @abstract
      */
     mouseupHandler(event) {
-        this.mouseIsPressed = false;
         if (this.preselected) {
             this.showTooltip();
         }
@@ -410,7 +413,12 @@ class VLabSceneInteractable {
                 this.select();
             }
         } else {
-            this.deSelect();
+            if (!this.vLabScene.manager.getCurrentlySelectedInteractable()) {
+                this.deSelect();
+            } else {
+                this.dePreselect();
+            }
+            this.hideMenu();
         }
     }
     /**
@@ -420,7 +428,6 @@ class VLabSceneInteractable {
      * @abstract
      */
     touchendHandler(event) {
-        // console.log(this.vLabSceneObject.name, this.selected);
     }
     /**
      * Default touchmove event.type handler
@@ -573,12 +580,6 @@ class VLabSceneInteractable {
              * New Menu Item; will be pushed to this.menu
              */
             if (top == true) {
-                if (this.menu[0]) {
-                    if (this.menu[0].label == 'Hold selection' && menuItemObj.label != 'Put back') {
-                        this.menu.splice(1, 0, menuItemObj);
-                        return;
-                    }
-                }
                 this.menu.unshift(menuItemObj);
             } else {
                 this.menu.push(menuItemObj);
@@ -638,7 +639,7 @@ class VLabSceneInteractable {
      * Show tooltip
      */
     showTooltip() {
-        if (this.tooltip != '' && !this.tooltipContainer && !this.mouseIsPressed) {
+        if (this.tooltip != '' && !this.tooltipContainer) {
             this.tooltipContainer = document.createElement('div');
             this.tooltipContainer.id = this.vLabSceneObject.name + '_TOOLTIP';
             this.tooltipContainer.className = 'interactableTooltip';

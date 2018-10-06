@@ -5,6 +5,7 @@ import * as HTTPUtils from '../utils/http.utils';
 import GLTFLoader from 'three-gltf-loader';
 import { ZipLoader } from '../utils/zip.loader';
 import * as ObjectUtils from '../utils/object.utils';
+import VLabSceneInteractable from './vlab.scene.interactable';
 
 /**
  * VLab Scene Manager.
@@ -189,6 +190,19 @@ class VLabSceneManager {
         selectedInteractables.forEach((selectedInteractable) => {
             selectedInteractable.outlineSelected();
         });
+    }
+    /**
+     * Returns currently selected (excluding those with selection.hold)
+     * @returns {VLabSceneInteractable}
+     */
+    getCurrentlySelectedInteractable() {
+        let currentlySelectedInteractable;
+        for (let interactableName in this.vLabScene.interactables) {
+            if (this.vLabScene.interactables[interactableName].selected && !this.vLabScene.interactables[interactableName].selection.hold) {
+                currentlySelectedInteractable = this.vLabScene.interactables[interactableName];
+            }
+        }
+        return currentlySelectedInteractable;
     }
     /**
      * VLab Scene loader.
@@ -425,6 +439,7 @@ class VLabSceneManager {
      */
     performanceManager() {
         if (this.vLab.fps < 30) {
+            if (this.performance.lowFPSDetected < 0) this.performance.lowFPSDetected = 0;
             if (this.performance.lowFPSDetected > 5) {
                 /**
                  * No EffectComposer at low FPS
@@ -436,9 +451,16 @@ class VLabSceneManager {
                 this.performance.lowFPSDetected = 0;
                 return;
             }
-            this.performance.lowFPSDetected += 1;
+            this.performance.lowFPSDetected++;
         } else {
-            this.performance.lowFPSDetected = 0;
+            if (this.performance.lowFPSDetected < -5) {
+                if (this.vLab.effectComposer == null) {
+                    this.vLab.setupEffectComposer();
+                    this.processInteractablesSelections();
+                }
+            } else {
+                if (this.performance.lowFPSDetected  > -10) this.performance.lowFPSDetected--;
+            }
         }
     }
 }

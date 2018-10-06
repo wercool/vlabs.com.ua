@@ -34,17 +34,17 @@
             "tooltip": "<i>Sphere2</i>",
             "menu": [
                 {
-                    "label": "Hold selection",
-                    "icon": "<i class=\"material-icons\">filter_tilt_shift</i>",
-                    "enabled": true,
-                    "action": "this.select({hold: true})",
-                    "args": null
-                },
-                {
                     "label": "Take",
                     "icon": "<i class=\"material-icons\">pan_tool</i>",
                     "enabled": true,
                     "action": "this.take()",
+                    "args": null
+                },
+                {
+                    "label": "Hold selection",
+                    "icon": "<i class=\"material-icons\">filter_tilt_shift</i>",
+                    "enabled": true,
+                    "action": "this.select({hold: true})",
                     "args": null
                 },
                 {
@@ -59,7 +59,7 @@
         {
             "name": "Suzanne",
             "intersectable": true,
-            "preselectable": true,
+            "preselectable": false,
             "selectable": true
         },
         {
@@ -80,7 +80,8 @@
                     "action": "this.take()",
                     "args": null
                 }
-            ]
+            ],
+            "tooltip": "Suzanne1"
         },
         {
             "name": "Suzanne2",
