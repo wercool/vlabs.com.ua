@@ -56,3 +56,19 @@
     -ms-user-select: none;      /* IE 10+ */
     user-select: none;          /* Likely future */
 }
+.interactableRespondentTooltip {
+    z-index: 4;
+    position: absolute;
+    color: #1b1b1b;
+    display: block;
+    padding: 4px;
+    font-size: 11px;
+    max-width: 400px;
+    border-radius: 1px;
+    background-color:rgba(159, 255, 164, 0.85);
+    pointer-events: none;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */
+}

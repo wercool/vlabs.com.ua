@@ -400,6 +400,11 @@ class VLabSceneInteractable {
         if(event.button != 1 && event.button != 2) {
             this.select();
             this.hideTooltip();
+        } else if (event.button == 2){
+            if (this.intersection) {
+                console.log(this.vLabSceneObject.name);
+                console.log(this);
+            }
         }
     }
     /**
@@ -569,7 +574,7 @@ class VLabSceneInteractable {
             });
 
             this.vLab.DOMManager.WebGLContainer.appendChild(this.menuContainer);
-            let menuCoords = THREEUtils.toScreenPosition(this.vLab, this.vLabSceneObject);
+            let menuCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, this.vLabSceneObject);
             let xPosDelta = this.vLab.DOMManager.WebGLContainer.clientWidth - (menuCoords.x + this.menuContainer.clientWidth);
             let yPosDelta = this.vLab.DOMManager.WebGLContainer.clientHeight - (menuCoords.y + this.menuContainer.clientHeight);
             let xPos = menuCoords.x + (xPosDelta < 0 ? xPosDelta : 0);
@@ -683,19 +688,30 @@ class VLabSceneInteractable {
      * Shows tooltip
      * Do not show tooltips when this.vLabScene.currentControls.active == false
      */
-    showTooltip() {
+    showTooltip(tooltipHTML, object3D) {
         if (!this.vLabScene.currentControls.active) {
             this.showRespondents();
 
-            if (this.tooltip != '' && !this.tooltipContainer) {
+            if ((this.tooltip != '' || tooltipHTML !== undefined) && !this.tooltipContainer) {
                 this.tooltipContainer = document.createElement('div');
                 this.tooltipContainer.id = this.vLabSceneObject.name + '_TOOLTIP';
-                this.tooltipContainer.className = 'interactableTooltip';
+                let shiftX = 0;
+                let shiftY = 0;
+                if (object3D == undefined) {
+                    this.tooltipContainer.className = 'interactableTooltip';
+                } else {
+                    this.tooltipContainer.className = 'interactableRespondentTooltip';
+                    shiftX += 2;
+                    shiftY += 2;
+                }
                 this.vLab.DOMManager.WebGLContainer.appendChild(this.tooltipContainer);
-                let tooltipCoords = THREEUtils.toScreenPosition(this.vLab, this.vLabSceneObject);
-    
-                this.tooltipContainer.innerHTML = this.tooltip;
-    
+                let tooltipCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, (object3D !== undefined) ? object3D : this.vLabSceneObject);
+
+                tooltipCoords.x += shiftX;
+                tooltipCoords.y += shiftY;
+
+                this.tooltipContainer.innerHTML = (tooltipHTML !== undefined) ? tooltipHTML : this.tooltip;
+
                 let xPosDelta = this.vLab.DOMManager.WebGLContainer.clientWidth - (tooltipCoords.x + this.tooltipContainer.clientWidth);
                 let yPosDelta = this.vLab.DOMManager.WebGLContainer.clientHeight - (tooltipCoords.y + this.tooltipContainer.clientHeight);
                 let xPos = tooltipCoords.x + (xPosDelta < 0 ? xPosDelta : 0);
@@ -717,6 +733,9 @@ class VLabSceneInteractable {
             this.tooltipContainer = null;
         }
         if (this.respondentPreselectionHelpers.length > 0) {
+            this.respondents.forEach((respondent) => {
+                respondent.hideTooltip();
+            });
             this.respondentPreselectionHelpers.forEach((respondentPreselectionHelper) => {
                 this.vLabScene.remove(respondentPreselectionHelper);
             });
@@ -764,9 +783,15 @@ class VLabSceneInteractable {
 
                     let respondentIntersectionPointMesh = new THREE.Mesh(this.vLab.prefabs['respondentIntersectionPointGeometry'], this.vLab.prefabs['respondentIntersectionPointMaterial']);
                     respondentIntersectionPointMesh.position.copy(respondentIntersections[0].point);
-                    respondentIntersectionPointMesh.scale.multiplyScalar(respondentIntersections[0].point.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
+                    respondentIntersectionPointMesh.scale.multiplyScalar(0.5 * respondentIntersections[0].point.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
                     this.vLabScene.add(respondentIntersectionPointMesh);
                     this.respondentPreselectionHelpers.push(respondentIntersectionPointMesh);
+
+                    if (respondent[this.vLabSceneObject.name + '_RESP_TOOLTIP']) {
+                        if (THREEUtils.frustumContainsPoint(this.vLab, respondentIntersectionPointMesh.position)) {
+                            respondent.showTooltip(respondent[this.vLabSceneObject.name + '_RESP_TOOLTIP'], respondentIntersectionPointMesh);
+                        }
+                    }
                 }
             }
         });

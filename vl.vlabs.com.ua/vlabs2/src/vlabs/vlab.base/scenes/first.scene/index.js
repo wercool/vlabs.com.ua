@@ -21,8 +21,11 @@ class FirstScene extends VLabScene {
         /**
         * @todo
         */
-        this.interactables['Sphere2'].respondents.push(this.interactables['Suzanne2']);
+        this.interactables['Sphere2'].respondents.push(this.interactables['Suzanne1']);
         this.interactables['Sphere2'].respondents.push(this.interactables['Suzanne1_1']);
+        this.interactables['Sphere2'].respondents.push(this.interactables['Suzanne2']);
+
+        this.interactables['Suzanne1_1']['Sphere2_RESP_TOOLTIP'] = 'applicable';
     }
     // Sphere2EventHandler(event) {
     //     console.log(this);
