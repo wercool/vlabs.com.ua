@@ -17,6 +17,12 @@ class FirstScene extends VLabScene {
         //         }
         //     }
         // });
+
+        /**
+        * @todo
+        */
+        this.interactables['Sphere2'].respondents.push(this.interactables['Suzanne2']);
+        this.interactables['Sphere2'].respondents.push(this.interactables['Suzanne1_1']);
     }
     // Sphere2EventHandler(event) {
     //     console.log(this);

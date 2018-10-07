@@ -48,6 +48,12 @@ class VLab {
          * @public
          */
         this.getProdMode                = () => { return  '<!--VLAB PROD MODE-->' == 'true' };
+        /**
+         * List of prefab elements
+         * @param {CircleBufferGeometry} respondentIntersectionPoint
+         * @param {MeshBasicMaterial} respondentIntersectionPointMaterial
+         */
+        this.prefabs = {};
     }
     /**
      * VLab initializer.

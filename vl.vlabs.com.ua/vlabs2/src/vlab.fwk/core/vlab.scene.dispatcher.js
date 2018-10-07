@@ -33,6 +33,11 @@ class VLabSceneDispatcher {
          * @public
          */
         this.takenInteractable = null;
+
+        /**
+         * Fills this.vLab.prefabs with initial objects
+         */
+        this.initializeVLabPrefabs();
     }
     /**
      * Add VLabScene to VLabSceneDispatcher stack.
@@ -264,6 +269,24 @@ this.takenInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, -0.0
                 });
             }
         });
+    }
+
+    /**
+     * Fills this.vLab.prefabs with initial objects
+     */
+    initializeVLabPrefabs() {
+        if (!this.vLab.prefabs['respondentLineMaterial']) {
+            this.vLab.prefabs['respondentLineMaterial'] = new THREE.LineBasicMaterial({ color: 0xfff6b7 });
+        }
+        if (!this.vLab.prefabs['respondentIntersectionPointGeometry']) {
+            this.vLab.prefabs['respondentIntersectionPointGeometry'] = new THREE.SphereBufferGeometry(0.005, 8, 8);
+        }
+        if (!this.vLab.prefabs['respondentIntersectionPointMaterial']) {
+            this.vLab.prefabs['respondentIntersectionPointMaterial'] = new THREE.MeshBasicMaterial({ color: 0xfff6b7, depthTest: false, side: THREE.BackSide });
+        }
+        if (!this.vLab.prefabs['interactableToRespondentPointMaterial']) {
+            this.vLab.prefabs['interactableToRespondentPointMaterial'] = new THREE.MeshBasicMaterial({ color: 0xfff6b7, side: THREE.BackSide });
+        }
     }
 }
 export default VLabSceneDispatcher;

@@ -88,6 +88,13 @@
             "intersectable": true,
             "preselectable": true,
             "tooltip": "<b>Suzanne</b><hr>In January–February 2002 it was clear that NaN could not survive and would close the doors in March. Nevertheless, they put out one more release, 2.25. As a sort-of easter egg, a last personal tag, the artists and developers decided to add a 3D model of a chimpanzee head. It was created by Willem-Paul van Overbruggen (SLiD3), who named it Suzanne after the orangutan in the Kevin Smith film Jay and Silent Bob Strike Back."
+        },
+        {
+            "name": "Suzanne1_1",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "Suzanne1_1"
         }
     ]
 }

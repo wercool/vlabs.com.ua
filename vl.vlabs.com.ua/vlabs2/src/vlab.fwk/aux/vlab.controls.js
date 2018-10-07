@@ -11,6 +11,7 @@ class VLabControls {
         this.MOUSEBUTTONS = { ORBIT: THREE.MOUSE.LEFT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.RIGHT };
 
         this.enabled = false;
+        this.active = false;
     }
     /**
      * VLabControls update abstract function.

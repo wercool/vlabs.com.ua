@@ -58,6 +58,8 @@ class VLabOrbitControls extends VLabControls {
      * @memberof VLabOrbitControls {@link VLabControls#update}
      */
     update() {
+        this.active = true;
+
         var offset = new THREE.Vector3();
         // camera.up is the orbit axis
         var quat = new THREE.Quaternion().setFromUnitVectors(this.vLabScene.currentCamera.up, new THREE.Vector3(0, 1, 0));
@@ -112,6 +114,7 @@ class VLabOrbitControls extends VLabControls {
      */
     depress () {
         this.state = this.STATE.NONE;
+        this.active = false;
     }
     /** 
      * rotating across whole screen goes 360 degrees around
@@ -149,6 +152,7 @@ class VLabOrbitControls extends VLabControls {
      */
     mouseupHandler(event) {
         this.state = this.STATE.NONE;
+        this.active = false;
     }
     /**
      * mousemove event type handler, invoked from {@link VLabSceneManager#onDefaultEventListener}
@@ -193,6 +197,7 @@ class VLabOrbitControls extends VLabControls {
      */
     touchendHandler(event) {
         this.state = this.STATE.NONE;
+        this.active = false;
     }
     /**
      * touchmove event type handler, invoked from {@link VLabSceneManager#onDefaultEventListener}
