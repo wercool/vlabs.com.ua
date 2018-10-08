@@ -74,8 +74,10 @@ class VLabSceneDispatcher {
         this.vLab.renderPaused = true;
         return new Promise((resolve, reject) => {
             this.scenes.forEach((vLabScene) => {
-                vLabScene.deactivate().then((vLabScene) => {
-                    vLabScene.onDeactivated();
+                vLabScene.deactivate().then((deactivated) => {
+                    if (deactivated) {
+                        vLabScene.onDeactivated.call(vLabScene);
+                    }
                 });
             });
             for (let vLabScene of this.scenes) {
@@ -87,7 +89,7 @@ class VLabSceneDispatcher {
                         self.vLab.setupWebGLRenderer();
                         self.vLab.resizeWebGLRenderer();
                         self.vLab.setupEffectComposer();
-                        vLabScene.onActivated();
+                        vLabScene.onActivated.call(vLabScene);
                         self.vLab.renderPaused = false;
                         setTimeout(() => {
                             self.vLab.WebGLRendererCanvas.classList.remove('hidden');
@@ -114,7 +116,9 @@ class VLabSceneDispatcher {
         }
         for (let vLabScene of this.scenes) {
             if (vLabScene.initObj.autoload && !vLabScene.loaded && !vLabScene.loading) {
-                vLabScene.manager.load().then(this.autoloadScenes.bind(this));
+                vLabScene.manager.load().then(() => {
+                    this.autoloadScenes.bind(this);
+                });
                 return;
             }
         }

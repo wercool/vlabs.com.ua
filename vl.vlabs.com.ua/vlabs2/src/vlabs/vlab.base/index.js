@@ -50,20 +50,20 @@ class BaseVLab extends VLab {
 
 
 
-        // let self = this;
-        // setTimeout(() => {
-        //     /* Activate Second Scene */
-        //     self.SceneDispatcher.activateScene({
-        //         class: SecondScene
-        //     });
-        // }, 3000);
+        let self = this;
+        setTimeout(() => {
+            /* Activate Second Scene */
+            self.SceneDispatcher.activateScene({
+                class: SecondScene
+            });
+        }, 10000);
 
-        // setTimeout(() => {
-        //     /* Activate FirstScene Scene */
-        //     self.SceneDispatcher.activateScene({
-        //         class: FirstScene
-        //     });
-        // }, 30000);
+        setTimeout(() => {
+            /* Activate FirstScene Scene */
+            self.SceneDispatcher.activateScene({
+                class: FirstScene
+            });
+        }, 40000);
 
         // let self = this;
         // setTimeout(() => {

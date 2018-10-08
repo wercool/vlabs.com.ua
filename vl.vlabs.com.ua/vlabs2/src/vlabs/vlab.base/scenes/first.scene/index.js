@@ -5,21 +5,7 @@ class FirstScene extends VLabScene {
     constructor(iniObj) {
         super(iniObj);
     }
-    onActivated() {
-        // console.log(this.name + ' activated');
-        // console.log(this);
-
-        // this.interactables['Sphere2'].onDefaultEventHandler = this.Sphere2EventHandler.bind(this);
-
-        // this.subscribe({
-        //     events: {
-        //         WebGLRendererCanvas: {
-        //             wheel:  this.onDefaultEventListener,
-        //         }
-        //     }
-        // });
-
-
+    onLoaded() {
         /**
          * Adds responder method to this.interactables[`interactable respondent vLabSceneObject.name`].responders to be responsive for desired vLabSceneObject.name;
          * 
@@ -62,6 +48,20 @@ class FirstScene extends VLabScene {
                 preTooltip: 'Reacts on Suzanne1'
             })
         );
+    }
+    onActivated() {
+        // console.log(this.name + ' activated');
+        // console.log(this);
+
+        // this.interactables['Sphere2'].onDefaultEventHandler = this.Sphere2EventHandler.bind(this);
+
+        // this.subscribe({
+        //     events: {
+        //         WebGLRendererCanvas: {
+        //             wheel:  this.onDefaultEventListener,
+        //         }
+        //     }
+        // });
     }
     Sphere2_to_Suzanne1_1_ACTION() {
         console.log('Sphere2_to_Suzanne1_1_ACTION', this);

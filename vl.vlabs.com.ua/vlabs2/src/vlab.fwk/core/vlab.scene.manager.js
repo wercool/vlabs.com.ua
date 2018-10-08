@@ -212,10 +212,10 @@ class VLabSceneManager {
      * @async
      * @memberof VLabSceneManager
      * @param {boolean} activation                          - VLabScene load initiated from {@link vLabScene#activate}
-     * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver
+     * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver [true - if just loaded, false - if already loaded]
      */
     load(activation) {
-        if (this.vLabScene.loaded) return Promise.resolve(this);
+        if (this.vLabScene.loaded) return Promise.resolve(false);
         if (this.vLabScene.loading || activation) this.vLabScene.initObj.autoload = false;
         this.vLabScene.loading = true;
         console.log(this.vLabScene.name + ' load initiated');
@@ -245,7 +245,7 @@ class VLabSceneManager {
                                     self.vLab.DOMManager.handleSceneLoadComplete();
                                     self.processGLTF(gltf).then(() => {
                                         gltf = null;
-                                        resolve();
+                                        resolve(true);
                                     });
                                 },
                                 function onProgress(xhr) {

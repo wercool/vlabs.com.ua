@@ -184,13 +184,14 @@ class VLabScene extends THREE.Scene {
      */
     activate() {
         return new Promise((resolve, reject) => {
-            this.manager.load(true).then(() => {
+            this.manager.load(true).then((justLoaded) => {
                 this.manager.configure().then(() => {
                     this.subscribe();
                     this.currentControls.enabled = true;
                     this.currentControls.update();
                     this.active = true;
                     this.manager.performance.performanceManagerInterval = setInterval(this.manager.performanceManager.bind(this.manager), 1000);
+                    if (justLoaded) this.onLoaded();
                     resolve(this);
                 });
             });
@@ -201,16 +202,27 @@ class VLabScene extends THREE.Scene {
      * 
      * @async
      * @memberof VLabScene
-     * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver
+     * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver; [true - if was active and was deactivated; false - if already not active]
      */
     deactivate() {
+        if (!this.active) return Promise.resolve(false);
         return new Promise((resolve, reject) => {
             this.unsubscribe();
             this.active = false;
             clearInterval(this.manager.performance.performanceManagerInterval);
-            resolve(this);
+            for (let interactableName in this.interactables) {
+                this.interactables[interactableName].hideTooltip();
+            }
+            resolve(true);
         });
     }
+    /**
+     * VLab Scene onLoaded abstract function.
+     *
+     * @memberof VLabScene
+     * @abstract
+     */
+    onLoaded() { console.warn(this.name + ' onLoaded abstract method not implemented'); }
     /**
      * VLab Scene onActivated abstract function.
      *
