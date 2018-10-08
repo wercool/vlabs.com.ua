@@ -454,7 +454,7 @@ class VLabSceneManager {
             }
             this.performance.lowFPSDetected++;
         } else {
-            if (this.performance.lowFPSDetected < -5) {
+            if (this.performance.lowFPSDetected < -2) {
                 if (this.vLab.effectComposer == null) {
                     this.vLab.setupEffectComposer();
                     this.processInteractablesSelections();

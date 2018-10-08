@@ -124,7 +124,7 @@ class VLabSceneInteractable {
          */
         this.menuContainer = undefined;
         /**
-         * Respondent VLabSceneInteractables (respondent is an object in a current scene, with which one `this` can interact)
+         * Respondent VLabSceneInteractables; identified by key = respondent(VLabSceneInteractables).vLabSceneObjectName
          */
         this.respondents = [];
         /**
@@ -324,6 +324,28 @@ class VLabSceneInteractable {
             this.vLabScene.preSelectedInteractables.splice(indexOfThisPreselected, 1);
             this.preselected = false;
             this.hideTooltip();
+        }
+    }
+    /**
+     * Adds / updates VLabSceneInteractableRespondent to this.respondents
+     * Checks that respondent.callerInteractable == this
+     * @param {VLabSceneInteractableRespondent} respondent 
+     */
+    addRespondent(respondent) {
+        if (respondent && respondent.callerInteractable == this) {
+            let existingRespondentIndex = undefined;
+            let idx = 0;
+            this.respondents.forEach((existingRespondent) => {
+                if (existingRespondent.interactable == respondent.interactable) {
+                    existingRespondentIndex = idx;
+                }
+                idx++;
+            });
+            if (existingRespondentIndex !== undefined) {
+                this.respondents[existingRespondentIndex] = respondent;
+            } else {
+                this.respondents.push(respondent);
+            }
         }
     }
     /**
@@ -688,16 +710,16 @@ class VLabSceneInteractable {
      * Shows tooltip
      * Do not show tooltips when this.vLabScene.currentControls.active == false
      */
-    showTooltip(tooltipHTML, object3D) {
+    showTooltip(tooltipHTML, refObject3D) {
         if (!this.vLabScene.currentControls.active) {
-            this.showRespondents();
+            if (tooltipHTML == undefined) this.showRespondents();
 
-            if ((this.tooltip != '' || tooltipHTML !== undefined) && !this.tooltipContainer) {
+            if ((this.tooltip != '' || (tooltipHTML !== undefined && tooltipHTML != '')) && !this.tooltipContainer) {
                 this.tooltipContainer = document.createElement('div');
                 this.tooltipContainer.id = this.vLabSceneObject.name + '_TOOLTIP';
                 let shiftX = 0;
                 let shiftY = 0;
-                if (object3D == undefined) {
+                if (refObject3D == undefined) {
                     this.tooltipContainer.className = 'interactableTooltip';
                 } else {
                     this.tooltipContainer.className = 'interactableRespondentTooltip';
@@ -705,12 +727,12 @@ class VLabSceneInteractable {
                     shiftY += 2;
                 }
                 this.vLab.DOMManager.WebGLContainer.appendChild(this.tooltipContainer);
-                let tooltipCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, (object3D !== undefined) ? object3D : this.vLabSceneObject);
+                let tooltipCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, (refObject3D !== undefined) ? refObject3D : this.vLabSceneObject);
 
                 tooltipCoords.x += shiftX;
                 tooltipCoords.y += shiftY;
 
-                this.tooltipContainer.innerHTML = (tooltipHTML !== undefined) ? tooltipHTML : this.tooltip;
+                this.tooltipContainer.innerHTML = (tooltipHTML !== undefined && tooltipHTML != '') ? tooltipHTML : this.tooltip;
 
                 let xPosDelta = this.vLab.DOMManager.WebGLContainer.clientWidth - (tooltipCoords.x + this.tooltipContainer.clientWidth);
                 let yPosDelta = this.vLab.DOMManager.WebGLContainer.clientHeight - (tooltipCoords.y + this.tooltipContainer.clientHeight);
@@ -734,7 +756,7 @@ class VLabSceneInteractable {
         }
         if (this.respondentPreselectionHelpers.length > 0) {
             this.respondents.forEach((respondent) => {
-                respondent.hideTooltip();
+                respondent.interactable.hideTooltip();
             });
             this.respondentPreselectionHelpers.forEach((respondentPreselectionHelper) => {
                 this.vLabScene.remove(respondentPreselectionHelper);
@@ -743,53 +765,51 @@ class VLabSceneInteractable {
         }
     }
     /**
-     * Shows respondents, e.g. VLabSceneInteractables ("respondent" is an object in a current scene, with which one `this` can interact)
+     * Shows respondents (if responder function is present), e.g. VLabSceneInteractables ("respondent" is an object in a current scene, with which one `this` can interact)
      */
     showRespondents() {
         let raycaster = new THREE.Raycaster();
         this.respondents.forEach((respondent) => {
-            if (respondent.vLabSceneObject) {
-                let thisOrigin = this.vLabSceneObject.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0));
-                let respondentOrigin = respondent.vLabSceneObject.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0));
-                let respondentDirection = respondentOrigin.clone().sub(thisOrigin.clone()).normalize();
+            if (respondent.callerInteractable == this) {
+                if (respondent.interactable) {
+                    if (respondent.interactable.vLabSceneObject) {
+                        let thisOrigin = this.vLabSceneObject.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0));
+                        let respondentOrigin = respondent.interactable.vLabSceneObject.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0));
+                        let respondentDirection = respondentOrigin.clone().sub(thisOrigin.clone()).normalize();
 
-                raycaster.set(thisOrigin, respondentDirection);
-                let respondentIntersections = raycaster.intersectObject(respondent.vLabSceneObject);
+                        raycaster.set(thisOrigin, respondentDirection);
+                        let respondentIntersections = raycaster.intersectObject(respondent.interactable.vLabSceneObject);
 
-                if (respondentIntersections.length > 0) {
-                    let lineGeometry = new THREE.Geometry();
-                    if (!this.taken) {
-                        let thisPointMeshPosition = new THREE.Vector3().addVectors(thisOrigin, respondentDirection.clone().multiplyScalar(this.vLabSceneObject.geometry.boundingSphere.radius * 1.1));
-                        let thisPointMesh = new THREE.Mesh(this.vLab.prefabs['respondentIntersectionPointGeometry'], this.vLab.prefabs['interactableToRespondentPointMaterial']);
-                        thisPointMesh.position.copy(thisPointMeshPosition);
-                        thisPointMesh.scale.multiplyScalar(2.0);
-                        this.vLabScene.add(thisPointMesh);
-                        this.respondentPreselectionHelpers.push(thisPointMesh);
+                        if (respondentIntersections.length > 0) {
+                            if (this.preselected) {
+                                let thisPointMeshPosition = new THREE.Vector3().addVectors(thisOrigin, respondentDirection.clone().multiplyScalar(this.vLabSceneObject.geometry.boundingSphere.radius * 1.1 * this.vLabSceneObject.scale.x));
+                                let thisPointMesh = new THREE.Mesh(this.vLab.prefabs['respondentIntersectionPointGeometry'], this.vLab.prefabs['interactablePreselectionToRespondentPointMaterial']);
+                                thisPointMesh.position.copy(thisPointMeshPosition);
+                                thisPointMesh.scale.multiplyScalar(2.0 * this.vLabSceneObject.scale.x);
+                                this.vLabScene.add(thisPointMesh);
+                                this.respondentPreselectionHelpers.push(thisPointMesh);
 
-                        lineGeometry.vertices.push(
-                            thisPointMeshPosition,
-                            respondentIntersections[0].point
-                        );
-                    } else {
-                        lineGeometry.vertices.push(
-                            thisOrigin,
-                            respondentIntersections[0].point
-                        );
-                    }
+                                let lineGeometry = new THREE.Geometry();
+                                lineGeometry.vertices.push(
+                                    thisPointMeshPosition,
+                                    respondentIntersections[0].point
+                                );
+                                let line = new THREE.Line(lineGeometry, this.vLab.prefabs['respondentPreselectionLineMaterial']);
+                                this.vLabScene.add(line);
+                                this.respondentPreselectionHelpers.push(line);
 
-                    let line = new THREE.Line(lineGeometry, this.vLab.prefabs['respondentLineMaterial']);
-                    this.vLabScene.add(line);
-                    this.respondentPreselectionHelpers.push(line);
+                                let respondentIntersectionPointMesh = new THREE.Mesh(this.vLab.prefabs['respondentIntersectionPointGeometry'], this.vLab.prefabs['respondentPreselectionIntersectionPointMaterial']);
+                                respondentIntersectionPointMesh.position.copy(respondentIntersections[0].point);
+                                respondentIntersectionPointMesh.scale.multiplyScalar(0.5 * respondentIntersections[0].point.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
+                                this.vLabScene.add(respondentIntersectionPointMesh);
+                                this.respondentPreselectionHelpers.push(respondentIntersectionPointMesh);
 
-                    let respondentIntersectionPointMesh = new THREE.Mesh(this.vLab.prefabs['respondentIntersectionPointGeometry'], this.vLab.prefabs['respondentIntersectionPointMaterial']);
-                    respondentIntersectionPointMesh.position.copy(respondentIntersections[0].point);
-                    respondentIntersectionPointMesh.scale.multiplyScalar(0.5 * respondentIntersections[0].point.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
-                    this.vLabScene.add(respondentIntersectionPointMesh);
-                    this.respondentPreselectionHelpers.push(respondentIntersectionPointMesh);
-
-                    if (respondent[this.vLabSceneObject.name + '_RESP_TOOLTIP']) {
-                        if (THREEUtils.frustumContainsPoint(this.vLab, respondentIntersectionPointMesh.position)) {
-                            respondent.showTooltip(respondent[this.vLabSceneObject.name + '_RESP_TOOLTIP'], respondentIntersectionPointMesh);
+                                if (respondent.preTooltip != '') {
+                                    if (THREEUtils.frustumContainsPoint(this.vLab, respondentIntersectionPointMesh.position)) {
+                                        respondent.interactable.showTooltip(respondent.preTooltip, respondentIntersectionPointMesh);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
