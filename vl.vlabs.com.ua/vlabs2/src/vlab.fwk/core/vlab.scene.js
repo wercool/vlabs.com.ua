@@ -208,11 +208,12 @@ class VLabScene extends THREE.Scene {
         if (!this.active) return Promise.resolve(false);
         return new Promise((resolve, reject) => {
             this.unsubscribe();
-            this.active = false;
             clearInterval(this.manager.performance.performanceManagerInterval);
             for (let interactableName in this.interactables) {
-                this.interactables[interactableName].hideTooltip();
+                this.interactables[interactableName].deSelect(true);
             }
+            this.manager.processInteractablesSelections();
+            this.active = false;
             resolve(true);
         });
     }

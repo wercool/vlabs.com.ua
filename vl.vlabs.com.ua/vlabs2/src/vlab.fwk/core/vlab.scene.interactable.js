@@ -248,7 +248,13 @@ class VLabSceneInteractable {
                     let currentlySelectedInteractable = this.vLabScene.manager.getCurrentlySelectedInteractable();
                     if (currentlySelectedInteractable) currentlySelectedInteractable.deSelect();
 
-                    this.vLabScene.selectedInteractables.push(this);
+                    /**
+                     * push to selections if not yet in array
+                     */
+                    if (this.vLabScene.selectedInteractables.indexOf(this) == -1) {
+                        this.vLabScene.selectedInteractables.push(this);
+                    }
+
                     this.selected = true;
                     this.dePreselect();
                 }
@@ -305,7 +311,13 @@ class VLabSceneInteractable {
     preselect() {
         if (this.intersection) {
             if (this.preselectable && !this.preselected && !this.selected) {
-                this.vLabScene.preSelectedInteractables.push(this);
+                /**
+                 * push to preSelections if not yet in array
+                 */
+                if (this.vLabScene.preSelectedInteractables.indexOf(this) == -1) {
+                    this.vLabScene.preSelectedInteractables.push(this);
+                }
+
                 this.preselected = true;
                 this.showTooltip();
             }

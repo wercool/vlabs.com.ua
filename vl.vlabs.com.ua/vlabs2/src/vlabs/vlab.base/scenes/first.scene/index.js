@@ -62,6 +62,7 @@ class FirstScene extends VLabScene {
         //         }
         //     }
         // });
+        console.log(this.interactables);
     }
     Sphere2_to_Suzanne1_1_ACTION() {
         console.log('Sphere2_to_Suzanne1_1_ACTION', this);
