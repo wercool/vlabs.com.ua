@@ -135,7 +135,7 @@ class VLab {
      * @memberof VLab
      */
     setupWebGLRenderer() {
-        if (this.WebGLRenderer === undefined) {
+        if (this.WebGLRendererCanvas === undefined) {
             /**
              * HTMLCanvasElement to render current VLabScene
              * @public
@@ -144,24 +144,27 @@ class VLab {
             this.WebGLRendererCanvas.id = 'WebGLRendererCanvas';
             this.WebGLRendererCanvas.classList.add('hidden');
             this.EventDispatcher.addWebGLRendererCanvasEventListeners();
-            /**
-             * THREE.WebGLRenderer
-             * @see https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
-             * @public
-             */
-            this.WebGLRenderer = new THREE.WebGLRenderer({
-                canvas: this.WebGLRendererCanvas,
-                powerPreference: 'high-performance',
-                precision: 'lowp'
-            });
-            this.WebGLRenderer.setPixelRatio(1.0);
-            if (this.getProdMode()) {
-                this.WebGLRenderer.context.getShaderInfoLog = function () { return '' };
-                this.WebGLRenderer.context.getProgramInfoLog = function () { return '' };
-            }
 
-            this.DOMManager.WebGLContainer.appendChild(this.WebGLRenderer.domElement);
+            this.DOMManager.WebGLContainer.appendChild(this.WebGLRendererCanvas);
         }
+
+        /**
+         * THREE.WebGLRenderer
+         * @see https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
+         * @public
+         */
+        this.WebGLRenderer = new THREE.WebGLRenderer({
+            canvas: this.WebGLRendererCanvas,
+            antialias: false,
+            powerPreference: 'high-performance',
+            precision: 'lowp'
+        });
+        this.WebGLRenderer.setPixelRatio(1.0);
+        if (this.getProdMode() || window.location.href.indexOf('localhost') > -1) {
+            this.WebGLRenderer.context.getShaderInfoLog = function () { return '' };
+            this.WebGLRenderer.context.getProgramInfoLog = function () { return '' };
+        }
+
         /* Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters */
         if (this.nature.WebGLRendererParameters) {
             if (this.nature.WebGLRendererParameters.clearColor)

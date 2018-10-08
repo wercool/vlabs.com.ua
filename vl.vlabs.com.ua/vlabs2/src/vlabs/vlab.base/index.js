@@ -56,14 +56,14 @@ class BaseVLab extends VLab {
             self.SceneDispatcher.activateScene({
                 class: SecondScene
             });
-        }, 10000);
+        }, 5000);
 
         setTimeout(() => {
             /* Activate FirstScene Scene */
             self.SceneDispatcher.activateScene({
                 class: FirstScene
             });
-        }, 40000);
+        }, 10000);
 
         // let self = this;
         // setTimeout(() => {

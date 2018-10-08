@@ -87,9 +87,8 @@ class VLabSceneManager {
      * @memberof VLabSceneManager
      */
     configure() {
+        if (this.configured) return Promise.resolve();
         return new Promise((resolve, reject) => {
-            if (this.configured) resolve();
-
             /* Configure VLabScene currentCamera from VLabScene nature */
             if (this.vLabScene.nature.cameras) {
                 if (this.vLabScene.nature.cameras.default) {

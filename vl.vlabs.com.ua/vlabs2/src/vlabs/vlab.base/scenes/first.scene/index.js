@@ -1,53 +1,45 @@
 import VLabScene from '../../../../vlab.fwk/core/vlab.scene';
-import VLabSceneInteractableRespondent from '../../../../vlab.fwk/core/vlab.scene.interactable.respondent';
 
 class FirstScene extends VLabScene {
     constructor(iniObj) {
         super(iniObj);
+
     }
     onLoaded() {
         /**
          * Adds responder method to this.interactables[`interactable respondent vLabSceneObject.name`].responders to be responsive for desired vLabSceneObject.name;
          * 
          */
-        this.interactables['Sphere2'].addRespondent(
-            new VLabSceneInteractableRespondent({
-                interactable: this.interactables['Suzanne1_1'],
-                callerInteractable: this.interactables['Sphere2'],
-                preTooltip: 'Reacts on Sphere2',
-                action: {
-                    function: this.Sphere2_to_Suzanne1_1_ACTION,
-                    args: {},
-                    context: this
-                }
-            })
-        );
-        this.interactables['Sphere2'].addRespondent(
-            new VLabSceneInteractableRespondent({
-                interactable: this.interactables['Suzanne1'],
-                callerInteractable: this.interactables['Sphere2'],
-                preTooltip: 'Reacts on Sphere2',
-                action: {
-                    function: this.Sphere2_to_Suzanne1,
-                    args: {},
-                    context: this
-                }
-            })
-        );
-        this.interactables['Sphere2'].addRespondent(
-            new VLabSceneInteractableRespondent({
-                interactable: this.interactables['Suzanne'],
-                callerInteractable: this.interactables['Sphere2'],
-                preTooltip: 'Referenced with Sphere2'
-            })
-        );
-        this.interactables['Suzanne1'].addRespondent(
-            new VLabSceneInteractableRespondent({
-                interactable: this.interactables['Suzanne'],
-                callerInteractable: this.interactables['Suzanne1'],
-                preTooltip: 'Reacts on Suzanne1'
-            })
-        );
+        this.interactables['Sphere2'].addRespondent({
+            interactable: this.interactables['Suzanne1_1'],
+            callerInteractable: this.interactables['Sphere2'],
+            preTooltip: 'Reacts on Sphere2',
+            action: {
+                function: this.Sphere2_to_Suzanne1_1_ACTION,
+                args: {},
+                context: this
+            }
+        });
+        this.interactables['Sphere2'].addRespondent({
+            interactable: this.interactables['Suzanne1'],
+            callerInteractable: this.interactables['Sphere2'],
+            preTooltip: 'Reacts on Sphere2',
+            action: {
+                function: this.Sphere2_to_Suzanne1,
+                args: {},
+                context: this
+            }
+        });
+        this.interactables['Sphere2'].addRespondent({
+            interactable: this.interactables['Suzanne'],
+            callerInteractable: this.interactables['Sphere2'],
+            preTooltip: 'Referenced with Sphere2'
+        });
+        this.interactables['Suzanne1'].addRespondent({
+            interactable: this.interactables['Suzanne'],
+            callerInteractable: this.interactables['Suzanne1'],
+            preTooltip: 'Reacts on Suzanne1'
+        });
     }
     onActivated() {
         // console.log(this.name + ' activated');
@@ -62,7 +54,6 @@ class FirstScene extends VLabScene {
         //         }
         //     }
         // });
-        console.log(this.interactables);
     }
     Sphere2_to_Suzanne1_1_ACTION() {
         console.log('Sphere2_to_Suzanne1_1_ACTION', this);

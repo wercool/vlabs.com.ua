@@ -213,6 +213,7 @@ class VLabScene extends THREE.Scene {
                 this.interactables[interactableName].deSelect(true);
             }
             this.manager.processInteractablesSelections();
+            this.currentControls.depress();
             this.active = false;
             resolve(true);
         });

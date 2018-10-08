@@ -282,6 +282,9 @@ this.takenInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, -0.0
         if (!this.vLab.prefabs['respondentPreselectionLineMaterial']) {
             this.vLab.prefabs['respondentPreselectionLineMaterial'] = new THREE.LineBasicMaterial({ color: 0xfff6b7 });
         }
+        if (!this.vLab.prefabs['refRespondentPreselectionLineMaterial']) {
+            this.vLab.prefabs['refRespondentPreselectionLineMaterial'] = new THREE.LineDashedMaterial({ color: 0xfff6b7, dashSize: 0.05, gapSize: 0.015 });
+        }
         if (!this.vLab.prefabs['respondentIntersectionPointGeometry']) {
             this.vLab.prefabs['respondentIntersectionPointGeometry'] = new THREE.SphereBufferGeometry(0.005, 8, 8);
         }
