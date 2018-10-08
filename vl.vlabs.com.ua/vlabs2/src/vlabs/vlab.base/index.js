@@ -39,7 +39,7 @@ class BaseVLab extends VLab {
         this.SceneDispatcher.addScene({
             class: SecondScene,
             natureURL: './scenes/second.scene/resources/vlab.scene.nature.json',
-            autoload: false
+            autoload: true
         });
         /* Third scene */
         this.SceneDispatcher.addScene({
@@ -55,41 +55,29 @@ class BaseVLab extends VLab {
             /* Activate Second Scene */
             self.SceneDispatcher.activateScene({
                 class: SecondScene
-            });
-        }, 5000);
+            }).then((vLabScene) => { console.log(vLabScene.name + ' activated from ' + this.initObj.name); });
+        }, 10000);
 
         setTimeout(() => {
             /* Activate FirstScene Scene */
             self.SceneDispatcher.activateScene({
                 class: FirstScene
             });
-        }, 10000);
+        }, 20000);
 
-        // let self = this;
-        // setTimeout(() => {
-        //     /* Third scene */
-        //     self.SceneDispatcher.addScene({
-        //         class: ThirdScene,
-        //         natureURL: './scenes/third.scene/resources/vlab.scene.nature.json',
-        //         active: true
-        //     });
-        // }, 5000);
+        setTimeout(() => {
+            /* Activate ThirdScene Scene */
+            self.SceneDispatcher.activateScene({
+                class: ThirdScene
+            });
+        }, 30000);
 
-        // let self = this;
-        // setTimeout(() => {
-        //     /* Third scene */
-        //     self.SceneDispatcher.activateScene({
-        //         class: ThirdScene
-        //     });
-        // }, 5000);
-
-        // let self = this;
-        // setTimeout(() => {
-        //     /* First scene */
-        //     self.SceneDispatcher.activateScene({
-        //         class: FirstScene
-        //     });
-        // }, 10000);
+        setTimeout(() => {
+            /* Activate FirstScene Scene */
+            self.SceneDispatcher.activateScene({
+                class: FirstScene
+            });
+        }, 40000);
 
         console.log(this);
     }

@@ -275,7 +275,9 @@ class VLabDOMManager {
      */
     handleSceneLoadComplete() {
         if (this.vLab.SceneDispatcher.getNotYetLoadedAutoloads() == 0) {
-            this.container.removeChild(this.VLabSceneSharedAssets.sceneLoaderContainer);
+            if (this.VLabSceneSharedAssets.sceneLoaderContainer) {
+                this.container.removeChild(this.VLabSceneSharedAssets.sceneLoaderContainer);
+            }
             for (let VLabSceneAsset in this.VLabSceneSharedAssets) {
                 this.VLabSceneSharedAssets[VLabSceneAsset] = null;
             }

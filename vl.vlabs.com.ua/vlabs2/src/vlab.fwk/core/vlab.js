@@ -146,6 +146,11 @@ class VLab {
             this.EventDispatcher.addWebGLRendererCanvasEventListeners();
 
             this.DOMManager.WebGLContainer.appendChild(this.WebGLRendererCanvas);
+
+            this.WebGLRendererCanvasOverlay = document.createElement('div');
+            this.WebGLRendererCanvasOverlay.id = 'WebGLRendererCanvasOverlay';
+            this.WebGLRendererCanvasOverlay.classList.add('hidden');
+            this.DOMManager.WebGLContainer.appendChild(this.WebGLRendererCanvasOverlay);
         }
 
         /**
@@ -217,6 +222,7 @@ class VLab {
      * @memberof VLab
      */
     resizeWebGLRenderer() {
+        if (this.WebGLRendererCanvas.classList.contains('hidden')) this.WebGLRendererCanvas.classList.remove('hidden');
         let resolutionFactor = 1.0;
         /* Cheks if this.nature.WebGLRendererParameters.resolutionFactor if defined */
         if (this.nature.WebGLRendererParameters) {

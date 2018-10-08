@@ -82,18 +82,20 @@ class VLabSceneDispatcher {
             });
             for (let vLabScene of this.scenes) {
                 if (vLabScene.constructor == initObj.class) {
-                    self.sceneIsBeingActivated = vLabScene;
-                    self.vLab.WebGLRendererCanvas.classList.add('hidden');
+                    self.vLab.WebGLRendererCanvasOverlay.classList.remove('hidden');
+                    this.vLab.WebGLRendererCanvasOverlay.classList.add('visible');
+                    this.sceneIsBeingActivated = vLabScene;
                     vLabScene.activate().then((vLabScene) => {
-                        self.currentVLabScene = vLabScene;
-                        self.vLab.setupWebGLRenderer();
-                        self.vLab.resizeWebGLRenderer();
-                        self.vLab.setupEffectComposer();
-                        vLabScene.onActivated.call(vLabScene);
-                        self.vLab.renderPaused = false;
+                        this.currentVLabScene = vLabScene;
+                        this.vLab.setupWebGLRenderer();
+                        this.vLab.resizeWebGLRenderer();
+                        this.vLab.setupEffectComposer();
+                        this.vLab.renderPaused = false;
                         setTimeout(() => {
-                            self.vLab.WebGLRendererCanvas.classList.remove('hidden');
                             self.sceneIsBeingActivated = null;
+                            vLabScene.onActivated.call(vLabScene);
+                            self.vLab.WebGLRendererCanvasOverlay.classList.remove('visible');
+                            self.vLab.WebGLRendererCanvasOverlay.classList.add('hidden');
                             resolve(vLabScene);
                         }, 250);
                     });
@@ -192,6 +194,14 @@ class VLabSceneDispatcher {
             args: putObj
         }, true);
 
+/**
+ * 
+ * 
+ * @todo
+ * taken interactable placement
+ * 
+ * 
+ */
 this.takenInteractable.vLabSceneObject.geometry.computeBoundingSphere();
 // console.log(this.vLabSceneObject.geometry.boundingSphere);
 this.takenInteractable.vLabSceneObject.scale.multiplyScalar(0.025);
