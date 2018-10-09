@@ -237,7 +237,7 @@ class VLabSceneInteractable {
             if (this.selection.hold == true) {
                 this.updateMenuWithMenuItem({
                     label: 'Hold selection',
-                    icon: '<i class="material-icons" style="color: #ffffff;">filter_tilt_shift</i>',
+                    icon: '<i class="material-icons" style="color: #ff0000;">filter_tilt_shift</i>',
                     action: 'this.select({hold: false})'
                 });
             } else {
