@@ -33,11 +33,6 @@ class VLabSceneDispatcher {
          * @public
          */
         this.takenInteractable = null;
-
-        /**
-         * Fills this.vLab.prefabs with initial objects
-         */
-        this.initializeVLabPrefabs();
     }
     /**
      * Add VLabScene to VLabSceneDispatcher stack.
@@ -82,7 +77,7 @@ class VLabSceneDispatcher {
             });
             for (let vLabScene of this.scenes) {
                 if (vLabScene.constructor == initObj.class) {
-                    self.vLab.WebGLRendererCanvasOverlay.classList.remove('hidden');
+                    this.vLab.WebGLRendererCanvasOverlay.classList.remove('hidden');
                     this.vLab.WebGLRendererCanvasOverlay.classList.add('visible');
                     this.sceneIsBeingActivated = vLabScene;
                     vLabScene.activate().then((vLabScene) => {
@@ -171,6 +166,7 @@ class VLabSceneDispatcher {
         });
 
         let putObj = {
+            scene: this.currentVLabScene,
             parent: this.takenInteractable.vLabSceneObject.parent,
             position: this.takenInteractable.vLabSceneObject.position.clone(),
             quaternion: this.takenInteractable.vLabSceneObject.quaternion.clone(),
@@ -283,27 +279,6 @@ this.takenInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, -0.0
                 });
             }
         });
-    }
-
-    /**
-     * Fills this.vLab.prefabs with initial objects
-     */
-    initializeVLabPrefabs() {
-        if (!this.vLab.prefabs['respondentPreselectionLineMaterial']) {
-            this.vLab.prefabs['respondentPreselectionLineMaterial'] = new THREE.LineBasicMaterial({ color: 0xfff6b7 });
-        }
-        if (!this.vLab.prefabs['refRespondentPreselectionLineMaterial']) {
-            this.vLab.prefabs['refRespondentPreselectionLineMaterial'] = new THREE.LineDashedMaterial({ color: 0xfff6b7, dashSize: 0.05, gapSize: 0.015 });
-        }
-        if (!this.vLab.prefabs['respondentIntersectionPointGeometry']) {
-            this.vLab.prefabs['respondentIntersectionPointGeometry'] = new THREE.SphereBufferGeometry(0.005, 8, 8);
-        }
-        if (!this.vLab.prefabs['respondentPreselectionIntersectionPointMaterial']) {
-            this.vLab.prefabs['respondentPreselectionIntersectionPointMaterial'] = new THREE.MeshBasicMaterial({ color: 0xfff6b7, depthTest: false, side: THREE.BackSide });
-        }
-        if (!this.vLab.prefabs['interactablePreselectionToRespondentPointMaterial']) {
-            this.vLab.prefabs['interactablePreselectionToRespondentPointMaterial'] = new THREE.MeshBasicMaterial({ color: 0xfff6b7, side: THREE.BackSide });
-        }
     }
 }
 export default VLabSceneDispatcher;

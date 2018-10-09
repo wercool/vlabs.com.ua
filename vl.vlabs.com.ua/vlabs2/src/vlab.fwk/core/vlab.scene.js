@@ -101,6 +101,7 @@ class VLabScene extends THREE.Scene {
                     mousedown:      this.onDefaultEventHandler,
                     mouseup:        this.onDefaultEventHandler,
                     mousemove:      this.onDefaultEventHandler,
+                    mouseout:       this.onMouseOutEventHandler,
                     touchstart:     this.onDefaultEventHandler,
                     touchend:       this.onDefaultEventHandler,
                     touchmove:      this.onDefaultEventHandler,
@@ -263,6 +264,12 @@ class VLabScene extends THREE.Scene {
      */
     unsubscribe() {
         this.vLab.EventDispatcher.unsubscribe(this.eventSubscrObj);
+    }
+    /**
+     * onMouseOutEventHandler
+     */
+    onMouseOutEventHandler(event) {
+        this.currentControls.depress();
     }
     /**
      * VLab Scene default event handler / router.

@@ -1,6 +1,7 @@
 import '@babel/polyfill';
 import * as THREE from 'three';
 import * as HTTPUtils from '../utils/http.utils';
+import * as VLabUtils from '../utils/vlab.utils.js';
 import VLabDOMManager from './vlab.dom.manager';
 import VLabEventDispatcher from './vlab.event.dispatcher';
 import VLabSceneDispatcher from './vlab.scene.dispatcher';
@@ -106,10 +107,16 @@ class VLab {
                          */
                         this.SceneDispatcher = new VLabSceneDispatcher(this);
 
-                        this.setupWebGLRenderer();
+                        /**
+                         * Fills this.vLab.prefabs with initial objects
+                         */
+                        VLabUtils.initializeVLabPrefabs(this).then((prefabs) => {
+                            this.prefabs = prefabs;
 
-                        this.requestAnimationFrame();
+                            this.setupWebGLRenderer();
 
+                            this.requestAnimationFrame();
+                        });
                         /**
                          * resolves initialization Promise
                          */

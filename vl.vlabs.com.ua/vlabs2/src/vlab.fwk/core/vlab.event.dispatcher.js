@@ -30,6 +30,7 @@ class VLabEventDispatcher {
                 mouseup:            {},
                 mousemove:          {},
                 wheel:              {},
+                mouseout:           {},
                 touchstart:         {},
                 touchend:           {},
                 touchmove:          {},
@@ -110,6 +111,7 @@ class VLabEventDispatcher {
         this.vLab.WebGLRendererCanvas.addEventListener('mouseup',       this.onWebGLRendererCanvasMouseUp.bind(this),       false);
         this.vLab.WebGLRendererCanvas.addEventListener('mousemove',     this.onWebGLRendererCanvasMouseMove.bind(this),     false);
         this.vLab.WebGLRendererCanvas.addEventListener('wheel',         this.onWebGLRendererCanvasMouseWheel.bind(this),    false);
+        this.vLab.WebGLRendererCanvas.addEventListener('mouseout',      this.onWebGLRendererCanvasMouseOut.bind(this),     false);
         /* Touch events */
         this.vLab.WebGLRendererCanvas.addEventListener('touchstart',    this.onWebGLRendererCanvasTouchStart.bind(this),    false);
         this.vLab.WebGLRendererCanvas.addEventListener('touchend',      this.onWebGLRendererCanvasTouchEnd.bind(this),      false);
@@ -137,6 +139,9 @@ class VLabEventDispatcher {
         this.notifySubscribers(event);
     }
     onWebGLRendererCanvasMouseWheel(event) {
+        this.notifySubscribers(event);
+    }
+    onWebGLRendererCanvasMouseOut(event) {
         this.notifySubscribers(event);
     }
     /* Touch event handlers */

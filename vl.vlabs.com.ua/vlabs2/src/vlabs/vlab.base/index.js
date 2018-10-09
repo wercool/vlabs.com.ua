@@ -39,7 +39,7 @@ class BaseVLab extends VLab {
         this.SceneDispatcher.addScene({
             class: SecondScene,
             natureURL: './scenes/second.scene/resources/vlab.scene.nature.json',
-            autoload: true
+            autoload: false
         });
         /* Third scene */
         this.SceneDispatcher.addScene({
@@ -50,34 +50,34 @@ class BaseVLab extends VLab {
 
 
 
-        let self = this;
-        setTimeout(() => {
-            /* Activate Second Scene */
-            self.SceneDispatcher.activateScene({
-                class: SecondScene
-            }).then((vLabScene) => { console.log(vLabScene.name + ' activated from ' + this.initObj.name); });
-        }, 10000);
+        // let self = this;
+        // setTimeout(() => {
+        //     /* Activate Second Scene */
+        //     self.SceneDispatcher.activateScene({
+        //         class: SecondScene
+        //     }).then((vLabScene) => { console.log(vLabScene.name + ' activated from ' + this.initObj.name); });
+        // }, 10000);
 
-        setTimeout(() => {
-            /* Activate FirstScene Scene */
-            self.SceneDispatcher.activateScene({
-                class: FirstScene
-            });
-        }, 20000);
+        // setTimeout(() => {
+        //     /* Activate FirstScene Scene */
+        //     self.SceneDispatcher.activateScene({
+        //         class: FirstScene
+        //     });
+        // }, 20000);
 
-        setTimeout(() => {
-            /* Activate ThirdScene Scene */
-            self.SceneDispatcher.activateScene({
-                class: ThirdScene
-            });
-        }, 30000);
+        // setTimeout(() => {
+        //     /* Activate ThirdScene Scene */
+        //     self.SceneDispatcher.activateScene({
+        //         class: ThirdScene
+        //     });
+        // }, 30000);
 
-        setTimeout(() => {
-            /* Activate FirstScene Scene */
-            self.SceneDispatcher.activateScene({
-                class: FirstScene
-            });
-        }, 40000);
+        // setTimeout(() => {
+        //     /* Activate FirstScene Scene */
+        //     self.SceneDispatcher.activateScene({
+        //         class: FirstScene
+        //     });
+        // }, 40000);
 
         console.log(this);
     }
