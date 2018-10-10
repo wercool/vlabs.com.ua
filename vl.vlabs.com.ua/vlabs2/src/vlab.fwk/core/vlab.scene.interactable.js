@@ -254,17 +254,22 @@ class VLabSceneInteractable {
     }
     /**
      * Native action
+     * @returns {boolean} this.actionFunction called or not
      */
     action(event) {
-        if (this.intersection) {
+        if (this.intersection && this.preselected) {
             if (this.actionFunction) {
                 let extendedActionFunctionArgs = ObjectUtils.merge(this.actionFunctionArgs, {
                     event: event,
                     intersection: this.intersection
                 });
                 this.actionFunction.call(this.actionFunctionContext, extendedActionFunctionArgs);
+                this.hideTooltip();
+                this.removeRespondentsHelpers();
+                return true;
             }
         }
+        return false;
     }
     /**
      * Makes VLabSceneInteractable.vLabSceneObject.visible = visibility; if defined
@@ -493,10 +498,11 @@ class VLabSceneInteractable {
          * do not react on right mouse down
          */
         if(event.button == 0) {
-            this.action(event);
-            this.select();
-            this.hideTooltip();
-            this.removeRespondentsHelpers();
+            if (!this.action(event)) {
+                this.select();
+                this.hideTooltip();
+                this.removeRespondentsHelpers();
+            }
         } else if (event.button == 2){
             if (this.intersection) {
                 console.log(this);
@@ -512,7 +518,9 @@ class VLabSceneInteractable {
      */
     mouseupHandler(event) {
         if (this.intersection) {
-            this.preselect();
+            if (!this.actionFunction) {
+                this.preselect();
+            }
         }
     }
     /**
@@ -536,20 +544,21 @@ class VLabSceneInteractable {
      * @abstract
      */
     touchstartHandler(event) {
-        this.action(event);
-        if (this.intersection) {
-            if (this.preselectable && !this.preselected && !this.selected) {
-                this.preselect();
+        if (!this.action(event)) {
+            if (this.intersection) {
+                if (this.preselectable && !this.preselected && !this.selected) {
+                    this.preselect();
+                } else {
+                    this.select();
+                }
             } else {
-                this.select();
+                if (!this.vLabScene.manager.getCurrentlySelectedInteractable()) {
+                    this.deSelect();
+                } else {
+                    this.dePreselect();
+                }
+                this.hideMenu();
             }
-        } else {
-            if (!this.vLabScene.manager.getCurrentlySelectedInteractable()) {
-                this.deSelect();
-            } else {
-                this.dePreselect();
-            }
-            this.hideMenu();
         }
     }
     /**
@@ -560,7 +569,9 @@ class VLabSceneInteractable {
      */
     touchendHandler(event) {
         if (this.intersection) {
-            this.preselect();
+            if (!this.actionFunction) {
+                this.preselect();
+            }
         }
     }
     /**
