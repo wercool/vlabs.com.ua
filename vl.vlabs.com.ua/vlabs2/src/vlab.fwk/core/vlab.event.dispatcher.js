@@ -37,6 +37,13 @@ class VLabEventDispatcher {
                 framerequest:       {}
             }
         };
+        /**
+         * Misc event meta info
+         */
+        this.eventHelpers = {
+            touchmovePrevEvent: undefined,
+            touchmoveDelta: 0
+        };
 
         window.addEventListener('resize',   this.onWindowResize.bind(this),     false);
         window.addEventListener('keydown',  this.onWindowKeyDown.bind(this),    false);
@@ -158,6 +165,9 @@ class VLabEventDispatcher {
         this.vLab.SceneDispatcher.currentVLabScene.eventCoords.set(event.touches[0].clientX, event.touches[0].clientY);
         event.preventDefault();
         this.notifySubscribers(event);
+        if (this.eventHelpers.touchmovePrevEvent == undefined) this.eventHelpers.touchmovePrevEvent = event;
+        this.eventHelpers.touchmoveDelta = Math.sqrt(Math.pow(this.eventHelpers.touchmovePrevEvent.touches[0].clientX - event.touches[0].clientX, 2) + Math.pow(this.eventHelpers.touchmovePrevEvent.touches[0].clientY - event.touches[0].clientY, 2));
+        this.eventHelpers.touchmovePrevEvent = event;
     }
 }
 export default VLabEventDispatcher;

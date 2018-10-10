@@ -47,32 +47,6 @@ class VLabSceneManager {
          */
         this.loadingManager = new THREE.LoadingManager();
         /**
-         * Simple outline material
-         * @public
-         */
-        this.simpleOutlineMaterial = new THREE.MeshLambertMaterial({
-            color: 0xffff00,
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0.75,
-            emissive: new THREE.Color(1.0, 1.0, 0.0),
-            depthTest: true,
-            depthWrite: true
-        });
-        /**
-         * Simple outline selected material
-         * @public
-         */
-        this.simpleOutlineSelectedMaterial = new THREE.MeshLambertMaterial({
-            color: 0x00ff00,
-            side: THREE.BackSide,
-            transparent: true,
-            opacity: 0.75,
-            emissive: new THREE.Color(0.0, 1.0, 0.0),
-            depthTest: true,
-            depthWrite: true
-        });
-        /**
          * Performance Object
          * @public
          */

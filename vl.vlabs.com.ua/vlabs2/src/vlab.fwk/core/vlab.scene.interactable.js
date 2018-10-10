@@ -57,6 +57,10 @@ class VLabSceneInteractable {
          */
         this.vLabSceneObject = undefined;
         /**
+         * Is this is a taken object in VLab
+         */
+        this.taken = false;
+        /**
          * If true then will be checked for intersection in {@link VLabScene#intersectInteractablesWithInteractablesRaycaster}
          * @public
          * @default false
@@ -96,10 +100,6 @@ class VLabSceneInteractable {
          * Selection inner object
          */
         this.selection = {};
-        /**
-         * Is this is a taken object in VLab
-         */
-        this.taken = false;
         /**
          * Simple outline (if EffectComposer is not in use) helper mesh
          */
@@ -246,6 +246,7 @@ class VLabSceneInteractable {
                     icon: '<i class="material-icons">filter_tilt_shift</i>',
                     action: 'this.select({hold: true})'
                 });
+                this.deSelect(true);
             }
             return;
         }
@@ -291,7 +292,7 @@ class VLabSceneInteractable {
             this.selected = false;
         }
         this.hideMenu();
-        this.dePreselect(insistently);
+        this.dePreselect();
     }
     /**
      * Preselects this VLabSceneInteractable
@@ -301,11 +302,13 @@ class VLabSceneInteractable {
     preselect() {
         if (this.intersection) {
             if (this.preselectable && !this.preselected && !this.selected) {
+                this.removeRespondentsHelpers();
                 /**
                  * push to preSelections if not yet in array
                  */
                 if (this.vLabScene.preSelectedInteractables.indexOf(this) == -1) {
                     this.vLabScene.preSelectedInteractables.push(this);
+                    this.vLabScene.manager.processInteractablesSelections();
                 }
 
                 this.preselected = true;
@@ -321,8 +324,8 @@ class VLabSceneInteractable {
      * Removes this instance from {@link VLabScene#preSelectedInteractables}
      * @abstract
      */
-    dePreselect(insistently) {
-        if (this.preselected || insistently == true) {
+    dePreselect() {
+        if (this.preselected) {
             let indexOfThisPreselected = this.vLabScene.preSelectedInteractables.indexOf(this);
             this.vLabScene.preSelectedInteractables.splice(indexOfThisPreselected, 1);
             this.preselected = false;
@@ -355,7 +358,7 @@ class VLabSceneInteractable {
     /**
      * 
      * 
-     *   ______               _     _    _                 _ _  
+     *    ______               _     _    _                 _ _  
      *   |  ____|             | |   | |  | |               | | |
      *   | |____   _____ _ __ | |_  | |__| | __ _ _ __   __| | | ___ _ __ ___ 
      *   |  __\ \ / / _ \ '_ \| __| |  __  |/ _` | '_ \ / _` | |/ _ \ '__/ __|
@@ -418,7 +421,7 @@ class VLabSceneInteractable {
          * do not react on middle mouse down
          * do not react on right mouse down
          */
-        if(event.button != 1 && event.button != 2) {
+        if(event.button == 0) {
             this.select();
             this.hideTooltip();
             this.removeRespondentsHelpers();
@@ -438,9 +441,6 @@ class VLabSceneInteractable {
      * @abstract
      */
     mouseupHandler(event) {
-        if (this.preselected) {
-            this.showTooltip();
-        }
     }
     /**
      * Default mousemove event.type handler
@@ -449,7 +449,9 @@ class VLabSceneInteractable {
      * @abstract
      */
     mousemoveHandler(event) {
-        this.preselect();
+        if(event.buttons == 0) {
+            this.preselect();
+        }
         if (!this.intersection) {
             this.hideMenu();
         }
@@ -483,6 +485,9 @@ class VLabSceneInteractable {
      * @abstract
      */
     touchendHandler(event) {
+        if (this.intersection) {
+            this.preselect();
+        }
     }
     /**
      * Default touchmove event.type handler
@@ -491,27 +496,22 @@ class VLabSceneInteractable {
      * @abstract
      */
     touchmoveHandler(event) {
-        this.preselect();
-        if (!this.intersection) {
-            this.hideMenu();
+        if (this.vLab.EventDispatcher.eventHelpers.touchmoveDelta > 5
+        || (this.vLab.SceneDispatcher.takenInteractable && this.vLab.EventDispatcher.eventHelpers.touchmoveDelta > 0)) {
+            this.dePreselect();
+            if (!this.intersection) {
+                this.hideMenu();
+            }
         }
     }
     /**
      * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * Behavior auxilary functions
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
+     *                     _ _            _
+     *     /\             (_) |          (_)
+     *    /  \  _   ___  ___| | __ _ _ __ _  ___  ___
+     *   / /\ \| | | \ \/ / | |/ _` | '__| |/ _ \/ __|
+     *  / ____ \ |_| |>  <| | | (_| | |  | |  __/\__ \
+     * /_/    \_\__,_/_/\_\_|_|\__,_|_|  |_|\___||___/
      * 
      * 
      */
@@ -519,7 +519,7 @@ class VLabSceneInteractable {
      * Shows simple outline based on this.vLabSceneObject.geometry
      */
     outline() {
-        this.outlineHelperMesh.material = this.vLabScene.manager.simpleOutlineMaterial;
+        this.outlineHelperMesh.material = this.vLabScene.vLab.prefabs['simpleOutlineMaterial'];
         this.outlineHelperMesh.visible = true;
         this.outlineHelperMesh.matrixAutoUpdate = true;
     }
@@ -527,7 +527,7 @@ class VLabSceneInteractable {
      * Shows simple outline shows selected, based on this.vLabSceneObject.geometry
      */
     outlineSelected() {
-        this.outlineHelperMesh.material = this.vLabScene.manager.simpleOutlineSelectedMaterial;
+        this.outlineHelperMesh.material = this.vLabScene.vLab.prefabs['simpleOutlineSelectedMaterial'];
         this.outlineHelperMesh.visible = true;
         this.outlineHelperMesh.matrixAutoUpdate = true;
     }
@@ -543,7 +543,7 @@ class VLabSceneInteractable {
      */
     addOutlineHelperMesh() {
         if (this.vLabSceneObject && this.outlineHelperMesh == undefined) {
-            this.outlineHelperMesh = new THREE.Mesh(this.vLabSceneObject.geometry, this.vLabScene.manager.simpleOutlineMaterial);
+            this.outlineHelperMesh = new THREE.Mesh(this.vLabSceneObject.geometry, this.vLabScene.vLab.prefabs['simpleOutlineMaterial']);
             this.outlineHelperMesh.name = this.vLabSceneObject.name + '_OUTLINE';
             this.outlineHelperMesh.scale.multiplyScalar(1.03);
             this.outlineHelperMesh.visible = false;
@@ -560,7 +560,13 @@ class VLabSceneInteractable {
     /**
      * 
      * 
-     * Menu functions
+     *  __  __                  
+     * |  \/  |                 
+     * | \  / | ___ _ __  _   _ 
+     * | |\/| |/ _ \ '_ \| | | |
+     * | |  | |  __/ | | | |_| |
+     * |_|  |_|\___|_| |_|\__,_|
+                          
      * 
      * 
      */
@@ -698,8 +704,14 @@ class VLabSceneInteractable {
      * 
      * 
      * 
-     * Tooltip functions
-     * 
+     *  _______          _ _   _       
+     * |__   __|        | | | (_)      
+     *    | | ___   ___ | | |_ _ _ __  
+     *    | |/ _ \ / _ \| | __| | '_ \ 
+     *    | | (_) | (_) | | |_| | |_) |
+     *    |_|\___/ \___/|_|\__|_| .__/ 
+     *                          | |    
+     *                          |_|    
      * 
      * 
      * 
@@ -708,31 +720,35 @@ class VLabSceneInteractable {
      * Shows tooltip
      * Do not show tooltips when this.vLabScene.currentControls.active == false
      */
-    showTooltip(tooltipHTML, refObject3D, CSSClass) {
+    showTooltip(shownRespondent) {
         let shiftX = 0;
         let shiftY = 0;
 
-        if ((this.tooltip != '' || (tooltipHTML !== undefined && tooltipHTML != '')) && !this.tooltipContainer && !this.selected) {
+        if (!this.tooltipContainer 
+        && (this.tooltip != '' || (shownRespondent !== undefined && shownRespondent.preselectionTooltip != ''))
+        && !this.selected
+        || (this.selected && (shownRespondent !== undefined && shownRespondent.preselectionTooltip != ''))) {
             this.tooltipContainer = document.createElement('div');
             this.tooltipContainer.id = this.vLabSceneObject.name + '_TOOLTIP';
-            if (refObject3D == undefined) {
+            if (shownRespondent == undefined) {
                 this.tooltipContainer.className = 'interactableTooltip';
             } else {
                 this.tooltipContainer.className = 'respondentTooltip';
                 shiftX += 2;
                 shiftY += 2;
             }
-            if (CSSClass !== undefined) {
-                this.tooltipContainer.classList.add(CSSClass);
+            if (shownRespondent !== undefined && shownRespondent.respondentCSSCLass !== undefined) {
+                this.tooltipContainer.classList.add(shownRespondent.respondentCSSCLass);
             }
 
-            this.tooltipContainer.innerHTML = (tooltipHTML !== undefined && tooltipHTML != '') ? tooltipHTML : this.tooltip;
-
+            this.tooltipContainer.innerHTML = (shownRespondent !== undefined && shownRespondent.preselectionTooltip != '') ? shownRespondent.preselectionTooltip : this.tooltip;
+            let existingTooltipContainer = document.getElementById(this.tooltipContainer.id);
+            if (existingTooltipContainer) this.vLab.DOMManager.WebGLContainer.removeChild(existingTooltipContainer);
             this.vLab.DOMManager.WebGLContainer.appendChild(this.tooltipContainer);
         }
 
         if (this.tooltipContainer) {
-            let tooltipCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, (refObject3D !== undefined) ? refObject3D : this.vLabSceneObject);
+            let tooltipCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, (shownRespondent !== undefined && shownRespondent.respondentIntersectionPointMesh != undefined) ? shownRespondent.respondentIntersectionPointMesh : this.vLabSceneObject);
             tooltipCoords.x += shiftX;
             tooltipCoords.y += shiftY;
             let xPosDelta = this.vLab.DOMManager.WebGLContainer.clientWidth - (tooltipCoords.x + this.tooltipContainer.clientWidth);
@@ -752,19 +768,21 @@ class VLabSceneInteractable {
     hideTooltip() {
         if (this.tooltipContainer) {
             this.vLab.DOMManager.WebGLContainer.removeChild(this.tooltipContainer);
-            this.tooltipContainer = null;
+            this.tooltipContainer = undefined;
         }
     }
     /**
      * 
      * 
      * 
-     *    _____  ______  _____ _____   ____  _   _ _____  ______ _   _ _______ _____
-     *   |  __ \|  ____|/ ____|  __ \ / __ \| \ | |  __ \|  ____| \ | |__   __/ ____|
-     *   | |__) | |__  | (___ | |__) | |  | |  \| | |  | | |__  |  \| |  | | | (___
-     *   |  _  /|  __|  \___ \|  ___/| |  | | . ` | |  | |  __| | . ` |  | |  \___ \
-     *   | | \ \| |____ ____) | |    | |__| | |\  | |__| | |____| |\  |  | |  ____) |
-     *   |_|  \_\______|_____/|_|     \____/|_| \_|_____/|______|_| \_|  |_| |_____/
+     *  _____                                 _            _       
+     * |  __ \                               | |          | |      
+     * | |__) |___  ___ _ __   ___  _ __   __| | ___ _ __ | |_ ___ 
+     * |  _  // _ \/ __| '_ \ / _ \| '_ \ / _` |/ _ \ '_ \| __/ __|
+     * | | \ \  __/\__ \ |_) | (_) | | | | (_| |  __/ | | | |_\__ \
+     * |_|  \_\___||___/ .__/ \___/|_| |_|\__,_|\___|_| |_|\__|___/
+     *                 | |                                         
+     *                 |_|                                         
      * 
      * 
      */
@@ -799,48 +817,56 @@ class VLabSceneInteractable {
                                         respondentIntersectionPointMaterial = this.vLab.prefabs['respondentIntersectionActionPointMaterial'];
                                     }
 
-                                    let thisPointMeshPosition = new THREE.Vector3().addVectors(thisOrigin, respondentDirection.clone().multiplyScalar(this.vLabSceneObject.geometry.boundingSphere.radius * 1.1 * this.vLabSceneObject.scale.x));
-                                    let thisPointMesh = new THREE.Mesh(this.vLab.prefabs['linePointGeometry'], interactableIntersectionPointMaterial);
-                                    thisPointMesh.position.copy(thisPointMeshPosition);
-                                    thisPointMesh.scale.multiplyScalar(2.0 * this.vLabSceneObject.scale.x);
-                                    this.vLabScene.add(thisPointMesh);
-                                    this.respondentPreselectionHelpers.push(thisPointMesh);
-
-                                    let lineGeometry = new THREE.Geometry();
-                                    lineGeometry.vertices.push(
-                                        thisPointMeshPosition,
-                                        respondentIntersections[0].point
-                                    );
-                                    this.respondentPreselectionHelpers.push(lineGeometry);
-
-                                    let line = new THREE.Line(lineGeometry, respondentLineMaterial);
-                                    this.vLabScene.add(line);
-                                    this.respondentPreselectionHelpers.push(line);
-
-                                    // var lineSegments = new THREE.LineSegments(lineGeometry, this.vLab.prefabs['respondentReferenceDashedLineMaterial']);
-                                    // lineSegments.computeLineDistances();
-                                    // this.vLabScene.add(lineSegments);
-                                    // this.respondentPreselectionHelpers.push(lineSegments);
-
                                     let respondentIntersectionPointMesh = new THREE.Mesh(this.vLab.prefabs['linePointGeometry'], respondentIntersectionPointMaterial);
                                     respondentIntersectionPointMesh.position.copy(respondentIntersections[0].point);
                                     respondentIntersectionPointMesh.scale.multiplyScalar(0.5 * respondentIntersections[0].point.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
                                     this.vLabScene.add(respondentIntersectionPointMesh);
-                                    this.respondentPreselectionHelpers.push(respondentIntersectionPointMesh);
 
-                                    this.shownRespondents.push({
-                                        respondent: respondent,
-                                        respondentIntersectionPointMesh: respondentIntersectionPointMesh,
-                                        respondentCSSCLass: respondentCSSCLass,
-                                        interactable: respondent.interactable
-                                    });
-
-                                    if (respondent.preselectionTooltip != '') {
-                                        if (THREEUtils.frustumContainsPoint(this.vLab, respondentIntersectionPointMesh.position)) {
-                                            respondent.interactable.showTooltip(respondent.preselectionTooltip, respondentIntersectionPointMesh, respondentCSSCLass);
+                                    raycaster.set(respondentIntersectionPointMesh.position.clone(), respondentDirection.clone().negate());
+                                    let thisIntersections = raycaster.intersectObject(this.vLabSceneObject);
+                                    if (thisIntersections.length > 0) {
+                                        let thisPointMeshPosition = new THREE.Vector3().addVectors(thisIntersections[0].point, (!this.taken) ? respondentDirection.clone().multiplyScalar(0.02) : new THREE.Vector3());
+                                        let thisPointMesh = new THREE.Mesh(this.vLab.prefabs['linePointGeometry'], interactableIntersectionPointMaterial);
+                                        thisPointMesh.position.copy(thisPointMeshPosition);
+                                        let scale = 0.1;
+                                        if (!this.taken) {
+                                            scale = 2.0 / (1 / thisIntersections[0].point.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
+                                            if (scale > 3.0) scale = 3.0;
                                         }
+                                        thisPointMesh.scale.multiplyScalar(scale);
+                                        this.vLabScene.add(thisPointMesh);
+
+                                        let lineGeometry = new THREE.Geometry();
+                                        lineGeometry.vertices.push(
+                                            thisPointMeshPosition,
+                                            respondentIntersections[0].point
+                                        );
+    
+    
+                                        let line = new THREE.Line(lineGeometry, respondentLineMaterial);
+                                        this.vLabScene.add(line);
+    
+                                        this.respondentPreselectionHelpers.push(lineGeometry);
+                                        this.respondentPreselectionHelpers.push(respondentIntersectionPointMesh);
+                                        this.respondentPreselectionHelpers.push(thisPointMesh);
+                                        this.respondentPreselectionHelpers.push(line);
+
+                                        // var lineSegments = new THREE.LineSegments(lineGeometry, this.vLab.prefabs['respondentReferenceDashedLineMaterial']);
+                                        // lineSegments.computeLineDistances();
+                                        // this.vLabScene.add(lineSegments);
+                                        // this.respondentPreselectionHelpers.push(lineSegments);
+
+                                        this.shownRespondents.push({
+                                            respondent: respondent,
+                                            respondentIntersectionPointMesh: respondentIntersectionPointMesh,
+                                            respondentCSSCLass: respondentCSSCLass,
+                                            interactable: respondent.interactable,
+                                            preselectionTooltip: respondent.preselectionTooltip
+                                        });
+
+                                        respondent.preselectionAction.call(respondent);
+                                        this.showRespondents();
                                     }
-                                    respondent.preselectionAction.call(respondent);
                                 }
                             }
                         }
@@ -851,7 +877,7 @@ class VLabSceneInteractable {
             this.shownRespondents.forEach((shownRespondent) => {
                 if (shownRespondent.preselectionTooltip != '') {
                     if (THREEUtils.frustumContainsPoint(this.vLab, shownRespondent.respondentIntersectionPointMesh.position)) {
-                        shownRespondent.interactable.showTooltip(shownRespondent.preselectionTooltip, shownRespondent.respondentIntersectionPointMesh, shownRespondent.respondentCSSCLass);
+                        shownRespondent.interactable.showTooltip(shownRespondent);
                     }
                 }
             });

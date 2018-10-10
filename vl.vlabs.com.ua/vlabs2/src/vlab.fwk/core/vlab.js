@@ -196,6 +196,7 @@ class VLab {
      * Instantiates EffectComposer if not yet instantiated.
      */
     setupEffectComposer() {
+        if (this.outlinePass) this.outlinePass.clearSelection();
         if (this.nature.WebGLRendererParameters) {
             if (this.nature.WebGLRendererParameters.effectComposer) {
                 if (this.SceneDispatcher.currentVLabScene) {

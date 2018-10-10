@@ -265,6 +265,8 @@ this.takenInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, -0.0
             context: this.takenInteractable
         }, true);
 
+        this.takenInteractable.deSelect(true);
+
         this.takenInteractable.taken = false;
         this.takenInteractable = null;
 

@@ -3,6 +3,9 @@ import * as THREE from 'three';
 export function initializeVLabPrefabs(vLab) {
     let vLabPrefabs = {};
     return new Promise((resolve, reject) => {
+        /**
+         * Prefabs for VLabSceneInteractableRespondets
+         */
         if (!vLab.prefabs['linePointGeometry']) {
             vLabPrefabs['linePointGeometry'] = new THREE.SphereBufferGeometry(0.006, 3, 3);
         }
@@ -30,6 +33,36 @@ export function initializeVLabPrefabs(vLab) {
         if (!vLab.prefabs['interactableIntersectionActionPointMaterial']) {
             vLabPrefabs['interactableIntersectionActionPointMaterial'] = new THREE.MeshBasicMaterial({ color: 0x91ff8e, side: THREE.BackSide });
         }
+        /**
+         * Simple outline material
+         */
+        if (!vLab.prefabs['simpleOutlineMaterial']) {
+            vLabPrefabs['simpleOutlineMaterial'] = new THREE.MeshLambertMaterial({
+                color: 0xffff00,
+                side: THREE.BackSide,
+                transparent: true,
+                opacity: 0.75,
+                emissive: new THREE.Color(1.0, 1.0, 0.0),
+                depthTest: true,
+                depthWrite: true
+            });
+        }
+        /**
+         * Simple outline selected material
+         */
+        if (!vLab.prefabs['simpleOutlineSelectedMaterial']) {
+            vLabPrefabs['simpleOutlineSelectedMaterial'] = new THREE.MeshLambertMaterial({
+                color: 0x00ff00,
+                side: THREE.BackSide,
+                transparent: true,
+                opacity: 0.75,
+                emissive: new THREE.Color(0.0, 1.0, 0.0),
+                depthTest: true,
+                depthWrite: true
+            });
+        }
+
+
         resolve(vLabPrefabs);
     });
 }
