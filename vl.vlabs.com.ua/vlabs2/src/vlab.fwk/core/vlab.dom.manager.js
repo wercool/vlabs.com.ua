@@ -62,13 +62,15 @@ class VLabDOMManager {
                     return false;
                 };
             }
-            let materialIconsCSSFontPreloader = document.createElement('div');
-            materialIconsCSSFontPreloader.className = 'material-icons';
-            materialIconsCSSFontPreloader.innerHTML = 'fiber_manual_record';
             this.addStyle({
                 id: 'materialIconsCSS',
                 href: '../vlab.assets/css/fonts/material-icons/material-icons.css'
             }).then(() => {
+                let materialIconsCSSFontPreloader = document.createElement('li');
+                materialIconsCSSFontPreloader.style.position = 'fixed';
+                materialIconsCSSFontPreloader.style.zIndex = 0;
+                materialIconsCSSFontPreloader.className = 'material-icons';
+                materialIconsCSSFontPreloader.innerHTML = 'fiber_manual_record';
                 document.body.appendChild(materialIconsCSSFontPreloader);
                 this.addStyle({
                     id: 'globalCSS',
@@ -83,9 +85,9 @@ class VLabDOMManager {
                     defaultJS.parentNode.removeChild(defaultJS);
                     let ZipLoaderJS = document.getElementById('ZipLoaderJS');
                     if (ZipLoaderJS) ZipLoaderJS.parentNode.removeChild(ZipLoaderJS);
-
-                    document.body.removeChild(materialIconsCSSFontPreloader);
-
+                    setTimeout(() => {
+                        document.body.removeChild(materialIconsCSSFontPreloader);
+                    }, 1000);
                     /**
                      * 
                      * VLab DOM container <div id='VLabContainer'>

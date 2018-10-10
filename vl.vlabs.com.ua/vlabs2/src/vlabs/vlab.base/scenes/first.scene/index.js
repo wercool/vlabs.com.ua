@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import VLabScene from '../../../../vlab.fwk/core/vlab.scene';
+import VLabSceneTransitor from '../../../../vlab.fwk/aux/scene/vlab.scene.transitor';
 
 class FirstScene extends VLabScene {
     constructor(iniObj) {
@@ -7,6 +8,12 @@ class FirstScene extends VLabScene {
 
     }
     onLoaded() {
+        new VLabSceneTransitor({
+            vLabScene: this,
+            targetVLabScene: this.vLab.SceneDispatcher.getSceneByClassName('SecondScene'),
+            position: new THREE.Vector3(4.0, 0.0, 0.0)
+        });
+
         this.interactables['Sphere2'].addRespondent({
             interactable: this.interactables['Suzanne1_1'],
             callerInteractable: this.interactables['Sphere2'],

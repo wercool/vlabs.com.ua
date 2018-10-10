@@ -152,6 +152,39 @@ class VLabSceneInteractable {
      * @returns {Promise | VLabSceneInteractable}                       - VLabSceneInteractable instance in Promise resolver
      */
     initialize(initObj){
+        /**
+         * Prefabs for VLabSceneInteractableRespondets
+         */
+        if (!this.vLab.prefabs['VLabSceneInteractablePrefabs']) {
+            this.vLab.prefabs['VLabSceneInteractablePrefabs'] = {};
+            this.vLab.prefabs['VLabSceneInteractablePrefabs']['linePointGeometry'] = new THREE.SphereBufferGeometry(0.006, 3, 3);
+            this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceLineMaterial'] = new THREE.LineBasicMaterial({ color: 0xfff6b7 });
+            this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentActionLineMaterial'] = new THREE.LineBasicMaterial({ color: 0x91ff8e });
+            this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial'] = new THREE.LineDashedMaterial({ color: 0xfff6b7, dashSize: 0.05, gapSize: 0.015 });
+            this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentActionDashedLineMaterial'] = new THREE.LineDashedMaterial({ color: 0x91ff8e, dashSize: 0.05, gapSize: 0.015 });
+            this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentIntersectionReferencePointMaterial'] = new THREE.MeshBasicMaterial({ color: 0xfff6b7, depthTest: false, side: THREE.BackSide });
+            this.vLab.prefabs['VLabSceneInteractablePrefabs']['interactableIntersectionReferencePointMaterial'] = new THREE.MeshBasicMaterial({ color: 0xfff6b7, side: THREE.BackSide });
+            this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentIntersectionActionPointMaterial'] = new THREE.MeshBasicMaterial({ color: 0x91ff8e, depthTest: false, side: THREE.BackSide });
+            this.vLab.prefabs['VLabSceneInteractablePrefabs']['interactableIntersectionActionPointMaterial'] = new THREE.MeshBasicMaterial({ color: 0x91ff8e, side: THREE.BackSide });
+            this.vLab.prefabs['VLabSceneInteractablePrefabs']['simpleOutlineMaterial'] = new THREE.MeshLambertMaterial({
+                color: 0xffff00,
+                side: THREE.BackSide,
+                transparent: true,
+                opacity: 0.75,
+                emissive: new THREE.Color(1.0, 1.0, 0.0),
+                depthTest: true,
+                depthWrite: true
+            });
+            this.vLab.prefabs['VLabSceneInteractablePrefabs']['simpleOutlineSelectedMaterial'] = new THREE.MeshLambertMaterial({
+                color: 0x00ff00,
+                side: THREE.BackSide,
+                transparent: true,
+                opacity: 0.75,
+                emissive: new THREE.Color(0.0, 1.0, 0.0),
+                depthTest: true,
+                depthWrite: true
+            });
+        }
         if (initObj) this.initObj = initObj;
         return new Promise((resolve, reject) => {
             this.vLab.DOMManager.addStyle({
@@ -237,13 +270,13 @@ class VLabSceneInteractable {
             if (this.selection.hold == true) {
                 this.updateMenuWithMenuItem({
                     label: 'Hold selection',
-                    icon: '<i class="material-icons" style="color: #ff0000;">filter_tilt_shift</i>',
+                    icon: '<i class="material-icons" style="color: #ff0000;">adjust</i>',
                     action: 'this.select({hold: false})'
                 });
             } else {
                 this.updateMenuWithMenuItem({
                     label: 'Hold selection',
-                    icon: '<i class="material-icons">filter_tilt_shift</i>',
+                    icon: '<i class="material-icons">adjust</i>',
                     action: 'this.select({hold: true})'
                 });
                 this.deSelect(true);
@@ -441,6 +474,9 @@ class VLabSceneInteractable {
      * @abstract
      */
     mouseupHandler(event) {
+        if (this.intersection) {
+            this.preselect();
+        }
     }
     /**
      * Default mousemove event.type handler
@@ -519,7 +555,7 @@ class VLabSceneInteractable {
      * Shows simple outline based on this.vLabSceneObject.geometry
      */
     outline() {
-        this.outlineHelperMesh.material = this.vLabScene.vLab.prefabs['simpleOutlineMaterial'];
+        this.outlineHelperMesh.material = this.vLabScene.vLab.prefabs['VLabSceneInteractablePrefabs']['simpleOutlineMaterial'];
         this.outlineHelperMesh.visible = true;
         this.outlineHelperMesh.matrixAutoUpdate = true;
     }
@@ -543,7 +579,7 @@ class VLabSceneInteractable {
      */
     addOutlineHelperMesh() {
         if (this.vLabSceneObject && this.outlineHelperMesh == undefined) {
-            this.outlineHelperMesh = new THREE.Mesh(this.vLabSceneObject.geometry, this.vLabScene.vLab.prefabs['simpleOutlineMaterial']);
+            this.outlineHelperMesh = new THREE.Mesh(this.vLabSceneObject.geometry, this.vLabScene.vLab.prefabs['VLabSceneInteractablePrefabs']['simpleOutlineMaterial']);
             this.outlineHelperMesh.name = this.vLabSceneObject.name + '_OUTLINE';
             this.outlineHelperMesh.scale.multiplyScalar(1.03);
             this.outlineHelperMesh.visible = false;
@@ -806,18 +842,18 @@ class VLabSceneInteractable {
                             if (respondentIntersections.length > 0) {
                                 if (this.preselected) {
                                     let respondentCSSCLass = 'respondentReferenceTooltip';
-                                    let interactableIntersectionPointMaterial = this.vLab.prefabs['interactableIntersectionReferencePointMaterial'];
-                                    let respondentLineMaterial = this.vLab.prefabs['respondentReferenceLineMaterial'];
-                                    let respondentIntersectionPointMaterial = this.vLab.prefabs['respondentIntersectionReferencePointMaterial'];
+                                    let interactableIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['interactableIntersectionReferencePointMaterial'];
+                                    let respondentLineMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceLineMaterial'];
+                                    let respondentIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentIntersectionReferencePointMaterial'];
 
                                     if (respondent.initObj.action !== undefined) {
                                         respondentCSSCLass = 'respondentActionTooltip';
-                                        interactableIntersectionPointMaterial = this.vLab.prefabs['interactableIntersectionActionPointMaterial'];
-                                        respondentLineMaterial = this.vLab.prefabs['respondentActionLineMaterial'];
-                                        respondentIntersectionPointMaterial = this.vLab.prefabs['respondentIntersectionActionPointMaterial'];
+                                        interactableIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['interactableIntersectionActionPointMaterial'];
+                                        respondentLineMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentActionLineMaterial'];
+                                        respondentIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentIntersectionActionPointMaterial'];
                                     }
 
-                                    let respondentIntersectionPointMesh = new THREE.Mesh(this.vLab.prefabs['linePointGeometry'], respondentIntersectionPointMaterial);
+                                    let respondentIntersectionPointMesh = new THREE.Mesh(this.vLab.prefabs['VLabSceneInteractablePrefabs']['linePointGeometry'], respondentIntersectionPointMaterial);
                                     respondentIntersectionPointMesh.position.copy(respondentIntersections[0].point);
                                     respondentIntersectionPointMesh.scale.multiplyScalar(0.5 * respondentIntersections[0].point.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
                                     this.vLabScene.add(respondentIntersectionPointMesh);
@@ -826,7 +862,7 @@ class VLabSceneInteractable {
                                     let thisIntersections = raycaster.intersectObject(this.vLabSceneObject);
                                     if (thisIntersections.length > 0) {
                                         let thisPointMeshPosition = new THREE.Vector3().addVectors(thisIntersections[0].point, (!this.taken) ? respondentDirection.clone().multiplyScalar(0.02) : new THREE.Vector3());
-                                        let thisPointMesh = new THREE.Mesh(this.vLab.prefabs['linePointGeometry'], interactableIntersectionPointMaterial);
+                                        let thisPointMesh = new THREE.Mesh(this.vLab.prefabs['VLabSceneInteractablePrefabs']['linePointGeometry'], interactableIntersectionPointMaterial);
                                         thisPointMesh.position.copy(thisPointMeshPosition);
                                         let scale = 0.1;
                                         if (!this.taken) {
@@ -851,7 +887,7 @@ class VLabSceneInteractable {
                                         this.respondentPreselectionHelpers.push(thisPointMesh);
                                         this.respondentPreselectionHelpers.push(line);
 
-                                        // var lineSegments = new THREE.LineSegments(lineGeometry, this.vLab.prefabs['respondentReferenceDashedLineMaterial']);
+                                        // var lineSegments = new THREE.LineSegments(lineGeometry, this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial']);
                                         // lineSegments.computeLineDistances();
                                         // this.vLabScene.add(lineSegments);
                                         // this.respondentPreselectionHelpers.push(lineSegments);

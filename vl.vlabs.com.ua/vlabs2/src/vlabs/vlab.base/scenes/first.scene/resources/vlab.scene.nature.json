@@ -42,7 +42,7 @@
                 },
                 {
                     "label": "Hold selection",
-                    "icon": "<i class=\"material-icons\">filter_tilt_shift</i>",
+                    "icon": "<i class=\"material-icons\">adjust</i>",
                     "enabled": true,
                     "action": "this.select({hold: true})",
                     "args": null

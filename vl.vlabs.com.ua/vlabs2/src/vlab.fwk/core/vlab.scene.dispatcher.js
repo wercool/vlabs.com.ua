@@ -45,14 +45,42 @@ class VLabSceneDispatcher {
      * @param {boolean}   initObj.autoload                  - Load VLabScene assets immediately after instantiation if no active loading happens
      */
     addScene(initObj) {
-        initObj.vLab = this.vLab;
-        let vLabScene = new initObj.class(initObj);
-        this.scenes.push(vLabScene);
-        if (initObj.active) {
-            this.activateScene(initObj).then(this.autoloadScenes.bind(this));
+        if (this.getScene(initObj.class) === null) {
+            initObj.vLab = this.vLab;
+            let vLabScene = new initObj.class(initObj);
+            this.scenes.push(vLabScene);
+            if (initObj.active) {
+                this.activateScene(initObj).then(this.autoloadScenes.bind(this));
+            } else {
+                this.autoloadScenes();
+            }
         } else {
-            this.autoloadScenes();
+            console.error(initObj.class.name + ' has been added previously!');
         }
+    }
+    /**
+     * Return VLabScene instance by VLabScene class if exists in this.scene or null otherwise
+     * @param {VLabScene} VLabSceneClass - VLabScene class
+     */
+    getScene(VLabSceneClass) {
+        for (let i = 0; i < this.scenes.length; i++) {
+            if (VLabSceneClass === this.scenes[i].constructor) {
+                return this.scenes[i];
+            }
+        }
+        return null;
+    }
+    /**
+     * Return VLabScene instance by VLabScene class name if exists in this.scene or null otherwise
+     * @param {string} vLabClassName - VLabScene class name
+     */
+    getSceneByClassName(vLabClassName) {
+        for (let i = 0; i < this.scenes.length; i++) {
+            if (vLabClassName === this.scenes[i].constructor.name) {
+                return this.scenes[i];
+            }
+        }
+        return null;
     }
     /**
      * Activates VLabScene.
@@ -82,6 +110,13 @@ class VLabSceneDispatcher {
                     this.sceneIsBeingActivated = vLabScene;
                     vLabScene.activate().then((vLabScene) => {
                         this.currentVLabScene = vLabScene;
+                        /**
+                         * See {@link VLabScene#activate}
+                         */
+                        if (vLabScene['justLoaded'] == true) {
+                            delete vLabScene['justLoaded'];
+                            vLabScene.onLoaded();
+                        }
                         this.vLab.setupWebGLRenderer();
                         this.vLab.resizeWebGLRenderer();
                         this.vLab.setupEffectComposer();

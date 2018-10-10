@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import VLab from './vlab';
 import VLabSceneManager from './vlab.scene.manager';
 import VLabSceneInteractable from './vlab.scene.interactable';
-import VLabOrbitControls from '../aux/vlab.orbit.controls';
+import VLabOrbitControls from '../aux/scene/vlab.orbit.controls';
 
 /**
  * VLab Scene.
@@ -192,7 +192,18 @@ class VLabScene extends THREE.Scene {
                     this.currentControls.update();
                     this.active = true;
                     this.manager.performance.performanceManagerInterval = setInterval(this.manager.performanceManager.bind(this.manager), 1000);
-                    if (justLoaded) this.onLoaded();
+                    if (justLoaded) {
+                        /**
+                         * For internal use in {@link VLabSceneDispatcher#activateScene}
+                         */
+                        this['justLoaded'] = true;
+                        /*<dev>*/
+                            if (!this.vLab.getProdMode()) {
+                                var axesHelper = new THREE.AxesHelper(5);
+                                this.add(axesHelper);
+                            }
+                        /*</dev>*/
+                    }
                     resolve(this);
                 });
             });
