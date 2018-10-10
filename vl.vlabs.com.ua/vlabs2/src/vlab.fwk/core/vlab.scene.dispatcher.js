@@ -87,9 +87,12 @@ class VLabSceneDispatcher {
      * * Sets this.vLab.WebGLRenderer.domElement to activated VLabScene canvas
      * * Sets this.vLab.WebGLRenderer.context to activated VLabScene canvas context
      * @async
+     * 
      * @memberof VLabSceneDispatcher
+     * 
      * @param {Object}    initObj                           - Scene activation object
      * @param {VLabScene} initObj.class                     - VLabScene Class
+     * 
      * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver
      */
     activateScene(initObj) {

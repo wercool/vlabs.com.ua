@@ -24,13 +24,17 @@ class VLabSceneInteractable {
      * @param {boolean}             [initObj.interactable.intersectable]        - If true then will be checked for intersection in {@link VLabScene#intersectInteractablesWithInteractablesRaycaster}
      * @param {boolean}             [initObj.interactable.preselecatble]        - If true mouseover and touchstart will preselect this.vLabSceneObject 
      * @param {boolean}             [initObj.interactable.selectable]           - If true mousedown and touchstart will select this.vLabSceneObject if it is preselectable and already preselected or if it is not preselectable
+     * @param {Object}              [initObj.interactable.action]               - Native action; if defined then VLabSceneInteractable.selectble is set to false; native action will be called instead of selection
+     * @param {Function}            [initObj.interactable.action.function]      - This function reference will be called on native action
+     * @param {Function}            [initObj.interactable.action.args]          - Native function arguments
+     * @param {Function}            [initObj.interactable.action.context]       - Native action function context; action.function.call(action.context, action.args)
      * @param {HTML}                [initObj.interactable.tooltip]              - If defined and != "" then will be shown in {@linkg VLabSceneInteractable#preselect}
      * @param {[Object]}            [initObj.interactable.menu]                 - Array of menu items
      * @param {Object}              [initObj.interactable.menu.item]            - Menu item
      * @param {string}              [initObj.interactable.menu.item.label]      - Menu item label (HTML)
      * @param {string}              [initObj.interactable.menu.item.icon]       - Menu item icon (HTML)
      * @param {boolean}             [initObj.interactable.menu.item.enabled]    - Menu item enabled
-     * @param {string | function}   [initObj.interactable.menu.item.action]     - Menu item action
+     * @param {string | Function}   [initObj.interactable.menu.item.action]     - Menu item action
      * @param {Object}              [initObj.interactable.menu.item.args]       - Menu item action args
      * @param {Object}              [interactable.style]                        - CSS style for particular VLabScene Interactable
      * @param {string}              [interactable.style.id]                     - CSS style link id
@@ -56,6 +60,18 @@ class VLabSceneInteractable {
          * @default undefined
          */
         this.vLabSceneObject = undefined;
+        /**
+         * This native action function
+         */
+        this.actionFunction = undefined;
+        /**
+         * This native action funciton args
+         */
+        this.actionFunctionArgs = {};
+        /**
+         * This native action funciton context
+         */
+        this.actionFunctionContext = undefined;
         /**
          * Is this is a taken object in VLab
          */
@@ -206,6 +222,14 @@ class VLabSceneInteractable {
                 if (this.initObj.interactable.selectable !== undefined) {
                     this.selectable = this.initObj.interactable.selectable;
                 }
+                if (this.initObj.interactable.action !== undefined) {
+                    if (this.initObj.interactable.action.function !== undefined) {
+                        this.actionFunction = this.initObj.interactable.action.function;
+                        this.actionFunctionArgs = this.initObj.interactable.action.args;
+                        this.actionFunctionContext = this.initObj.interactable.action.context;
+                        this.selectable = false;
+                    }
+                }
                 if (this.initObj.interactable.tooltip !== undefined) {
                     this.tooltip = this.initObj.interactable.tooltip;
                 }
@@ -226,6 +250,20 @@ class VLabSceneInteractable {
             this.vLabScene.interactables[this.vLabSceneObject.name] = this;
             this.addOutlineHelperMesh();
             this.setVisibility();
+        }
+    }
+    /**
+     * Native action
+     */
+    action(event) {
+        if (this.intersection) {
+            if (this.actionFunction) {
+                let extendedActionFunctionArgs = ObjectUtils.merge(this.actionFunctionArgs, {
+                    event: event,
+                    intersection: this.intersection
+                });
+                this.actionFunction.call(this.actionFunctionContext, extendedActionFunctionArgs);
+            }
         }
     }
     /**
@@ -455,14 +493,13 @@ class VLabSceneInteractable {
          * do not react on right mouse down
          */
         if(event.button == 0) {
+            this.action(event);
             this.select();
             this.hideTooltip();
             this.removeRespondentsHelpers();
         } else if (event.button == 2){
             if (this.intersection) {
-                console.log('VLabSceneInteractable');
                 console.log(this);
-                console.log('VLab');
                 console.log(this.vLab);
             }
         }
@@ -499,6 +536,7 @@ class VLabSceneInteractable {
      * @abstract
      */
     touchstartHandler(event) {
+        this.action(event);
         if (this.intersection) {
             if (this.preselectable && !this.preselected && !this.selected) {
                 this.preselect();
@@ -563,7 +601,7 @@ class VLabSceneInteractable {
      * Shows simple outline shows selected, based on this.vLabSceneObject.geometry
      */
     outlineSelected() {
-        this.outlineHelperMesh.material = this.vLabScene.vLab.prefabs['simpleOutlineSelectedMaterial'];
+        this.outlineHelperMesh.material = this.vLabScene.vLab.prefabs['VLabSceneInteractablePrefabs']['simpleOutlineSelectedMaterial'];
         this.outlineHelperMesh.visible = true;
         this.outlineHelperMesh.matrixAutoUpdate = true;
     }

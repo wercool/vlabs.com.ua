@@ -81,6 +81,7 @@ class VLabSceneTransitor extends VLabSceneInteractable {
 
         /**
          * VLabSceneInteractable initialization for VLabSceneTransitor
+         * @memberof VLabSceneInteractable
          * {@link VLabSceneInteractable#initialize}
          */
         this.initialize({
@@ -88,6 +89,16 @@ class VLabSceneTransitor extends VLabSceneInteractable {
                 sceneObject: vLabSceneTransitorInteractableObject,
                 intersectable: true,
                 preselectable: true,
+                action: {
+                    function: this.vLab.SceneDispatcher.activateScene,
+                    /**
+                     * Scene activation object {@link VLabSceneDispatcher#activateScene}
+                     */
+                    args: {
+                        class: this.selfInitObj.targetVLabScene.constructor
+                    },
+                    context: this.vLab.SceneDispatcher
+                },
                 tooltip: 'Go to <b>' + initObj.vLabScene.nature.title + '</b>'
             }
         });
