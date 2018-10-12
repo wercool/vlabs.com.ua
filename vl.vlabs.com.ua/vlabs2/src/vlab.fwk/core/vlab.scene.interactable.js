@@ -184,6 +184,12 @@ class VLabSceneInteractable {
      * @returns {Promise | VLabSceneInteractable}                       - VLabSceneInteractable instance in Promise resolver
      */
     initialize(initObj){
+        /*<dev>*/
+        if (!this['DEV']) {
+            this['DEV'] = new DEVVLabSceneInteractable(this);
+        }
+        /*</dev>*/
+
         /**
          * Prefabs for VLabSceneInteractableRespondets
          */
@@ -525,11 +531,7 @@ class VLabSceneInteractable {
         } else if (event.button == 2){
             if (this.intersection) {
                 /*<dev>*/
-                    if (!this['DEV']) {
-                        this['DEV'] = new DEVVLabSceneInteractable(this);
-                    } else {
-                        this['DEV'].showMenu();
-                    }
+                    this['DEV'].showMenu();
                 /*</dev>*/
             }
         }
@@ -593,9 +595,7 @@ class VLabSceneInteractable {
      */
     touchendHandler(event) {
         if (this.intersection) {
-            if (!this.actionFunction) {
-                this.preselect();
-            }
+            this.preselect();
         }
     }
     /**

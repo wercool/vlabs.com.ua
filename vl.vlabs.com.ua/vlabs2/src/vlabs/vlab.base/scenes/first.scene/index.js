@@ -8,6 +8,13 @@ class FirstScene extends VLabScene {
 
     }
     onLoaded() {
+        /**
+         * Z-fighting
+         */
+        this.getObjectByName('Plane').material.polygonOffset = true;
+        this.getObjectByName('Plane').material.polygonOffsetFactor = 1;
+
+
         new VLabSceneTransitor({
             vLabScene: this,
             targetVLabScene: this.vLab.SceneDispatcher.getSceneByClassName('SecondScene'),

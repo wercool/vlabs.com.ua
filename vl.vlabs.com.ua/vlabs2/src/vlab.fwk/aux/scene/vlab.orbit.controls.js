@@ -135,14 +135,16 @@ class VLabOrbitControls extends VLabControls {
      * @memberof VLabOrbitControls
      */
     mousedownHandler(event) {
-        if (this.enabled) {
-            switch (event.button) {
-                case this.MOUSEBUTTONS.ORBIT:
-                    if (this.enableRotate) {
-                        this.rotateStart.set(event.clientX, event.clientY);
-                        this.state = this.STATE.ROTATE;
-                    }
-                break;
+        if (!event.ctrlKey) {
+            if (this.enabled) {
+                switch (event.button) {
+                    case this.MOUSEBUTTONS.ORBIT:
+                        if (this.enableRotate) {
+                            this.rotateStart.set(event.clientX, event.clientY);
+                            this.state = this.STATE.ROTATE;
+                        }
+                    break;
+                }
             }
         }
     }
