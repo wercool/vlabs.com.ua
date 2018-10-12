@@ -3,13 +3,12 @@ const gulp                  = require('gulp');
 const gulpif                = require('gulp-if');
 const color                 = require('gulp-color');
 const fs                    = require('fs');
+const rename                = require('gulp-rename');
 const replace               = require('gulp-replace');
 const cryptojs              = require('gulp-crypto-js');
 const dirsync               = require('gulp-directory-sync');
-const obfuscator            = require('gulp-javascript-obfuscator');
+const minify                = require('gulp-minify');
 const sourcemaps            = require('gulp-sourcemaps');
-const uglify                = require('gulp-uglify');
-const stripfebug            = require('gulp-strip-debug');
 const cleancss              = require('gulp-clean-css');
 const connect               = require('gulp-connect');
 const cors                  = require('cors');
@@ -111,21 +110,41 @@ gulp.task('build', gulp.series('sync-vlab-assets',
                                'vlab-nature-process',
                                'vlab-scene-nature-process',
                                 function transpiling () {
+    var devIgnore = [];
+    if (initObj.mode == 'prod') {
+        fs.readdirSync('./src/vlab.fwk/aux/dev')
+        .filter(function(devFile) {
+            devIgnore.push('./src/vlab.fwk/aux/dev/' + devFile);
+        });
+    }
+
     return browserify('./src/vlabs/' + initObj.vLabName + '/index.js')
-    .transform('babelify', {presets: ['@babel/preset-env']})
+    .transform('babelify', { presets: ['@babel/preset-env'] })
+    .ignore(devIgnore)
     .bundle()
     .pipe(source('bundle.js'))
     .pipe(buffer())
-    .pipe(gulpif(initObj.mode == 'prod', stripfebug()))
     .pipe(replace('<!--VLAB NATURE PASSPHRASE-->', (!initObj.naturePlain) ? initObj.settings.VLabNaturePassPhrase : ''))
     .pipe(replace('<!--VLAB AUTH REQUIRED-->', process.argv.indexOf('--noauth') == -1 ? 'true' : 'false'))
     .pipe(replace('<!--VLAB PROD MODE-->', initObj.mode == 'prod' ? 'true' : 'false'))
     .pipe(gulpif(initObj.mode != 'prod', sourcemaps.init({loadMaps: true})))
     .pipe(gulpif(initObj.mode != 'prod', sourcemaps.write('./maps')))
-    .pipe(gulpif(initObj.mode == 'prod', uglify()))
-    .pipe(gulpif(initObj.mode == 'prod', obfuscator({compact: true, sourceMap: false})))
+    .pipe(gulpif(initObj.mode == 'prod', replace(/<dev>(.+?)<\/dev>/msig, '')))
+    .pipe(gulpif(initObj.mode == 'prod', replace(/console.log((.+?));/msig, '')))
+    .pipe(gulpif(initObj.mode == 'prod', minify({
+            mangle: false
+        }
+    )))
     .pipe(gulp.dest('./build/' + initObj.vLabName))
     .on('end', function() {
+        if (initObj.mode == 'prod') {
+            gulp.src('./build/' + initObj.vLabName + '/bundle-min.js')
+            .pipe(rename('bundle.js'))
+            .pipe(gulp.dest('./build/' + initObj.vLabName));
+
+            del('./build/' + initObj.vLabName + '/bundle-min.js');
+        }
+
         if (initObj.zipBundle) {
             gulp.src('./build/' + initObj.vLabName + '/bundle.js')
             .pipe(zip('bundle.js.zip'))

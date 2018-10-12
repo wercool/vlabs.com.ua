@@ -4,6 +4,8 @@ import * as THREEUtils from '../utils/three.utils';
 import * as ObjectUtils from '../utils/object.utils';
 import VLabScene from './vlab.scene';
 import VLabSceneInteractableRespondent from './vlab.scene.interactable.respondent';
+/*DEV*/
+import DEVVLabSceneInteractable from '../aux/dev/dev.vlab.scene.interactable';
 
 /**
  * VLabScene Interactable base class.
@@ -267,8 +269,9 @@ class VLabSceneInteractable {
         }
     }
     /**
-     * Native action
-     * @returns {boolean} this.actionFunction called or not
+     * Native action which calls this.actionFunction if defined
+     * Exectued if this.intersection and this.preselected
+     * @returns {boolean} returns true if this.actionFunction was actually called
      */
     action(event) {
         if (this.intersection && this.preselected) {
@@ -448,12 +451,14 @@ class VLabSceneInteractable {
     /**
      * 
      * 
+     * 
      *    ______               _     _    _                 _ _  
      *   |  ____|             | |   | |  | |               | | |
      *   | |____   _____ _ __ | |_  | |__| | __ _ _ __   __| | | ___ _ __ ___ 
      *   |  __\ \ / / _ \ '_ \| __| |  __  |/ _` | '_ \ / _` | |/ _ \ '__/ __|
      *   | |___\ V /  __/ | | | |_  | |  | | (_| | | | | (_| | |  __/ |  \__ \
      *   |______\_/ \___|_| |_|\__| |_|  |_|\__,_|_| |_|\__,_|_|\___|_|  |___/
+     * 
      * 
      * 
      * 
@@ -519,8 +524,13 @@ class VLabSceneInteractable {
             }
         } else if (event.button == 2){
             if (this.intersection) {
-                console.log(this);
-                console.log(this.vLab);
+                /*<dev>*/
+                    if (!this['DEV']) {
+                        this['DEV'] = new DEVVLabSceneInteractable(this);
+                    } else {
+                        this['DEV'].showMenu();
+                    }
+                /*</dev>*/
             }
         }
     }
@@ -611,6 +621,7 @@ class VLabSceneInteractable {
      *   / /\ \| | | \ \/ / | |/ _` | '__| |/ _ \/ __|
      *  / ____ \ |_| |>  <| | | (_| | |  | |  __/\__ \
      * /_/    \_\__,_/_/\_\_|_|\__,_|_|  |_|\___||___/
+     * 
      * 
      * 
      */

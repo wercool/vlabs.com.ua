@@ -5,6 +5,10 @@ import * as VLabUtils from '../utils/vlab.utils.js';
 import VLabDOMManager from './vlab.dom.manager';
 import VLabEventDispatcher from './vlab.event.dispatcher';
 import VLabSceneDispatcher from './vlab.scene.dispatcher';
+/**
+ * Post Processing
+ * https://vanruesc.github.io/postprocessing/public/docs/
+ */
 import { EffectComposer, RenderPass, OutlinePass } from "postprocessing";
 
 var TWEEN = require('@tweenjs/tween.js');

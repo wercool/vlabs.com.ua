@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as ObjectUtils from '../../utils/object.utils';
+import * as VLabUtils from '../../utils/vlab.utils.js';
 import VLabSceneInteractable from '../../core/vlab.scene.interactable';
 /**
  * VLab Scene auxilary which makes a transition to target VLabScene.
@@ -42,26 +42,8 @@ class VLabSceneTransitor extends VLabSceneInteractable {
 
         if (!this.vLab.prefabs['VLabSceneTransitorPrefabs']) {
             this.vLab.prefabs['VLabSceneTransitorPrefabs'] = {};
-            /**
-             * Prepare VLabSceneTransitorSpriteMaterial
-             */
-            let canvas = document.createElement('canvas');
-            let ctx = canvas.getContext('2d');
-            canvas.width = 50;
-            canvas.height = 50;
-            ctx.font = '50px Material Icons';
-            ctx.fillStyle = '#00ff00';
-            ctx.fillText('input', 0, 50);
 
-            // ctx.strokeStyle = '#ff0000';
-            // ctx.strokeRect(0, 0, canvas.width, canvas.height);
-            // canvas.style.left = '300px';
-            // canvas.style.top = '300px';
-            // canvas.style.position = 'absolute';
-            // canvas.style.zIndex = 100000;
-            // document.body.appendChild(canvas);
-
-            let vLabSceneTransitorSpriteMaterialMap = new THREE.Texture(canvas);
+            let vLabSceneTransitorSpriteMaterialMap = VLabUtils.textureFromMaterialIcon({ icon: 'input', sizeP2: 64 });
             vLabSceneTransitorSpriteMaterialMap.needsUpdate = true;
             this.vLab.prefabs['VLabSceneTransitorPrefabs']['VLabSceneTransitorSpriteMaterial'] = new THREE.SpriteMaterial({
                 map: vLabSceneTransitorSpriteMaterialMap,
@@ -76,7 +58,7 @@ class VLabSceneTransitor extends VLabSceneInteractable {
         let vLabSceneTransitorInteractableObject = new THREE.Mesh(this.vLab.prefabs['VLabSceneTransitorPrefabs']['VLabSceneTransitorInteractableObjectGeometry'], this.vLab.prefabs['Generic']['TransparentMeshBasicMaterial']);
         vLabSceneTransitorInteractableObject.add(vLabSceneTransitorInteractableObjectSprite);
         vLabSceneTransitorInteractableObject.position.copy(this.selfInitObj.position);
-        vLabSceneTransitorInteractableObject.name = 'VLabSceneTransitor_' + initObj.targetVLabScene.name;
+        vLabSceneTransitorInteractableObject.name = 'VLabSceneTransitor_' + this.selfInitObj.targetVLabScene.name;
         this.vLabScene.add(vLabSceneTransitorInteractableObject);
 
         /**

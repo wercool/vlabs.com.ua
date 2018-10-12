@@ -71,9 +71,13 @@ class VLabSceneManager {
                         case 'PerspectiveCamera':
                             if (this.vLabScene.nature.cameras.default.fov)
                                 this.vLabScene.currentCamera.fov = this.vLabScene.nature.cameras.default.fov;
-                            if (this.vLabScene.nature.cameras.default.position 
-                             && this.vLabScene.currentCamera.position.equals(new THREE.Vector3()))
-                                this.vLabScene.currentCamera.position.copy(eval(this.vLabScene.nature.cameras.default.position));
+                            if (this.vLabScene.nature.cameras.default.position) {
+                                this.vLabScene.currentCamera.position.set(
+                                    this.vLabScene.nature.cameras.default.position.x,
+                                    this.vLabScene.nature.cameras.default.position.y,
+                                    this.vLabScene.nature.cameras.default.position.z
+                                );
+                            }
                         break;
                     }
                 }
@@ -88,7 +92,11 @@ class VLabSceneManager {
                             }
                             if (this.vLabScene.nature.controls.default.target) {
                                 if (this.vLabScene.nature.controls.default.target.vector3) {
-                                    this.vLabScene.currentControls.target = eval(this.vLabScene.nature.controls.default.target);
+                                    this.vLabScene.currentControls.target.set(
+                                        this.vLabScene.nature.controls.default.target.x,
+                                        this.vLabScene.nature.controls.default.target.y,
+                                        this.vLabScene.nature.controls.default.target.z
+                                    );
                                 }
                                 if (this.vLabScene.nature.controls.default.target.object) {
                                     let sceneTargetObject = this.vLabScene.getObjectByName(this.vLabScene.nature.controls.default.target.object);

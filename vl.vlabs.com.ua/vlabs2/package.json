@@ -26,12 +26,11 @@
     "gulp-crypto-js": "^1.0.0",
     "gulp-directory-sync": "^1.2.3",
     "gulp-if": "^2.0.2",
-    "gulp-javascript-obfuscator": "^1.1.4",
     "gulp-jsdoc3": "^2.0.0",
+    "gulp-minify": "^3.1.0",
+    "gulp-rename": "^1.4.0",
     "gulp-replace": "^1.0.0",
     "gulp-sourcemaps": "^2.6.4",
-    "gulp-strip-debug": "^3.0.0",
-    "gulp-uglify": "^3.0.1",
     "gulp-util": "^3.0.8",
     "gulp-zip": "^4.2.0",
     "vinyl-buffer": "^1.0.1",
@@ -46,6 +45,7 @@
     "stats-js": "^1.0.0-alpha1",
     "three": "^0.96.0",
     "three-gltf-loader": "^1.96.0",
+    "three-transformcontrols": "^0.78.1",
     "three-webgl-stats": "^1.0.5",
     "three-ziploader": "0.0.1"
   }

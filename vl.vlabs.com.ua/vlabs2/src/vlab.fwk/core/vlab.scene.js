@@ -198,10 +198,8 @@ class VLabScene extends THREE.Scene {
                          */
                         this['justLoaded'] = true;
                         /*<dev>*/
-                            if (!this.vLab.getProdMode()) {
-                                var axesHelper = new THREE.AxesHelper(5);
-                                this.add(axesHelper);
-                            }
+                            var axesHelper = new THREE.AxesHelper(5);
+                            this.add(axesHelper);
                         /*</dev>*/
                     }
                     resolve(this);
