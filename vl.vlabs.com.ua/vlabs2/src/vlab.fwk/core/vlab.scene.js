@@ -197,6 +197,7 @@ class VLabScene extends THREE.Scene {
                          * For internal use in {@link VLabSceneDispatcher#activateScene}
                          */
                         this['justLoaded'] = true;
+
                         /*<dev>*/
                             var axesHelper = new THREE.AxesHelper(5);
                             this.add(axesHelper);

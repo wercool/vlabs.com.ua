@@ -215,6 +215,7 @@ class VLabSceneManager {
 
                 this.setupStyles().then(() => {
                     this.vLab.DOMManager.showSceneLoader(vLabScene);
+                    this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderHint.innerHTML = (!this.vLabScene.initObj.autoload) ? 'Loading geometries...' : 'Autoloading of ' + vLabScene.nature.title + ' initiated...';
                     /* Load (GL Transmission Format) from gltfURL */
                     if (vLabScene.nature.gltfURL) {
                         this.loadZIP(vLabScene.nature.gltfURL).then((gltfFile) => {
@@ -224,7 +225,6 @@ class VLabSceneManager {
                                 function onLoad(gltf) {
                                     vLabScene.loading = false;
                                     vLabScene.loaded = true;
-                                    self.vLab.DOMManager.handleSceneLoadComplete();
                                     self.processGLTF(gltf).then(() => {
                                         gltf = null;
                                         resolve(true);
@@ -249,9 +249,19 @@ class VLabSceneManager {
      * LoadingManager onProgress
      * Is used to show textures loading progress
      */
-    loadingManagerProgress(item, loaded, total) {
-        let progress = parseInt(loaded / total * 100);
-        this.vLab.DOMManager.refreshSceneLoaderIndicator(this.vLabScene, progress);
+    loadingManagerProgress(item, loaded, total, intermediateLoadingProgress) {
+        if (this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderHint && !this.vLabScene.loaded) {
+            if (this.intermediateLoadingProgressTimeout !== undefined) clearTimeout(this.intermediateLoadingProgressTimeout);
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderHint.innerHTML = 'Loading textures...';
+            let progress = (intermediateLoadingProgress !== undefined) ? intermediateLoadingProgress : parseInt(loaded / total * 100);
+            this.vLab.DOMManager.refreshSceneLoaderIndicator(this.vLabScene, progress);
+            let self = this;
+            this.intermediateLoadingProgressTimeout = setTimeout(() => {
+                if (progress < 99) self.loadingManagerProgress(null, null, null, progress + 0.25);
+            }, 1000);
+        } else if (this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderHint && this.vLabScene.loaded) {
+            this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderHint.innerHTML = 'Initializing...';
+        }
     }
     /**
      * Loads ZIP archived scene file if file name ended with .zip, else return non-modified url.

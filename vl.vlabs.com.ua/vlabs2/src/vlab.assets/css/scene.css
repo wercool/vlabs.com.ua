@@ -32,8 +32,15 @@
     position: absolute;
     top: -3px;
     right: -22px;
-    font-size: 9pt !important;
     height: 50px !important;
+    font-size: 9pt !important;
+}
+#sceneLoaderHint {
+    position: absolute;
+    top: -16px;
+    right: 25px;
+    font-size: 9pt;
+    color: #ffffffbe;
 }
 #sceneLoaderHeader {
     font-size: 16pt;

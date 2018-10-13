@@ -129,6 +129,7 @@ class VLabSceneDispatcher {
                             vLabScene.onActivated.call(vLabScene);
                             self.vLab.WebGLRendererCanvasOverlay.classList.remove('visible');
                             self.vLab.WebGLRendererCanvasOverlay.classList.add('hidden');
+                            self.vLab.DOMManager.handleSceneLoadComplete();
                             resolve(vLabScene);
                         }, 250);
                     });
@@ -152,6 +153,7 @@ class VLabSceneDispatcher {
         for (let vLabScene of this.scenes) {
             if (vLabScene.initObj.autoload && !vLabScene.loaded && !vLabScene.loading) {
                 vLabScene.manager.load().then(() => {
+                    this.vLab.DOMManager.handleSceneLoadComplete();
                     this.autoloadScenes.bind(this);
                 });
                 return;

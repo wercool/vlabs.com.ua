@@ -118,10 +118,12 @@ class VLabDOMManager {
                         sceneLoaderHeader: null,
                         sceneLoaderContent: null,
                         sceneLoadingBarDIV: null,
+                        sceneLoaderHint: null,
                         loadingBar: null,
                         sceneAutoLoader: null,
                         sceneAutoLoaderProgress: null,
-                        sceneAutoLoaderLabel: null
+                        sceneAutoLoaderLabel: null,
+                        sceneIntializing: null
                     };
                     /**
                      * Setup simple statistics
@@ -223,6 +225,9 @@ class VLabDOMManager {
             this.VLabSceneSharedAssets.sceneLoadingBarDIV.setAttribute('data-stroke', '#c3d7e4');
             this.VLabSceneSharedAssets.sceneLoader.appendChild(this.VLabSceneSharedAssets.sceneLoadingBarDIV);
             this.VLabSceneSharedAssets.loadingBar = new ldBar(this.VLabSceneSharedAssets.sceneLoadingBarDIV);
+            this.VLabSceneSharedAssets.sceneLoaderHint = document.createElement('div');
+            this.VLabSceneSharedAssets.sceneLoaderHint.id = 'sceneLoaderHint';
+            this.VLabSceneSharedAssets.sceneLoader.appendChild(this.VLabSceneSharedAssets.sceneLoaderHint);
 
             /* Autloader */
             this.VLabSceneSharedAssets.sceneAutoLoader = document.createElement('div');
@@ -244,6 +249,7 @@ class VLabDOMManager {
             this.VLabSceneSharedAssets.sceneLoaderContainer.style.pointerEvents = 'none';
             this.VLabSceneSharedAssets.sceneAutoLoaderProgress.style.width = '0%';
             this.VLabSceneSharedAssets.sceneAutoLoaderLabel.innerHTML = '';
+            this.VLabSceneSharedAssets.sceneLoaderHint.innerHTML = '';
         } else {
             this.VLabSceneSharedAssets.loadingBar.set(0);
             this.VLabSceneSharedAssets.sceneLoader.style.display = 'inline';
@@ -252,6 +258,7 @@ class VLabDOMManager {
             this.VLabSceneSharedAssets.sceneLoaderContainer.style.pointerEvents = 'auto';
             this.VLabSceneSharedAssets.sceneLoaderHeader.innerHTML = vLabScene.nature.title || 'Loading scene...';
             this.VLabSceneSharedAssets.sceneLoaderContent.innerHTML = vLabScene.nature.description || '';
+            this.VLabSceneSharedAssets.sceneLoaderHint.innerHTML = '';
         }
     }
     /**
