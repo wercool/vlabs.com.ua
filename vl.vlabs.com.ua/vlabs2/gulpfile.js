@@ -30,15 +30,13 @@ gulp.task('vlab-sync-files', function(done) {
     }));
 });
 
-gulp.task('vlab-zip-glb', function(done) {
-    if (initObj.zipGLB) {
+gulp.task('vlab-zip-gltf', function(done) {
+    if (initObj.zipGLTF) {
         fs.readdirSync('./src/vlabs/' + initObj.vLabName + '/scenes')
         .filter(function(sceneDir) {
-            gulp.src('./src/vlabs/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources/3d/' + sceneDir + '.glb')
-            .pipe(zip(sceneDir +'.glb.zip'))
+            gulp.src('./src/vlabs/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources/3d/*.*')
+            .pipe(zip(sceneDir +'.gltf.zip'))
             .pipe(gulp.dest('./build/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources/3d'));
-
-            del('./build/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources/3d/' + sceneDir + '.glb');
         });
         done();
     } else {
@@ -54,21 +52,11 @@ gulp.task('vlab-nature-process', function () {
     .pipe(gulp.dest('./build/' + initObj.vLabName + '/resources'));
 });
 
-gulp.task('vlab-index-process', function (done) {
-    if (initObj.zipBundle) {
-        return gulp.src('./build/' + initObj.vLabName + '/index.html')
-        .pipe(replace('bundle="js"', 'bundle="zip"'))
-        .pipe(gulp.dest('./build/' + initObj.vLabName));
-    } else {
-        done();
-    }
-});
-
 gulp.task('vlab-scene-nature-process', function (done) {
     fs.readdirSync('./src/vlabs/' + initObj.vLabName + '/scenes')
     .filter(function(sceneDir) {
         gulp.src('./src/vlabs/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources/vlab.scene.nature.json')
-        .pipe(gulpif(initObj.zipGLB, replace('.glb', '.glb.zip')))
+        .pipe(gulpif(initObj.zipGLTF, replace('.gltf', '.gltf.zip')))
         .pipe(gulpif(!initObj.naturePlain, cryptojs({algorithm: 'AES', action: 'encrypt', key: initObj.settings.VLabNaturePassPhrase})))
         .pipe(gulp.dest('./build/' + initObj.vLabName + '/scenes/' + sceneDir + '/resources'));
     });
@@ -104,9 +92,8 @@ gulp.task('clean-css', function (done) {
 gulp.task('build', gulp.series('sync-vlab-assets', 
                                'sync-vlab-items',
                                'vlab-sync-files',
-                               'vlab-zip-glb',
+                               'vlab-zip-gltf',
                                'clean-css',
-                               'vlab-index-process',
                                'vlab-nature-process',
                                'vlab-scene-nature-process',
                                 function transpiling () {
@@ -145,13 +132,6 @@ gulp.task('build', gulp.series('sync-vlab-assets',
             del('./build/' + initObj.vLabName + '/bundle-min.js');
         }
 
-        if (initObj.zipBundle) {
-            gulp.src('./build/' + initObj.vLabName + '/bundle.js')
-            .pipe(zip('bundle.js.zip'))
-            .pipe(gulp.dest('./build/' + initObj.vLabName));
-
-            del('./build/' + initObj.vLabName + '/bundle.js');
-        }
         console.log(color('VLab ', 'GREEN') + color(initObj.vLabName, 'BLUE') + color(' build completed ', 'GREEN'));
     });
 }));
@@ -181,15 +161,10 @@ gulp.task('main', function (done) {
     } else {
         initObj.naturePlain = false;
     }
-    if (process.argv.indexOf('--zip-bundle') > -1) {
-        initObj.zipBundle = true;
+    if (process.argv.indexOf('--zip-gltf') > -1) {
+        initObj.zipGLTF = true;
     } else {
-        initObj.zipBundle = false;
-    }
-    if (process.argv.indexOf('--zip-glb') > -1) {
-        initObj.zipGLB = true;
-    } else {
-        initObj.zipGLB = false;
+        initObj.zipGLTF = false;
     }
     if (errors.length > 0) {
         for (error of errors) {

@@ -1,8 +1,8 @@
 {
     "title": "First Scene",
     "description": "First scene description...",
-    "_style": "./scenes/first.scene/resources/css/vlab.scene.css",
-    "gltfURL": "./scenes/first.scene/resources/3d/first.scene.glb",
+    "___style": "./scenes/first.scene/resources/css/vlab.scene.css",
+    "gltfURL": "./scenes/first.scene/resources/3d/first.scene.gltf",
     "WebGLRendererParameters": {
         "resolutionFactor": 1.0,
         "clearColor": "0x849299"
@@ -23,7 +23,7 @@
         "default": {
             "type": "orbit",
             "target": {
-                "_vector3": {
+                "___vector3": {
                     "x": 0.0,
                     "y": 0.5,
                     "z": 0.0

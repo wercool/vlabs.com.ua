@@ -202,6 +202,7 @@ class VLabSceneManager {
         console.log(this.vLabScene.name + ' load initiated');
         let self = this;
         let vLabScene = this.vLabScene;
+        this.loadingManager.onProgress = this.loadingManagerProgress.bind(this);
         return new Promise((resolve, reject) => {
             HTTPUtils.getJSONFromURL(vLabScene.initObj.natureURL, this.vLab.getNaturePassphrase())
             .then((nature) => {
@@ -243,6 +244,14 @@ class VLabSceneManager {
                 });
             });
         });
+    }
+    /**
+     * LoadingManager onProgress
+     * Is used to show textures loading progress
+     */
+    loadingManagerProgress(item, loaded, total) {
+        let progress = parseInt(loaded / total * 100);
+        this.vLab.DOMManager.refreshSceneLoaderIndicator(this.vLabScene, progress);
     }
     /**
      * Loads ZIP archived scene file if file name ended with .zip, else return non-modified url.

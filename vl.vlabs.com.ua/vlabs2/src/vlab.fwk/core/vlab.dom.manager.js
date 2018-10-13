@@ -266,7 +266,7 @@ class VLabDOMManager {
             this.VLabSceneSharedAssets.sceneAutoLoaderProgress.style.width = progress + '%';
             this.VLabSceneSharedAssets.sceneAutoLoaderLabel.innerHTML = 'Autoloading ' + (vLabScene.nature.title ? vLabScene.nature.title : 'scene') + ' ' + progress + '%';
         } else {
-            this.VLabSceneSharedAssets.loadingBar.set(parseInt(progress));
+            if (this.VLabSceneSharedAssets.loadingBar) this.VLabSceneSharedAssets.loadingBar.set(parseInt(progress));
         }
     }
     /**
