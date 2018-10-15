@@ -4,8 +4,9 @@ import * as THREEUtils from '../utils/three.utils';
 import * as ObjectUtils from '../utils/object.utils';
 import VLabScene from './vlab.scene';
 import VLabSceneInteractableRespondent from './vlab.scene.interactable.respondent';
-/*DEV*/
+/*<dev>*/
 import DEVVLabSceneInteractable from '../aux/dev/dev.vlab.scene.interactable';
+/*</dev>*/
 
 /**
  * VLabScene Interactable base class.
@@ -738,7 +739,7 @@ class VLabSceneInteractable {
                 let actionArgs = ObjectUtils.merge({ interactable: this }, menuItem.args ? menuItem.args : {} );
                 menuItem.action.call(menuItem.context, actionArgs);
             } else {
-                console.warn('Menu Item [' + menuItem.label + '] has no context defined and will be removed from menu');
+                console.log('Menu Item [' + menuItem.label + '] has no context defined and will be removed from menu');
                 this.removeMenuItem(menuItem);
             }
         }

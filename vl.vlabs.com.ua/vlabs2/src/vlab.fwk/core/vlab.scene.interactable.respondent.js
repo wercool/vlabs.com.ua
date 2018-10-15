@@ -23,11 +23,11 @@ class VLabSceneInteractableRespondent {
      */
     constructor(initObj = {}) {
         if (!initObj.interactable) {
-            console.warn('VLabSceneInteractable is not defined for VLabSceneInteractableRespondent');
+            console.log('VLabSceneInteractable is not defined for VLabSceneInteractableRespondent');
             return null;
         }
         if (!initObj.callerInteractable) {
-            console.warn('Caller VLabSceneInteractable is not defined for VLabSceneInteractableRespondent');
+            console.log('Caller VLabSceneInteractable is not defined for VLabSceneInteractableRespondent');
             return null;
         }
         this.initObj = initObj;

@@ -235,21 +235,21 @@ class VLabScene extends THREE.Scene {
      * @memberof VLabScene
      * @abstract
      */
-    onLoaded() { console.warn(this.name + ' onLoaded abstract method not implemented'); }
+    onLoaded() { console.log(this.name + ' onLoaded abstract method not implemented'); }
     /**
      * VLab Scene onActivated abstract function.
      *
      * @memberof VLabScene
      * @abstract
      */
-    onActivated() { console.warn(this.name + ' onActivated abstract method not implemented'); }
+    onActivated() { console.log(this.name + ' onActivated abstract method not implemented'); }
     /**
      * VLab Scene onDeactivated abstract function.
      *
      * @memberof VLabScene
      * @abstract
      */
-    onDeactivated() { console.warn(this.name + ' onDeactivated abstract method not implemented'); }
+    onDeactivated() { console.log(this.name + ' onDeactivated abstract method not implemented'); }
     /**
      * VLab Scene default event subscriber, could be overridden in VLabScene inheritor.
      *

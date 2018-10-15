@@ -105,7 +105,7 @@ class VLabSceneManager {
                     switch (this.vLabScene.nature.controls.default.type) {
                         case 'orbit':
                             if (this.vLabScene.currentControls.constructor.name !== 'VLabOrbitControls') {
-                                console.warn('Implement switch VLabScene default controls');
+                                console.log('Implement switch VLabScene default controls');
                             }
                             if (this.vLabScene.nature.controls.default.target) {
                                 if (this.vLabScene.nature.controls.default.target.vector3) {
