@@ -26,6 +26,15 @@ class VLabOrbitControls extends VLabControls {
         this.enableRotate = true;
         this.rotateSpeed = 0.5;
 
+        // This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
+        // Set to false to disable zooming
+        this.enableZoom = true;
+        this.zoomSpeed = 0.25;
+
+        // Set to false to disable panning
+        this.enablePan = true;
+        this.keyPanSpeed = 2.0;	// pixels moved per arrow key push
+
         // How far you can orbit horizontally, upper and lower limits.
         // If set, must be a sub-interval of the interval [-Math.PI, Math.PI].
         this.minAzimuthAngle = -Infinity; // radians
@@ -47,6 +56,14 @@ class VLabOrbitControls extends VLabControls {
         this.rotateStart = new THREE.Vector2();
         this.rotateEnd = new THREE.Vector2();
         this.rotateDelta = new THREE.Vector2();
+
+        this.dollyStart = new THREE.Vector2();
+        this.dollyEnd = new THREE.Vector2();
+        this.dollyDelta = new THREE.Vector2();
+
+        this.panStart = new THREE.Vector2();
+        this.panEnd = new THREE.Vector2();
+        this.panDelta = new THREE.Vector2();
 
         // current position in spherical coordinates
         this.spherical = new THREE.Spherical();
@@ -131,6 +148,36 @@ class VLabOrbitControls extends VLabControls {
         this.sphericalDelta.phi -= angle;
     }
     /**
+     * Dolly camera In
+     */
+    dollyIn() {
+        this.scale *= Math.pow(0.95, this.zoomSpeed);
+    }
+    /**
+     * Dolly camera Out
+     */
+    dollyOut() {
+        this.scale /= Math.pow(0.95, this.zoomSpeed);
+    }
+    /**
+     * Pan camera horizontal
+     */
+    panLeft(distance, cameraMatrix) {
+        let v = new THREE.Vector3();
+        v.setFromMatrixColumn(cameraMatrix, 0); // get X column of objectMatrix
+        v.multiplyScalar(-distance);
+        this.panOffset.add(v);
+    }
+    /**
+     * Pan camera vertical
+     */
+    panUp(distance, cameraMatrix) {
+        let v = new THREE.Vector3();
+        v.setFromMatrixColumn(cameraMatrix, 1); // get X column of objectMatrix
+        v.multiplyScalar(distance);
+        this.panOffset.add(v);
+    }
+    /**
      * mousedown event type handler, invoked from {@link VLabSceneManager#onDefaultEventListener}
      * @memberof VLabOrbitControls
      */
@@ -142,6 +189,18 @@ class VLabOrbitControls extends VLabControls {
                         if (this.enableRotate) {
                             this.rotateStart.set(event.clientX, event.clientY);
                             this.state = this.STATE.ROTATE;
+                        }
+                    break;
+                    case this.MOUSEBUTTONS.ZOOM:
+                        if (this.enableZoom) {
+                            this.dollyStart.set(event.clientX, event.clientY);
+                            this.state = this.STATE.DOLLY;
+                        }
+                    break;
+                    case this.MOUSEBUTTONS.PAN:
+                        if (this.enablePan) {
+                            this.panStart.set(event.clientX, event.clientY);
+                            this.state = this.STATE.PAN;
                         }
                     break;
                 }
@@ -173,6 +232,36 @@ class VLabOrbitControls extends VLabControls {
                         this.update();
                     }
                 break;
+                case this.STATE.DOLLY:
+                    if (this.enableZoom) {
+                        this.dollyEnd.set(event.clientX, event.clientY);
+                        this.dollyDelta.subVectors(this.dollyEnd, this.dollyStart);
+                        if (this.dollyDelta.y > 0) {
+                            this.dollyOut();
+                        } else if (this.dollyDelta.y < 0) {
+                            this.dollyIn();
+                        }
+                        this.dollyStart.copy(this.dollyEnd);
+                        this.update();
+                    }
+                break;
+                case this.STATE.PAN:
+                    if (this.enablePan) {
+                        this.panEnd.set(event.clientX, event.clientY);
+                        this.panDelta.subVectors(this.panEnd, this.panStart);
+
+                        let offset = new THREE.Vector3();
+                        let position = this.vLabScene.currentCamera.position;
+                        offset.copy(position).sub(this.target);
+                        let targetDistance = offset.length();
+                        // half of the fov is center to top of screen
+                        targetDistance *= Math.tan((this.vLabScene.currentCamera.fov / 2) * Math.PI / 180.0);
+                        this.panLeft(2 * this.panDelta.x * targetDistance / this.vLabScene.vLab.WebGLRendererCanvas.clientWidth, this.vLabScene.currentCamera.matrix);
+                        this.panUp(2 * this.panDelta.y * targetDistance / this.vLabScene.vLab.WebGLRendererCanvas.clientHeight, this.vLabScene.currentCamera.matrix );
+                        this.panStart.copy(this.panEnd);
+                        this.update();
+                    }
+                break;
             }
         }
     }
@@ -188,6 +277,16 @@ class VLabOrbitControls extends VLabControls {
                     if (this.enableRotate) {
                         this.rotateStart.set(event.touches[0].clientX, event.touches[0].clientY);
                         this.state = this.STATE.TOUCH_ROTATE;
+                    }
+                break;
+                // two-fingered touch: dolly
+                case 2:
+                    if (this.enableZoom) {
+                        let dx = event.touches[0].clientX - event.touches[1].clientX;
+                        let dy = event.touches[0].clientY - event.touches[1].clientY;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        this.dollyStart.set(0, distance);
+                        this.state = this.STATE.TOUCH_DOLLY;
                     }
                 break;
             }
@@ -216,6 +315,23 @@ class VLabOrbitControls extends VLabControls {
                         this.rotateLeft(2 * Math.PI * this.rotateDelta.x / event.target.clientWidth * this.rotateSpeed);
                         this.rotateUp(2 * Math.PI * this.rotateDelta.y / event.target.clientHeight * this.rotateSpeed);
                         this.rotateStart.copy(this.rotateEnd);
+                        this.update();
+                    }
+                break;
+                // // two-fingered touch: dolly
+                case 2:
+                    if (this.enableZoom && this.STATE.TOUCH_DOLLY) {
+                        let dx = event.touches[0].clientX - event.touches[1].clientX;
+                        let dy = event.touches[0].clientY - event.touches[1].clientY;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        this.dollyEnd.set(0, distance);
+                        this.dollyDelta.subVectors(this.dollyEnd, this.dollyStart);
+                        if (this.dollyDelta.y > 0) {
+                            this.dollyIn();
+                        } else if (this.dollyDelta.y < 0) {
+                            this.dollyOut();
+                        }
+                        this.dollyStart.copy(this.dollyEnd);
                         this.update();
                     }
                 break;

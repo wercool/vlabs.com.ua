@@ -533,6 +533,8 @@ class VLabSceneInteractable {
                 this.hideTooltip();
                 this.removeRespondentsHelpers();
             }
+        } else if (event.button == 1){
+            this.deSelect();
         } else if (event.button == 2){
             if (this.intersection) {
                 /*<dev>*/
