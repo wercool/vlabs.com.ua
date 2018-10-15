@@ -7,6 +7,11 @@
         "resolutionFactor": 1.0,
         "clearColor": "0x849299"
     },
+    "scene": {
+        "background": {
+            "color": "0x849299"
+        }
+    },
     "cameras": {
         "default": {
             "type": "PerspectiveCamera",
@@ -103,6 +108,102 @@
             "preselectable": true,
             "selectable": false,
             "tooltip": "Suzanne1_1"
+        },
+        {
+            "name": "BigSphereTest",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "tooltip": "BigSphereTest",
+            "menu": [
+                {
+                    "label": "Take",
+                    "icon": "<i class=\"material-icons\">pan_tool</i>",
+                    "enabled": true,
+                    "action": "this.take()",
+                    "args": null
+                }
+            ]
+        },
+        {
+            "name": "SmallSphereTest",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "tooltip": "SmallSphereTest",
+            "menu": [
+                {
+                    "label": "Take",
+                    "icon": "<i class=\"material-icons\">pan_tool</i>",
+                    "enabled": true,
+                    "action": "this.take()",
+                    "args": null
+                }
+            ]
+        },
+        {
+            "name": "PlaneTest",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "tooltip": "PlaneTest",
+            "menu": [
+                {
+                    "label": "Take",
+                    "icon": "<i class=\"material-icons\">pan_tool</i>",
+                    "enabled": true,
+                    "action": "this.take()",
+                    "args": null
+                }
+            ]
+        },
+        {
+            "name": "BigSphereGeometryScale_01Test",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "tooltip": "PlaneTest",
+            "menu": [
+                {
+                    "label": "Take",
+                    "icon": "<i class=\"material-icons\">pan_tool</i>",
+                    "enabled": true,
+                    "action": "this.take()",
+                    "args": null
+                }
+            ]
+        },
+        {
+            "name": "BigSphereScale_05Test",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "tooltip": "PlaneTest",
+            "menu": [
+                {
+                    "label": "Take",
+                    "icon": "<i class=\"material-icons\">pan_tool</i>",
+                    "enabled": true,
+                    "action": "this.take()",
+                    "args": null
+                }
+            ]
+        },
+        {
+            "name": "BigSphereScale_025Test",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "tooltip": "PlaneTest",
+            "menu": [
+                {
+                    "label": "Take",
+                    "icon": "<i class=\"material-icons\">pan_tool</i>",
+                    "enabled": true,
+                    "action": "this.take()",
+                    "args": null
+                }
+            ]
         }
     ]
 }

@@ -18,7 +18,14 @@ class FirstScene extends VLabScene {
         new VLabSceneTransitor({
             vLabScene: this,
             targetVLabScene: this.vLab.SceneDispatcher.getSceneByClassName('SecondScene'),
-            position: new THREE.Vector3(4.0, 0.0, 0.0)
+            position: new THREE.Vector3(4.0, 0.0, 0.0),
+            tooltip: 'Go to <b>Second Scene</b>'
+        });
+
+        this.interactables['PlaneTest'].addRespondent({
+            interactable: this.interactables['Suzanne2'],
+            callerInteractable: this.interactables['PlaneTest'],
+            preselectionTooltip: 'Reacts on PlaneTest'
         });
 
         this.interactables['Sphere2'].addRespondent({

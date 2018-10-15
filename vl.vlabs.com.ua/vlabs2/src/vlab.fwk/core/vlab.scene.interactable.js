@@ -211,7 +211,9 @@ class VLabSceneInteractable {
                 opacity: 0.75,
                 emissive: new THREE.Color(1.0, 1.0, 0.0),
                 depthTest: true,
-                depthWrite: true
+                depthWrite: true,
+                polygonOffset: true,
+                polygonOffsetFactor: 1
             });
             this.vLab.prefabs['VLabSceneInteractablePrefabs']['simpleOutlineSelectedMaterial'] = new THREE.MeshLambertMaterial({
                 color: 0x00ff00,
@@ -220,7 +222,9 @@ class VLabSceneInteractable {
                 opacity: 0.75,
                 emissive: new THREE.Color(0.0, 1.0, 0.0),
                 depthTest: true,
-                depthWrite: true
+                depthWrite: true,
+                polygonOffset: true,
+                polygonOffsetFactor: 1
             });
         }
         if (initObj) this.initObj = initObj;
@@ -559,9 +563,6 @@ class VLabSceneInteractable {
         if(event.buttons == 0) {
             this.preselect();
         }
-        if (!this.intersection) {
-            this.hideMenu();
-        }
     }
     /**
      * Default touchstart event.type handler
@@ -769,6 +770,7 @@ class VLabSceneInteractable {
     /**
      * Updates or add (if none of this.menu items has the same label as menuItemObj) new menuItem to this.menu
      * @param {Object | string} menuItemObj     - Menu Item Object or Menu Item Label
+     * If menuItemObj is type of string - then Menu item will be deleted by label
      */
     removeMenuItem(menuItemObj) {
         if (typeof menuItemObj == 'string') {
@@ -903,7 +905,7 @@ class VLabSceneInteractable {
         let raycaster = new THREE.Raycaster();
         if (this.shownRespondents.length == 0) {
             this.respondents.forEach((respondent) => {
-                if (respondent.callerInteractable == this) {
+                if (respondent.callerInteractable == this && respondent.interactable.vLabScene == this.vLab.SceneDispatcher.currentVLabScene) {
                     if (respondent.interactable) {
                         if (respondent.interactable.vLabSceneObject) {
                             let thisOrigin = this.vLabSceneObject.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0));
@@ -932,51 +934,58 @@ class VLabSceneInteractable {
                                     respondentIntersectionPointMesh.scale.multiplyScalar(0.5 * respondentIntersections[0].point.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
                                     this.vLabScene.add(respondentIntersectionPointMesh);
 
+                                    /**
+                                     * Show this interactable intersection point of line, connecting with this respondent
+                                     */
                                     raycaster.set(respondentIntersectionPointMesh.position.clone(), respondentDirection.clone().negate());
                                     let thisIntersections = raycaster.intersectObject(this.vLabSceneObject);
+                                    let thisIntersectionPoint = thisOrigin;
                                     if (thisIntersections.length > 0) {
-                                        let thisPointMeshPosition = new THREE.Vector3().addVectors(thisIntersections[0].point, (!this.taken) ? respondentDirection.clone().multiplyScalar(0.02) : new THREE.Vector3());
-                                        let thisPointMesh = new THREE.Mesh(this.vLab.prefabs['VLabSceneInteractablePrefabs']['linePointGeometry'], interactableIntersectionPointMaterial);
-                                        thisPointMesh.position.copy(thisPointMeshPosition);
-                                        let scale = 0.1;
-                                        if (!this.taken) {
-                                            scale = 2.0 / (1 / thisIntersections[0].point.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
-                                            if (scale > 3.0) scale = 3.0;
-                                        }
-                                        thisPointMesh.scale.multiplyScalar(scale);
-                                        this.vLabScene.add(thisPointMesh);
-
-                                        let lineGeometry = new THREE.Geometry();
-                                        lineGeometry.vertices.push(
-                                            thisPointMeshPosition,
-                                            respondentIntersections[0].point
-                                        );
-    
-    
-                                        let line = new THREE.Line(lineGeometry, respondentLineMaterial);
-                                        this.vLabScene.add(line);
-    
-                                        this.respondentPreselectionHelpers.push(lineGeometry);
-                                        this.respondentPreselectionHelpers.push(respondentIntersectionPointMesh);
-                                        this.respondentPreselectionHelpers.push(thisPointMesh);
-                                        this.respondentPreselectionHelpers.push(line);
-
-                                        // var lineSegments = new THREE.LineSegments(lineGeometry, this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial']);
-                                        // lineSegments.computeLineDistances();
-                                        // this.vLabScene.add(lineSegments);
-                                        // this.respondentPreselectionHelpers.push(lineSegments);
-
-                                        this.shownRespondents.push({
-                                            respondent: respondent,
-                                            respondentIntersectionPointMesh: respondentIntersectionPointMesh,
-                                            respondentCSSCLass: respondentCSSCLass,
-                                            interactable: respondent.interactable,
-                                            preselectionTooltip: respondent.preselectionTooltip
-                                        });
-
-                                        respondent.preselectionAction.call(respondent);
-                                        this.showRespondents();
+                                        thisIntersectionPoint = thisIntersections[0].point;
                                     }
+
+                                    let thisPointMeshPosition = new THREE.Vector3().addVectors(thisIntersectionPoint, (!this.taken) ? respondentDirection.clone().multiplyScalar(0.02) : new THREE.Vector3());
+                                    let thisPointMesh = new THREE.Mesh(this.vLab.prefabs['VLabSceneInteractablePrefabs']['linePointGeometry'], interactableIntersectionPointMaterial);
+                                    thisPointMesh.position.copy(thisPointMeshPosition);
+                                    let scale = 0.1;
+                                    if (!this.taken) {
+                                        scale = 2.0 / (1 / thisIntersectionPoint.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
+                                        if (scale > 3.0) scale = 3.0;
+                                    }
+                                    thisPointMesh.scale.multiplyScalar(scale);
+                                    this.vLabScene.add(thisPointMesh);
+
+                                    let lineGeometry = new THREE.Geometry();
+                                    lineGeometry.vertices.push(
+                                        thisPointMeshPosition,
+                                        respondentIntersections[0].point
+                                    );
+
+
+                                    let line = new THREE.Line(lineGeometry, respondentLineMaterial);
+                                    this.vLabScene.add(line);
+
+                                    this.respondentPreselectionHelpers.push(lineGeometry);
+                                    this.respondentPreselectionHelpers.push(respondentIntersectionPointMesh);
+                                    this.respondentPreselectionHelpers.push(thisPointMesh);
+                                    this.respondentPreselectionHelpers.push(line);
+
+                                    // var lineSegments = new THREE.LineSegments(lineGeometry, this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial']);
+                                    // lineSegments.computeLineDistances();
+                                    // this.vLabScene.add(lineSegments);
+                                    // this.respondentPreselectionHelpers.push(lineSegments);
+
+                                    this.shownRespondents.push({
+                                        respondent: respondent,
+                                        respondentIntersectionPointMesh: respondentIntersectionPointMesh,
+                                        respondentCSSCLass: respondentCSSCLass,
+                                        interactable: respondent.interactable,
+                                        preselectionTooltip: respondent.preselectionTooltip
+                                    });
+
+                                    respondent.preselectionAction.call(respondent);
+                                    this.showRespondents();
+
                                 }
                             }
                         }

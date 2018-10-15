@@ -3,6 +3,8 @@ import VLab from './vlab';
 import VLabScene from "./vlab.scene";
 import VLabSceneInteractable from './vlab.scene.interactable';
 
+var TWEEN = require('@tweenjs/tween.js');
+
 /**
  * VLab Scene Dispatcher.
  * @class
@@ -33,6 +35,11 @@ class VLabSceneDispatcher {
          * @public
          */
         this.takenInteractable = null;
+        /**
+         * Taken object tween animation reference
+         * @public
+         */
+        this.takenInteractableSceneObjectTween = null;
     }
     /**
      * Add VLabScene to VLabSceneDispatcher stack.
@@ -111,28 +118,36 @@ class VLabSceneDispatcher {
                     this.vLab.WebGLRendererCanvasOverlay.classList.remove('hidden');
                     this.vLab.WebGLRendererCanvasOverlay.classList.add('visible');
                     this.sceneIsBeingActivated = vLabScene;
-                    vLabScene.activate().then((vLabScene) => {
-                        this.currentVLabScene = vLabScene;
-                        /**
-                         * See {@link VLabScene#activate}
-                         */
-                        if (vLabScene['justLoaded'] == true) {
-                            delete vLabScene['justLoaded'];
-                            vLabScene.onLoaded();
-                        }
-                        this.vLab.setupWebGLRenderer();
-                        this.vLab.resizeWebGLRenderer();
-                        this.vLab.setupEffectComposer();
-                        this.vLab.renderPaused = false;
-                        setTimeout(() => {
-                            self.sceneIsBeingActivated = null;
-                            vLabScene.onActivated.call(vLabScene);
-                            self.vLab.WebGLRendererCanvasOverlay.classList.remove('visible');
-                            self.vLab.WebGLRendererCanvasOverlay.classList.add('hidden');
-                            self.vLab.DOMManager.handleSceneLoadComplete();
-                            resolve(vLabScene);
-                        }, 250);
-                    });
+                    setTimeout(() => {
+                        vLabScene.activate().then((vLabScene) => {
+                            /**
+                             * Transit taken interactable to this.currentVLabScene
+                             */
+                            self.transitTakenInteractable(self.currentVLabScene, vLabScene);
+
+                            self.currentVLabScene = vLabScene;
+
+                            /**
+                             * See {@link VLabScene#activate}
+                             */
+                            if (vLabScene['justLoaded'] == true) {
+                                delete vLabScene['justLoaded'];
+                                vLabScene.onLoaded();
+                            }
+                            self.vLab.setupWebGLRenderer();
+                            self.vLab.resizeWebGLRenderer();
+                            self.vLab.setupEffectComposer();
+                            self.vLab.renderPaused = false;
+                            setTimeout(() => {
+                                self.sceneIsBeingActivated = null;
+                                vLabScene.onActivated.call(vLabScene);
+                                self.vLab.WebGLRendererCanvasOverlay.classList.remove('visible');
+                                self.vLab.WebGLRendererCanvasOverlay.classList.add('hidden');
+                                self.vLab.DOMManager.handleSceneLoadComplete();
+                                resolve(vLabScene);
+                            }, 250);
+                        });
+                    }, 250);
                     break;
                 }
             }
@@ -172,6 +187,22 @@ class VLabSceneDispatcher {
         return notYetAutloaded;
     }
     /**
+     * 
+     * 
+     * 
+     * 
+     *   _______    _                _____       _                      _        _     _
+     *  |__   __|  | |              |_   _|     | |                    | |      | |   | |
+     *     | | __ _| | _____ _ __     | |  _ __ | |_ ___ _ __ __ _  ___| |_ __ _| |__ | | ___
+     *     | |/ _` | |/ / _ \ '_ \    | | | '_ \| __/ _ \ '__/ _` |/ __| __/ _` | '_ \| |/ _ \
+     *     | | (_| |   <  __/ | | |  _| |_| | | | ||  __/ | | (_| | (__| || (_| | |_) | |  __/
+     *     |_|\__,_|_|\_\___|_| |_| |_____|_| |_|\__\___|_|  \__,_|\___|\__\__,_|_.__/|_|\___|
+     * 
+     * 
+     * 
+     * 
+     */
+    /**
      * Process taken process Interactable
      * Removes vLabSceneObject from VLabScene and attaches it to {@link VLabScene#currentCamera}
      * Replaces vLabSceneObject materials (including all children) with MeshBasicMaterial
@@ -195,13 +226,17 @@ class VLabSceneDispatcher {
 
         let beforeTakenMaterials = {};
         this.takenInteractable.vLabSceneObject.traverse((sibling) => {
-            if (sibling.type == 'Mesh') {
+            if (sibling.type == 'Mesh' && sibling.name.indexOf('_OUTLINE') == -1) {
                 beforeTakenMaterials[sibling.uuid] = sibling.material;
-
                 let takenObjectMaterial = new THREE.MeshBasicMaterial();
-                takenObjectMaterial.map = sibling.material.map;
+                if (sibling.material.map) {
+                    takenObjectMaterial.map = sibling.material.map;
+                } else {
+                    takenObjectMaterial.color = sibling.material.color;
+                }
+                takenObjectMaterial.side = sibling.material.side;
+                takenObjectMaterial.needsUpdate = true;
                 sibling.material = takenObjectMaterial;
-                sibling.material.needsUpdate = true;
             }
         });
 
@@ -214,6 +249,10 @@ class VLabSceneDispatcher {
             materials: beforeTakenMaterials
         };
 
+        /**
+         * Remove taken interactable from VLabScene
+         * Add interactable to current VLabScene camera
+         */
         this.takenInteractable.vLabSceneObject.parent.remove();
         this.currentVLabScene.currentCamera.add(this.takenInteractable.vLabSceneObject);
 
@@ -227,23 +266,25 @@ class VLabSceneDispatcher {
             enabled: true,
             action: this.takenInteractable.put,
             context: this.takenInteractable,
+            originalScene: this.currentVLabScene,
             args: putObj
         }, true);
 
-/**
- * 
- * 
- * @todo
- * taken interactable placement
- * 
- * 
- */
-this.takenInteractable.vLabSceneObject.geometry.computeBoundingSphere();
-// console.log(this.vLabSceneObject.geometry.boundingSphere);
-this.takenInteractable.vLabSceneObject.scale.multiplyScalar(0.025);
-this.takenInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, -0.06, -0.15));
-// console.log(this.vLabSceneObject.geometry.boundingSphere);
-// console.log(this.vLabScene.currentCamera);
+        /**
+         * Resize take object to fit it into camera
+         */
+        this.takenInteractable.vLabSceneObject.geometry.computeBoundingSphere();
+        let scaleFactor = 0.01 / (this.takenInteractable.vLabSceneObject.geometry.boundingSphere.radius * this.takenInteractable.vLabSceneObject.scale.z);
+        this.takenInteractable.vLabSceneObject.scale.multiplyScalar(scaleFactor);
+        this.takenInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, -0.04, -0.11)).sub(this.takenInteractable.vLabSceneObject.geometry.boundingSphere.center.multiplyScalar(scaleFactor));
+
+        this.takenInteractable.vLabSceneObject.rotation.y -= 0.2;
+        this.takenInteractableSceneObjectTween = new TWEEN.Tween(this.takenInteractable.vLabSceneObject.rotation)
+        .to({y: 0.2}, 4000)
+        .repeat(Infinity)
+        .yoyo(true)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .start();
 
         this.scenes.forEach((vLabScene) => {
             for (let interactableName in vLabScene.interactables) {
@@ -272,6 +313,11 @@ this.takenInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, -0.0
      * };
      */
     putTakenInteractable(putObj) {
+        if (this.takenInteractableSceneObjectTween) {
+            this.takenInteractableSceneObjectTween.stop();
+            this.takenInteractableSceneObjectTween = undefined;
+        }
+
         this.takenInteractable.vLabSceneObject.visible = false;
 
         this.currentVLabScene.currentCamera.remove(this.takenInteractable.vLabSceneObject);
@@ -281,7 +327,7 @@ this.takenInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, -0.0
         if (putObj.scale) this.takenInteractable.vLabSceneObject.scale.copy(putObj.scale);
         if (putObj.materials) {
             this.takenInteractable.vLabSceneObject.traverse((sibling) => {
-                if (sibling.type == 'Mesh') {
+                if (sibling.type == 'Mesh' && sibling.name.indexOf('_OUTLINE') == -1) {
                     sibling.material = putObj.materials[sibling.uuid];
                     sibling.material.needsUpdate = true;
                 }
@@ -321,6 +367,32 @@ this.takenInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, -0.0
                 });
             }
         });
+    }
+    /**
+     * Taken VLabSceneInteractable transition between VLabScenes
+     */
+    transitTakenInteractable(fromScene, toScene) {
+        if (this.takenInteractable) {
+
+            for (let i = 0; i < this.takenInteractable.menu.length; i++) {
+                if (this.takenInteractable.menu[i].label == 'Put back') {
+                    if (this.takenInteractable.menu[i].context && this.takenInteractable.menu[i].originalScene) {
+                        if (this.takenInteractable.menu[i].originalScene == toScene) {
+                            this.takenInteractable.menu[i].enabled = true;
+                        } else {
+                            this.takenInteractable.menu[i].enabled = false;
+                        }
+                    } else {
+                        this.takenInteractable.menu[i].enabled = false;
+                    }
+                }
+            }
+
+            this.takenInteractable.vLabSceneObject.parent.remove(this.takenInteractable.vLabSceneObject);
+            toScene.currentCamera.add(this.takenInteractable.vLabSceneObject);
+            this.takenInteractable.vLabScene = toScene;
+            toScene.interactables[this.takenInteractable.vLabSceneObject.name] = this.takenInteractable;
+        }
     }
 }
 export default VLabSceneDispatcher;

@@ -39,6 +39,7 @@ class VLabSceneTransitor extends VLabSceneInteractable {
         super(interactableInitObj);
 
         this.selfInitObj = initObj;
+        this.selfInitObj.scaleFactor = (initObj.scaleFactor) ? initObj.scaleFactor : 1.0;
 
         if (!this.vLab.prefabs['VLabSceneTransitorPrefabs']) {
             this.vLab.prefabs['VLabSceneTransitorPrefabs'] = {};
@@ -58,6 +59,7 @@ class VLabSceneTransitor extends VLabSceneInteractable {
         let vLabSceneTransitorInteractableObject = new THREE.Mesh(this.vLab.prefabs['VLabSceneTransitorPrefabs']['VLabSceneTransitorInteractableObjectGeometry'], this.vLab.prefabs['Generic']['TransparentMeshBasicMaterial']);
         vLabSceneTransitorInteractableObject.add(vLabSceneTransitorInteractableObjectSprite);
         vLabSceneTransitorInteractableObject.position.copy(this.selfInitObj.position);
+        vLabSceneTransitorInteractableObject.scale.multiplyScalar(this.selfInitObj.scaleFactor);
         vLabSceneTransitorInteractableObject.name = 'VLabSceneTransitor_' + this.selfInitObj.targetVLabScene.name;
         this.vLabScene.add(vLabSceneTransitorInteractableObject);
 
@@ -81,7 +83,7 @@ class VLabSceneTransitor extends VLabSceneInteractable {
                     },
                     context: this.vLab.SceneDispatcher
                 },
-                tooltip: 'Go to <b>' + initObj.vLabScene.nature.title + '</b>'
+                tooltip: (this.selfInitObj.tooltip) ? this.selfInitObj.tooltip : undefined
             }
         });
     }

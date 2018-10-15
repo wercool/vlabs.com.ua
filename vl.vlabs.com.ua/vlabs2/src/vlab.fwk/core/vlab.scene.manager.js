@@ -63,7 +63,22 @@ class VLabSceneManager {
     configure() {
         if (this.configured) return Promise.resolve();
         return new Promise((resolve, reject) => {
-            /* Configure VLabScene currentCamera from VLabScene nature */
+            /**
+             * Configure Scene background
+             */
+            if (this.vLabScene.nature.scene) {
+                if (this.vLabScene.nature.scene.background) {
+                    if (this.vLabScene.nature.scene.background.color) {
+                        this.vLabScene.background = new THREE.Color(parseInt(this.vLabScene.nature.scene.background.color));
+                    }
+                }
+            } else if (this.vLabScene.nature.WebGLRendererParameters && this.vLabScene.nature.WebGLRendererParameters.clearColor) {
+                this.vLabScene.background = new THREE.Color(parseInt(this.vLabScene.nature.WebGLRendererParameters.clearColor));
+            }
+
+            /**
+             * Configure VLabScene currentCamera from VLabScene nature
+             */
             if (this.vLabScene.nature.cameras) {
                 if (this.vLabScene.nature.cameras.default) {
                     this.vLabScene.currentCamera.name = this.vLabScene.nature.cameras.default.name;
@@ -82,7 +97,9 @@ class VLabSceneManager {
                     }
                 }
             }
-            /* Configure VLabScene currentControls from VLabScene nature */
+            /**
+             * Configure VLabScene currentControls from VLabScene nature
+             */
             if (this.vLabScene.nature.controls) {
                 if (this.vLabScene.nature.controls.default) {
                     switch (this.vLabScene.nature.controls.default.type) {
@@ -109,7 +126,9 @@ class VLabSceneManager {
                     }
                 }
             }
-            /* Configure VLabScene interactables from VLabScene nature */
+            /** 
+             * Configure VLabScene interactables from VLabScene nature 
+             */
             if (this.vLabScene.nature.interactables) {
                 this.vLabScene.nature.interactables.forEach(async (interactableNatureObj) => {
                     await this.vLabScene.addInteractable(interactableNatureObj);
@@ -389,6 +408,9 @@ class VLabSceneManager {
                 let _MeshBasicMaterial = new THREE.MeshBasicMaterial();
                 _MeshBasicMaterial = ObjectUtils.assign(_MeshBasicMaterial, material);
                 _MeshBasicMaterial.type = 'MeshBasicMaterial';
+                if (material.userData.MaterialSide) {
+                    _MeshBasicMaterial.side = material.userData.MaterialSide;
+                }
                 _MeshBasicMaterial.userData = {};
                 return _MeshBasicMaterial;
             }
@@ -396,6 +418,9 @@ class VLabSceneManager {
                 let _MeshLambertMaterial = new THREE.MeshLambertMaterial();
                 _MeshLambertMaterial = ObjectUtils.assign(_MeshLambertMaterial, material);
                 _MeshLambertMaterial.type = 'MeshLambertMaterial';
+                if (material.userData.MaterialSide) {
+                    _MeshLambertMaterial.side = material.userData.MaterialSide;
+                }
                 _MeshLambertMaterial.userData = {};
                 return _MeshLambertMaterial;
             }
@@ -403,6 +428,9 @@ class VLabSceneManager {
                 let _MeshPhongMaterial = new THREE.MeshPhongMaterial();
                 _MeshPhongMaterial = ObjectUtils.assign(_MeshPhongMaterial, material);
                 _MeshPhongMaterial.type = 'MeshPhongMaterial';
+                if (material.userData.MaterialSide) {
+                    _MeshPhongMaterial.side = material.userData.MaterialSide;
+                }
                 _MeshPhongMaterial.userData = {};
                 return _MeshPhongMaterial;
             }
