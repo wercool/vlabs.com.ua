@@ -67,7 +67,7 @@ class VLabSceneInteractable {
         /**
          * Bounding sphere center Object3D
          */
-        this.centerObject3d = undefined;
+        this.centerObject3D = undefined;
         /**
          * This native action function
          */
@@ -256,10 +256,10 @@ class VLabSceneInteractable {
         if (vLabSceneObject) {
             this.vLabSceneObject = vLabSceneObject;
             this.vLabSceneObject.geometry.computeBoundingSphere();
-            this.centerObject3d = new THREE.Object3D();
-            this.centerObject3d.name = this.vLabSceneObject.name + '_CENTER';
-            this.centerObject3d.position.copy(this.vLabSceneObject.geometry.boundingSphere.center);
-            this.vLabSceneObject.add(this.centerObject3d);
+            this.centerObject3D = new THREE.Object3D();
+            this.centerObject3D.name = this.vLabSceneObject.name + '_CENTER';
+            this.centerObject3D.position.copy(this.vLabSceneObject.geometry.boundingSphere.center);
+            this.vLabSceneObject.add(this.centerObject3D);
             this.vLabScene.interactables[this.vLabSceneObject.name] = this;
             this.addOutlineHelperMesh();
             this.addBoundsSprite();
@@ -341,6 +341,17 @@ class VLabSceneInteractable {
             }
             return;
         }
+
+        if (this.vLabScene.intersectedInteractables[0]) {
+            // this.vLabScene.selectedInteractables.forEach((selectedInteractable) => {
+            //     selectedInteractable.respondents.forEach((selectedInteractableRespondent) => {
+            //         if (selectedInteractableRespondent.interactable == this.vLabScene.intersectedInteractables[0]) {
+            //             console.log('!!!!!!!!!!!!!!!');
+            //         }
+            //     });
+            // });
+        }
+
         /**
          * Intersection
          */
@@ -349,7 +360,6 @@ class VLabSceneInteractable {
                 if (this.preselectable && this.preselected || !this.preselectable) {
                     let currentlySelectedInteractable = this.vLabScene.manager.getCurrentlySelectedInteractable();
                     if (currentlySelectedInteractable) currentlySelectedInteractable.deSelect();
-
                     /**
                      * push to selections if not yet in array
                      */
@@ -524,9 +534,12 @@ class VLabSceneInteractable {
         } else if (event.button == 1){
             this.deSelect();
         } else if (event.button == 2){
+            this.deSelect();
             if (this.intersection) {
                 /*<dev>*/
-                    this['DEV'].showMenu();
+                    if (!this.taken) {
+                        this['DEV'].showMenu();
+                    }
                 /*</dev>*/
             }
         }
@@ -684,7 +697,7 @@ class VLabSceneInteractable {
             this.boundsSprite.scale.multiplyScalar(2 * this.vLabSceneObject.geometry.boundingSphere.radius);
             this.boundsSprite.visible = false;
             this.boundsSprite.matrixAutoUpdate = false;
-            this.centerObject3d.add(this.boundsSprite);
+            this.centerObject3D.add(this.boundsSprite);
         }
     }
     /**
@@ -728,7 +741,7 @@ class VLabSceneInteractable {
             });
 
             this.vLab.DOMManager.WebGLContainer.appendChild(this.menuContainer);
-            let menuCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, this.centerObject3d);
+            let menuCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, this.centerObject3D);
             let xPosDelta = this.vLab.DOMManager.WebGLContainer.clientWidth - (menuCoords.x + this.menuContainer.clientWidth);
             let yPosDelta = this.vLab.DOMManager.WebGLContainer.clientHeight - (menuCoords.y + this.menuContainer.clientHeight);
             let xPos = menuCoords.x + (xPosDelta < 0 ? xPosDelta : 0);
@@ -879,7 +892,7 @@ class VLabSceneInteractable {
         }
 
         if (this.tooltipContainer) {
-            let tooltipCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, (shownRespondent !== undefined && shownRespondent.respondentIntersectionPointMesh != undefined) ? shownRespondent.respondentIntersectionPointMesh : this.centerObject3d);
+            let tooltipCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, (shownRespondent !== undefined && shownRespondent.respondentIntersectionPointMesh != undefined) ? shownRespondent.respondentIntersectionPointMesh : this.centerObject3D);
             tooltipCoords.x += shiftX;
             tooltipCoords.y += shiftY;
             let xPosDelta = this.vLab.DOMManager.WebGLContainer.clientWidth - (tooltipCoords.x + this.tooltipContainer.clientWidth);
@@ -979,7 +992,6 @@ class VLabSceneInteractable {
                                         thisPointMeshPosition,
                                         respondentIntersections[0].point
                                     );
-
 
                                     let line = new THREE.Line(lineGeometry, respondentLineMaterial);
                                     this.vLabScene.add(line);

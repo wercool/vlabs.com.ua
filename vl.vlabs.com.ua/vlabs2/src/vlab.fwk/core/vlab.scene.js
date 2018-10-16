@@ -359,7 +359,7 @@ class VLabScene extends THREE.Scene {
                  * 
                  * 
                  */
-                intersectedInteractable = this.interactables[this.intersectedInteractables[0].object.name];
+                intersectedInteractable = this.intersectedInteractables[0];
                 /**
                  * Dispatch intersectionHandler
                  */
@@ -408,7 +408,11 @@ class VLabScene extends THREE.Scene {
                 this.eventCoordsNormalized.set((this.eventCoords.x / this.vLab.WebGLRendererCanvas.clientWidth) * 2 - 1, 1 - (this.eventCoords.y / this.vLab.WebGLRendererCanvas.clientHeight) * 2);
             }
             this.interactablesRaycaster.setFromCamera(this.eventCoordsNormalized, this.currentCamera);
-            this.intersectedInteractables = this.interactablesRaycaster.intersectObjects(this.intersectableInteractables);
+            let intersectedInteractablesIntersections = this.interactablesRaycaster.intersectObjects(this.intersectableInteractables);
+            intersectedInteractablesIntersections.forEach((intersectedInteractablesIntersection) => {
+                let intersectedInteractable = this.interactables[intersectedInteractablesIntersection.object.name];
+                if (intersectedInteractable) this.intersectedInteractables.push(intersectedInteractable);
+            });
         }
     }
     /**

@@ -258,7 +258,7 @@ class VLabSceneDispatcher {
          * Remove taken interactable from VLabScene
          * Add interactable to current VLabScene camera
          */
-        this.takenInteractable.vLabSceneObject.parent.remove();
+        this.takenInteractable.vLabSceneObject.parent.remove(this.takenInteractable.vLabSceneObject);
         this.currentVLabScene.currentCamera.add(this.takenInteractable.vLabSceneObject);
 
         this.takenInteractable.vLabSceneObject.visible = true;
@@ -290,6 +290,10 @@ class VLabSceneDispatcher {
         .yoyo(true)
         .easing(TWEEN.Easing.Quadratic.InOut)
         .start();
+
+        this.takenInteractable.boundsSprite.position.copy(this.takenInteractable.vLabSceneObject.position.clone().add(this.takenInteractable.centerObject3D.position.clone().multiplyScalar(scaleFactor)));
+        this.takenInteractable.boundsSprite.scale.multiplyScalar(scaleFactor);
+        this.currentVLabScene.currentCamera.add(this.takenInteractable.boundsSprite);
 
         this.scenes.forEach((vLabScene) => {
             for (let interactableName in vLabScene.interactables) {
@@ -344,6 +348,10 @@ class VLabSceneDispatcher {
             this.vLabScene.add(this.takenInteractable.vLabSceneObject);
         }
 
+        this.takenInteractable.boundsSprite.position.copy(new THREE.Vector3(0.0, 0.0, 0.0));
+        this.takenInteractable.boundsSprite.scale.copy(new THREE.Vector3(1.0, 1.0, 1.0).multiplyScalar(2 * this.takenInteractable.vLabSceneObject.geometry.boundingSphere.radius));
+        this.takenInteractable.centerObject3D.add(this.takenInteractable.boundsSprite);
+
         this.takenInteractable.vLabSceneObject.visible = true;
 
         this.takenInteractable.removeMenuItem('Put back');
@@ -397,6 +405,10 @@ class VLabSceneDispatcher {
 
             fromScene.currentCamera.remove(this.takenInteractable.vLabSceneObject);
             toScene.currentCamera.add(this.takenInteractable.vLabSceneObject);
+
+            fromScene.currentCamera.remove(this.takenInteractable.boundsSprite);
+            toScene.currentCamera.add(this.takenInteractable.boundsSprite);
+
             /**
              * Transit all siblings of this.takenInteractable, updating toScene.interactables; used this.takenInteractable.vLabSceneObject siblings' names
              */
