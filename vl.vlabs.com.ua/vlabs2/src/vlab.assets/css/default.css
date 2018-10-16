@@ -6,7 +6,7 @@ html, body {
     width: 100%;
     background-color: #235272;
     color: #ffffff;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Arial';
     font-size: 12pt;
 }
 #loader {

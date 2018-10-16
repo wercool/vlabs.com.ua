@@ -120,11 +120,12 @@ class VLab {
                             this.setupWebGLRenderer();
 
                             this.requestAnimationFrame();
+
+                            /**
+                             * resolves initialization Promise
+                             */
+                            resolve({});
                         });
-                        /**
-                         * resolves initialization Promise
-                         */
-                        resolve({});
                     });
                 })
                 .catch((error) => { reject(error); });

@@ -114,6 +114,7 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": true,
+            "boundsOnly": true,
             "tooltip": "BigSphereTest",
             "menu": [
                 {
@@ -162,7 +163,7 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": true,
-            "tooltip": "PlaneTest",
+            "tooltip": "BigSphereGeometryScale_01Test",
             "menu": [
                 {
                     "label": "Take",
@@ -178,7 +179,7 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": true,
-            "tooltip": "PlaneTest",
+            "tooltip": "BigSphereScale_05Test",
             "menu": [
                 {
                     "label": "Take",
@@ -194,7 +195,7 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": true,
-            "tooltip": "PlaneTest",
+            "tooltip": "BigSphereScale_025Test",
             "menu": [
                 {
                     "label": "Take",

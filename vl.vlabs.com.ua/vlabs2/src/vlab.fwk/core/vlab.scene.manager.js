@@ -166,8 +166,13 @@ class VLabSceneManager {
             if (preselectedInteractables.length > 0) {
                 let preselectedInteractablesSceneObjects = [];
                 preselectedInteractables.forEach((preselectedInteractable) => {
-                    if (preselectedInteractable.vLabSceneObject)
-                        preselectedInteractablesSceneObjects.push(preselectedInteractable.vLabSceneObject);
+                    if (preselectedInteractable.vLabSceneObject) {
+                        if (!preselectedInteractable.boundsOnly) {
+                            preselectedInteractablesSceneObjects.push(preselectedInteractable.vLabSceneObject);
+                        } else {
+                            preselectedInteractable.outline();
+                        }
+                    }
                 });
                 this.vLab.outlinePass.setSelection(preselectedInteractablesSceneObjects);
                 if (!this.vLab.outlinePass.renderToScreen) {

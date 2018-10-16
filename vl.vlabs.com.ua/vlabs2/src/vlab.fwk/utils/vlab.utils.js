@@ -16,7 +16,64 @@ export function initializeVLabPrefabs(vLab) {
             color: 0xffff00,
             opacity: 0.0,
         });
-
+        /**
+         * Prefabs for VLabSceneInteractableRespondets
+         */
+        vLabPrefabs['VLabSceneInteractablePrefabs'] = {};
+        vLabPrefabs['VLabSceneInteractablePrefabs']['linePointGeometry'] = new THREE.SphereBufferGeometry(0.006, 3, 3);
+        vLabPrefabs['VLabSceneInteractablePrefabs']['respondentReferenceLineMaterial'] = new THREE.LineBasicMaterial({ color: 0xfff6b7 });
+        vLabPrefabs['VLabSceneInteractablePrefabs']['respondentActionLineMaterial'] = new THREE.LineBasicMaterial({ color: 0x91ff8e });
+        vLabPrefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial'] = new THREE.LineDashedMaterial({ color: 0xfff6b7, dashSize: 0.05, gapSize: 0.015 });
+        vLabPrefabs['VLabSceneInteractablePrefabs']['respondentActionDashedLineMaterial'] = new THREE.LineDashedMaterial({ color: 0x91ff8e, dashSize: 0.05, gapSize: 0.015 });
+        vLabPrefabs['VLabSceneInteractablePrefabs']['respondentIntersectionReferencePointMaterial'] = new THREE.MeshBasicMaterial({ color: 0xfff6b7, depthTest: false, side: THREE.BackSide });
+        vLabPrefabs['VLabSceneInteractablePrefabs']['interactableIntersectionReferencePointMaterial'] = new THREE.MeshBasicMaterial({ color: 0xfff6b7, side: THREE.BackSide });
+        vLabPrefabs['VLabSceneInteractablePrefabs']['respondentIntersectionActionPointMaterial'] = new THREE.MeshBasicMaterial({ color: 0x91ff8e, depthTest: false, side: THREE.BackSide });
+        vLabPrefabs['VLabSceneInteractablePrefabs']['interactableIntersectionActionPointMaterial'] = new THREE.MeshBasicMaterial({ color: 0x91ff8e, side: THREE.BackSide });
+        vLabPrefabs['VLabSceneInteractablePrefabs']['simpleOutlineMaterial'] = new THREE.MeshLambertMaterial({
+            color: 0xffff00,
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0.75,
+            emissive: new THREE.Color(1.0, 1.0, 0.0),
+            depthTest: true,
+            depthWrite: true,
+            polygonOffset: true,
+            polygonOffsetFactor: 1
+        });
+        vLabPrefabs['VLabSceneInteractablePrefabs']['simpleOutlineSelectedMaterial'] = new THREE.MeshLambertMaterial({
+            color: 0x00ff00,
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0.75,
+            emissive: new THREE.Color(0.0, 1.0, 0.0),
+            depthTest: true,
+            depthWrite: true,
+            polygonOffset: true,
+            polygonOffsetFactor: 1
+        });
+        /**
+         * VLabSceneInteractablePrefabs prefab textures
+         */
+        let textureLoader = new THREE.TextureLoader()
+        Promise.all([
+            /**
+             * selectionSpriteMaterial
+             */
+            textureLoader.load('/vlab.assets/img/selection-bounds.png')
+        ]).then((results) => {
+            vLabPrefabs['VLabSceneInteractablePrefabs']['selectionSpriteMaterial'] = new THREE.SpriteMaterial({
+                map: results[0],
+                blending: THREE.AdditiveBlending,
+                color: 0x00ff00,
+                depthTest: false
+            });
+            vLabPrefabs['VLabSceneInteractablePrefabs']['preSelectionSpriteMaterial'] = new THREE.SpriteMaterial({
+                map: results[0],
+                blending: THREE.AdditiveBlending,
+                color: 0xffff00,
+                depthTest: false
+            });
+        });
         resolve(vLabPrefabs);
     });
 }

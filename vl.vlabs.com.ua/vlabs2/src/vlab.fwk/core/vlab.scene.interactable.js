@@ -26,6 +26,7 @@ class VLabSceneInteractable {
      * @param {boolean}             [initObj.interactable.visibility]           - VLab Scene object visibility
      * @param {boolean}             [initObj.interactable.intersectable]        - If true then will be checked for intersection in {@link VLabScene#intersectInteractablesWithInteractablesRaycaster}
      * @param {boolean}             [initObj.interactable.preselecatble]        - If true mouseover and touchstart will preselect this.vLabSceneObject 
+     * @param {boolean}             [initObj.interactable.boundsOnly]           - If true pre-selectionwill always show only selection bounds Sprite only
      * @param {boolean}             [initObj.interactable.selectable]           - If true mousedown and touchstart will select this.vLabSceneObject if it is preselectable and already preselected or if it is not preselectable
      * @param {Object}              [initObj.interactable.action]               - Native action; if defined then VLabSceneInteractable.selectble is set to false; native action will be called instead of selection
      * @param {Function}            [initObj.interactable.action.function]      - This function reference will be called on native action
@@ -63,6 +64,10 @@ class VLabSceneInteractable {
          * @default undefined
          */
         this.vLabSceneObject = undefined;
+        /**
+         * Bounding sphere center Object3D
+         */
+        this.centerObject3d = undefined;
         /**
          * This native action function
          */
@@ -104,6 +109,12 @@ class VLabSceneInteractable {
          */
         this.preselected = false;
         /**
+         * If true then postprocessing pre-selection outline will not be shown, instead only bounds Sprtie will be shown
+         * @public
+         * @default false
+         */
+        this.boundsOnly = false;
+        /**
          * If true then will be rendered as "selected" {@link VLabScene#selectedInteractables}
          * @public
          * @default false
@@ -127,6 +138,10 @@ class VLabSceneInteractable {
          * Simple outline TWEEN animation
          */
         this.outlineHelperMeshTWEEN = undefined;
+        /**
+         * Selection bounds Sprite
+         */
+        this.boundsSprite = undefined;
         /**
          * Tooltip to be shown in {@link VLabSceneInteractable#preselect}
          * @default empty
@@ -191,43 +206,6 @@ class VLabSceneInteractable {
         }
         /*</dev>*/
 
-        /**
-         * Prefabs for VLabSceneInteractableRespondets
-         */
-        if (!this.vLab.prefabs['VLabSceneInteractablePrefabs']) {
-            this.vLab.prefabs['VLabSceneInteractablePrefabs'] = {};
-            this.vLab.prefabs['VLabSceneInteractablePrefabs']['linePointGeometry'] = new THREE.SphereBufferGeometry(0.006, 3, 3);
-            this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceLineMaterial'] = new THREE.LineBasicMaterial({ color: 0xfff6b7 });
-            this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentActionLineMaterial'] = new THREE.LineBasicMaterial({ color: 0x91ff8e });
-            this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial'] = new THREE.LineDashedMaterial({ color: 0xfff6b7, dashSize: 0.05, gapSize: 0.015 });
-            this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentActionDashedLineMaterial'] = new THREE.LineDashedMaterial({ color: 0x91ff8e, dashSize: 0.05, gapSize: 0.015 });
-            this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentIntersectionReferencePointMaterial'] = new THREE.MeshBasicMaterial({ color: 0xfff6b7, depthTest: false, side: THREE.BackSide });
-            this.vLab.prefabs['VLabSceneInteractablePrefabs']['interactableIntersectionReferencePointMaterial'] = new THREE.MeshBasicMaterial({ color: 0xfff6b7, side: THREE.BackSide });
-            this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentIntersectionActionPointMaterial'] = new THREE.MeshBasicMaterial({ color: 0x91ff8e, depthTest: false, side: THREE.BackSide });
-            this.vLab.prefabs['VLabSceneInteractablePrefabs']['interactableIntersectionActionPointMaterial'] = new THREE.MeshBasicMaterial({ color: 0x91ff8e, side: THREE.BackSide });
-            this.vLab.prefabs['VLabSceneInteractablePrefabs']['simpleOutlineMaterial'] = new THREE.MeshLambertMaterial({
-                color: 0xffff00,
-                side: THREE.BackSide,
-                transparent: true,
-                opacity: 0.75,
-                emissive: new THREE.Color(1.0, 1.0, 0.0),
-                depthTest: true,
-                depthWrite: true,
-                polygonOffset: true,
-                polygonOffsetFactor: 1
-            });
-            this.vLab.prefabs['VLabSceneInteractablePrefabs']['simpleOutlineSelectedMaterial'] = new THREE.MeshLambertMaterial({
-                color: 0x00ff00,
-                side: THREE.BackSide,
-                transparent: true,
-                opacity: 0.75,
-                emissive: new THREE.Color(0.0, 1.0, 0.0),
-                depthTest: true,
-                depthWrite: true,
-                polygonOffset: true,
-                polygonOffsetFactor: 1
-            });
-        }
         if (initObj) this.initObj = initObj;
         return new Promise((resolve, reject) => {
             this.vLab.DOMManager.addStyle({
@@ -245,6 +223,9 @@ class VLabSceneInteractable {
                 }
                 if (this.initObj.interactable.preselectable !== undefined) {
                     this.preselectable = this.initObj.interactable.preselectable;
+                }
+                if (this.initObj.interactable.boundsOnly !== undefined) {
+                    this.boundsOnly = this.initObj.interactable.boundsOnly;
                 }
                 if (this.initObj.interactable.selectable !== undefined) {
                     this.selectable = this.initObj.interactable.selectable;
@@ -274,15 +255,21 @@ class VLabSceneInteractable {
     setVLabSceneObject(vLabSceneObject) {
         if (vLabSceneObject) {
             this.vLabSceneObject = vLabSceneObject;
+            this.vLabSceneObject.geometry.computeBoundingSphere();
+            this.centerObject3d = new THREE.Object3D();
+            this.centerObject3d.name = this.vLabSceneObject.name + '_CENTER';
+            this.centerObject3d.position.copy(this.vLabSceneObject.geometry.boundingSphere.center);
+            this.vLabSceneObject.add(this.centerObject3d);
             this.vLabScene.interactables[this.vLabSceneObject.name] = this;
             this.addOutlineHelperMesh();
+            this.addBoundsSprite();
             this.setVisibility();
         }
     }
     /**
      * Native action which calls this.actionFunction if defined
      * Exectued if this.intersection and this.preselected
-     * @returns {boolean} returns true if this.actionFunction was actually called
+     * @returns {boolean} returns true if this.actionFunction has been actually called
      */
     action(event) {
         if (this.intersection && this.preselected) {
@@ -633,17 +620,29 @@ class VLabSceneInteractable {
      * Shows simple outline based on this.vLabSceneObject.geometry
      */
     outline() {
-        this.outlineHelperMesh.material = this.vLabScene.vLab.prefabs['VLabSceneInteractablePrefabs']['simpleOutlineMaterial'];
-        this.outlineHelperMesh.visible = true;
-        this.outlineHelperMesh.matrixAutoUpdate = true;
+        if (this.vLab.nature.selections && this.vLab.nature.selections.outlineHelperMesh == true && !this.boundsOnly) {
+            this.outlineHelperMesh.material = this.vLabScene.vLab.prefabs['VLabSceneInteractablePrefabs']['simpleOutlineMaterial'];
+            this.outlineHelperMesh.visible = true;
+            this.outlineHelperMesh.matrixAutoUpdate = true;
+        } else if (!this.vLab.nature.selections || (this.vLab.nature.selections && this.vLab.nature.selections.boundsSprite == true) || this.boundsOnly) {
+            this.boundsSprite.material = this.vLabScene.vLab.prefabs['VLabSceneInteractablePrefabs']['preSelectionSpriteMaterial'];
+            this.boundsSprite.visible = true;
+            this.boundsSprite.matrixAutoUpdate = true;
+        }
     }
     /**
      * Shows simple outline shows selected, based on this.vLabSceneObject.geometry
      */
     outlineSelected() {
-        this.outlineHelperMesh.material = this.vLabScene.vLab.prefabs['VLabSceneInteractablePrefabs']['simpleOutlineSelectedMaterial'];
-        this.outlineHelperMesh.visible = true;
-        this.outlineHelperMesh.matrixAutoUpdate = true;
+        if (this.vLab.nature.selections && this.vLab.nature.selections.outlineHelperMesh == true && !this.boundsOnly) {
+            this.outlineHelperMesh.material = this.vLabScene.vLab.prefabs['VLabSceneInteractablePrefabs']['simpleOutlineSelectedMaterial'];
+            this.outlineHelperMesh.visible = true;
+            this.outlineHelperMesh.matrixAutoUpdate = true;
+        } else if (!this.vLab.nature.selections || (this.vLab.nature.selections && this.vLab.nature.selections.boundsSprite == true)|| this.boundsOnly) {
+            this.boundsSprite.material = this.vLabScene.vLab.prefabs['VLabSceneInteractablePrefabs']['selectionSpriteMaterial'];
+            this.boundsSprite.visible = true;
+            this.boundsSprite.matrixAutoUpdate = true;
+        }
     }
     /**
      * Hides simple outline based on this.vLabSceneObject.geometry
@@ -651,6 +650,9 @@ class VLabSceneInteractable {
     clearOutline() {
         this.outlineHelperMesh.visible = false;
         this.outlineHelperMesh.matrixAutoUpdate = false;
+
+        this.boundsSprite.visible = false;
+        this.boundsSprite.matrixAutoUpdate = false;
     }
     /**
      * Adds simple outline based on this.vLabSceneObject.geometry as THREE.Mesh to this.vLabSceneObject
@@ -669,6 +671,19 @@ class VLabSceneInteractable {
             .yoyo(true)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .start();
+        }
+    }
+    /**
+     * Adds pre-selection / selection bound Sprite
+     */
+    addBoundsSprite() {
+        if (this.vLabSceneObject && this.boundsSprite == undefined) {
+            this.boundsSprite = new THREE.Sprite(this.vLab.prefabs['VLabSceneInteractablePrefabs']['preSelectionSpriteMaterial']);
+            this.boundsSprite.name = this.vLabSceneObject.name + '_BOUNDS';
+            this.boundsSprite.scale.multiplyScalar(2 * this.vLabSceneObject.geometry.boundingSphere.radius);
+            this.boundsSprite.visible = false;
+            this.boundsSprite.matrixAutoUpdate = false;
+            this.centerObject3d.add(this.boundsSprite);
         }
     }
     /**
@@ -712,7 +727,7 @@ class VLabSceneInteractable {
             });
 
             this.vLab.DOMManager.WebGLContainer.appendChild(this.menuContainer);
-            let menuCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, this.vLabSceneObject);
+            let menuCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, this.centerObject3d);
             let xPosDelta = this.vLab.DOMManager.WebGLContainer.clientWidth - (menuCoords.x + this.menuContainer.clientWidth);
             let yPosDelta = this.vLab.DOMManager.WebGLContainer.clientHeight - (menuCoords.y + this.menuContainer.clientHeight);
             let xPos = menuCoords.x + (xPosDelta < 0 ? xPosDelta : 0);
@@ -863,7 +878,7 @@ class VLabSceneInteractable {
         }
 
         if (this.tooltipContainer) {
-            let tooltipCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, (shownRespondent !== undefined && shownRespondent.respondentIntersectionPointMesh != undefined) ? shownRespondent.respondentIntersectionPointMesh : this.vLabSceneObject);
+            let tooltipCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, (shownRespondent !== undefined && shownRespondent.respondentIntersectionPointMesh != undefined) ? shownRespondent.respondentIntersectionPointMesh : this.centerObject3d);
             tooltipCoords.x += shiftX;
             tooltipCoords.y += shiftY;
             let xPosDelta = this.vLab.DOMManager.WebGLContainer.clientWidth - (tooltipCoords.x + this.tooltipContainer.clientWidth);

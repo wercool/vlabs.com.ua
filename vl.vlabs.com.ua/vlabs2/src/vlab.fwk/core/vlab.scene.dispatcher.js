@@ -125,6 +125,10 @@ class VLabSceneDispatcher {
                              */
                             self.transitTakenInteractable(self.currentVLabScene, vLabScene);
 
+                            /**
+                             * Setting this.currentVLabScene
+                             * See {@link VLabSceneDispatcher#currentVLabScene}
+                             */
                             self.currentVLabScene = vLabScene;
 
                             /**
@@ -139,11 +143,12 @@ class VLabSceneDispatcher {
                             self.vLab.setupEffectComposer();
                             self.vLab.renderPaused = false;
                             setTimeout(() => {
-                                self.sceneIsBeingActivated = null;
-                                vLabScene.onActivated.call(vLabScene);
                                 self.vLab.WebGLRendererCanvasOverlay.classList.remove('visible');
                                 self.vLab.WebGLRendererCanvasOverlay.classList.add('hidden');
                                 self.vLab.DOMManager.handleSceneLoadComplete();
+                                self.sceneIsBeingActivated = null;
+                                vLabScene.onActivated.call(vLabScene);
+                                vLabScene.manager.processInteractablesSelections();
                                 resolve(vLabScene);
                             }, 250);
                         });
@@ -271,7 +276,7 @@ class VLabSceneDispatcher {
         }, true);
 
         /**
-         * Resize take object to fit it into camera
+         * Resize taken object to fit it into camera
          */
         this.takenInteractable.vLabSceneObject.geometry.computeBoundingSphere();
         let scaleFactor = 0.01 / (this.takenInteractable.vLabSceneObject.geometry.boundingSphere.radius * this.takenInteractable.vLabSceneObject.scale.z);
@@ -373,7 +378,9 @@ class VLabSceneDispatcher {
      */
     transitTakenInteractable(fromScene, toScene) {
         if (this.takenInteractable) {
-
+            /**
+             * Menu 'Put back' is available only in the VLabScene from where takenInteractable has been taken
+             */
             for (let i = 0; i < this.takenInteractable.menu.length; i++) {
                 if (this.takenInteractable.menu[i].label == 'Put back') {
                     if (this.takenInteractable.menu[i].context && this.takenInteractable.menu[i].originalScene) {
@@ -388,10 +395,23 @@ class VLabSceneDispatcher {
                 }
             }
 
-            this.takenInteractable.vLabSceneObject.parent.remove(this.takenInteractable.vLabSceneObject);
+            fromScene.currentCamera.remove(this.takenInteractable.vLabSceneObject);
             toScene.currentCamera.add(this.takenInteractable.vLabSceneObject);
-            this.takenInteractable.vLabScene = toScene;
-            toScene.interactables[this.takenInteractable.vLabSceneObject.name] = this.takenInteractable;
+            /**
+             * Transit all siblings of this.takenInteractable base on this.takenInteractable.vLabSceneObject siblings' names
+             */
+            this.takenInteractable.vLabSceneObject.traverse((takenInteractableVLabSceneObjectSibling) => {
+                if (fromScene.interactables[takenInteractableVLabSceneObjectSibling.name] !== undefined) {
+                    toScene.interactables[takenInteractableVLabSceneObjectSibling.name] = fromScene.interactables[takenInteractableVLabSceneObjectSibling.name];
+                    toScene.interactables[takenInteractableVLabSceneObjectSibling.name].vLabScene = toScene;
+                }
+            });
+
+            fromScene.selectedInteractables.splice(fromScene.selectedInteractables.indexOf(this.takenInteractable), 1);
+
+            if (this.takenInteractable.selected && toScene.selectedInteractables.indexOf(this.takenInteractable) == -1) {
+                toScene.selectedInteractables.push(this.takenInteractable);
+            }
         }
     }
 }

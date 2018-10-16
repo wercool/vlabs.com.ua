@@ -8,6 +8,10 @@
         "clearColor": "0x6d6d6d",
         "effectComposer": true
     },
+    "selections": {
+        "outlineHelperMesh": false,
+        "boundsSprite": true
+    },
     "simpleStats": true,
     "rendererStats": true
 }
