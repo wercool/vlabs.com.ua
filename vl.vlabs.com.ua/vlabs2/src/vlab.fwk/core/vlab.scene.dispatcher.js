@@ -398,18 +398,19 @@ class VLabSceneDispatcher {
             fromScene.currentCamera.remove(this.takenInteractable.vLabSceneObject);
             toScene.currentCamera.add(this.takenInteractable.vLabSceneObject);
             /**
-             * Transit all siblings of this.takenInteractable base on this.takenInteractable.vLabSceneObject siblings' names
+             * Transit all siblings of this.takenInteractable, updating toScene.interactables; used this.takenInteractable.vLabSceneObject siblings' names
              */
             this.takenInteractable.vLabSceneObject.traverse((takenInteractableVLabSceneObjectSibling) => {
                 if (fromScene.interactables[takenInteractableVLabSceneObjectSibling.name] !== undefined) {
                     toScene.interactables[takenInteractableVLabSceneObjectSibling.name] = fromScene.interactables[takenInteractableVLabSceneObjectSibling.name];
                     toScene.interactables[takenInteractableVLabSceneObjectSibling.name].vLabScene = toScene;
+                    delete fromScene.interactables[takenInteractableVLabSceneObjectSibling.name];
                 }
             });
 
             fromScene.selectedInteractables.splice(fromScene.selectedInteractables.indexOf(this.takenInteractable), 1);
 
-            if (this.takenInteractable.selected && toScene.selectedInteractables.indexOf(this.takenInteractable) == -1) {
+            if ((this.takenInteractable.selection && this.takenInteractable.selection.hold) && toScene.selectedInteractables.indexOf(this.takenInteractable) == -1) {
                 toScene.selectedInteractables.push(this.takenInteractable);
             }
         }

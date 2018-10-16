@@ -73,6 +73,7 @@ class VLabSceneTransitor extends VLabSceneInteractable {
                 sceneObject: vLabSceneTransitorInteractableObject,
                 intersectable: true,
                 preselectable: true,
+                selectable: false,
                 boundsOnly: true,
                 action: {
                     function: this.vLab.SceneDispatcher.activateScene,

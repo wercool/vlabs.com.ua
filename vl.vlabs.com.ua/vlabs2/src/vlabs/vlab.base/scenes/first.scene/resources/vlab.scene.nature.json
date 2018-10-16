@@ -57,14 +57,14 @@
                     "label": "Hold selection",
                     "icon": "<i class=\"material-icons\">adjust</i>",
                     "enabled": true,
-                    "action": "this.select({hold: true})",
+                    "action": "this.select({ hold: true })",
                     "args": null
                 },
                 {
                     "label": "Sphere2TestAction",
                     "icon": "",
                     "enabled": true,
-                    "action": "this.vLabScene.Sphere2TestAction({ interactable : this })",
+                    "action": "if (this.vLabScene.Sphere2TestAction) this.vLabScene.Sphere2TestAction({ interactable : this })",
                     "args": null
                 }
             ]

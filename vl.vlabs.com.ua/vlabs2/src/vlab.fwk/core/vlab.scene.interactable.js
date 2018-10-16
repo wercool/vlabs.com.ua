@@ -377,7 +377,8 @@ class VLabSceneInteractable {
      * @abstract
      */
     deSelect(insistently) {
-        if (this.selected  && ((!this.selection.hold && this.vLabScene.intersectedInteractables.length > 0) || (!this.selection.hold && insistently == true))) {
+        if (this.selected  
+        && ((!this.selection.hold && this.vLabScene.intersectedInteractables.length > 0) || (!this.selection.hold && insistently == true))) {
             let indexOfThisSelected = this.vLabScene.selectedInteractables.indexOf(this);
             this.vLabScene.selectedInteractables.splice(indexOfThisSelected, 1);
             this.selected = false;

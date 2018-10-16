@@ -220,9 +220,7 @@ class VLabScene extends THREE.Scene {
         return new Promise((resolve, reject) => {
             this.unsubscribe();
             clearInterval(this.manager.performance.performanceManagerInterval);
-            for (let interactableName in this.interactables) {
-                this.interactables[interactableName].deSelect(true);
-            }
+            this.deselectInteractables();
             this.manager.processInteractablesSelections();
             this.currentControls.depress();
             this.active = false;
