@@ -342,16 +342,6 @@ class VLabSceneInteractable {
             return;
         }
 
-        if (this.vLabScene.intersectedInteractables[0]) {
-            // this.vLabScene.selectedInteractables.forEach((selectedInteractable) => {
-            //     selectedInteractable.respondents.forEach((selectedInteractableRespondent) => {
-            //         if (selectedInteractableRespondent.interactable == this.vLabScene.intersectedInteractables[0]) {
-            //             console.log('!!!!!!!!!!!!!!!');
-            //         }
-            //     });
-            // });
-        }
-
         /**
          * Intersection
          */

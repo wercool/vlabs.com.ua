@@ -380,6 +380,30 @@ class VLabScene extends THREE.Scene {
             }
 
             /**
+             * Check is this.intersectedInteractables[0] is among this.selectedInteractables respondents
+             * If so check if this.selectedInteractable(s) has this.intersectedInteractables[0] action function
+             * Call this.selectedInteractable(s) respondent action function
+             */
+            if (event.type == 'mousedown' || event.type == 'touchstart') {
+                if (this.intersectedInteractables[0]) {
+                    this.selectedInteractables.forEach((selectedInteractable) => {
+                        selectedInteractable.respondents.forEach((selectedInteractableRespondent) => {
+                            if (selectedInteractableRespondent.interactable && selectedInteractableRespondent.callerInteractable) {
+                                if (selectedInteractableRespondent.interactable == this.intersectedInteractables[0] 
+                                    && selectedInteractableRespondent.callerInteractable == selectedInteractable
+                                    && ((this.intersectedInteractables[0].preselectable && this.intersectedInteractables[0].preselected) || !this.intersectedInteractables[0].preselectable)
+                                ) {
+                                    if (selectedInteractableRespondent.action) {
+                                        selectedInteractableRespondent.action.call(selectedInteractableRespondent);
+                                    }
+                                }
+                            }
+                        });
+                    });
+                }
+            }
+
+            /**
              * Dispatch nointersectionHandler for all other VLabSceneInteractable except ( intersectedInteractable )
              */
             for (let interactableName in this.interactables) {

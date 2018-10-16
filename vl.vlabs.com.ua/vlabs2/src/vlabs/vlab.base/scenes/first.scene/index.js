@@ -28,6 +28,16 @@ class FirstScene extends VLabScene {
             preselectionTooltip: 'Reacts on PlaneTest'
         });
 
+        this.interactables['Suzanne'].addRespondent({
+            interactable: this.interactables['Suzanne1'],
+            callerInteractable: this.interactables['Suzanne'],
+            preselectionTooltip: 'Reacts on Suzanne',
+            action: {
+                function: this.Suzanne_ACTION_Suzanne1,
+                args: {},
+                context: this
+            }
+        });
         this.interactables['Sphere2'].addRespondent({
             interactable: this.interactables['Suzanne1_1'],
             callerInteractable: this.interactables['Sphere2'],
@@ -128,11 +138,17 @@ class FirstScene extends VLabScene {
         this.interactables['BigSphere'].vLabSceneObject.material.wireframe = true;
     }
     Sphere2_ACTION_Suzanne1_1() {
-        console.log('Sphere2_to_Suzanne1_1_ACTION', this);
+        console.log('Sphere2_to_Suzanne1_1_ACTION');
+        console.log('context (this)', this);
     }
     Sphere2_ACTION_Suzanne1() {
-        console.log('Sphere2_to_Suzanne1_ACTION', this);
-    }    
+        console.log('Sphere2_to_Suzanne1_ACTION');
+        console.log('context (this)', this);
+    }
+    Suzanne_ACTION_Suzanne1() {
+        console.log('Suzanne_ACTION_Suzanne1');
+        console.log('context (this)', this);
+    }
     // Sphere2EventHandler(event) {
     //     console.log(this);
     // }
