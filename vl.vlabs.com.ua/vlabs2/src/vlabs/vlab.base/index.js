@@ -13,7 +13,7 @@ import ThirdScene   from    './scenes/third.scene';
  */
 class BaseVLab extends VLab {
     /**
-     * BaseVLab constructor.
+     * BaseVLab constructor
      * @constructor
      * @param {Object} initObj                      - Initialization Object
      * @param {string} initObj.name                 - VLab name

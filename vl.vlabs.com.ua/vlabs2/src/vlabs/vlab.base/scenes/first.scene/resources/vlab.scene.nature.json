@@ -205,6 +205,22 @@
                     "args": null
                 }
             ]
+        },
+        {
+            "name": "OWONSmartDS7102",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "tooltip": "OWONSmartDS7102",
+            "menu": [
+                {
+                    "label": "Take",
+                    "icon": "<i class=\"material-icons\">pan_tool</i>",
+                    "enabled": true,
+                    "action": "this.take()",
+                    "args": null
+                }
+            ]
         }
     ]
 }
