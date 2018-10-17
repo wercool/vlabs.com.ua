@@ -52,7 +52,7 @@ class VLabSceneTransitor extends VLabSceneInteractable {
                 color: 0xffffff
             });
 
-            this.vLab.prefabs['VLabSceneTransitorPrefabs']['VLabSceneTransitorInteractableObjectGeometry'] = new THREE.SphereBufferGeometry(0.2, 10, 10);
+            this.vLab.prefabs['VLabSceneTransitorPrefabs']['VLabSceneTransitorInteractableObjectGeometry'] = new THREE.SphereBufferGeometry(0.2, 4, 4);
         }
         let vLabSceneTransitorInteractableObjectSprite = new THREE.Sprite(this.vLab.prefabs['VLabSceneTransitorPrefabs']['VLabSceneTransitorSpriteMaterial']);
         vLabSceneTransitorInteractableObjectSprite.scale.set(0.3, 0.3, 0.3);
