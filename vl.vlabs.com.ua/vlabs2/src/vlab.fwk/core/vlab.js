@@ -126,9 +126,8 @@ class VLab {
                              */
                             resolve({});
                         });
-                    });
-                })
-                .catch((error) => { reject(error); });
+                    }).catch((error) => { reject(error); });
+                }).catch((error) => { reject(error); });
             } else {
                 if (initObjAbnormals.length > 0) {
                     console.error('VLab incorrectly initialized!');
