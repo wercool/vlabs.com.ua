@@ -12,6 +12,5 @@
         "outlineHelperMesh": false,
         "boundsSprite": true
     },
-    "simpleStats": true,
-    "rendererStats": true
+    "simpleStats": true
 }

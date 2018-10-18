@@ -210,7 +210,7 @@ class VLabSceneInteractable {
         return new Promise((resolve, reject) => {
             this.vLab.DOMManager.addStyle({
                 id: (this.initObj.interactable.style && this.initObj.interactable.style.id !== undefined) ? this.initObj.interactable.style.id : 'interactableCSS',
-                href: (this.initObj.interactable.style && this.initObj.interactable.style.href !== undefined) ? this.initObj.interactable.style.href : '../vlab.assets/css/interactable.css'
+                href: (this.initObj.interactable.style && this.initObj.interactable.style.href !== undefined) ? this.initObj.interactable.style.href : '/vlab.assets/css/interactable.css'
             }).then(() => {
                 if (this.initObj.interactable.name !== undefined) {
                     this.setVLabSceneObject(this.vLabScene.getObjectByName(this.initObj.interactable.name));

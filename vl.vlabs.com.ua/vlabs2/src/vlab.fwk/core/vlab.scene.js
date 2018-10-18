@@ -240,7 +240,7 @@ class VLabScene extends THREE.Scene {
      * @memberof VLabScene
      * @abstract
      */
-    onActivated() { console.log(this.name + ' onActivated abstract method not implemented'); }
+    onActivated() { console.log('%c' + this.name + ' onActivated abstract method not implemented', 'color: orange'); }
     /**
      * VLab Scene onDeactivated abstract function.
      *

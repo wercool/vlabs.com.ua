@@ -1,5 +1,8 @@
 import VLab from '../../vlab.fwk/core/vlab';
 
+/* This VLab Auxilaries */
+import VLabInventory   from    '../../vlab.fwk/aux/inventory/index';
+
 /* This VLab Scenes */
 import FirstScene   from    './scenes/first.scene';
 import SecondScene  from    './scenes/second.scene';
@@ -29,6 +32,11 @@ class BaseVLab extends VLab {
      * @memberof BaseVLab
      */
     bootstrap(iniObj) {
+        /* VLab Inventory */
+        new VLabInventory({
+            vLab: this
+        });
+
         /* First scene */
         this.SceneDispatcher.addScene({
             class: FirstScene,

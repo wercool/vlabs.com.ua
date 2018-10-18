@@ -6,13 +6,13 @@ import VLabSceneInteractable from './vlab.scene.interactable';
 var TWEEN = require('@tweenjs/tween.js');
 
 /**
- * VLab Scene Dispatcher.
+ * VLab Scene Dispatcher
  * @class
  * @classdesc VLab Scene Dispatcher class serves VLab Scene routing and state control.
  */
 class VLabSceneDispatcher {
     /**
-     * VLabSceneDispatcher constructor.
+     * VLabSceneDispatcher constructor
      * @constructor
      * @param {VLab} vLabInstance                         - VLab instance
      */
@@ -307,6 +307,11 @@ class VLabSceneDispatcher {
                 });
             }
         });
+
+        this.vLab.EventDispatcher.notifySubscribers({
+            target: 'VLabScene',
+            type: 'interactableTaken'
+        });
     }
     /**
      * Process put process Interactable
@@ -380,6 +385,11 @@ class VLabSceneDispatcher {
                     menuItemId++;
                 });
             }
+        });
+
+        this.vLab.EventDispatcher.notifySubscribers({
+            target: 'VLabScene',
+            type: 'interactablePut'
         });
     }
     /**

@@ -463,7 +463,7 @@ class VLabSceneManager {
             } else {
                 return this.vLab.DOMManager.addStyle({
                     id: 'sceneCSS',
-                    href: '../vlab.assets/css/scene.css'
+                    href: '/vlab.assets/css/scene.css'
                 });
             }
         }

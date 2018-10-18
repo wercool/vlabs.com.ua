@@ -3,12 +3,12 @@ window.onload = function() {
     defaultCSS.id = 'defaultCSS';
     defaultCSS.type = 'text/css';
     defaultCSS.rel = 'stylesheet';
-    defaultCSS.href = '../vlab.assets/css/default.css';
+    defaultCSS.href = '/vlab.assets/css/default.css';
     document.getElementsByTagName('head')[0].appendChild(defaultCSS);
     defaultCSS.onload = function() {
         var webGLDetectorJS = document.createElement('script');
         webGLDetectorJS.type = 'text/javascript';
-        webGLDetectorJS.src = '../vlab.assets/js/WebGLDetector.js';
+        webGLDetectorJS.src = '/vlab.assets/js/WebGLDetector.js';
         document.getElementsByTagName('head')[0].appendChild(webGLDetectorJS);
         webGLDetectorJS.onload = function() {
             if (Detector.webgl) {
@@ -20,12 +20,12 @@ window.onload = function() {
                 ldBarCSS.id = 'ldBarCSS';
                 ldBarCSS.type = 'text/css';
                 ldBarCSS.rel = 'stylesheet';
-                ldBarCSS.href = '../vlab.assets/css/loading-bar.css';
+                ldBarCSS.href = '/vlab.assets/css/loading.bar.css';
                 document.getElementsByTagName('head')[0].appendChild(ldBarCSS);
                 ldBarCSS.onload = function() {
                     var ldBarJS = document.createElement('script');
                     ldBarJS.type = 'text/javascript';
-                    ldBarJS.src = '../vlab.assets/js/loading-bar.js';
+                    ldBarJS.src = '/vlab.assets/js/loading-bar.js';
                     document.getElementsByTagName('head')[0].appendChild(ldBarJS);
                     ldBarJS.onload = function() {
                         loader.setAttribute('class', 'ldBar label-center');

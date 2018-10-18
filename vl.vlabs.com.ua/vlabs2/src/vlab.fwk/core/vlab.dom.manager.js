@@ -1,7 +1,11 @@
 import * as StringUtils from '../utils/string.utils';
 import Stats from 'stats-js';
-import RendererStats from 'three-webgl-stats';
 import VLab from './vlab';
+import VLabPanel from '../aux/vlab.panel';
+
+/*<dev>*/
+import RendererStats from 'three-webgl-stats';
+/*</dev>*/
 
 /**
  * VLab DOM manager.
@@ -64,7 +68,7 @@ class VLabDOMManager {
             }
             this.addStyle({
                 id: 'materialIconsCSS',
-                href: '../vlab.assets/css/fonts/material-icons/material-icons.css'
+                href: '/vlab.assets/css/fonts/material-icons/material-icons.css'
             }).then(() => {
                 let materialIconsCSSFontPreloader = document.createElement('li');
                 materialIconsCSSFontPreloader.style.position = 'fixed';
@@ -74,7 +78,7 @@ class VLabDOMManager {
                 document.body.appendChild(materialIconsCSSFontPreloader);
                 this.addStyle({
                     id: 'globalCSS',
-                    href: (this.vLab.nature.styles) ? this.vLab.nature.styles.global ? this.vLab.nature.styles.global : '../vlab.assets/css/global.css' : '../vlab.assets/css/global.css'
+                    href: (this.vLab.nature.styles) ? this.vLab.nature.styles.global ? this.vLab.nature.styles.global : '/vlab.assets/css/global.css' : '/vlab.assets/css/global.css'
                 }).then(() => {
                     /* Remove default loader, default JS, default CSS */
                     let defaultLoader = document.getElementById('loader');
@@ -141,18 +145,35 @@ class VLabDOMManager {
                     /**
                      * Setup WebGLRenderer statistics
                      */
-                    if (this.vLab.nature.rendererStats !== undefined) {
+                    /*<dev>*/
                         this.rendererStats = new RendererStats();
                         this.rendererStats.domElement.style.position = 'absolute';
                         this.rendererStats.domElement.style.top = '0px';
                         this.rendererStats.domElement.style.right = '0px';
                         this.rendererStats.domElement.style.zIndex = 3;
                         this.container.appendChild(this.rendererStats.domElement);
-                        if (this.vLab.nature.rendererStats === false) this.rendererStats.domElement.style.display = 'none';
-                    }
+                    /*</dev>*/
 
+                    /**
+                     * 
+                     * 
+                     *  __      ___           _       _____                 _ 
+                     *  \ \    / / |         | |     |  __ \               | |
+                     *   \ \  / /| |     __ _| |__   | |__) |_ _ _ __   ___| |
+                     *    \ \/ / | |    / _` | '_ \  |  ___/ _` | '_ \ / _ \ |
+                     *     \  /  | |___| (_| | |_) | | |  | (_| | | | |  __/ |
+                     *      \/   |______\__,_|_.__/  |_|   \__,_|_| |_|\___|_|
+                     * 
+                     * 
+                     */
+                    this.vLabPanel = new VLabPanel({
+                        vLab: this.vLab
+                    });
+                    this.vLabPanel.initialize().then((vLabPanel) => {
+                        this.container.appendChild(this.vLabPanel.VLabPanelContainer);
 
-                    resolve();
+                        resolve();
+                    });
                 });
             })
         });

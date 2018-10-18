@@ -59,7 +59,7 @@ export function initializeVLabPrefabs(vLab) {
             /**
              * selectionSpriteMaterial
              */
-            textureLoader.load('/vlab.assets/img/selection-bounds.png')
+            textureLoader.load('/vlab.assets/img/scene/selection-bounds.png')
         ]).then((results) => {
             vLabPrefabs['VLabSceneInteractablePrefabs']['selectionSpriteMaterial'] = new THREE.SpriteMaterial({
                 map: results[0],

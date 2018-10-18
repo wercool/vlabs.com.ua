@@ -93,6 +93,16 @@ class VLab {
                      */
                     this.nature = nature;
 
+                    /**
+                     * VLab EventDispatcher {@link VLabEventDispatcher} instance
+                     * @public
+                     */
+                    this.EventDispatcher = new VLabEventDispatcher(this);
+                    /**
+                     * VLab SceneDispatcher {@link VLabSceneDispatcher} instance
+                     * @public
+                     */
+                    this.SceneDispatcher = new VLabSceneDispatcher(this);
 
                     /**
                      * VLab DOMManager manager {@link VLabDOMManager} instance
@@ -100,17 +110,6 @@ class VLab {
                      */
                     this.DOMManager = new VLabDOMManager(this);
                     this.DOMManager.initialize().then(() => {
-                        /**
-                         * VLab EventDispatcher {@link VLabEventDispatcher} instance
-                         * @public
-                         */
-                        this.EventDispatcher = new VLabEventDispatcher(this);
-                        /**
-                         * VLab SceneDispatcher {@link VLabSceneDispatcher} instance
-                         * @public
-                         */
-                        this.SceneDispatcher = new VLabSceneDispatcher(this);
-
                         /**
                          * Fills this.vLab.prefabs with initial objects
                          */
@@ -279,7 +278,9 @@ class VLab {
             this.render();
             TWEEN.update(time);
             if (this.nature.simpleStats) this.DOMManager.simpleStats.end();
-            if (this.nature.rendererStats) this.DOMManager.rendererStats.update(this.WebGLRenderer);
+            /*<dev>*/
+                this.DOMManager.rendererStats.update(this.WebGLRenderer);
+            /*</dev>*/
         } else {
             setTimeout(this.requestAnimationFrame.bind(this), 250);
         }

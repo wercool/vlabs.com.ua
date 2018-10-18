@@ -1,5 +1,5 @@
 .respondentTooltip {
-    z-index: 3;
+    z-index: 100;
     position: absolute;
     color: #1b1b1b;
     display: block;
@@ -14,7 +14,7 @@
     user-select: none;          /* Likely future */
 }
 .interactableTooltip {
-    z-index: 4;
+    z-index: 101;
     position: absolute;
     color: #1b1b1b;
     display: block;
@@ -44,7 +44,7 @@
     box-shadow: 0px 0px 2px 1px #24f81cc2;
 }
 .interactableMenu {
-    z-index: 5;
+    z-index: 102;
     position: absolute;
     display: block;
     padding: 10px;

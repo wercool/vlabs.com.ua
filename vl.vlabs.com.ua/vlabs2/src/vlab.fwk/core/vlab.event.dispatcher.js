@@ -35,6 +35,10 @@ class VLabEventDispatcher {
                 touchend:           {},
                 touchmove:          {},
                 framerequest:       {}
+            },
+            VLabScene: {
+                interactableTaken:          {},
+                interactablePut:            {}
             }
         };
         /**
@@ -52,7 +56,7 @@ class VLabEventDispatcher {
      * VLabEventDispatcher event subscription.
      * @memberof VLabEventDispatcher
      * @param {Object}      eventSubscrObj                           - Subscription object
-     * @param {Object}      eventSubscrObj.subscriber                - Subscriber object
+     * @param {Object}      eventSubscrObj.subscriber                - Subscriber object (eventSubscrObj.subscriber.name property should be defined)
      * @param {Object}      eventSubscrObj.events                    - Event groups subscriber subscribing on
      */
     subscribe(eventSubscrObj) {
@@ -61,9 +65,13 @@ class VLabEventDispatcher {
                 for (let eventGroupName in eventSubscrObj['events']) {
                     for (let eventType in eventSubscrObj['events'][eventGroupName]) {
                         let eventCallBack = eventSubscrObj['events'][eventGroupName][eventType];
-                        this.eventSubscribers[eventGroupName][eventType][eventSubscrObj['subscriber'].name] = {
-                            subscriber: eventSubscrObj['subscriber'],
-                            callback:   eventCallBack
+                        if (eventSubscrObj['subscriber'].name !== undefined) {
+                            this.eventSubscribers[eventGroupName][eventType][eventSubscrObj['subscriber'].name] = {
+                                subscriber: eventSubscrObj['subscriber'],
+                                callback:   eventCallBack
+                            }
+                        } else {
+                            console.log('%c' + eventSubscrObj['subscriber'].constructor.name + ' will not be added to EventDispatcher subscribers because of subsriber.name is undefined', 'color: orange');
                         }
                     }
                 }
@@ -95,10 +103,24 @@ class VLabEventDispatcher {
      */
     notifySubscribers(event) {
         if (!this.vLab.renderPaused) {
-            if (this.eventSubscribers[event.target.id]) {
-                for (let eventSubscriberName in this.eventSubscribers[event.target.id][event.type]) {
-                    this.eventSubscribers[event.target.id][event.type][eventSubscriberName].callback.call(this.eventSubscribers[event.target.id][event.type][eventSubscriberName].subscriber, event);
-                }
+            switch (event.target) {
+                case this.vLab.WebGLRendererCanvas:
+                    if (this.eventSubscribers[event.target.id]) {
+                        for (let eventSubscriberName in this.eventSubscribers[event.target.id][event.type]) {
+                            this.eventSubscribers[event.target.id][event.type][eventSubscriberName].callback.call(this.eventSubscribers[event.target.id][event.type][eventSubscriberName].subscriber, event);
+                        }
+                    }
+                break;
+                case window:
+                    for (let eventSubscriberName in this.eventSubscribers['window'][event.type]) {
+                        this.eventSubscribers['window'][event.type][eventSubscriberName].callback.call(this.eventSubscribers['window'][event.type][eventSubscriberName].subscriber, event);
+                    }
+                break;
+                case 'VLabScene':
+                    for (let eventSubscriberName in this.eventSubscribers[event.target][event.type]) {
+                        this.eventSubscribers[event.target][event.type][eventSubscriberName].callback.call(this.eventSubscribers[event.target][event.type][eventSubscriberName].subscriber, event);
+                    }
+                break;
             }
         }
     }
