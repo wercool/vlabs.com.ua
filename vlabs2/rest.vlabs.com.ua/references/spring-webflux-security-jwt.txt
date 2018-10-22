@@ -1,1 +1,2 @@
 https://github.com/raphaelDL/spring-webflux-security-jwt
+https://github.com/TransEmpiric/webFluxTemplates
