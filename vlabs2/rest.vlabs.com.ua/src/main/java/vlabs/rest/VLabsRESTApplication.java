@@ -19,11 +19,6 @@ import org.springframework.core.io.Resource;
 
 @SpringBootApplication
 @ComponentScan
-@EnableConfigurationProperties({ MongoProperties.class })
-@EnableAutoConfiguration(exclude = {
-        MongoAutoConfiguration.class,
-        MongoDataAutoConfiguration.class,
-})
 public class VLabsRESTApplication {
     private static final Logger log = LoggerFactory.getLogger(VLabsRESTApplication.class);
 
@@ -34,9 +29,7 @@ public class VLabsRESTApplication {
             properties.load(resource.getInputStream());
             String projectTitle = properties.getProperty("project.title");
 
-            SpringApplication app = new SpringApplication(VLabsRESTApplication.class);
-            app.setWebApplicationType(WebApplicationType.REACTIVE);
-            app.run(args);
+            SpringApplication.run(VLabsRESTApplication.class, args);
             log.info(projectTitle + " is up and running...");
         } catch (IOException e) {
             e.printStackTrace();

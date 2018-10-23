@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,13 +11,6 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './component/home/home.component';
 import { LoginComponent } from './component/login/login.component';
 import { ServiceModule } from './module/service.module';
-
-import { UserService } from './service/user.service';
-
-export function initUserFactory(userService: UserService)
-{
-    return () => userService.initUser();
-}
 
 @NgModule({
   declarations: [
@@ -36,12 +29,7 @@ export function initUserFactory(userService: UserService)
     ServiceModule
   ],
   providers: [
-    {
-      'provide': APP_INITIALIZER,
-      'useFactory': initUserFactory,
-      'deps': [UserService],
-      'multi': true
-    }
+    ServiceModule
   ],
   bootstrap: [AppComponent]
 })

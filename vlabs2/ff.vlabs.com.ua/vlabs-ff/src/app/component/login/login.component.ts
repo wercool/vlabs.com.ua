@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
-import { ApiService } from "src/app/service/api.service";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { AuthService } from "src/app/service/auth.service";
 
 @Component({
     selector: 'app-login',
@@ -15,7 +15,7 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
     constructor(
         private router: Router,
         private route: ActivatedRoute,
-        private apiService: ApiService,
+        private authService: AuthService,
         private formBuilder: FormBuilder,
     ) { }
 
@@ -27,5 +27,14 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
     }
 
     onSubmit() {
+        this.authService.getAuthToken(this.form.value)
+        .subscribe(
+            result => {
+                console.log(result);
+            },
+            error => {
+                // console.log(error);
+            }
+        );
     }
 }

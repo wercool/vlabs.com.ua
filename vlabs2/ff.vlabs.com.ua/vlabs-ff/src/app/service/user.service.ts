@@ -14,23 +14,4 @@ export class UserService {
   isLoggedIn() {
     return (this.currentUser) ? true : false;
   }
-
-  initUser() {
-    const promise = this.apiService.anonGet(this.apiService.APIEndpoints.getFullyQualifiedURL('public', 'refresh')).toPromise()
-    .then(res => {
-      if (res.access_token !== null) {
-        return this.getMyInfo().toPromise()
-        .then(user => {
-          console.log(user);
-          this.currentUser = user;
-        });
-      }
-    })
-    .catch(() => null);
-    return promise;
-  }
-
-  getMyInfo() {
-    return this.apiService.get(this.apiService.APIEndpoints.getFullyQualifiedURL('public', 'whoami')).map(user => this.currentUser = user);
-  }
 }

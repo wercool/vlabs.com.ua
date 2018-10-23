@@ -12,19 +12,18 @@ export class ApiService {
 
     @Output() onError = new EventEmitter<any>();
 
-    private jsonHeaders = new Headers({
-        'Accept': 'application/json'
+    public jsonHeaders = new Headers({
+        'Content-Type': 'application/json'
     });
 
     public APIEndpoints = {
-        base: '/api',
-        public: {
-            refresh: '/refresh',
-            login: '/login',
-            whoami: '/whoami',
+        base: 'http://localhost:8080/api',
+        auth: {
+            base: '/auth',
+            token: '/token'
         },
         getFullyQualifiedURL: function (endpointGroup: string, endpointPoint: string) {
-            return this.base + this[endpointGroup][endpointPoint];
+            return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint];
         }
     };
 
@@ -49,18 +48,6 @@ export class ApiService {
         }
     }
 
-    anonGet(path: string): Observable<any> {
-        return this.http.get(
-            path,
-            {
-                headers: this.jsonHeaders,
-                withCredentials: true
-            }
-        )
-        .map(this.extractData)
-        .catch(this.handleError.bind(this));
-    }
-
     get(path: string, customHeaders?, withoutCredentials?): Observable<any> {
         return this.http.get(
             path,
@@ -71,5 +58,23 @@ export class ApiService {
         )
         .map(this.extractData)
         .catch(this.handleError.bind(this));
+    }
+
+    post(path: string, body, customHeaders?, put?, withoutCredentials?): Observable<any> {
+        return this.http.request(
+            path,
+            {
+                method: put ? RequestMethod.Put : RequestMethod.Post,
+                body: body,
+                headers: customHeaders || this.jsonHeaders,
+                withCredentials: withoutCredentials ? false : true
+            }
+        )
+        .map(this.extractData)
+        .catch(this.handleError.bind(this));
+    }
+
+    put(path: string, body: any): Observable<any> {
+        return this.post(path, body, true).catch(this.handleError.bind(this));
     }
 }
