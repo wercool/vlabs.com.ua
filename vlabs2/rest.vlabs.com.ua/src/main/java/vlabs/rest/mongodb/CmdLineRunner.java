@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import reactor.core.publisher.Flux;
-import vlabs.rest.model.User;
-import vlabs.rest.repository.reactive.UserReactiveRepository;
+import vlabs.rest.model.user.User;
+import vlabs.rest.mongodb.repository.UserReactiveRepository;
 
 @Component
 public class CmdLineRunner {

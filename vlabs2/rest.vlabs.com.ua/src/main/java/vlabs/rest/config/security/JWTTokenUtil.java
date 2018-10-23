@@ -9,7 +9,6 @@ import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Clock;
@@ -39,11 +38,7 @@ public class JWTTokenUtil implements Serializable {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public JWTTokenUtil(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") Long expiration) {
-        Assert.notNull(secret, "secret cannot be null");
-        Assert.notNull(expiration, "expiration cannot be null");
-        this.secret = secret;
-        this.expiration = expiration;
+    public JWTTokenUtil() {
     }
 
     public String getUsernameFromToken(String token) {

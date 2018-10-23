@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 
 import reactor.core.publisher.Mono;
-import vlabs.rest.repository.reactive.UserReactiveRepository;
+import vlabs.rest.mongodb.repository.UserReactiveRepository;
 
 @Service
 public class CustomReactiveUserDetailsService implements ReactiveUserDetailsService {

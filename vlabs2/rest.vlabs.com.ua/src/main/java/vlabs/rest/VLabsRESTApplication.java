@@ -28,21 +28,18 @@ public class VLabsRESTApplication {
     private static final Logger log = LoggerFactory.getLogger(VLabsRESTApplication.class);
 
     public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(VLabsRESTApplication.class);
-        app.setWebApplicationType(WebApplicationType.REACTIVE);
-        app.run(args);
-//        Resource resource = new ClassPathResource("application.properties");
-//        Properties properties = new Properties();
-//        try {
-//            properties.load(resource.getInputStream());
-//            String projectTitle = properties.getProperty("project.title");
-//
-//            SpringApplication app = new SpringApplication(VLabsRESTApplication.class);
-//            app.setWebApplicationType(WebApplicationType.REACTIVE);
-//            app.run(args);
-//            log.info(projectTitle + " is up and running...");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        Resource resource = new ClassPathResource("application.properties");
+        Properties properties = new Properties();
+        try {
+            properties.load(resource.getInputStream());
+            String projectTitle = properties.getProperty("project.title");
+
+            SpringApplication app = new SpringApplication(VLabsRESTApplication.class);
+            app.setWebApplicationType(WebApplicationType.REACTIVE);
+            app.run(args);
+            log.info(projectTitle + " is up and running...");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
