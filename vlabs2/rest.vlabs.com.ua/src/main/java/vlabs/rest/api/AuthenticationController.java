@@ -1,5 +1,7 @@
 package vlabs.rest.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,8 @@ import vlabs.rest.service.UserService;
 @RequestMapping(path = "/api/auth")
 public class AuthenticationController {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthenticationController.class);
+
     @Autowired
     private JWTUtil jwtUtil;
 
@@ -27,20 +31,22 @@ public class AuthenticationController {
     private PBKDF2Encoder passwordEncoder;
 
     @Autowired
-    private UserService userRepository;
+    private UserService userService;
 
-    @RequestMapping(value = "/token", method = RequestMethod.POST)
-    public Mono<ResponseEntity<AuthResponse>> auth(@RequestBody AuthRequest ar) {
-        Mono<User> hypotheticalUser = userRepository.findByUsername(ar.getUsername());
-        return hypotheticalUser.map((userDetails) -> {
-            if (passwordEncoder.encode(ar.getPassword()).equals(userDetails.getPassword())) {
+    @RequestMapping(value = "/attempt", method = RequestMethod.POST)
+    public Mono<ResponseEntity<AuthResponse>> attempt(@RequestBody AuthRequest authRequest) {
+        log.info("Authentication attempt { username: \"" + authRequest.getUsername() + "\" }");
+        Mono<User> claimedUser = userService.findByUsername(authRequest.getUsername());
+        return claimedUser.map((userDetails) -> {
+            if (passwordEncoder.matches(authRequest.getPassword(), userDetails.getPassword())) {
                 AuthResponse authResponse = new AuthResponse();
                 authResponse.setToken(jwtUtil.generateToken(userDetails));
+                log.info("Authentication attempt succeeded { username: \"" + authRequest.getUsername() + "\" }");
                 return ResponseEntity.ok(authResponse);
             } else {
+                log.info("Authentication attempt failed { username: \"" + authRequest.getUsername() + "\" }");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
         });
     }
-
 }

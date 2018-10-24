@@ -1,6 +1,7 @@
 package vlabs.rest.security.model;
 
 public class AuthResponse {
+
     private String token;
 
     public String getToken() {

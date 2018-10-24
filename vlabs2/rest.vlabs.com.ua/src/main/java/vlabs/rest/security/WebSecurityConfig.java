@@ -12,6 +12,13 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableReactiveMethodSecurity
 public class WebSecurityConfig {
 
+    private static final String[] AUTH_WHITELIST = {
+            "/resources/**",
+            "/api/auth/**",
+            "/api/aux/**",
+            "/favicon.ico"
+    };
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -28,7 +35,7 @@ public class WebSecurityConfig {
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange()
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
-                .pathMatchers("/api/auth/**").permitAll()
+                .pathMatchers(AUTH_WHITELIST).permitAll()
                 .anyExchange().authenticated()
                 .and().build();
         

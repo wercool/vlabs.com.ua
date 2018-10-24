@@ -24,7 +24,6 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         String authToken = authentication.getCredentials().toString();
-        
         String username;
         try {
             username = jwtUtil.getUsernameFromToken(authToken);
@@ -33,6 +32,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
         }
         if (username != null && jwtUtil.validateToken(authToken)) {
             Claims claims = jwtUtil.getAllClaimsFromToken(authToken);
+            @SuppressWarnings("unchecked")
             List<String> rolesMap = claims.get("role", List.class);
             List<Role> roles = new ArrayList<>();
             for (String rolemap : rolesMap) {

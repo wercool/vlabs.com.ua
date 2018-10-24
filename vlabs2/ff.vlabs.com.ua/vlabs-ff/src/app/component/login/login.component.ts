@@ -27,14 +27,12 @@ import { AuthService } from "src/app/service/auth.service";
     }
 
     onSubmit() {
-        this.authService.getAuthToken(this.form.value)
+        this.authService.authAttempt(this.form.value)
         .subscribe(
             result => {
                 console.log(result);
             },
-            error => {
-                // console.log(error);
-            }
+            error => { }
         );
     }
 }

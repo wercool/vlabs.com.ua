@@ -13,14 +13,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PBKDF2Encoder implements PasswordEncoder {
-    
-    @Value("${springbootwebfluxjjwt.password.encoder.secret}")
+
+    @Value("${password.encoder.secret}")
     private String secret;
 
-    @Value("${springbootwebfluxjjwt.password.encoder.iteration}")
+    @Value("${password.encoder.iteration}")
     private Integer iteration;
 
-    @Value("${springbootwebfluxjjwt.password.encoder.keylength}")
+    @Value("${password.encoder.keylength}")
     private Integer keylength;
 
     /**
@@ -44,6 +44,5 @@ public class PBKDF2Encoder implements PasswordEncoder {
     public boolean matches(CharSequence cs, String string) {
         return encode(cs).equals(string);
     }
-    
 }
 

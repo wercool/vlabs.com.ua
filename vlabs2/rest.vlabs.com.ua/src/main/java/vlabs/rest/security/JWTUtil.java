@@ -17,30 +17,30 @@ import vlabs.rest.model.User;
 public class JWTUtil implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Value("${jwt.secret}")
     private String secret;
-    
+
     @Value("${jwt.expiration}")
     private String expirationTime;
-    
+
     public Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
-    
+
     public String getUsernameFromToken(String token) {
         return getAllClaimsFromToken(token).getSubject();
     }
-    
+
     public Date getExpirationDateFromToken(String token) {
         return getAllClaimsFromToken(token).getExpiration();
     }
-    
+
     private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
-    
+
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRoles());
@@ -61,9 +61,8 @@ public class JWTUtil implements Serializable {
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
-    
+
     public Boolean validateToken(String token) {
         return !isTokenExpired(token);
     }
-
 }

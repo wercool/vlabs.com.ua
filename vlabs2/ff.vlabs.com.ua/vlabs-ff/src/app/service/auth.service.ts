@@ -8,11 +8,8 @@ export class AuthService {
         private apiService: ApiService,
     ) { }
 
-    getAuthToken(credentials) {
-        let endPoint = this.apiService.APIEndpoints.getFullyQualifiedURL('auth', 'token');
-        let authorizationHeader = this.apiService.jsonHeaders;
-        authorizationHeader.set('Authorization', 'true');
-        console.log(authorizationHeader);
-        return this.apiService.post(endPoint, credentials, authorizationHeader);
+    authAttempt(credentials) {
+        let apiEndPoint = this.apiService.APIEndpoints.getFullyQualifiedURL('auth', 'attempt');
+        return this.apiService.post(apiEndPoint, credentials);
     }
 }
