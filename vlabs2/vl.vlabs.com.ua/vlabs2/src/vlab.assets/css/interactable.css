@@ -43,6 +43,9 @@
     -moz-box-shadow: 0px 0px 2px 1px #24f81cc2;
     box-shadow: 0px 0px 2px 1px #24f81cc2;
 }
+/**
+* Menu
+*/
 .interactableMenu {
     z-index: 102;
     position: absolute;
@@ -83,3 +86,53 @@
     margin-bottom: 5px;
     color: #00ff00;
 }
+/*<dev>*/
+.interactableMenuDEV {
+    z-index: 102;
+    position: absolute;
+    padding: 5px;
+    min-width: 100px;
+    min-height: 40px;
+    background-color:rgba(221, 221, 221, 0.95);
+    border-radius: 2px;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */
+}
+.interactableMenuItemDEV {
+    display: flex;
+    margin-top: auto;
+    clear: both;
+    font-size: 14pt;
+    min-width: 80px;
+    line-height: 16pt;
+    padding-right: 5px;
+    border-radius: 2px;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    color: #000000;
+}
+.interactableMenuItemDEV:hover {
+    background-color: rgb(136, 136, 136);
+}
+.interactableMenuItemSelectedDEV {
+    background-color: rgb(180, 255, 170);
+}
+.interactableMenuItemLabelDEV {
+    display: flex;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: auto;
+}
+.interactableMenuIconDEV {
+    margin-right: 2px;
+    color: #000000;
+}
+.materialIconsDEV {
+    font-size: 16pt;
+}
+/*</dev>*/

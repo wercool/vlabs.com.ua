@@ -760,6 +760,9 @@ class VLabSceneInteractable {
             this.vLab.DOMManager.WebGLContainer.removeChild(this.menuContainer);
             this.menuContainer = null;
         }
+        /*<dev>*/
+            this['DEV'].hideMenu();
+        /*</dev>*/
     }
     /**
      * Calls menu item action; eval(event.target.menuItem.action) or call event.target.menuItem.action in event.target.menuItem.context
