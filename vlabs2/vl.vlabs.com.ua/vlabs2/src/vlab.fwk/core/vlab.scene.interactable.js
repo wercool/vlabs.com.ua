@@ -201,6 +201,18 @@ class VLabSceneInteractable {
      */
     initialize(initObj){
         /*<dev>*/
+        /**
+         * 
+         * 
+         *  _____  ________      ____      ___           _     _____                     _____       _                      _        _     _      
+         * |  __ \|  ____\ \    / /\ \    / / |         | |   / ____|                   |_   _|     | |                    | |      | |   | |     
+         * | |  | | |__   \ \  / /  \ \  / /| |     __ _| |__| (___   ___ ___ _ __   ___  | |  _ __ | |_ ___ _ __ __ _  ___| |_ __ _| |__ | | ___ 
+         * | |  | |  __|   \ \/ /    \ \/ / | |    / _` | '_ \\___ \ / __/ _ \ '_ \ / _ \ | | | '_ \| __/ _ \ '__/ _` |/ __| __/ _` | '_ \| |/ _ \
+         * | |__| | |____   \  /      \  /  | |___| (_| | |_) |___) | (_|  __/ | | |  __/_| |_| | | | ||  __/ | | (_| | (__| || (_| | |_) | |  __/
+         * |_____/|______|   \/        \/   |______\__,_|_.__/_____/ \___\___|_| |_|\___|_____|_| |_|\__\___|_|  \__,_|\___|\__\__,_|_.__/|_|\___|
+         * 
+         * 
+         */
         if (!this['DEV']) {
             this['DEV'] = new DEVVLabSceneInteractable(this);
         }
@@ -941,7 +953,7 @@ class VLabSceneInteractable {
                                 if (this.preselected) {
                                     let respondentCSSCLass = 'respondentReferenceTooltip';
                                     let interactableIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['interactableIntersectionReferencePointMaterial'];
-                                    let respondentLineMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceLineMaterial'];
+                                    let respondentLineMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial'];
                                     let respondentIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentIntersectionReferencePointMaterial'];
 
                                     if (respondent.initObj.action !== undefined) {
@@ -984,17 +996,19 @@ class VLabSceneInteractable {
                                     );
 
                                     let line = new THREE.Line(lineGeometry, respondentLineMaterial);
+                                    if (respondentLineMaterial === this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial']) {
+                                        line = new THREE.LineSegments(lineGeometry, this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial']);
+                                        line.computeLineDistances();
+                                    } else {
+                                        line = new THREE.Line(lineGeometry, respondentLineMaterial);
+                                    }
+
                                     this.vLabScene.add(line);
 
                                     this.respondentPreselectionHelpers.push(lineGeometry);
                                     this.respondentPreselectionHelpers.push(respondentIntersectionPointMesh);
                                     this.respondentPreselectionHelpers.push(thisPointMesh);
                                     this.respondentPreselectionHelpers.push(line);
-
-                                    // var lineSegments = new THREE.LineSegments(lineGeometry, this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial']);
-                                    // lineSegments.computeLineDistances();
-                                    // this.vLabScene.add(lineSegments);
-                                    // this.respondentPreselectionHelpers.push(lineSegments);
 
                                     this.shownRespondents.push({
                                         respondent: respondent,
