@@ -5,6 +5,7 @@ import * as VLabUtils from '../utils/vlab.utils.js';
 import VLabDOMManager from './vlab.dom.manager';
 import VLabEventDispatcher from './vlab.event.dispatcher';
 import VLabSceneDispatcher from './vlab.scene.dispatcher';
+import VLabsRESTClientManager from '../aux/rest.vlabs.client/manager';
 /**
  * Post Processing
  * https://vanruesc.github.io/postprocessing/public/docs/
@@ -93,6 +94,20 @@ class VLab {
                      */
                     this.nature = nature;
 
+                    /**
+                     * VLabsRESTClientManager
+                     * @public
+                     */
+                    this.VLabsRESTClientManager = new VLabsRESTClientManager(this);
+this.VLabsRESTClientManager
+.AuthService
+.authAttempt({
+    username: 'vlabs.com.ua@gmail.com',
+    password: '...'
+})
+.then((result) => {
+    console.log(result);
+});
                     /**
                      * VLab EventDispatcher {@link VLabEventDispatcher} instance
                      * @public

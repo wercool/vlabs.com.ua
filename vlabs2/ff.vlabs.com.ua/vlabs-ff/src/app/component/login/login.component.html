@@ -10,12 +10,21 @@
             <mat-label>Email</mat-label>
             <input matInput type="email" formControlName="username" placeholder="email@host.name" autocapitalize="off" autofocus>
             <mat-icon matSuffix>email</mat-icon>
+            <mat-error *ngIf="this.form.controls.username.hasError('email') && !this.form.controls.username.hasError('required')">
+              Please provide a valid email address
+            </mat-error>
+            <mat-error *ngIf="this.form.controls.username.hasError('required')">
+              Please provide your email
+            </mat-error>
         </mat-form-field>
         <input type="submit" style="display: none;">
         <mat-form-field appearance="outline" class="g_full_width">
             <mat-label>Password</mat-label>
             <input matInput type="password" formControlName="password" autocapitalize="off">
             <mat-icon matSuffix>vpn_key</mat-icon>
+            <mat-error *ngIf="this.form.controls.password.hasError('required')">
+              Password is required
+            </mat-error>
         </mat-form-field>
     </form>
   </mat-card-content>

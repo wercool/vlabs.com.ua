@@ -22,11 +22,12 @@ import { AuthService } from "src/app/service/auth.service";
     ngOnInit(): void {
         this.form = this.formBuilder.group({
             username: ['', Validators.compose([Validators.required, Validators.email])],
-            password: ['']
+            password: ['', Validators.compose([Validators.required])]
         });
     }
 
     onSubmit() {
+        if (!this.form.valid) return;
         this.authService.authAttempt(this.form.value)
         .subscribe(
             result => {
