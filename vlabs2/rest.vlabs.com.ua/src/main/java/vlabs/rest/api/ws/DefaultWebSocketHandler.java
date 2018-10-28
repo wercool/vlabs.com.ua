@@ -20,4 +20,5 @@ public class DefaultWebSocketHandler extends AuthorizedWebSocketHandler {
         // Use retain() for Reactor Netty
         return session.send(session.receive().doOnNext(WebSocketMessage::retain).delayElements(Duration.ofSeconds(2)));
     }
+
 }

@@ -23,9 +23,9 @@ public class UserService {
 
     public Mono<UserDetails> getAuthenticatedUserDetails(){
         return ReactiveSecurityContextHolder
-            .getContext()
-            .map(SecurityContext::getAuthentication)
-            .flatMap(authentication -> findByUsername(authentication.getPrincipal().toString()));
+               .getContext()
+               .map(SecurityContext::getAuthentication)
+               .flatMap(authentication -> findByUsername(authentication.getPrincipal().toString()));
     }
 
     public Mono<UserDetails> findByUsername(String username) {

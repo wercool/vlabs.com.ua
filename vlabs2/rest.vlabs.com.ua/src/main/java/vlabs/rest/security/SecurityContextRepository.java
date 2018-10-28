@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ServerWebExchange;
 
 import reactor.core.publisher.Mono;
@@ -36,6 +37,7 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         MultiValueMap<String, String> queryParams = request.getQueryParams();
 
+        this.authenticationManager.wsAuthentication = false;
         String authToken = null;
         Boolean wsAuth = queryParams.containsKey("token");
 
@@ -43,13 +45,13 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
             authToken = authHeader.substring(7);
         } else if (wsAuth) {
             authToken = queryParams.getFirst("token");
+            this.authenticationManager.wsAuthentication = true;
         }
 
         if (authToken != null) {
             Authentication auth = new UsernamePasswordAuthenticationToken(authToken, authToken);
             return this.authenticationManager.authenticate(auth)
                     .map((authentication) -> {
-                        if (wsAuth) log.info("WebSocket authentication attempt succeeded { username: \"" + authentication.getPrincipal().toString() + "\" }");
                         return new SecurityContextImpl(authentication);
                     });
         } else {
