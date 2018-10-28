@@ -34,9 +34,13 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
+    /**
+     * Return Bearer token if authRequest credentials matches
+     * @param authRequest
+     * @return
+     */
     @RequestMapping(value = "/attempt", method = RequestMethod.POST)
     public Mono<ResponseEntity<?>> attempt(@RequestBody AuthRequest authRequest) {
-        log.info("Authentication attempt { username: \"" + authRequest.getUsername() + "\" }");
         return userService.findUserByUsername(authRequest.getUsername())
             .map((userDetails) -> {
                 if (passwordEncoder.matches(authRequest.getPassword(), userDetails.getPassword())) {
@@ -52,8 +56,8 @@ public class AuthenticationController {
             .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    @PreAuthorize("hasRole('USER')")
     @RequestMapping(value = "/details", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('USER')")
     public Mono<UserDetails> details() {
         return userService.getAuthenticatedUserDetails();
     }

@@ -107,6 +107,9 @@ username: 'vlabs.com.ua@gmail.com',
 password: 'dbrnjhbz1989'
                     })
                     .then((result) => {
+                        /**
+                         * Reterieve UserDetails
+                         */
                         this.VLabsRESTClientManager
                         .AuthService
                         .userDetails()
@@ -116,6 +119,10 @@ password: 'dbrnjhbz1989'
                         .catch((error) => {
                             // console.error(error);
                         });
+                        /**
+                         * VLabs REST WS
+                         */
+                        this.VLabsRESTClientManager.WSService.connect();
 
                         /**
                          * VLab EventDispatcher {@link VLabEventDispatcher} instance
