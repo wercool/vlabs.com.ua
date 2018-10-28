@@ -99,48 +99,64 @@ class VLab {
                      * @public
                      */
                     this.VLabsRESTClientManager = new VLabsRESTClientManager(this);
-this.VLabsRESTClientManager
-.AuthService
-.authAttempt({
-    username: 'vlabs.com.ua@gmail.com',
-    password: '...'
-})
-.then((result) => {
-    console.log(result);
-});
-                    /**
-                     * VLab EventDispatcher {@link VLabEventDispatcher} instance
-                     * @public
-                     */
-                    this.EventDispatcher = new VLabEventDispatcher(this);
-                    /**
-                     * VLab SceneDispatcher {@link VLabSceneDispatcher} instance
-                     * @public
-                     */
-                    this.SceneDispatcher = new VLabSceneDispatcher(this);
 
-                    /**
-                     * VLab DOMManager manager {@link VLabDOMManager} instance
-                     * @public
-                     */
-                    this.DOMManager = new VLabDOMManager(this);
-                    this.DOMManager.initialize().then(() => {
-                        /**
-                         * Fills this.vLab.prefabs with initial objects
-                         */
-                        VLabUtils.initializeVLabPrefabs(this).then((prefabs) => {
-                            this.prefabs = prefabs;
-
-                            this.setupWebGLRenderer();
-
-                            this.requestAnimationFrame();
-
-                            /**
-                             * resolves initialization Promise
-                             */
-                            resolve({});
+                    this.VLabsRESTClientManager
+                    .AuthService
+                    .authAttempt({
+username: 'vlabs.com.ua@gmail.com',
+password: 'dbrnjhbz1989'
+                    })
+                    .then((result) => {
+                        this.VLabsRESTClientManager
+                        .AuthService
+                        .userDetails()
+                        .then((result) => {
+                            // console.log(result);
+                        })
+                        .catch((error) => {
+                            // console.error(error);
                         });
-                    }).catch((error) => { reject(error); });
+
+                        /**
+                         * VLab EventDispatcher {@link VLabEventDispatcher} instance
+                         * @public
+                         */
+                        this.EventDispatcher = new VLabEventDispatcher(this);
+                        /**
+                         * VLab SceneDispatcher {@link VLabSceneDispatcher} instance
+                         * @public
+                         */
+                        this.SceneDispatcher = new VLabSceneDispatcher(this);
+
+                        /**
+                         * VLab DOMManager manager {@link VLabDOMManager} instance
+                         * @public
+                         */
+                        this.DOMManager = new VLabDOMManager(this);
+                        this.DOMManager.initialize().then(() => {
+                            /**
+                             * Fills this.vLab.prefabs with initial objects
+                             */
+                            VLabUtils.initializeVLabPrefabs(this).then((prefabs) => {
+                                this.prefabs = prefabs;
+
+                                this.setupWebGLRenderer();
+
+                                this.requestAnimationFrame();
+
+                                /**
+                                 * resolves initialization Promise
+                                 */
+                                resolve({});
+                            });
+                        }).catch((error) => { reject(error); });
+                    })
+                    .catch((error) => {
+                        /**
+                         * VLabs REST Auth failed
+                         */
+                        // console.error(error.status);
+                    });
                 }).catch((error) => { reject(error); });
             } else {
                 if (initObjAbnormals.length > 0) {

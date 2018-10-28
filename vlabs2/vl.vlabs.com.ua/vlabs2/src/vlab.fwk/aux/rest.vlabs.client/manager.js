@@ -1,4 +1,5 @@
-import VLabsRESTAuthService from '../rest.vlabs.client/service/auth.service'
+import VLabsRESTAuthService from '../rest.vlabs.client/service/auth.service';
+import VLabsRESTUserService from '../rest.vlabs.client/service/user.service';
 
 /**
  * VLabsRESTClientManager base class
@@ -17,11 +18,19 @@ class VLabsRESTClientManager {
          */
         this.vLab = vLab;
 
+        this.headers = [
+            ["Content-Type", "application/json"]
+        ];
+
         this.APIEndpoints = {
             base: 'http://localhost:8080/api',
             auth: {
                 base: '/auth',
-                attempt: '/attempt'
+                attempt: '/attempt',
+                details: '/details'
+            },
+            user: {
+                base: '/user',
             },
             getFullyQualifiedURL: function (endpointGroup, endpointPoint) {
                 return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint];
@@ -33,24 +42,128 @@ class VLabsRESTClientManager {
          * Services
          * 
          */
-        this.AuthService = new VLabsRESTAuthService(this);
+        this.AuthService        = new VLabsRESTAuthService(this);
+        this.UserService        = new VLabsRESTUserService(this);
     }
-    post(endPointPath, body, customHeaders, withoutCredentials) {
+    handleError(error) {
+        switch (error.type) {
+            case 'XHR':
+                console.error('Error response: ' + error.status + ' ' + error.statusText);
+            break;
+            case 'JSON':
+                console.error('Error parsing response JSON: ' + error.status + ' ' + error.statusText);
+            break;
+        }
+    }
+    /**
+     * Conditionally setup HTTP headers
+     */
+    setupHeaders() {
+        let headers = this.headers;
+        if (this.AuthService.token !== undefined) {
+            headers.push(['Authorization', 'Bearer ' + this.AuthService.token]);
+        }
+        return headers;
+    }
+    /**
+     * GET
+     * @param {String} endPointPath 
+     * @param {*} customHeaders 
+     */
+    get(endPointPath, customHeaders) {
+        let self = this;
         return new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
             xhr.onload = function() {
-                console.log(xhr.responseText);
-                // resolve(JSON.parse(xhr.responseText));
-            }
-            xhr.onerror = function() {
-                if (xhr.status == 404) {
-                    reject('REST endpoint not found: ' + endPointPath);
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    try {
+                        let xhrResponseJSON = JSON.parse(xhr.responseText);
+                        resolve(xhrResponseJSON);
+                    } catch (error) {
+                        let errorObj = {
+                            type: 'JSON',
+                            status: 'Syntax Error',
+                            statusText: error.message
+                        };
+                        self.handleError(errorObj);
+                        reject(errorObj);
+                    }
                 } else {
-                    reject('REST endpoint request failed: ', xhr.status);
+                    let errorObj = {
+                        type: 'XHR',
+                        status: xhr.status,
+                        statusText: xhr.statusText
+                    };
+                    self.handleError(errorObj);
+                    reject(errorObj);
                 }
             }
+            xhr.onerror = function() {
+                let errorObj = {
+                    type: 'XHR',
+                    status: xhr.status,
+                    statusText: xhr.statusText
+                };
+                self.handleError(errorObj);
+                reject(errorObj);
+            }
+            xhr.open('GET', endPointPath);
+            let headers = self.setupHeaders();
+            headers.forEach((header) => {
+                xhr.setRequestHeader(header[0], header[1]);
+            });
+            xhr.send();
+        });
+    }
+    /**
+     * POST
+     * @param {*} endPointPath 
+     * @param {*} body 
+     * @param {*} customHeaders 
+     */
+    post(endPointPath, body, customHeaders) {
+        let self = this;
+        return new Promise(function(resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    try {
+                        let xhrResponseJSON = JSON.parse(xhr.responseText);
+                        resolve(xhrResponseJSON);
+                    } catch (error) {
+                        let errorObj = {
+                            type: 'JSON',
+                            status: 'Syntax Error',
+                            statusText: error.message
+                        };
+                        self.handleError(errorObj);
+                        reject(errorObj);
+                    }
+                } else {
+                    let errorObj = {
+                        type: 'XHR',
+                        status: xhr.status,
+                        statusText: xhr.statusText
+                    };
+                    self.handleError(errorObj);
+                    reject(errorObj);
+                }
+            }
+            xhr.onerror = function() {
+                let errorObj = {
+                    type: 'XHR',
+                    status: xhr.status,
+                    statusText: xhr.statusText
+                };
+                self.handleError(errorObj);
+                reject(errorObj);
+            }
             xhr.open('POST', endPointPath);
-            xhr.send(body);
+            let headers = self.setupHeaders();
+            headers.forEach((header) => {
+                xhr.setRequestHeader(header[0], header[1]);
+            });
+            xhr.send(JSON.stringify(body));
         });
     }
 }

@@ -5,13 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Mono;
-import vlabs.rest.model.User;
 import vlabs.rest.security.JWTUtil;
 import vlabs.rest.security.PBKDF2Encoder;
 import vlabs.rest.security.model.AuthRequest;
@@ -34,19 +35,26 @@ public class AuthenticationController {
     private UserService userService;
 
     @RequestMapping(value = "/attempt", method = RequestMethod.POST)
-    public Mono<ResponseEntity<AuthResponse>> attempt(@RequestBody AuthRequest authRequest) {
+    public Mono<ResponseEntity<?>> attempt(@RequestBody AuthRequest authRequest) {
         log.info("Authentication attempt { username: \"" + authRequest.getUsername() + "\" }");
-        Mono<User> claimedUser = userService.findByUsername(authRequest.getUsername());
-        return claimedUser.map((userDetails) -> {
-            if (passwordEncoder.matches(authRequest.getPassword(), userDetails.getPassword())) {
-                AuthResponse authResponse = new AuthResponse();
-                authResponse.setToken(jwtUtil.generateToken(userDetails));
-                log.info("Authentication attempt succeeded { username: \"" + authRequest.getUsername() + "\" }");
-                return ResponseEntity.ok(authResponse);
-            } else {
-                log.info("Authentication attempt failed { username: \"" + authRequest.getUsername() + "\" }");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
-        });
+        return userService.findUserByUsername(authRequest.getUsername())
+            .map((userDetails) -> {
+                if (passwordEncoder.matches(authRequest.getPassword(), userDetails.getPassword())) {
+                    AuthResponse authResponse = new AuthResponse();
+                    authResponse.setToken(jwtUtil.generateToken(userDetails));
+                    log.info("Authentication attempt succeeded { username: \"" + authRequest.getUsername() + "\" }");
+                    return ResponseEntity.ok(authResponse);
+                } else {
+                    log.info("Authentication attempt failed { username: \"" + authRequest.getUsername() + "\" }");
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                }
+            })
+            .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @RequestMapping(value = "/details", method = RequestMethod.GET)
+    public Mono<UserDetails> details() {
+        return userService.getAuthenticatedUserDetails();
     }
 }
