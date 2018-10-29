@@ -1,4 +1,4 @@
-package vlabs.rest.config;
+package vlabs.rest.config.websocket;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class WebSocketConfig {
 
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
         mapping.initApplicationContext();
-        mapping.setOrder(10);
+        mapping.setOrder(-1); // before annotated controllers
         mapping.setUrlMap(map);
         return mapping;
     }

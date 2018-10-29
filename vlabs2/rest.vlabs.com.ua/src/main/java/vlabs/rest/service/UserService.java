@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,7 @@ import vlabs.rest.model.User;
 import vlabs.rest.repository.mongo.UserRepository;
 
 @Service
-public class UserService {
+public class UserService implements ReactiveUserDetailsService{
 
     @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(UserService.class);

@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Mono;
-import vlabs.rest.security.JWTUtil;
-import vlabs.rest.security.PBKDF2Encoder;
-import vlabs.rest.security.model.AuthRequest;
-import vlabs.rest.security.model.AuthResponse;
+import vlabs.rest.config.security.JWTTokenUtil;
+import vlabs.rest.config.security.JWTUtil;
+import vlabs.rest.config.security.PBKDF2Encoder;
+import vlabs.rest.config.security.model.AuthRequest;
+import vlabs.rest.config.security.model.AuthResponse;
 import vlabs.rest.service.UserService;
 
 @RestController
@@ -27,6 +28,9 @@ public class AuthenticationController {
 
     @Autowired
     private JWTUtil jwtUtil;
+
+    @Autowired
+    private JWTTokenUtil jwtTokenUtil;
 
     @Autowired
     private PBKDF2Encoder passwordEncoder;
@@ -45,7 +49,8 @@ public class AuthenticationController {
             .map((userDetails) -> {
                 if (passwordEncoder.matches(authRequest.getPassword(), userDetails.getPassword())) {
                     AuthResponse authResponse = new AuthResponse();
-                    authResponse.setToken(jwtUtil.generateToken(userDetails));
+//                    authResponse.setToken(jwtUtil.generateToken(userDetails));
+                    authResponse.setToken(jwtTokenUtil.generateToken(userDetails));
                     log.info("Authentication attempt succeeded { username: \"" + authRequest.getUsername() + "\" }");
                     return ResponseEntity.ok(authResponse);
                 } else {

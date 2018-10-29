@@ -28,7 +28,7 @@ class VLabsRESTWSDefaultService {
     }
     onSocketOpen(event) {
         // console.log(event);
-        this.send('test');
+this.send('test');
     }
     onSocketError(error) {
         console.log(error);

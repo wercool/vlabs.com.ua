@@ -1,4 +1,4 @@
-package vlabs.rest.security;
+package vlabs.rest.config.security;
 
 import java.io.Serializable;
 import java.util.Date;

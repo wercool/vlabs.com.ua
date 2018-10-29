@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Mono;
-import vlabs.rest.security.PBKDF2Encoder;
+import vlabs.rest.config.security.PBKDF2Encoder;
 
 @RestController
 @RequestMapping(path = "/api/aux")

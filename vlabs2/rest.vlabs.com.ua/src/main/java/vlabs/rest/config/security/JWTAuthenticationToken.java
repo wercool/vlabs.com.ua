@@ -1,14 +1,12 @@
-package vlabs.rest.security;
+package vlabs.rest.config.security;
 
 import java.util.Collection;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
+@SuppressWarnings("serial")
 public class JWTAuthenticationToken extends UsernamePasswordAuthenticationToken {
-
-    private static final long serialVersionUID = 1L;
-
     private String token;
 
     public JWTAuthenticationToken(String token, String username, Collection<? extends GrantedAuthority> authorities) {

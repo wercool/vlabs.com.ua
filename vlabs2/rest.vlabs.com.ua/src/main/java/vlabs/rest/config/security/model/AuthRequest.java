@@ -1,4 +1,4 @@
-package vlabs.rest.security.model;
+package vlabs.rest.config.security.model;
 
 public class AuthRequest {
 

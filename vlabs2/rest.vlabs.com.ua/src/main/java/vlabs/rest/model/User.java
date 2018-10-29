@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import vlabs.rest.security.model.Role;
+import vlabs.rest.config.security.model.Role;
 
 @Document(collection = "users")
 public class User implements UserDetails {

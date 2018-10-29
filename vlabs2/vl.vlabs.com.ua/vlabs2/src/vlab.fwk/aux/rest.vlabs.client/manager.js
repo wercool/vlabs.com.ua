@@ -20,7 +20,7 @@ class VLabsRESTClientManager {
         this.vLab = vLab;
 
         this.headers = [
-            ["Content-Type", "application/json"]
+            ['Content-Type', 'application/json']
         ];
 
         this.APIEndpoints = {
