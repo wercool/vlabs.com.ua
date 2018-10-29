@@ -9,7 +9,8 @@ export class AuthService {
     ) { }
 
     authAttempt(credentials) {
-        let apiEndPoint = this.apiService.APIEndpoints.getFullyQualifiedURL('auth', 'attempt');
+        credentials.password = btoa(credentials.password);
+        let apiEndPoint = this.apiService.APIEndpoints.getFullyQualifiedURL('auth', 'token');
         return this.apiService.post(apiEndPoint, credentials);
     }
 }

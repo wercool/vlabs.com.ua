@@ -110,15 +110,15 @@ password: 'dbrnjhbz1989'
                         /**
                          * Reterieve UserDetails
                          */
-                        // this.VLabsRESTClientManager
-                        // .AuthService
-                        // .userDetails()
-                        // .then((result) => {
-                        //     // console.log(result);
-                        // })
-                        // .catch((error) => {
-                        //     // console.error(error);
-                        // });
+                        this.VLabsRESTClientManager
+                        .AuthService
+                        .userDetails()
+                        .then((result) => {
+                            // console.log(result);
+                        })
+                        .catch((error) => {
+                            // console.error(error);
+                        });
                         /**
                          * VLabs REST WS
                          */

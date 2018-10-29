@@ -20,7 +20,7 @@ export class ApiService {
         base: 'http://localhost:8080/api',
         auth: {
             base: '/auth',
-            attempt: '/attempt'
+            token: '/token'
         },
         getFullyQualifiedURL: function (endpointGroup: string, endpointPoint: string) {
             return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint];

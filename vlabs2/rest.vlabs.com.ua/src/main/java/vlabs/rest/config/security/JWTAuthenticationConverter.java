@@ -64,9 +64,7 @@ public class JWTAuthenticationConverter implements Function<ServerWebExchange, M
                 logger.warn("couldn't find bearer string, will ignore the header");
             }
 
-            logger.info("checking authentication for user " + username);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
                 return Mono.just(new JWTPreAuthenticationToken(authToken, bearerRequestHeader, username));
             }
 

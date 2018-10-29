@@ -1,12 +1,16 @@
 buildscript {
     ext {
-	   springBootVersion = '2.0.6.RELEASE'
+	   springBootVersion = '2.0.0.M7'
     }
     repositories {
-	   mavenCentral()
+        mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+        maven { url 'http://repo.spring.io/plugins-release' }
     }
     dependencies {
 	   classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	   classpath 'io.spring.gradle:propdeps-plugin:0.0.9.RELEASE'
     }
 }
 
@@ -22,8 +26,9 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
 }
-
 
 dependencies {
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux
@@ -35,8 +40,8 @@ dependencies {
     // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-reactor-netty
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-reactor-netty', version: '2.0.6.RELEASE'
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.0.6.RELEASE'
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.0.6.RELEASE'

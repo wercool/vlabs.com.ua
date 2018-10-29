@@ -34,15 +34,15 @@ public class JWTAuthenticationWebFilter extends AuthenticationWebFilter {
         public Mono<MatchResult> matches(final ServerWebExchange exchange) {
             Mono<ServerHttpRequest> request = Mono.just(exchange).map(ServerWebExchange::getRequest);
 
-            /* Check for header "authorization" or parameter "token" */
+            /* Check for header "Authorization" or parameter "token" */
             return request.map(ServerHttpRequest::getHeaders)
-                    .filter(h -> h.containsKey("authorization"))
-                    .flatMap($ -> MatchResult.match())
-                    .switchIfEmpty(request.map(ServerHttpRequest::getQueryParams)
-                            .filter(h -> h.containsKey("token"))
-                            .flatMap($ -> MatchResult.match())
-                            .switchIfEmpty(MatchResult.notMatch())
-                    );
+                   .filter(h -> h.containsKey("Authorization"))
+                   .flatMap($ -> MatchResult.match())
+                   .switchIfEmpty(request.map(ServerHttpRequest::getQueryParams)
+                           .filter(h -> h.containsKey("token"))
+                           .flatMap($ -> MatchResult.match())
+                           .switchIfEmpty(MatchResult.notMatch())
+                   );
         }
     }
 }

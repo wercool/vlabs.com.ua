@@ -31,7 +31,7 @@ class VLabsRESTClientManager {
             },
             auth: {
                 base: '/auth',
-                attempt: '/attempt',
+                token: '/token',
                 details: '/details'
             },
             user: {
@@ -65,7 +65,7 @@ class VLabsRESTClientManager {
      * Conditionally setup HTTP headers
      */
     setupHeaders() {
-        let headers = this.headers;
+        let headers = this.headers.slice();
         if (this.AuthService.token !== undefined) {
             headers.push(['Authorization', 'Bearer ' + this.AuthService.token]);
         }

@@ -18,8 +18,9 @@ class VLabsRESTAuthService {
     }
     authAttempt(credentials) {
         if ('<!--VLAB AUTH REQUIRED-->' == 'true') {
+            credentials.password = btoa(credentials.password);
             return new Promise((resolve, reject) => {
-                let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('auth', 'attempt');
+                let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('auth', 'token');
                 this.manager.post(apiEndPoint, credentials)
                 .then((result) => {
                     console.log(result);

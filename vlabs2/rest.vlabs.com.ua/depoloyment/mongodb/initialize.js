@@ -1,6 +1,6 @@
 db.users.insert({
     username: "vlabs.com.ua@gmail.com",
-    password: "W1wROAONnPU1KtR3R7BHuGxox84bztIp5aTUVd1hBjU=",
+    password: "$2a$14$NT5l7X8qA49WbFNz3TYR2uA4j1Ih7CqyvopbnKgmxSGYsd3.vAeDS",
     enabled: true,
     roles: [
         "ROLE_USER",

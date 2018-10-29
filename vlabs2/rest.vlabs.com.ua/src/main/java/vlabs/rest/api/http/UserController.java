@@ -1,4 +1,4 @@
-package vlabs.rest.api;
+package vlabs.rest.api.http;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

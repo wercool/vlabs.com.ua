@@ -15,6 +15,7 @@ public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
             "/resources/**",
+            "/actuator/**",
             "/api/auth/**",
             "/api/aux/**",
             "/favicon.ico"
@@ -24,13 +25,7 @@ public class SecurityConfig {
     private UnauthorizedAuthenticationEntryPoint entryPoint;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
     JWTAuthenticationWebFilter authenticationWebFilter;
-
-    @Autowired
-    private SecurityContextRepository securityContextRepository;
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
@@ -39,8 +34,6 @@ public class SecurityConfig {
             .authenticationEntryPoint(entryPoint)
             .and()
             .addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
-//            .authenticationManager(authenticationManager)
-//            .securityContextRepository(securityContextRepository)
             .authorizeExchange()
             .pathMatchers(HttpMethod.OPTIONS).permitAll()
             .pathMatchers(AUTH_WHITELIST).permitAll()

@@ -1,6 +1,10 @@
 package vlabs.rest.config.security.model;
 
-public class AuthRequest {
+import java.io.Serializable;
+
+public class JWTAuthenticationRequest  implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String username;
     private String password;
