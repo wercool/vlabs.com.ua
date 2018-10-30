@@ -1,6 +1,6 @@
-import VLabsRESTAuthService from '../rest.vlabs.client/service/auth.service';
-import VLabsRESTUserService from '../rest.vlabs.client/service/user.service';
-import VLabsRESTWSDefaultService from './service/ws.default.service';
+import VLabsRESTAuthService from './service/auth.service';
+import VLabsRESTUserService from './service/user.service';
+import VLabsRESTWSBasicService from './service/ws.basic.service';
 
 /**
  * VLabsRESTClientManager base class
@@ -27,7 +27,7 @@ class VLabsRESTClientManager {
             base: 'http://localhost:8080/api',
             ws: {
                 base: 'ws://localhost:8080/api/ws',
-                default: '/default'
+                basic: '/basic'
             },
             auth: {
                 base: '/auth',
@@ -49,7 +49,7 @@ class VLabsRESTClientManager {
          */
         this.AuthService        = new VLabsRESTAuthService(this);
         this.UserService        = new VLabsRESTUserService(this);
-        this.WSService          = new VLabsRESTWSDefaultService(this);
+        this.WSBasicService     = new VLabsRESTWSBasicService(this);
     }
     handleError(error) {
         switch (error.type) {

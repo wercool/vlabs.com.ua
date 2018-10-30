@@ -40,7 +40,7 @@ public class AuthenticationController {
         return userService.findByUsername(authenticationRequest.getUsername())
                .map((userDetails) -> {
                    if (customPasswordEncoder.matches(authenticationRequest.getPassword(), userDetails.getPassword())) {
-                       log.info("Authentication attempt succeeded { username: \"" + authenticationRequest.getUsername() + "\" }");
+                       log.info("Authentication attempt succeeded { username: \"" + authenticationRequest.getUsername() + "\" }, token returned");
                        return ResponseEntity.ok(new JWTAuthenticationResponse(jwtTokenUtil.generateToken(userDetails), userDetails.getUsername()));
                    } else {
                        log.info("Authentication attempt failed { username: \"" + authenticationRequest.getUsername() + "\" }");

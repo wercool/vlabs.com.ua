@@ -4,3 +4,5 @@
    \ V / | |__| (_| | |_) \__ \ |  _ <| |___ ___) || |  
     \_/  |_____\__,_|_.__/|___/ |_| \_\_____|____/ |_|  
                                                         
+Spring Boot (v.${spring-boot.version})
+VLabREST (v.${application.version})

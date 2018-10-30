@@ -23,13 +23,13 @@ public class VLabsRESTApplication {
         Properties properties = new Properties();
         try {
             properties.load(resource.getInputStream());
-            String projectTitle = properties.getProperty("project.title");
+            String applicationTitle = properties.getProperty("application.title");
 
             SpringApplication app = new SpringApplication(VLabsRESTApplication.class);
             app.setWebApplicationType(WebApplicationType.REACTIVE);
             app.run(args);
 
-            log.info(projectTitle + " is up and running...");
+            log.info(applicationTitle + " is up and running...");
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -17,9 +17,6 @@ abstract class AuthorizedWebSocketHandler implements WebSocketHandler {
 
     protected ArrayList<String> authorizedRoles = new ArrayList<String>();
 
-    public AuthorizedWebSocketHandler(){
-    }
-
     private <T> Mono<T> raiseBadCredentials() {
         return Mono.error(new BadCredentialsException("HandshakeInfo().getPrincipal() is empty"));
     }

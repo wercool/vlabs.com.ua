@@ -1,10 +1,10 @@
 /**
- * VLabsRESTWSDefaultService base class
+ * VLabsRESTWSBasicService base class
  * @class
  */
-class VLabsRESTWSDefaultService {
+class VLabsRESTWSBasicService {
     /**
-     * VLabsRESTWSDefaultService constructor
+     * VLabsRESTWSBasicService constructor
      * @constructor
      * @param {VLabsRESTClientManager}         vLabsRESTClientManager                      - VLabsRESTClientManager instance
      */
@@ -18,7 +18,7 @@ class VLabsRESTWSDefaultService {
         this.socket = undefined;
     }
     connect() {
-        this.socket = new WebSocket(this.manager.APIEndpoints.ws.base + this.manager.APIEndpoints.ws.default + '?token=' + this.manager.AuthService.token);
+        this.socket = new WebSocket(this.manager.APIEndpoints.ws.base + this.manager.APIEndpoints.ws.basic + '?token=' + this.manager.AuthService.token);
         this.socket.onopen = this.onSocketOpen.bind(this);
         this.socket.onerror = this.onSocketError.bind(this);
         this.socket.onmessage = this.onSocketMessage.bind(this);
@@ -28,13 +28,17 @@ class VLabsRESTWSDefaultService {
     }
     onSocketOpen(event) {
         // console.log(event);
-this.send('test');
+        let payload = {
+            type: 'test',
+            message: 'test message'
+        };
+this.send(JSON.stringify(payload));
     }
     onSocketError(error) {
         console.log(error);
     }
     onSocketMessage(event) {
-        console.log(event.data);
+        console.log(JSON.parse(event.data));
     }
  }
- export default VLabsRESTWSDefaultService;
+ export default VLabsRESTWSBasicService;

@@ -123,7 +123,7 @@ password: 'dbrnjhbz1989'
                          * VLabs REST WS
                          */
                         this.VLabsRESTClientManager
-                        .WSService
+                        .WSBasicService
                         .connect();
 
                         /**

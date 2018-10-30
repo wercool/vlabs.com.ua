@@ -3,6 +3,7 @@ package vlabs.rest.config.websocket;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.HandlerMapping;
@@ -13,15 +14,30 @@ import org.springframework.web.reactive.socket.server.support.HandshakeWebSocket
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
 import org.springframework.web.reactive.socket.server.upgrade.ReactorNettyRequestUpgradeStrategy;
 
-import vlabs.rest.api.ws.DefaultWebSocketHandler;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.UnicastProcessor;
+import vlabs.rest.api.ws.BasicWebSocketHandler;
+import vlabs.rest.api.ws.BasicWebSocketMessage;
 
 @Configuration
 public class WebSocketConfig {
 
     @Bean
-    public HandlerMapping handlerMapping() {
+    public UnicastProcessor<BasicWebSocketMessage> messagePublisher(){
+        return UnicastProcessor.create();
+    }
+
+    @Bean
+    public Flux<BasicWebSocketMessage> messages(UnicastProcessor<BasicWebSocketMessage> messagePublisher) {
+        return messagePublisher
+               .replay(0)
+               .autoConnect();
+    }
+
+    @Bean
+    public HandlerMapping handlerMapping(UnicastProcessor<BasicWebSocketMessage> messagePublisher, Flux<BasicWebSocketMessage> messages) {
         Map<String, WebSocketHandler> map = new HashMap<>();
-        map.put("/api/ws/default", new DefaultWebSocketHandler());
+        map.put("/api/ws/basic", new BasicWebSocketHandler(messagePublisher, messages));
 
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
         mapping.initApplicationContext();

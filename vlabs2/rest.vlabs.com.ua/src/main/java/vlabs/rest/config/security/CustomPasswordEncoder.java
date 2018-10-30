@@ -16,7 +16,7 @@ public class CustomPasswordEncoder implements PasswordEncoder {
         byte bytes[] = new byte[20];
         random.nextBytes(bytes);
 
-        String hashed = BCrypt.hashpw(rawPassword.toString(), BCrypt.gensalt(14, random));
+        String hashed = BCrypt.hashpw(rawPassword.toString(), BCrypt.gensalt(4, random));
         return hashed;
     }
 
