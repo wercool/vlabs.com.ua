@@ -19,6 +19,12 @@ class VLabPanel {
          */
         this.vLab = this.initObj.vLab;
         this.name = 'VLabPanel';
+        /**
+         * @todo describe VLabPanel components
+         * this.VLabPanelContainer
+         * this.VLabPanelLeftContainer
+         * this.VLabPanelRightContainer
+         */
     }
     /**
      * Initialize VLabPanel

@@ -107,24 +107,24 @@ username: 'vlabs.com.ua@gmail.com',
 password: 'dbrnjhbz1989'
                     })
                     .then((result) => {
-                        /**
-                         * Reterieve UserDetails
-                         */
-                        this.VLabsRESTClientManager
-                        .AuthService
-                        .userDetails()
-                        .then((result) => {
-                            // console.log(result);
-                        })
-                        .catch((error) => {
-                            // console.error(error);
-                        });
-                        /**
-                         * VLabs REST WS
-                         */
-                        this.VLabsRESTClientManager
-                        .WSBasicService
-                        .connect();
+                        // /**
+                        //  * Reterieve UserDetails
+                        //  */
+                        // this.VLabsRESTClientManager
+                        // .AuthService
+                        // .userDetails()
+                        // .then((result) => {
+                        //     // console.log(result);
+                        // })
+                        // .catch((error) => {
+                        //     // console.error(error);
+                        // });
+                        // /**
+                        //  * VLabs REST WS
+                        //  */
+                        // this.VLabsRESTClientManager
+                        // .WSBasicService
+                        // .connect();
 
                         /**
                          * VLab EventDispatcher {@link VLabEventDispatcher} instance

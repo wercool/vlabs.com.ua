@@ -17,6 +17,7 @@ class VLabInventory extends VLabScene {
         initObj['configured'] = true;
         super(initObj);
         this.initObj = initObj;
+        this.VLab = this.initObj.vLab;
         /**
          * VLab instance
          * @public
@@ -25,6 +26,22 @@ class VLabInventory extends VLabScene {
 
         if (this.vLab.SceneDispatcher.getScene(VLabInventory) === null) {
             this.vLab.SceneDispatcher.scenes.push(this);
+
+            if (this.VLab.DOMManager.vLabPanel) {
+                if (this.VLab.DOMManager.vLabPanel.VLabPanelRightContainer) {
+                    this.VLab.DOMManager.addStyle({
+                        id: 'inventoryCSS',
+                        href: '/vlab.assets/css/inventory.css'
+                    })
+                    .then(() => {
+                        // console.log('/vlab.assets/css/inventory.css loaded...');
+                        /**
+                         * @todo add Inventory icon to vLabPanel
+                         */
+                        console.warn('add Inventory icon to vLabPanel');
+                    });
+                }
+            }
 
             // let self = this;
             // setTimeout(() => {
