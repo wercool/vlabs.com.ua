@@ -1,3 +1,4 @@
+import BasicWebSocketMessage from '../model/basic.websocket.message';
 /**
  * VLabsRESTWSBasicService base class
  * @class
@@ -18,7 +19,7 @@ class VLabsRESTWSBasicService {
         this.socket = undefined;
     }
     connect() {
-        this.socket = new WebSocket(this.manager.APIEndpoints.ws.base + this.manager.APIEndpoints.ws.basic + '?token=' + this.manager.AuthService.token);
+        this.socket = new WebSocket(this.manager.APIEndpoints.ws['base'] + this.manager.APIEndpoints.ws['basic'] + '?token=' + this.manager.AuthService.token);
         this.socket.onopen = this.onSocketOpen.bind(this);
         this.socket.onerror = this.onSocketError.bind(this);
         this.socket.onmessage = this.onSocketMessage.bind(this);
@@ -28,11 +29,10 @@ class VLabsRESTWSBasicService {
     }
     onSocketOpen(event) {
         // console.log(event);
-        let payload = {
-            type: 'test',
-            message: 'test message'
-        };
-this.send(JSON.stringify(payload));
+        let basicWebSocketMessage = new BasicWebSocketMessage();
+        basicWebSocketMessage.type = 'test';
+        basicWebSocketMessage.message = 'test message';
+this.send(JSON.stringify(basicWebSocketMessage));
     }
     onSocketError(error) {
         console.log(error);
