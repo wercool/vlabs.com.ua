@@ -17,24 +17,25 @@ class VLabsRESTAuthService {
         this.token = undefined;
     }
     authAttempt(credentials) {
-        if ('<!--VLAB AUTH REQUIRED-->' == 'true') {
-            credentials.password = btoa(credentials.password);
-            return new Promise((resolve, reject) => {
-                let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('auth', 'token');
-                this.manager.post(apiEndPoint, credentials)
-                .then((result) => {
-                    console.log(result);
-                    this.token = result.token;
-                    resolve(result);
-                })
-                .catch((error) => {
-                    // console.error(error.status);
-                    reject(error);
-                });
-            });
-        } else {
-            return Promise.resolve('NO AUTH');
-        }
+return Promise.resolve('NO AUTH');
+        // if ('<!--VLAB AUTH REQUIRED-->' == 'true') {
+        //     credentials.password = btoa(credentials.password);
+        //     return new Promise((resolve, reject) => {
+        //         let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('auth', 'token');
+        //         this.manager.post(apiEndPoint, credentials)
+        //         .then((result) => {
+        //             console.log(result);
+        //             this.token = result.token;
+        //             resolve(result);
+        //         })
+        //         .catch((error) => {
+        //             // console.error(error.status);
+        //             reject(error);
+        //         });
+        //     });
+        // } else {
+        //     return Promise.resolve('NO AUTH');
+        // }
     }
     userDetails() {
         if (this.token !== undefined) {
