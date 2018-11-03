@@ -6,6 +6,7 @@ import {
     MatInputModule,
     MatIconModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
 } from '@angular/material';
 
 @NgModule({
@@ -16,6 +17,7 @@ import {
     MatButtonModule,
     MatInputModule,
     MatIconModule,
+    MatProgressSpinnerModule,
   ],
   providers:
   [

@@ -1,1 +1,4 @@
-<app-login class="login-card centering"></app-login>
+<!-- not authenticated -->
+<app-login *ngIf="!this.authService.isAuthenticated()" class="login-card centering"></app-login>
+
+<!-- authenticated -->

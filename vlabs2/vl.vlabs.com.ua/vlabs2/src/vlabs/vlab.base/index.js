@@ -32,8 +32,8 @@ class BaseVLab extends VLab {
      * @memberof BaseVLab
      */
     bootstrap(iniObj) {
-// console.warn('NO CONTENT MODE');
-// return;
+console.warn('NO CONTENT MODE');
+return;
         /* VLab Inventory */
         new VLabInventory({
             vLab: this

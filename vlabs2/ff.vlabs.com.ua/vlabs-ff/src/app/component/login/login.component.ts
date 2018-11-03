@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { AuthService } from "src/app/service/auth.service";
+import { delay } from "q";
 
 @Component({
     selector: 'app-login',
@@ -11,6 +12,7 @@ import { AuthService } from "src/app/service/auth.service";
   export class LoginComponent implements OnInit {
 
     form: FormGroup;
+    submitted: boolean = false;
 
     constructor(
         private router: Router,
@@ -28,12 +30,17 @@ import { AuthService } from "src/app/service/auth.service";
 
     onSubmit() {
         if (!this.form.valid) return;
-        this.authService.authAttempt(this.form.value)
-        .subscribe(
-            result => {
-                console.log(result);
-            },
-            error => { }
-        );
+        this.submitted = true;
+        this.authService
+        .authenticate(this.form.value)
+        .then(result => {
+            console.log(result);
+            this.submitted = false;
+            this.form.reset();
+        })
+        .catch((error) => {
+            this.submitted = false;
+            console.warn('TODO: handle error', error.status, error.statusText);
+        });
     }
 }

@@ -29,7 +29,10 @@
     </form>
   </mat-card-content>
   <mat-card-actions class="g_mat_card_actions">
-    <button mat-raised-button class="g_float_left">HELP</button>
-    <button mat-raised-button color="accent" (click)="onSubmit()">CONTINUE</button>
+    <div *ngIf="!submitted">
+        <button mat-raised-button class="g_float_left">HELP</button>
+        <button mat-raised-button color="accent" (click)="onSubmit()">CONTINUE</button>
+    </div>
+    <mat-progress-spinner *ngIf="submitted" class="g_float_right" diameter="30" mode="indeterminate"></mat-progress-spinner>
   </mat-card-actions>
 </mat-card>
