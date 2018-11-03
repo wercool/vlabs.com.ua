@@ -33,6 +33,7 @@ class BaseVLab extends VLab {
      */
     bootstrap(iniObj) {
 console.warn('NO CONTENT MODE');
+this.FFClientManager.sendMessage({message: 'test message from VLab'});
 return;
         /* VLab Inventory */
         new VLabInventory({

@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   title: 'VLabs',
-  APIName: 'VLabs API',
+  APIName: 'VLabs REST',
+  VLabsHost: '*'
 };
 
 /*

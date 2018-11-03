@@ -9,17 +9,30 @@ import { RoutingModule } from './module/routing.module';
 import { ServiceModule } from './module/service.module';
 import { GuardModule } from './module/guard.module';
 
+import { SafeURLPipe } from './pipe/safe.url.pipe';
+
 import { AppComponent } from './app.component';
 import { HomeComponent } from './component/home/home.component';
 import { LoginComponent } from './component/login/login.component';
+import { WorkspaceComponent } from './component/workspace/workspace.component';
+import { VLabComponent } from './component/vlab/vlab.component';
 import { NotFoundComponent } from './component/not-found/not-found.component';
 
 @NgModule({
   declarations: [
+    /**
+     * VLabs FF components
+     */
     AppComponent,
     HomeComponent,
     LoginComponent,
-    NotFoundComponent
+    WorkspaceComponent,
+    VLabComponent,
+    NotFoundComponent,
+    /**
+     * Service declarations
+     */
+    SafeURLPipe
   ],
   imports: [
     BrowserModule,

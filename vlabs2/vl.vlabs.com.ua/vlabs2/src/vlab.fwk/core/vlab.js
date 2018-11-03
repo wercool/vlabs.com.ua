@@ -6,6 +6,7 @@ import VLabDOMManager from './vlab.dom.manager';
 import VLabEventDispatcher from './vlab.event.dispatcher';
 import VLabSceneDispatcher from './vlab.scene.dispatcher';
 import VLabsRESTClientManager from '../aux/rest.vlabs.client/manager';
+import VLabsFFClientManager from '../aux/ff.vlabs.client/manager';
 /**
  * Post Processing
  * https://vanruesc.github.io/postprocessing/public/docs/
@@ -102,7 +103,7 @@ class VLab {
 
                     this.VLabsRESTClientManager
                     .AuthService
-                    .authAttempt({
+                    .authenticate({
 // username: 'vlabs.com.ua@gmail.com',
 // password: 'dbrnjhbz1989'
 username: 'maskame@gmail.com',
@@ -138,6 +139,11 @@ password: '123'
                          * @public
                          */
                         this.SceneDispatcher = new VLabSceneDispatcher(this);
+                        /**
+                         * VLabs FF Client Manager {@link VLabsFFClientManager} instance
+                         * @public
+                         */
+                        this.FFClientManager = new VLabsFFClientManager(this);
 
                         /**
                          * VLab DOMManager manager {@link VLabDOMManager} instance

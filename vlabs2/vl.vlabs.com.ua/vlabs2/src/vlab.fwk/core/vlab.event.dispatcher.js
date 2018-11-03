@@ -23,7 +23,8 @@ class VLabEventDispatcher {
         this.eventSubscribers = {
             window: {
                 resize:     {},
-                keydown:    {}
+                keydown:    {},
+                message:    {}
             },
             WebGLRendererCanvas: {
                 mousedown:          {},
@@ -51,6 +52,7 @@ class VLabEventDispatcher {
 
         window.addEventListener('resize',   this.onWindowResize.bind(this),     false);
         window.addEventListener('keydown',  this.onWindowKeyDown.bind(this),    false);
+        window.addEventListener('message',  this.onWindowMessage.bind(this),    false);
     }
     /**
      * VLabEventDispatcher event subscription.
@@ -102,6 +104,13 @@ class VLabEventDispatcher {
      * @param {Event} event
      */
     notifySubscribers(event) {
+        switch (event.target) {
+            case window:
+                for (let eventSubscriberName in this.eventSubscribers['window'][event.type]) {
+                    this.eventSubscribers['window'][event.type][eventSubscriberName].callback.call(this.eventSubscribers['window'][event.type][eventSubscriberName].subscriber, event);
+                }
+            break;
+        }
         if (!this.vLab.renderPaused) {
             switch (event.target) {
                 case this.vLab.WebGLRendererCanvas:
@@ -109,11 +118,6 @@ class VLabEventDispatcher {
                         for (let eventSubscriberName in this.eventSubscribers[event.target.id][event.type]) {
                             this.eventSubscribers[event.target.id][event.type][eventSubscriberName].callback.call(this.eventSubscribers[event.target.id][event.type][eventSubscriberName].subscriber, event);
                         }
-                    }
-                break;
-                case window:
-                    for (let eventSubscriberName in this.eventSubscribers['window'][event.type]) {
-                        this.eventSubscribers['window'][event.type][eventSubscriberName].callback.call(this.eventSubscribers['window'][event.type][eventSubscriberName].subscriber, event);
                     }
                 break;
                 case 'VLabScene':
@@ -152,6 +156,9 @@ class VLabEventDispatcher {
         this.notifySubscribers(event);
     }
     onWindowKeyDown(event) {
+        this.notifySubscribers(event);
+    }
+    onWindowMessage(event) {
         this.notifySubscribers(event);
     }
     /* Mouse event handlers */

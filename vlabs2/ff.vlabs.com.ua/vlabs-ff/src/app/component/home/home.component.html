@@ -2,3 +2,4 @@
 <app-login *ngIf="!this.authService.isAuthenticated()" class="login-card centering"></app-login>
 
 <!-- authenticated -->
+<app-workspace *ngIf="this.authService.isAuthenticated()"></app-workspace>
