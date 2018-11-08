@@ -9,12 +9,15 @@ import { AuthService } from 'src/app/service/auth.service';
 export class WorkspaceComponent implements OnInit {
 
     constructor(
-        authService: AuthService
+        private authService: AuthService
     ) {
-
     }
 
     ngOnInit() {
+        this.authService.details()
+        .then((details) => {
+            console.log(details);
+        });
     }
 
 }

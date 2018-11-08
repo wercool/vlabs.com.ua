@@ -21,6 +21,15 @@ export class AuthService {
     persistToken(token: string) {
         this.token = token;
         localStorage.setItem('token', token);
+        this.apiService.modifyHeaders({name: 'Authorization', value: 'Bearer ' + this.token});
+    }
+
+    getToken() {
+        return this.token;
+    }
+
+    getPersistedToken() {
+        return localStorage.getItem('token');
     }
 
     authenticate(credentials) {
@@ -34,6 +43,22 @@ export class AuthService {
             .then(result => {
                 this.authenticated = true;
                 this.persistToken(result.token);
+                resolve(result);
+            })
+            .catch((error) => {
+                reject(error);
+            });
+        });
+    }
+
+    details() {
+        let apiEndPoint = this.apiService.APIEndpoints.getFullyQualifiedURL('auth', 'details');
+        return new Promise((resolve, reject) => {
+            this.apiService
+            .get(apiEndPoint)
+            .delay(500)
+            .toPromise()
+            .then(result => {
                 resolve(result);
             })
             .catch((error) => {

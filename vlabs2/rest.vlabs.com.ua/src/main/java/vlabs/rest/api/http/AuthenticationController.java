@@ -3,6 +3,11 @@ package vlabs.rest.api.http;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.SingletonBeanRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +23,7 @@ import vlabs.rest.config.security.CustomPasswordEncoder;
 import vlabs.rest.config.security.JWTTokenUtil;
 import vlabs.rest.config.security.model.JWTAuthenticationRequest;
 import vlabs.rest.config.security.model.JWTAuthenticationResponse;
+import vlabs.rest.config.websocket.WSHandlerMapping;
 import vlabs.rest.service.UserService;
 
 @RestController
@@ -34,6 +40,9 @@ public class AuthenticationController {
 
     @Autowired
     private UserService userService;
+
+@Autowired
+private ConfigurableApplicationContext configurableApplicationContext;
 
     @RequestMapping(value = "/token", method = RequestMethod.POST)
     public Mono<ResponseEntity<?>> token(@RequestBody JWTAuthenticationRequest authenticationRequest) throws AuthenticationException {
@@ -53,6 +62,13 @@ public class AuthenticationController {
     @RequestMapping(value = "/details", method = RequestMethod.GET)
     @PreAuthorize("hasRole('USER')")
     public Mono<UserDetails> details() {
+
+
+DefaultSingletonBeanRegistry registry = (DefaultSingletonBeanRegistry) configurableApplicationContext.getBeanFactory();
+//registry.destroySingleton("basic2"); //destroys the bean object
+if (registry.)
+registry.registerSingleton("basic2", new WSHandlerMapping()); //add to singleton beans cache
+
         return userService.getAuthenticatedUserDetails();
     }
 }

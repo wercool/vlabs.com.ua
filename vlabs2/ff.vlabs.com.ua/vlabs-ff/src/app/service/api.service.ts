@@ -12,7 +12,7 @@ export class ApiService {
 
     @Output() onError = new EventEmitter<any>();
 
-    public jsonHeaders = new Headers({
+    public headers = new Headers({
         'Content-Type': 'application/json'
     });
 
@@ -20,7 +20,8 @@ export class ApiService {
         base: 'http://localhost:8080/api',
         auth: {
             base: '/auth',
-            token: '/token'
+            token: '/token',
+            details: '/details'
         },
         getFullyQualifiedURL: function (endpointGroup: string, endpointPoint: string) {
             return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint];
@@ -48,11 +49,15 @@ export class ApiService {
         }
     }
 
+    public modifyHeaders(header: any) {
+        this.headers.append(header.name, header.value);
+    }
+
     get(path: string, customHeaders?, withoutCredentials?): Observable<any> {
         return this.http.get(
             path,
             {
-                headers: customHeaders || this.jsonHeaders,
+                headers: customHeaders || this.headers,
                 withCredentials: withoutCredentials ? false : true
             }
         )
@@ -66,7 +71,7 @@ export class ApiService {
             {
                 method: put ? RequestMethod.Put : RequestMethod.Post,
                 body: body,
-                headers: customHeaders || this.jsonHeaders,
+                headers: customHeaders || this.headers,
                 withCredentials: withoutCredentials ? false : true
             }
         )
