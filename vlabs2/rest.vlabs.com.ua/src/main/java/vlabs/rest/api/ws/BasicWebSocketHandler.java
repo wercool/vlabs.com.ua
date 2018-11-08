@@ -30,10 +30,12 @@ public class BasicWebSocketHandler extends AuthorizedWebSocketHandler {
     @Override
     Mono<Void> doHandle(WebSocketSession session) {
         WebSocketMessageSubscriber subscriber = new WebSocketMessageSubscriber(messagePublisher);
+
         session.receive()
                .map(WebSocketMessage::getPayloadAsText)
                .map(this::toBasicWebSocketMessage)
                .subscribe(subscriber::onNext, subscriber::onError, subscriber::onComplete);
+
         return session.send(outputMessages.map(session::textMessage));
     }
 

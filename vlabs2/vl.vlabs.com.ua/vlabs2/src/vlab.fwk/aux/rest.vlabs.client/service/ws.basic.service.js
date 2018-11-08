@@ -19,7 +19,7 @@ class VLabsRESTWSBasicService {
         this.socket = undefined;
     }
     connect() {
-        this.socket = new WebSocket(this.manager.APIEndpoints.ws['base'] + this.manager.APIEndpoints.ws['basic'] + '?token=' + this.manager.AuthService.token);
+        this.socket = new WebSocket(this.manager.APIEndpoints.ws['base'] + this.manager.APIEndpoints.ws['basic'] + window.location.pathname + '?token=' + this.manager.AuthService.token);
         this.socket.onopen = this.onSocketOpen.bind(this);
         this.socket.onerror = this.onSocketError.bind(this);
         this.socket.onmessage = this.onSocketMessage.bind(this);

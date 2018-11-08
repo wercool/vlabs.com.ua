@@ -34,9 +34,15 @@ public class WebSocketConfig {
     }
 
     @Bean
-    public HandlerMapping handlerMapping(UnicastProcessor<BasicWebSocketMessage> messagePublisher, Flux<BasicWebSocketMessage> messages) {
+    public BasicWebSocketHandler basicWebSocketHandler(UnicastProcessor<BasicWebSocketMessage> messagePublisher, Flux<BasicWebSocketMessage> messages)
+    {
+        return new BasicWebSocketHandler(messagePublisher, messages);
+    }
+
+    @Bean
+    public HandlerMapping handlerMapping(BasicWebSocketHandler basicWebSocketHandler) {
         Map<String, WebSocketHandler> map = new HashMap<>();
-        map.put("/api/ws/basic", new BasicWebSocketHandler(messagePublisher, messages));
+        map.put("/api/ws/basic/*/", basicWebSocketHandler);
 
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
         mapping.initApplicationContext();

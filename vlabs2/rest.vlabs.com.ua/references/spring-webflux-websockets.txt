@@ -2,3 +2,6 @@ https://github.com/learning-spring-boot/learning-spring-boot-2nd-edition-code/tr
 https://blog.monkey.codes/how-to-build-a-chat-app-using-webflux-websockets-react/
 https://github.com/monkey-codes/java-reactive-chat
 https://developer.okta.com/blog/2018/09/24/reactive-apis-with-spring-webflux
+https://github.com/oktadeveloper/okta-spring-webflux-react-example
+https://github.com/luis-moral/sample-webflux-websocket-netty
+https://github.com/kvnxiao/spring-webflux-websocket-chatroom
