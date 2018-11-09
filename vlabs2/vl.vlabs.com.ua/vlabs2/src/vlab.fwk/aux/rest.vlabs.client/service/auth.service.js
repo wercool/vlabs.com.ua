@@ -62,8 +62,6 @@ class VLabsRESTAuthService {
                 let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('auth', 'details');
                 this.manager.get(apiEndPoint)
                 .then((result) => {
-                    console.log(result);
-                    this.token = result.token;
                     resolve(result);
                 })
                 .catch((error) => {

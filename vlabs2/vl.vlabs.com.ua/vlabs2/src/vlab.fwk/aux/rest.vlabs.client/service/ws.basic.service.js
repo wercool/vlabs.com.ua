@@ -17,12 +17,11 @@ class VLabsRESTWSBasicService {
         this.manager = vLabsRESTClientManager;
 
         this.socket = undefined;
+        this.suffix = undefined;
     }
-    connect() {
-        // this.socket = new WebSocket(this.manager.APIEndpoints.ws['base'] + this.manager.APIEndpoints.ws['basic'] + '?token=' + this.manager.AuthService.token);
-        let _specific = (Math.random() > 0.5) ? '' : '2';
-        console.log('>>>>>>>>>>>>>>>>>>>>', _specific);
-        this.socket = new WebSocket(this.manager.APIEndpoints.ws['base'] + this.manager.APIEndpoints.ws['basic'] + _specific +  '?token=' + this.manager.AuthService.token);
+    connect(suffix) {
+        this.suffix = suffix;
+        this.socket = new WebSocket(this.manager.APIEndpoints.ws['base'] + ((this.suffix !== undefined) ? this.suffix : this.manager.APIEndpoints.ws['basic']) + '?token=' + this.manager.AuthService.token);
         this.socket.onopen = this.onSocketOpen.bind(this);
         this.socket.onerror = this.onSocketError.bind(this);
         this.socket.onmessage = this.onSocketMessage.bind(this);
@@ -34,7 +33,7 @@ class VLabsRESTWSBasicService {
         // console.log(event);
         let basicWebSocketMessage = new BasicWebSocketMessage();
         basicWebSocketMessage.type = 'test';
-        basicWebSocketMessage.message = 'test message';
+        basicWebSocketMessage.message = 'test message' + (this.suffix ? this.suffix : '');
 this.send(JSON.stringify(basicWebSocketMessage));
     }
     onSocketError(error) {

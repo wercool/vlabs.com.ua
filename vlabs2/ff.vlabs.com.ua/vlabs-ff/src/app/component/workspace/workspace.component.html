@@ -1,3 +1,10 @@
 WORKSPACE
+<br/>
+<button mat-raised-button color="accent" (click)="onAddVLabWebSocketURLMapping()">Add VLab WebSocket URL mapping</button>
+<button mat-raised-button color="warn" (click)="onRemoveVLabWebSocketURLMapping()">Remove VLab WebSocket URL mapping</button>
+<br/>
+<br/>
+<button mat-raised-button color="primary" (click)="onVLabWebSocketConnect()">VLab WebSocket connect</button>
+<button mat-raised-button color="primary" (click)="onVLabWebSocketSend()">VLab WebSocket send random</button>
 <hr/>
-<app-vlab></app-vlab>
+<app-vlab #vLabComponent></app-vlab>

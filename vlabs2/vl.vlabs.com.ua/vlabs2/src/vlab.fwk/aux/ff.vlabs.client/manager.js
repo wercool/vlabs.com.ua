@@ -1,3 +1,6 @@
+import VLabsRESTWSBasicService from '../rest.vlabs.client/service/ws.basic.service';
+import BasicWebSocketMessage from '../../aux/rest.vlabs.client/model/basic.websocket.message';
+
 /**
  * VLabsFFClientManager base class
  * Manages VLabs FF application communication
@@ -15,11 +18,14 @@ class VLabsFFClientManager {
          * @public
          */
         this.vLab = vLab;
-
+        /**
+         * name for this.vLab.EventDispatcher
+         */
         this.name = 'FFClientManager';
-
+        /**
+         * Managed by VLabs FF or standalone
+         */
         this.managedMode = false;
-
         /**
          * Default event subscription object; {@link VLabEventDispatcher#eventSubscribers}
          * @public
@@ -50,7 +56,21 @@ class VLabsFFClientManager {
      * window.top message handler
      */
     onMessage(event) {
-        console.log(event);
+        console.log(event.data);
+        switch (event.data.message.type) {
+            case 'connectWS':
+                this.vLabWSService = new VLabsRESTWSBasicService(this.vLab.VLabsRESTClientManager);
+                this.vLabWSService.connect(event.data.message.suffix);
+            break;
+            case 'sendWS':
+                if (this.vLabWSService) {
+                    let basicWebSocketMessage = new BasicWebSocketMessage();
+                    basicWebSocketMessage.type = 'test';
+                    basicWebSocketMessage.message = event.data.message.message;
+                    this.vLabWSService.send(JSON.stringify(basicWebSocketMessage));
+                }
+            break;
+        }
     }
 }
 export default VLabsFFClientManager;

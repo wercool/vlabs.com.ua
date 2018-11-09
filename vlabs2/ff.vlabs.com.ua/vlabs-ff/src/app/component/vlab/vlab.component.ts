@@ -32,7 +32,10 @@ export class VLabComponent implements OnInit {
     }
 
     onVLabMessage(event: any) {
-        console.log(event);
-        this.iframe.nativeElement.contentWindow.postMessage({message: 'test message from VLabs FF'}, environment.VLabsHost);
+        console.log('VLab message: ', event.data);
+    }
+
+    sendVLabMessage(message: any) {
+        this.iframe.nativeElement.contentWindow.postMessage({ message: message }, environment.VLabsHost);
     }
 }

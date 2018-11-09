@@ -7,17 +7,18 @@ import {
     MatIconModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
 } from '@angular/material';
 
 @NgModule({
-  exports:
-  [
+  exports: [
     MatCardModule,
     MatFormFieldModule,
     MatButtonModule,
     MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
   ],
   providers:
   [

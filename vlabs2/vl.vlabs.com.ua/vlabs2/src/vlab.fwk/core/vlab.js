@@ -110,6 +110,7 @@ username: 'maskame@gmail.com',
 password: '123'
                     })
                     .then((result) => {
+                        console.log(result);
                         /**
                          * Reterieve UserDetails
                          */
@@ -135,15 +136,15 @@ password: '123'
                          */
                         this.EventDispatcher = new VLabEventDispatcher(this);
                         /**
-                         * VLab SceneDispatcher {@link VLabSceneDispatcher} instance
-                         * @public
-                         */
-                        this.SceneDispatcher = new VLabSceneDispatcher(this);
-                        /**
                          * VLabs FF Client Manager {@link VLabsFFClientManager} instance
                          * @public
                          */
                         this.FFClientManager = new VLabsFFClientManager(this);
+                        /**
+                         * VLab SceneDispatcher {@link VLabSceneDispatcher} instance
+                         * @public
+                         */
+                        this.SceneDispatcher = new VLabSceneDispatcher(this);
 
                         /**
                          * VLab DOMManager manager {@link VLabDOMManager} instance

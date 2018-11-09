@@ -23,8 +23,20 @@ export class ApiService {
             token: '/token',
             details: '/details'
         },
-        getFullyQualifiedURL: function (endpointGroup: string, endpointPoint: string) {
-            return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint];
+        vlab_websocket_manager: {
+            base: '/vlab_websocket_manager',
+            add_mapping: '/add_mapping',
+            remove_mapping: '/remove_mapping'
+        },
+        getFullyQualifiedURL: function (endpointGroup: string, endpointPoint: string, pathVariables: string[] = []) {
+            let pathVariablesSuffix = '/';
+            pathVariables.forEach(pathVariable => {
+                if (pathVariablesSuffix != '/') {
+                    pathVariablesSuffix += '/';
+                }
+                pathVariablesSuffix += pathVariable;
+            });
+            return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint] + pathVariablesSuffix;
         }
     };
 
