@@ -34,9 +34,16 @@ public class BasicWebSocketHandler extends AuthorizedWebSocketHandler {
         session.receive()
                .map(WebSocketMessage::getPayloadAsText)
                .map(this::toBasicWebSocketMessage)
-               .subscribe(subscriber::onNext, subscriber::onError, subscriber::onComplete);
+               .subscribe(subscriber::onNext,
+                          subscriber::onError,
+                          subscriber::onComplete);
 
         return session.send(outputMessages.map(session::textMessage));
+    }
+
+    public void terminate() {
+        outputMessages.subscribe().dispose();
+        messagePublisher.cancel();
     }
 
     private static class WebSocketMessageSubscriber {

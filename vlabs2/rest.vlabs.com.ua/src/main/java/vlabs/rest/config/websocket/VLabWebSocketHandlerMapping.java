@@ -53,7 +53,8 @@ public class VLabWebSocketHandlerMapping extends AbstractHandlerMapping {
     public Mono<Boolean> removeMapping(String url) {
         PathPattern pattern = getPathPatternParser().parse(url);
         if (this.handlerMap.containsKey(pattern)) {
-            this.handlerMap.put(pattern, null);
+            BasicWebSocketHandler handler = (BasicWebSocketHandler) this.handlerMap.get(pattern);
+            handler.terminate();
             this.handlerMap.remove(pattern);
             log.warn("VLabWebSocketHandlerMapping for the URL [" + url + "] removed");
             return Mono.just(true);
