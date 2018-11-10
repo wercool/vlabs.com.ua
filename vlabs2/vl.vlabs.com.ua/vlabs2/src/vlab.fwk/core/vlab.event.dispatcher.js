@@ -38,8 +38,32 @@ class VLabEventDispatcher {
                 framerequest:       {}
             },
             VLabScene: {
-                interactableTaken:          {},
-                interactablePut:            {}
+                /**
+                 *  {
+                 *      target: 'VLabScene',
+                 *      type: 'deActivated',
+                 *      vLabSceneClass: vLabScene.constructor.name
+                 *  }
+                 */
+                activated:          {},
+                deActivated:        {},
+                /**
+                 *  {
+                 *      target: 'VLabScene',
+                 *      type: 'interactableTaken'
+                 *  }
+                 */
+                interactableTaken:  {},
+                /**
+                 *  {
+                 *      target: 'VLabScene',
+                 *      type: 'interactablePut'
+                 *  }
+                 */
+                interactablePut:    {}
+            },
+            VLabInventory: {
+                ready:          {},
             }
         };
         /**
@@ -110,6 +134,12 @@ class VLabEventDispatcher {
                     this.eventSubscribers['window'][event.type][eventSubscriberName].callback.call(this.eventSubscribers['window'][event.type][eventSubscriberName].subscriber, event);
                 }
             break;
+            case 'VLabScene':
+            case 'VLabInventory':
+                for (let eventSubscriberName in this.eventSubscribers[event.target][event.type]) {
+                    this.eventSubscribers[event.target][event.type][eventSubscriberName].callback.call(this.eventSubscribers[event.target][event.type][eventSubscriberName].subscriber, event);
+                }
+            break;
         }
         if (!this.vLab.renderPaused) {
             switch (event.target) {
@@ -118,11 +148,6 @@ class VLabEventDispatcher {
                         for (let eventSubscriberName in this.eventSubscribers[event.target.id][event.type]) {
                             this.eventSubscribers[event.target.id][event.type][eventSubscriberName].callback.call(this.eventSubscribers[event.target.id][event.type][eventSubscriberName].subscriber, event);
                         }
-                    }
-                break;
-                case 'VLabScene':
-                    for (let eventSubscriberName in this.eventSubscribers[event.target][event.type]) {
-                        this.eventSubscribers[event.target][event.type][eventSubscriberName].callback.call(this.eventSubscribers[event.target][event.type][eventSubscriberName].subscriber, event);
                     }
                 break;
             }

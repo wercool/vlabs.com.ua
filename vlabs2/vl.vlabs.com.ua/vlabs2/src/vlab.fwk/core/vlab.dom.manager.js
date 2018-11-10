@@ -172,6 +172,8 @@ class VLabDOMManager {
                     this.vLabPanel.initialize().then((vLabPanel) => {
                         this.container.appendChild(this.vLabPanel.VLabPanelContainer);
 
+
+
                         resolve();
                     });
                 });

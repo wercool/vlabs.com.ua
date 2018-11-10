@@ -110,6 +110,15 @@ class VLabSceneDispatcher {
                 vLabScene.deactivate().then((deactivated) => {
                     if (deactivated) {
                         vLabScene.onDeactivated.call(vLabScene);
+
+                        /**
+                         * Notify event subscribers
+                         */
+                        this.vLab.EventDispatcher.notifySubscribers({
+                            target: 'VLabScene',
+                            type: 'deActivated',
+                            vLabSceneClass: vLabScene.constructor.name
+                        });
                     }
                 });
             });
@@ -149,6 +158,16 @@ class VLabSceneDispatcher {
                                 self.sceneIsBeingActivated = null;
                                 vLabScene.onActivated.call(vLabScene);
                                 vLabScene.manager.processInteractablesSelections();
+
+                                /**
+                                 * Notify event subscribers
+                                 */
+                                this.vLab.EventDispatcher.notifySubscribers({
+                                    target: 'VLabScene',
+                                    type: 'activated',
+                                    vLabSceneClass: vLabScene.constructor.name
+                                });
+
                                 resolve(vLabScene);
                             }, 250);
                         });

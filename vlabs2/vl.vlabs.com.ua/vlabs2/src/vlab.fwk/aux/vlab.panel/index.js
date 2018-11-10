@@ -20,11 +20,26 @@ class VLabPanel {
         this.vLab = this.initObj.vLab;
         this.name = 'VLabPanel';
         /**
-         * @todo describe VLabPanel components
-         * this.VLabPanelContainer
-         * this.VLabPanelLeftContainer
-         * this.VLabPanelRightContainer
+         * Default event subscription object; {@link VLabEventDispatcher#eventSubscribers}
+         * @public
          */
+        this.eventSubscrObj = {
+            subscriber: this,
+            events: {
+                window: {
+                    resize: this.onWindowResized
+                },
+                VLabScene: {
+                    activated:          this.onVLabSceneActivated,
+                    deActivated:        this.onVLabSceneDeActivated,
+                    interactableTaken: this.onVLabSceneInteractableTaken,
+                    interactablePut: this.onVLabSceneInteractablePut,
+                },
+                VLabInventory: {
+                    ready: this.onInventoryReady
+                }
+            }
+        };
     }
     /**
      * Initialize VLabPanel
@@ -51,30 +66,43 @@ class VLabPanel {
                 this.VLabPanelRightContainer.id = 'VLabPanelRightContainer';
                 this.VLabPanelContainer.appendChild(this.VLabPanelRightContainer);
 
-                this.conformVLabPanelCenterContainer();
+                /**
+                 * Subscrive to events
+                 */
+                this.vLab.EventDispatcher.subscribe(this.eventSubscrObj);
 
-                this.vLab.EventDispatcher.subscribe({
-                    subscriber: this,
-                    events: {
-                        window: {
-                            resize: this.onWindowResized
-                        },
-                        VLabScene: {
-                            interactableTaken: this.onVLabSceneInteractableTaken,
-                            interactablePut: this.onVLabSceneInteractablePut,
-                        }
-                    }
-                });
+                this.hide();
 
                 resolve(this);
             });
         });
     }
     /**
+     * Shows VLabPanel
+     */
+    show() {
+        this.VLabPanelContainer.style.display = 'table';
+        this.conform();
+    }
+    /**
+     * Hides VLabPanel
+     */
+    hide() {
+        this.VLabPanelContainer.style.display = 'none';
+    }
+    /**
+     * Conform everything in the VLabPanel
+     */
+    conform() {
+        this.conformVLabPanelLeftContainer();
+        this.conformVLabPanelCenterContainer();
+        this.conformVLabPanelRightContainer();
+    }
+    /**
      * Window resized event handler
      */
     onWindowResized(event) {
-        this.conformVLabPanelCenterContainer();
+        this.conform();
     }
     /**
      * Conditionally conforms VLabPanelContainer
@@ -86,6 +114,21 @@ class VLabPanel {
      * Conditionally conforms VLabPanelLeftContainer
      */
     conformVLabPanelLeftContainer() {
+        if (this.vLab.SceneDispatcher.takenInteractable) {
+            this.VLabPanelLeftContainer.style.width = 'auto';
+        } else {
+            /**
+             * If inventory is present take it's size into account
+             */
+            let shiftLeft = 0;
+            if (this.vLab.Inventory !== undefined) {
+                shiftLeft += this.vLab.Inventory.opentButton.clientWidth / 2;
+            }
+
+            shiftLeft = 50 - (shiftLeft / this.vLab.DOMManager.container.clientWidth) * 100;
+
+            this.VLabPanelLeftContainer.style.width = shiftLeft + '%';
+        }
     }
     /**
      * Conditionally conforms VLabPanelCenterContainer
@@ -95,10 +138,10 @@ class VLabPanel {
             let vLabContainerRatio = this.vLab.DOMManager.container.clientWidth / this.vLab.DOMManager.container.clientHeight;
             this.VLabPanelCenterContainer.style.width = 'calc(20% / ' + vLabContainerRatio + ')';
             this.VLabPanelCenterContainer.style.display = 'table-cell';
+            this.VLabPanelLeftContainer.style.width = 'auto';
             this.VLabPanelRightContainer.style.width = 'auto';
         } else {
             this.VLabPanelCenterContainer.style.display = 'none';
-            this.VLabPanelRightContainer.style.width = '60%';
         }
     }
     /**
@@ -117,6 +160,26 @@ class VLabPanel {
      */
     onVLabSceneInteractablePut() {
         this.conformVLabPanelCenterContainer();
+    }
+    /**
+     * Inventory ready event handler
+     */
+    onInventoryReady() {
+        this.conformVLabPanelLeftContainer();
+    }
+    /**
+     * Arbitary VLabScene activated event handler
+     */
+    onVLabSceneActivated(event) {
+        if (event.vLabSceneClass !== 'VLabInventory') {
+            this.show();
+        }
+    }
+    /**
+     * Arbitary VLabScene de-activated event handler
+     */
+    onVLabSceneDeActivated(event) {
+        this.hide();
     }
 }
 export default VLabPanel;

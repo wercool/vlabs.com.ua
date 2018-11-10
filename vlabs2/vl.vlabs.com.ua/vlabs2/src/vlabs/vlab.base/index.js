@@ -32,11 +32,11 @@ class BaseVLab extends VLab {
      * @memberof BaseVLab
      */
     bootstrap(iniObj) {
-console.warn('NO CONTENT MODE');
-this.FFClientManager.sendMessage({message: 'test message from VLab'});
-return;
+// console.warn('NO CONTENT MODE');
+// this.FFClientManager.sendMessage({message: 'test message from VLab'});
+// return;
         /* VLab Inventory */
-        new VLabInventory({
+        this.Inventory = new VLabInventory({
             vLab: this
         });
 

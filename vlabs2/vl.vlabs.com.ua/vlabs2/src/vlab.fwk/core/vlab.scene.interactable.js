@@ -742,10 +742,10 @@ class VLabSceneInteractable {
                 this.menuContainer.appendChild(menuItemDIV);
             });
 
-            this.vLab.DOMManager.WebGLContainer.appendChild(this.menuContainer);
+            this.vLab.DOMManager.container.appendChild(this.menuContainer);
             let menuCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, this.centerObject3D);
-            let xPosDelta = this.vLab.DOMManager.WebGLContainer.clientWidth - (menuCoords.x + this.menuContainer.clientWidth);
-            let yPosDelta = this.vLab.DOMManager.WebGLContainer.clientHeight - (menuCoords.y + this.menuContainer.clientHeight);
+            let xPosDelta = this.vLab.DOMManager.container.clientWidth - (menuCoords.x + this.menuContainer.clientWidth);
+            let yPosDelta = this.vLab.DOMManager.container.clientHeight - (menuCoords.y + this.menuContainer.clientHeight);
             let xPos = menuCoords.x + (xPosDelta < 0 ? xPosDelta : 0);
             let yPos = menuCoords.y + (yPosDelta < 0 ? yPosDelta : 0);
             this.menuContainer.style.left = (xPos > 0 ? xPos : 0).toFixed(0) + 'px';
@@ -757,7 +757,7 @@ class VLabSceneInteractable {
      */
     hideMenu() {
         if (this.menuContainer) {
-            this.vLab.DOMManager.WebGLContainer.removeChild(this.menuContainer);
+            this.vLab.DOMManager.container.removeChild(this.menuContainer);
             this.menuContainer = null;
         }
         /*<dev>*/
@@ -892,16 +892,16 @@ class VLabSceneInteractable {
 
             this.tooltipContainer.innerHTML = (shownRespondent !== undefined && shownRespondent.preselectionTooltip != '') ? shownRespondent.preselectionTooltip : this.tooltip;
             let existingTooltipContainer = document.getElementById(this.tooltipContainer.id);
-            if (existingTooltipContainer) this.vLab.DOMManager.WebGLContainer.removeChild(existingTooltipContainer);
-            this.vLab.DOMManager.WebGLContainer.appendChild(this.tooltipContainer);
+            if (existingTooltipContainer) this.vLab.DOMManager.container.removeChild(existingTooltipContainer);
+            this.vLab.DOMManager.container.appendChild(this.tooltipContainer);
         }
 
         if (this.tooltipContainer) {
             let tooltipCoords = THREEUtils.screenProjected2DCoordsOfObject(this.vLab, (shownRespondent !== undefined && shownRespondent.respondentIntersectionPointMesh != undefined) ? shownRespondent.respondentIntersectionPointMesh : this.centerObject3D);
             tooltipCoords.x += shiftX;
             tooltipCoords.y += shiftY;
-            let xPosDelta = this.vLab.DOMManager.WebGLContainer.clientWidth - (tooltipCoords.x + this.tooltipContainer.clientWidth);
-            let yPosDelta = this.vLab.DOMManager.WebGLContainer.clientHeight - (tooltipCoords.y + this.tooltipContainer.clientHeight);
+            let xPosDelta = this.vLab.DOMManager.container.clientWidth - (tooltipCoords.x + this.tooltipContainer.clientWidth);
+            let yPosDelta = this.vLab.DOMManager.container.clientHeight - (tooltipCoords.y + this.tooltipContainer.clientHeight);
             let xPos = tooltipCoords.x + (xPosDelta < 0 ? xPosDelta : 0);
             let yPos = tooltipCoords.y + (yPosDelta < 0 ? yPosDelta : 0);
             if (this.tooltipContainer.clientHeight > this.tooltipContainer.clientWidth * 3) {
@@ -916,7 +916,7 @@ class VLabSceneInteractable {
      */
     hideTooltip() {
         if (this.tooltipContainer) {
-            this.vLab.DOMManager.WebGLContainer.removeChild(this.tooltipContainer);
+            this.vLab.DOMManager.container.removeChild(this.tooltipContainer);
             this.tooltipContainer = undefined;
         }
     }

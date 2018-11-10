@@ -23,6 +23,27 @@ class VLabInventory extends VLabScene {
          * @public
          */
         this.vLab = this.initObj.vLab;
+        /**
+         * name for this.vLab.EventDispatcher
+         */
+        this.name = 'VLabInventory';
+        /**
+         * Inventory open button
+         */
+        this.opentButton = undefined;
+        /**
+         * Inventory opentButton icon
+         */
+        this.opentButtonIcon = undefined;
+        /**
+         * Default event subscription object; {@link VLabEventDispatcher#eventSubscribers}
+         * @public
+         */
+        this.eventSubscrObj = {
+            subscriber: this,
+            events: {
+            }
+        };
 
         if (this.vLab.SceneDispatcher.getScene(VLabInventory) === null) {
             this.vLab.SceneDispatcher.scenes.push(this);
@@ -34,24 +55,50 @@ class VLabInventory extends VLabScene {
                         href: '/vlab.assets/css/inventory.css'
                     })
                     .then(() => {
-                        // console.log('/vlab.assets/css/inventory.css loaded...');
                         /**
-                         * @todo add Inventory icon to vLabPanel
+                         * Subscrive to events
                          */
-                        console.warn('add Inventory icon to vLabPanel');
+                        this.vLab.EventDispatcher.subscribe(this.eventSubscrObj);
+
+                        this.opentButtonIcon = document.createElement('li');
+                        this.opentButtonIcon.id = 'inventoryOpentButtonIcon';
+                        this.opentButtonIcon.className = 'material-icons';
+                        this.opentButtonIcon.innerHTML = 'work';
+
+                        this.opentButton = document.createElement('div');
+                        this.opentButton.id = 'inventoryOpentButton';
+
+                        this.opentButton.appendChild(this.opentButtonIcon);
+                        this.opentButton.onclick = this.opentButton.ontouchstart = this.onOpentButtonHandler.bind(this);
+
+                        /**
+                         * Add this.opentButton to vLabPanel.VLabPanelRightContainer
+                         * {@link VLabPanel#VLabPanelRightContainer}
+                         */
+                        this.VLab.DOMManager.vLabPanel.VLabPanelRightContainer.appendChild(this.opentButton);
+
+                        /**
+                         * Notify event subscribers
+                         */
+                        this.vLab.EventDispatcher.notifySubscribers({
+                            target: 'VLabInventory',
+                            type: 'ready'
+                        });
                     });
                 }
             }
-
-            // let self = this;
-            // setTimeout(() => {
-            //     self.vLab.SceneDispatcher.activateScene({
-            //         class: self.constructor
-            //     });
-            // }, 5000);
         } else {
             console.error('VLabInventory already exists in VLab');
         }
+    }
+    /**
+     * this.opentButton click and touchstart event hanlder
+     * this.opentButton.onclick = this.opentButton.ontouchstart
+     */
+    onOpentButtonHandler(event) {
+        this.vLab.SceneDispatcher.activateScene({
+            class: this.constructor
+        });
     }
 }
 export default VLabInventory;
