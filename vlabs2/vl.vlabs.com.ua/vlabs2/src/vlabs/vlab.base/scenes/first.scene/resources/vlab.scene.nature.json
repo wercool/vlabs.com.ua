@@ -64,7 +64,7 @@
                     "label": "Sphere2TestAction",
                     "icon": "",
                     "enabled": true,
-                    "action": "if (this.vLabScene.Sphere2TestAction) this.vLabScene.Sphere2TestAction({ interactable : this })",
+                    "action": "if (this.vLabScene.Sphere2TestAction) this.vLabScene.Sphere2TestAction({ interactable : this });",
                     "args": null
                 }
             ]

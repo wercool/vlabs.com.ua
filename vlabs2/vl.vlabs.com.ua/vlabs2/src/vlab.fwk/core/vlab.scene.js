@@ -248,7 +248,7 @@ class VLabScene extends THREE.Scene {
      * @memberof VLabScene
      * @abstract
      */
-    onDeactivated() { console.log(this.name + ' onDeactivated abstract method not implemented'); }
+    onDeactivated() { console.log('%c' + this.name + ' onDeactivated abstract method not implemented', 'color: orange'); }
     /**
      * VLab Scene default event subscriber, could be overridden in VLabScene inheritor.
      *
@@ -446,6 +446,14 @@ class VLabScene extends THREE.Scene {
     deselectInteractables() {
         for (let interactableName in this.interactables) {
             this.interactables[interactableName].deSelect(true);
+        }
+    }
+    /**
+     * De preselect Interactables all of this.interactables
+     */
+    dePreselectInteractables() {
+        for (let interactableName in this.interactables) {
+            this.interactables[interactableName].dePreselect();
         }
     }
 }

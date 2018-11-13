@@ -17,7 +17,6 @@ class VLabInventory extends VLabScene {
         initObj['configured'] = true;
         super(initObj);
         this.initObj = initObj;
-        this.VLab = this.initObj.vLab;
         /**
          * VLab instance
          * @public
@@ -35,47 +34,50 @@ class VLabInventory extends VLabScene {
          * Inventory opentButton icon
          */
         this.opentButtonIcon = undefined;
-        /**
-         * Default event subscription object; {@link VLabEventDispatcher#eventSubscribers}
-         * @public
-         */
-        this.eventSubscrObj = {
-            subscriber: this,
-            events: {
-            }
-        };
 
         if (this.vLab.SceneDispatcher.getScene(VLabInventory) === null) {
+            /**
+             * Push VLabInventory to vLab.SceneDispatcher into scenes[] array
+             * {@link VLabSceneDispatcher#scenes}
+             */
             this.vLab.SceneDispatcher.scenes.push(this);
 
-            if (this.VLab.DOMManager.vLabPanel) {
-                if (this.VLab.DOMManager.vLabPanel.VLabPanelRightContainer) {
-                    this.VLab.DOMManager.addStyle({
+            /**
+             * Build HTML elements
+             */
+            if (this.vLab.DOMManager.vLabPanel) {
+                if (this.vLab.DOMManager.vLabPanel.VLabPanelRightContainer) {
+                    this.vLab.DOMManager.addStyle({
                         id: 'inventoryCSS',
                         href: '/vlab.assets/css/inventory.css'
                     })
                     .then(() => {
-                        /**
-                         * Subscrive to events
-                         */
-                        this.vLab.EventDispatcher.subscribe(this.eventSubscrObj);
-
                         this.opentButtonIcon = document.createElement('li');
                         this.opentButtonIcon.id = 'inventoryOpentButtonIcon';
                         this.opentButtonIcon.className = 'material-icons';
                         this.opentButtonIcon.innerHTML = 'work';
 
+                        this.closeButtonIcon = document.createElement('li');
+                        this.closeButtonIcon.id = 'inventoryCloseButtonIcon';
+                        this.closeButtonIcon.className = 'material-icons';
+                        this.closeButtonIcon.innerHTML = 'subdirectory_arrow_left';
+                        this.closeButtonIcon.classList.add('hidden');
+
+
                         this.opentButton = document.createElement('div');
                         this.opentButton.id = 'inventoryOpentButton';
 
                         this.opentButton.appendChild(this.opentButtonIcon);
+                        this.opentButton.appendChild(this.closeButtonIcon);
+
                         this.opentButton.onclick = this.opentButton.ontouchstart = this.onOpentButtonHandler.bind(this);
+                        this.opentButton.onmouseover = this.onOpentButtonMouseOverHandler.bind(this);
 
                         /**
                          * Add this.opentButton to vLabPanel.VLabPanelRightContainer
                          * {@link VLabPanel#VLabPanelRightContainer}
                          */
-                        this.VLab.DOMManager.vLabPanel.VLabPanelRightContainer.appendChild(this.opentButton);
+                        this.vLab.DOMManager.vLabPanel.VLabPanelRightContainer.appendChild(this.opentButton);
 
                         /**
                          * Notify event subscribers
@@ -84,6 +86,33 @@ class VLabInventory extends VLabScene {
                             target: 'VLabInventory',
                             type: 'ready'
                         });
+
+
+                        /**
+                         * Initialized THREE initial assets
+                         */
+
+                        /*<dev>*/
+                            var axesHelper = new THREE.AxesHelper(10);
+                            this.add(axesHelper);
+                            console.info("10m AxesHelper added to VLabInventory");
+                        /*</dev>*/
+
+                        this.currentCamera.position.copy(new THREE.Vector3(0.5, 0.5, 0.5));
+
+var pointLight = new THREE.PointLight(0xff0000, 1, 100);
+pointLight.position.set(0, 1.0, 0);
+this.add(pointLight);
+
+var sphereSize = 0.1;
+var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
+this.add(pointLightHelper);
+
+var geometry = new THREE.SphereBufferGeometry( 0.1, 32, 32 );
+var material = new THREE.MeshPhongMaterial( {color: 0xffff00} );
+var sphere = new THREE.Mesh( geometry, material );
+this.add( sphere );
+
                     });
                 }
             }
@@ -92,13 +121,40 @@ class VLabInventory extends VLabScene {
         }
     }
     /**
+     * VLab Scene onActivated abstract function implementation.
+     *
+     */
+    onActivated() {
+        this.closeButtonIcon.classList.remove('hidden');
+    }
+    /**
+     * VLab Scene onDeactivated abstract function implementation.
+     *
+     */
+    onDeactivated() {
+        this.closeButtonIcon.classList.add('hidden');
+    }
+    /**
      * this.opentButton click and touchstart event hanlder
      * this.opentButton.onclick = this.opentButton.ontouchstart
      */
     onOpentButtonHandler(event) {
-        this.vLab.SceneDispatcher.activateScene({
-            class: this.constructor
-        });
+        event.stopPropagation();
+        if (!this.active) {
+            this.vLab.SceneDispatcher.activateScene({
+                class: this.constructor
+            });
+        } else {
+            this.vLab.SceneDispatcher.activateScene({
+                class: this.vLab.SceneDispatcher.previousVLabScene.constructor
+            });
+        }
+    }
+    /**
+     * Mouse over handler
+     */
+    onOpentButtonMouseOverHandler(event) {
+        this.vLab.SceneDispatcher.currentVLabScene.dePreselectInteractables();
     }
 }
 export default VLabInventory;

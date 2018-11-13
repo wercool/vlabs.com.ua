@@ -26,6 +26,11 @@ class VLabSceneDispatcher {
          */
         this.currentVLabScene = new THREE.Scene();
         /**
+         * This previous VLabScene
+         * @public
+         */
+        this.previousVLabScene = undefined;
+        /**
          * VLabScene instance currently is beeing activated
          * @public
          */
@@ -97,14 +102,18 @@ class VLabSceneDispatcher {
      * 
      * @memberof VLabSceneDispatcher
      * 
-     * @param {Object}    initObj                           - Scene activation object
-     * @param {VLabScene} initObj.class                     - VLabScene Class
+     * @param {Object}              initObj                           - Scene activation object
+     * @param {VLabScene | string}  initObj.class                     - VLabScene Class | VLabsScene class name as string
      * 
      * @returns {Promise | VLabScene}                       - VLabScene instance in Promise resolver
      */
     activateScene(initObj) {
         let self = this;
         this.vLab.renderPaused = true;
+        /**
+         * Set currentVLabScene to this.previousVLabScene
+         */
+        this.previousVLabScene = this.currentVLabScene;
         return new Promise((resolve, reject) => {
             this.scenes.forEach((vLabScene) => {
                 vLabScene.deactivate().then((deactivated) => {
@@ -123,7 +132,8 @@ class VLabSceneDispatcher {
                 });
             });
             for (let vLabScene of this.scenes) {
-                if (vLabScene.constructor == initObj.class) {
+                if ((typeof initObj.class == 'function' && vLabScene.constructor == initObj.class)
+                 || (typeof initObj.class == 'string' && vLabScene.constructor.name === initObj.class)) {
                     this.vLab.WebGLRendererCanvasOverlay.classList.remove('hidden');
                     this.vLab.WebGLRendererCanvasOverlay.classList.add('visible');
                     this.sceneIsBeingActivated = vLabScene;
@@ -147,6 +157,16 @@ class VLabSceneDispatcher {
                                 delete vLabScene['justLoaded'];
                                 vLabScene.onLoaded();
                             }
+
+                            /**
+                             * Fix of glitch (?) weird rendering with Sprite
+                             * Make Sprite rendered for a moment to eliminate the glitch
+                             * Comment to see what happens without fix ;)
+                             */
+                            if (this.takenInteractable) {
+                                this.takenInteractable.boundsSprite.visible = true;
+                            }
+
                             self.vLab.setupWebGLRenderer();
                             self.vLab.resizeWebGLRenderer();
                             self.vLab.setupEffectComposer();
@@ -417,7 +437,7 @@ class VLabSceneDispatcher {
     transitTakenInteractable(fromScene, toScene) {
         if (this.takenInteractable) {
             /**
-             * Menu 'Put back' is available only in the VLabScene from where takenInteractable has been taken
+             * Menu 'Put back' is available only in the VLabScene from which takenInteractable has been taken
              */
             for (let i = 0; i < this.takenInteractable.menu.length; i++) {
                 if (this.takenInteractable.menu[i].label == 'Put back') {
@@ -452,6 +472,9 @@ class VLabSceneDispatcher {
 
             fromScene.selectedInteractables.splice(fromScene.selectedInteractables.indexOf(this.takenInteractable), 1);
 
+            /**
+             * Hold this.takenInteractable selection
+             */
             if ((this.takenInteractable.selection && this.takenInteractable.selection.hold) && toScene.selectedInteractables.indexOf(this.takenInteractable) == -1) {
                 toScene.selectedInteractables.push(this.takenInteractable);
             }

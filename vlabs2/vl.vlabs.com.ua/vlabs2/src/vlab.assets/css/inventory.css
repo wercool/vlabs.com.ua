@@ -39,3 +39,16 @@ border: solid 1px #ff6016;
                  0px 3px 1px rgb(119, 119, 119),
                  0px 3px 1px #777;
 }
+#inventoryCloseButtonIcon {
+    position: absolute;
+    top: 10%;
+    left: 0%;
+    font-size: calc(var(--screenDependentSize) / 1.25);
+    color: #e2e2e2;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
