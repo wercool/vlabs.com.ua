@@ -35,6 +35,10 @@ class VLabInventory extends VLabScene {
          */
         this.opentButtonIcon = undefined;
 
+        /**
+         * Initialize inventory; VLabInventory contructor called;
+         */
+        console.log('Initialize inventory; VLabInventory contructor called;');
         if (this.vLab.SceneDispatcher.getScene(VLabInventory) === null) {
             /**
              * Push VLabInventory to vLab.SceneDispatcher into scenes[] array

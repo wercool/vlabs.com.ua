@@ -108,7 +108,9 @@ class VLabPanel {
      * Conditionally conforms VLabPanelContainer
      */
     conformVLabPanelContainer() {
-
+        this.conformVLabPanelLeftContainer();
+        this.conformVLabPanelCenterContainer();
+        this.conformVLabPanelRightContainer();
     }
     /**
      * Conditionally conforms VLabPanelLeftContainer
