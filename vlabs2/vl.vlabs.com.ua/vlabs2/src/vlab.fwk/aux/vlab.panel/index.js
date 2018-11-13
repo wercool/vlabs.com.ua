@@ -30,10 +30,10 @@ class VLabPanel {
                     resize: this.onWindowResized
                 },
                 VLabScene: {
-                    activated:          this.onVLabSceneActivated,
-                    deActivated:        this.onVLabSceneDeActivated,
-                    interactableTaken: this.onVLabSceneInteractableTaken,
-                    interactablePut: this.onVLabSceneInteractablePut,
+                    activated:              this.onVLabSceneActivated,
+                    deActivated:            this.onVLabSceneDeActivated,
+                    interactableTaken:      this.onVLabSceneInteractableTaken,
+                    interactablePut:        this.onVLabSceneInteractablePut,
                 },
                 VLabInventory: {
                     ready: this.onInventoryReady
@@ -108,7 +108,9 @@ class VLabPanel {
      * Conditionally conforms VLabPanelContainer
      */
     conformVLabPanelContainer() {
-
+        this.conformVLabPanelLeftContainer();
+        this.conformVLabPanelCenterContainer();
+        this.conformVLabPanelRightContainer();
     }
     /**
      * Conditionally conforms VLabPanelLeftContainer
@@ -153,19 +155,19 @@ class VLabPanel {
      * VLabScene interactable taken event handler
      */
     onVLabSceneInteractableTaken() {
-        this.conformVLabPanelCenterContainer();
+        this.conformVLabPanelContainer();
     }
     /**
      * VLabScene interactable put event handler
      */
     onVLabSceneInteractablePut() {
-        this.conformVLabPanelCenterContainer();
+        this.conformVLabPanelContainer();
     }
     /**
      * Inventory ready event handler
      */
     onInventoryReady() {
-        this.conformVLabPanelLeftContainer();
+        this.conformVLabPanelContainer();
     }
     /**
      * Arbitary VLabScene activated event handler
