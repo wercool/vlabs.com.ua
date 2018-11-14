@@ -61,6 +61,17 @@ class VLabSceneManager {
      * @memberof VLabSceneManager
      */
     configure() {
+        if (this.vLabScene.getObjectByName('antiGlitchSprite') == undefined) {
+            /**
+             * Fix of glitch (?) weird rendering with Sprite
+             * Make Sprite rendered for a moment to eliminate the glitch
+             * Comment to see what happens without fix ;)
+             */
+            var sprite = new THREE.Sprite();
+            sprite.name = 'antiGlitchSprite';
+            sprite.scale.set(1e-10, 1e-10, 1e-10);
+            this.vLabScene.add(sprite);
+        }
         if (this.configured) return Promise.resolve();
         return new Promise((resolve, reject) => {
             /**
@@ -84,8 +95,6 @@ class VLabSceneManager {
                     this.vLabScene.currentCamera.name = this.vLabScene.nature.cameras.default.name;
                     switch (this.vLabScene.nature.cameras.default.type) {
                         case 'PerspectiveCamera':
-                            if (this.vLabScene.nature.cameras.default.fov)
-                                this.vLabScene.currentCamera.fov = this.vLabScene.nature.cameras.default.fov;
                             if (this.vLabScene.nature.cameras.default.position) {
                                 this.vLabScene.currentCamera.position.set(
                                     this.vLabScene.nature.cameras.default.position.x,

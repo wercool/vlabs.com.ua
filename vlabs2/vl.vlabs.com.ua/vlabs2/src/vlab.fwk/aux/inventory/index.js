@@ -56,32 +56,32 @@ class VLabInventory extends VLabScene {
                         href: '/vlab.assets/css/inventory.css'
                     })
                     .then(() => {
-                        this.opentButtonIcon = document.createElement('li');
-                        this.opentButtonIcon.id = 'inventoryOpentButtonIcon';
-                        this.opentButtonIcon.className = 'material-icons';
-                        this.opentButtonIcon.innerHTML = 'work';
+                        this.openButtonIcon = document.createElement('li');
+                        this.openButtonIcon.id = 'inventoryOpenButtonIcon';
+                        this.openButtonIcon.className = 'material-icons';
+                        this.openButtonIcon.innerHTML = 'work';
 
                         this.closeButtonIcon = document.createElement('li');
                         this.closeButtonIcon.id = 'inventoryCloseButtonIcon';
                         this.closeButtonIcon.className = 'material-icons';
-                        this.closeButtonIcon.innerHTML = 'subdirectory_arrow_left';
+                        this.closeButtonIcon.innerHTML = 'undo';
                         this.closeButtonIcon.classList.add('hidden');
 
 
-                        this.opentButton = document.createElement('div');
-                        this.opentButton.id = 'inventoryOpentButton';
+                        this.button = document.createElement('div');
+                        this.button.id = 'inventoryButton';
 
-                        this.opentButton.appendChild(this.opentButtonIcon);
-                        this.opentButton.appendChild(this.closeButtonIcon);
+                        this.button.appendChild(this.openButtonIcon);
+                        this.button.appendChild(this.closeButtonIcon);
 
-                        this.opentButton.onclick = this.opentButton.ontouchstart = this.onOpentButtonHandler.bind(this);
-                        this.opentButton.onmouseover = this.onOpentButtonMouseOverHandler.bind(this);
+                        this.button.onclick = this.button.ontouchstart = this.onButtonHandler.bind(this);
+                        this.button.onmouseover = this.onButtonMouseOverHandler.bind(this);
 
                         /**
-                         * Add this.opentButton to vLabPanel.VLabPanelRightContainer
+                         * Add this.button to vLabPanel.VLabPanelRightContainer
                          * {@link VLabPanel#VLabPanelRightContainer}
                          */
-                        this.vLab.DOMManager.vLabPanel.VLabPanelRightContainer.appendChild(this.opentButton);
+                        this.vLab.DOMManager.vLabPanel.VLabPanelRightContainer.appendChild(this.button);
 
                         /**
                          * Notify event subscribers
@@ -102,20 +102,17 @@ class VLabInventory extends VLabScene {
                             console.info("10m AxesHelper added to VLabInventory");
                         /*</dev>*/
 
+                        this.currentCamera.near = 0.01;
+                        this.currentCamera.far = 10.0;
+
                         this.currentCamera.position.copy(new THREE.Vector3(0.5, 0.5, 0.5));
 
-var pointLight = new THREE.PointLight(0xff0000, 1, 100);
-pointLight.position.set(0, 1.0, 0);
-this.add(pointLight);
+                        var pointLight = new THREE.PointLight(0xffffff, 2.0, 5.0);
+                        pointLight.position.set(0.0, 2.5, 0.0);
+                        this.add(pointLight);
 
-var sphereSize = 0.1;
-var pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
-this.add(pointLightHelper);
-
-var geometry = new THREE.SphereBufferGeometry( 0.1, 32, 32 );
-var material = new THREE.MeshPhongMaterial( {color: 0xffff00} );
-var sphere = new THREE.Mesh( geometry, material );
-this.add( sphere );
+                        var ambientLight = new THREE.AmbientLight(0x404040, 2.0); // soft white light
+                        this.add(ambientLight);
 
                     });
                 }
@@ -137,12 +134,18 @@ this.add( sphere );
      */
     onDeactivated() {
         this.closeButtonIcon.classList.add('hidden');
+
+        this.currentCamera.position.copy(new THREE.Vector3(0.5, 0.5, 0.5));
+
+        this.currentControls.target = new THREE.Vector3(0.0, 0.0, 0.0);
+        this.currentControls.reset();
+        this.currentControls.update();
     }
     /**
      * this.opentButton click and touchstart event hanlder
      * this.opentButton.onclick = this.opentButton.ontouchstart
      */
-    onOpentButtonHandler(event) {
+    onButtonHandler(event) {
         event.stopPropagation();
         if (!this.active) {
             this.vLab.SceneDispatcher.activateScene({
@@ -157,8 +160,87 @@ this.add( sphere );
     /**
      * Mouse over handler
      */
-    onOpentButtonMouseOverHandler(event) {
+    onButtonMouseOverHandler(event) {
         this.vLab.SceneDispatcher.currentVLabScene.dePreselectInteractables();
+    }
+    /**
+     * Removes {interactable} from interactable.vLabScene.interactables;
+     * Appends VLabSceneInteractable to this.VLabScene.interactables
+     * @param {VLabSceneInteractable} interactable 
+     */
+    addInteractable(interactable) {
+
+        let interactableVLabScene = interactable.vLabScene;
+
+        let putObj = {
+            scene: interactableVLabScene,
+            parent: interactable.vLabSceneObject.parent,
+            position: interactable.vLabSceneObject.position.clone(),
+            quaternion: interactable.vLabSceneObject.quaternion.clone(),
+            scale:  interactable.vLabSceneObject.scale.clone()
+        };
+
+        /**
+         * If interactable is this.vLab.SceneDispatcher.takenInteractable
+         */
+        if (interactable == this.vLab.SceneDispatcher.takenInteractable) {
+            this.vLab.SceneDispatcher.putTakenInteractable(interactable.vLabSceneObject.userData['beforeTakenState']);
+        }
+
+        interactable.removeMenuItem('Take');
+
+        interactable.updateMenuWithMenuItem({
+            label: 'Put back',
+            icon: '<i class="material-icons">undo</i>',
+            enabled: true,
+            action: this.take,
+            context: interactable,
+            originalScene: interactableVLabScene,
+            args: putObj
+        }, true);
+
+        interactable.deSelect(true);
+
+        /**
+         * Process all siblings of interactable (transit them to VLabInventory), updating interactable.vLabScene setting it to this (VLabInventory Scene); used interactable.vLabSceneObject siblings' names
+         */
+        let siblingInteractables = [];
+        interactable.vLabSceneObject.traverse((interactableVLabSceneObjectSibling) => {
+            let interactableVLabSceneInteractable = interactableVLabScene.interactables[interactableVLabSceneObjectSibling.name];
+            if (interactableVLabSceneInteractable !== undefined) {
+                siblingInteractables.push(interactableVLabSceneInteractable);
+            }
+        });
+
+        interactableVLabScene.remove(interactable.vLabSceneObject);
+
+        siblingInteractables.forEach((siblingInteractable) => {
+            delete interactableVLabScene.interactables[siblingInteractable.vLabSceneObject.name];
+            this.appendInteractable(siblingInteractable);
+        });
+
+        interactable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, 0.0, 0.0));
+        interactable.vLabSceneObject.quaternion.copy(new THREE.Quaternion(0.0, 0.0, 0.0, 0.0));
+        interactable.vLabSceneObject.scale.copy(new THREE.Vector3(1.0, 1.0, 1.0));
+
+        this.add(interactable.vLabSceneObject);
+
+        interactable.vLabSceneObject.visible = true;
+
+        interactable.vLabSceneObject.lookAt(new THREE.Vector3(0.5, 0.5, 0.5));
+
+        this.vLab.EventDispatcher.notifySubscribers({
+            target: 'VLabScene',
+            type: 'interactablePut'
+        });
+    }
+
+    /**
+     * Takes VLabSceneInteractable and sets it as taken
+     * putObj {@link VLabInventory#addInteractable}
+     */
+    take(putObj) {
+        console.log(putObj);
     }
 }
 export default VLabInventory;

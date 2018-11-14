@@ -158,15 +158,6 @@ class VLabSceneDispatcher {
                                 vLabScene.onLoaded();
                             }
 
-                            /**
-                             * Fix of glitch (?) weird rendering with Sprite
-                             * Make Sprite rendered for a moment to eliminate the glitch
-                             * Comment to see what happens without fix ;)
-                             */
-                            if (this.takenInteractable) {
-                                this.takenInteractable.boundsSprite.visible = true;
-                            }
-
                             self.vLab.setupWebGLRenderer();
                             self.vLab.resizeWebGLRenderer();
                             self.vLab.setupEffectComposer();
@@ -259,8 +250,9 @@ class VLabSceneDispatcher {
      *  scale:  this.vLabSceneObject.scale.clone(),
      *  materials: list of objects; key = vLabSceneObject->sibling->uuid, value = vLabSceneObject->sibling->material
      * };
+     * Adds userData['beforeTakenState'] to  this.takenInteractable.vLabSceneObject
      * 
-     * @param {VLabSceneInteractable} takenInteractable 
+     * @param {VLabSceneInteractable} takenInteractable
      */
     setTakenInteractable(takenInteractable) {
         this.takenInteractable = takenInteractable;
@@ -269,6 +261,7 @@ class VLabSceneDispatcher {
         this.takenInteractable.vLabSceneObject.visible = false;
 
         let beforeTakenMaterials = {};
+
         this.takenInteractable.vLabSceneObject.traverse((sibling) => {
             if (sibling.type == 'Mesh' && sibling.name.indexOf('_OUTLINE') == -1) {
                 beforeTakenMaterials[sibling.uuid] = sibling.material;
@@ -292,6 +285,8 @@ class VLabSceneDispatcher {
             scale:  this.takenInteractable.vLabSceneObject.scale.clone(),
             materials: beforeTakenMaterials
         };
+
+        this.takenInteractable.vLabSceneObject.userData['beforeTakenState'] = putObj;
 
         /**
          * Remove taken interactable from VLabScene
@@ -411,6 +406,8 @@ class VLabSceneDispatcher {
 
         this.takenInteractable.deSelect(true);
 
+        delete this.takenInteractable.vLabSceneObject.userData['beforeTakenState'];
+
         this.takenInteractable.taken = false;
         this.takenInteractable = null;
 
@@ -460,7 +457,8 @@ class VLabSceneDispatcher {
             toScene.currentCamera.add(this.takenInteractable.boundsSprite);
 
             /**
-             * Transit all siblings of this.takenInteractable, updating toScene.interactables; used this.takenInteractable.vLabSceneObject siblings' names
+             * Transit all siblings of this.takenInteractable, updating toScene.interactables;
+             * Used this.takenInteractable.vLabSceneObject siblings' names
              */
             this.takenInteractable.vLabSceneObject.traverse((takenInteractableVLabSceneObjectSibling) => {
                 if (fromScene.interactables[takenInteractableVLabSceneObjectSibling.name] !== undefined) {
@@ -470,14 +468,21 @@ class VLabSceneDispatcher {
                 }
             });
 
-            fromScene.selectedInteractables.splice(fromScene.selectedInteractables.indexOf(this.takenInteractable), 1);
-
             /**
              * Hold this.takenInteractable selection
              */
             if ((this.takenInteractable.selection && this.takenInteractable.selection.hold) && toScene.selectedInteractables.indexOf(this.takenInteractable) == -1) {
                 toScene.selectedInteractables.push(this.takenInteractable);
             }
+        }
+    }
+    /**
+     * Takes interactable into into VLabInventory if exists; calls VLabInventory.addInteractable
+     * @param {VLabSceneInteractable} interactable 
+     */
+    takeInteractableToInventory(interactable) {
+        if (this.vLab.Inventory) {
+            this.vLab.Inventory.addInteractable(interactable);
         }
     }
 }

@@ -28,6 +28,13 @@ class VLabControls {
      */
     depress() { console.log('depress() abstract method not implemented in ' + this.constructor.name); }
     /**
+     * VLabControls reset abstract function.
+     *
+     * @memberof VLabControls
+     * @abstract
+     */
+    reset() { console.log('reset() abstract method not implemented in ' + this.constructor.name); }
+    /**
      * VLabControls default event handler / router; could be overridden in inheritor.
      *
      * @memberof VLabControls

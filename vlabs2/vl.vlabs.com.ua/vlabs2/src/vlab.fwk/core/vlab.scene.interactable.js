@@ -320,6 +320,13 @@ class VLabSceneInteractable {
         this.vLab.SceneDispatcher.setTakenInteractable(this);
     }
     /**
+     * Calls {@link VLabSceneDispatcher#takeInteractableToInventory}
+     * @abstract
+     */
+    takeToInventory() {
+        this.vLab.SceneDispatcher.takeInteractableToInventory(this);
+    }
+    /**
      * Selects this VLabSceneInteractable
      * Adds this instance to {@link VLabScene#selectedInteractables}
      * @param {Object} selectionObj 
@@ -331,55 +338,57 @@ class VLabSceneInteractable {
      * @abstract
      */
     select(selectionObj) {
-        /**
-         * Selection
-         */
-        if (selectionObj != undefined) {
-            this.selection =  ObjectUtils.merge(this.selection, selectionObj);
-
-            if (this.selection.hold == true) {
-                this.updateMenuWithMenuItem({
-                    label: 'Hold selection',
-                    icon: '<i class="material-icons" style="color: #ff0000;">adjust</i>',
-                    action: 'this.select({hold: false})'
-                });
-            } else {
-                this.updateMenuWithMenuItem({
-                    label: 'Hold selection',
-                    icon: '<i class="material-icons">adjust</i>',
-                    action: 'this.select({hold: true})'
-                });
-                this.deSelect(true);
-            }
-            return;
-        }
-
-        /**
-         * Intersection
-         */
-        if (this.intersection) {
-            if (this.selectable && !this.selected) {
-                if (this.preselectable && this.preselected || !this.preselectable) {
-                    let currentlySelectedInteractable = this.vLabScene.manager.getCurrentlySelectedInteractable();
-                    if (currentlySelectedInteractable) currentlySelectedInteractable.deSelect();
-                    /**
-                     * push to selections if not yet in array
-                     */
-                    if (this.vLabScene.selectedInteractables.indexOf(this) == -1) {
-                        this.vLabScene.selectedInteractables.push(this);
-                    }
-
-                    this.selected = true;
-                    this.dePreselect();
-                }
-            } else if (this.selectable && this.selected) {
-                this.showMenu();
-            }
-        } else {
+        if (this.vLabScene.constructor.name !== 'VLabInventory' || this.taken) {
             /**
-             * No intersection
+             * Selection
              */
-            this.deSelect();
+            if (selectionObj != undefined) {
+                this.selection =  ObjectUtils.merge(this.selection, selectionObj);
+
+                if (this.selection.hold == true) {
+                    this.updateMenuWithMenuItem({
+                        label: 'Hold selection',
+                        icon: '<i class="material-icons" style="color: #ff0000;">adjust</i>',
+                        action: 'this.select({hold: false})'
+                    });
+                } else {
+                    this.updateMenuWithMenuItem({
+                        label: 'Hold selection',
+                        icon: '<i class="material-icons">adjust</i>',
+                        action: 'this.select({hold: true})'
+                    });
+                    this.deSelect(true);
+                }
+                return;
+            }
+
+            /**
+             * Intersection
+             */
+            if (this.intersection) {
+                if (this.selectable && !this.selected) {
+                    if (this.preselectable && this.preselected || !this.preselectable) {
+                        let currentlySelectedInteractable = this.vLabScene.manager.getCurrentlySelectedInteractable();
+                        if (currentlySelectedInteractable) currentlySelectedInteractable.deSelect();
+                        /**
+                         * push to selections if not yet in array
+                         */
+                        if (this.vLabScene.selectedInteractables.indexOf(this) == -1) {
+                            this.vLabScene.selectedInteractables.push(this);
+                        }
+
+                        this.selected = true;
+                        this.dePreselect();
+                    }
+                } else if (this.selectable && this.selected) {
+                    this.showMenu();
+                }
+            } else {
+                /**
+                 * No intersection
+                 */
+                this.deSelect();
+            }
         }
     }
     /**
@@ -418,7 +427,9 @@ class VLabSceneInteractable {
                 this.preselected = true;
             }
             this.showTooltip();
-            this.showRespondents();
+            if (this.vLabScene.constructor.name !== 'VLabInventory') {
+                this.showRespondents();
+            }
         } else {
             this.dePreselect();
         }
@@ -432,9 +443,12 @@ class VLabSceneInteractable {
         if (this.preselected) {
             let indexOfThisPreselected = this.vLabScene.preSelectedInteractables.indexOf(this);
             this.vLabScene.preSelectedInteractables.splice(indexOfThisPreselected, 1);
+            this.vLabScene.manager.processInteractablesSelections();
             this.preselected = false;
             this.hideTooltip();
-            this.removeRespondentsHelpers();
+            if (this.vLabScene.constructor.name !== 'VLabInventory') {
+                this.removeRespondentsHelpers();
+            }
         }
     }
     /**
@@ -664,11 +678,15 @@ class VLabSceneInteractable {
      * Hides simple outline based on this.vLabSceneObject.geometry
      */
     clearOutline() {
-        this.outlineHelperMesh.visible = false;
-        this.outlineHelperMesh.matrixAutoUpdate = false;
+        if (this.outlineHelperMesh) {
+            this.outlineHelperMesh.visible = false;
+            this.outlineHelperMesh.matrixAutoUpdate = false;
+        }
 
-        this.boundsSprite.visible = false;
-        this.boundsSprite.matrixAutoUpdate = false;
+        if (this.boundsSprite) {
+            this.boundsSprite.visible = false;
+            this.boundsSprite.matrixAutoUpdate = false;
+        }
     }
     /**
      * Adds simple outline based on this.vLabSceneObject.geometry as THREE.Mesh to this.vLabSceneObject
@@ -734,6 +752,16 @@ class VLabSceneInteractable {
                 let menuItemDIV = document.createElement('div');
                 menuItemDIV.className = 'interactableMenuItem';
                 menuItemDIV.innerHTML = '<div class="interactableMenuIcon">' + (menuItem.icon ? menuItem.icon : '<i class=\"material-icons\">code</i>') + '</div>' + menuItem.label;
+
+                /**
+                 * Check special conditions on particular Menu Items by menuItem.label
+                 */
+                switch (menuItem.label) {
+                    case 'Take to Inventory':
+                        if (this.vLab.Inventory == undefined) menuItem.enabled = false;
+                    break;
+                }
+
                 if (menuItem.enabled !== undefined && !menuItem.enabled) {
                     menuItemDIV.style.opacity = 0.1;
                 } else {

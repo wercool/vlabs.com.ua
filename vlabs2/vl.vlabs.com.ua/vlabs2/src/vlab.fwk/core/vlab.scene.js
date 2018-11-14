@@ -42,7 +42,6 @@ class VLabScene extends THREE.Scene {
          * @property {Object} [nature.cameras.default]              - Scene default camera configurer object
          * @property {string} [nature.cameras.default.type]                 - Scene default camera type {PerspectiveCamera}
          * @property {string} [nature.cameras.default.name]                 - Scene default camera name
-         * @property {number} [nature.cameras.default.fov]                  - Scene default camera field of view
          * @property {string} [nature.cameras.default.position]             - Scene default camera position; THREE.Vector3; evalutated
          * @property {Object} [nature.controls]                         - Scene controls object
          * @property {Object} [nature.controls.default]                 - Scene default controls configurer object
@@ -330,6 +329,14 @@ class VLabScene extends THREE.Scene {
                 resolve(vLabSceneInteractable)
             });
         });
+    }
+    /**
+     * Appends existing VLabSceneInteractable instance (vLabSceneInteractable) to this.interactables
+     * @param {VLabSceneInteractable} vLabSceneInteractable 
+     */
+    appendInteractable(vLabSceneInteractable) {
+        this.interactables[vLabSceneInteractable.vLabSceneObject.name] = vLabSceneInteractable;
+        this.interactables[vLabSceneInteractable.vLabSceneObject.name].vLabScene = this;
     }
     /**
      * VLab Scene interactables processing (interactions), reacts only on user actions

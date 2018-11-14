@@ -16,7 +16,6 @@
         "default": {
             "type": "PerspectiveCamera",
             "name": "Camera",
-            "fov": 50,
             "position": {
                 "x": 0.0,
                 "y": 2.0,
@@ -51,6 +50,13 @@
                     "icon": "<i class=\"material-icons\">pan_tool</i>",
                     "enabled": true,
                     "action": "this.take()",
+                    "args": null
+                },
+                {
+                    "label": "Take to Inventory",
+                    "icon": "<i class=\"material-icons\">next_week</i>",
+                    "enabled": true,
+                    "action": "this.takeToInventory()",
                     "args": null
                 },
                 {
@@ -92,6 +98,13 @@
                     "enabled": true,
                     "action": "this.take()",
                     "args": null
+                },
+                {
+                    "label": "Take to Inventory",
+                    "icon": "<i class=\"material-icons\">next_week</i>",
+                    "enabled": true,
+                    "action": "this.takeToInventory()",
+                    "args": null
                 }
             ],
             "tooltip": "Suzanne1"
@@ -122,6 +135,13 @@
                     "icon": "<i class=\"material-icons\">pan_tool</i>",
                     "enabled": true,
                     "action": "this.take()",
+                    "args": null
+                },
+                {
+                    "label": "Take to Inventory",
+                    "icon": "<i class=\"material-icons\">next_week</i>",
+                    "enabled": true,
+                    "action": "this.takeToInventory()",
                     "args": null
                 }
             ]
@@ -218,6 +238,13 @@
                     "icon": "<i class=\"material-icons\">pan_tool</i>",
                     "enabled": true,
                     "action": "this.take()",
+                    "args": null
+                },
+                {
+                    "label": "Take to Inventory",
+                    "icon": "<i class=\"material-icons\">next_week</i>",
+                    "enabled": true,
+                    "action": "this.takeToInventory()",
                     "args": null
                 }
             ]

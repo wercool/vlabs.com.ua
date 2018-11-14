@@ -49,25 +49,7 @@ class VLabOrbitControls extends VLabControls {
         this.minDistance = this.vLabScene.currentCamera.near;
         this.maxDistance = this.vLabScene.currentCamera.far;
 
-
-        this.scale = 1.0;
-        this.panOffset = new THREE.Vector3();
-
-        this.rotateStart = new THREE.Vector2();
-        this.rotateEnd = new THREE.Vector2();
-        this.rotateDelta = new THREE.Vector2();
-
-        this.dollyStart = new THREE.Vector2();
-        this.dollyEnd = new THREE.Vector2();
-        this.dollyDelta = new THREE.Vector2();
-
-        this.panStart = new THREE.Vector2();
-        this.panEnd = new THREE.Vector2();
-        this.panDelta = new THREE.Vector2();
-
-        // current position in spherical coordinates
-        this.spherical = new THREE.Spherical();
-        this.sphericalDelta = new THREE.Spherical();
+        this.reset();
     }
     /**
      * VLabControls update abstract function implementation.
@@ -132,6 +114,29 @@ class VLabOrbitControls extends VLabControls {
     depress () {
         this.state = this.STATE.NONE;
         this.active = false;
+    }
+    /**
+     * Resets controls
+     */
+    reset() {
+        this.scale = 1.0;
+        this.panOffset = new THREE.Vector3();
+
+        this.rotateStart = new THREE.Vector2();
+        this.rotateEnd = new THREE.Vector2();
+        this.rotateDelta = new THREE.Vector2();
+
+        this.dollyStart = new THREE.Vector2();
+        this.dollyEnd = new THREE.Vector2();
+        this.dollyDelta = new THREE.Vector2();
+
+        this.panStart = new THREE.Vector2();
+        this.panEnd = new THREE.Vector2();
+        this.panDelta = new THREE.Vector2();
+
+        // current position in spherical coordinates
+        this.spherical = new THREE.Spherical();
+        this.sphericalDelta = new THREE.Spherical();
     }
     /** 
      * rotating across whole screen goes 360 degrees around

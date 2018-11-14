@@ -282,7 +282,7 @@ password: '123'
      * @memberof VLab
      */
     resizeWebGLRenderer() {
-        if (this.WebGLRendererCanvas.classList.contains('hidden')) this.WebGLRendererCanvas.classList.remove('hidden');
+        if (this.WebGLRendererCanvas && this.WebGLRendererCanvas.classList.contains('hidden')) this.WebGLRendererCanvas.classList.remove('hidden');
         let resolutionFactor = 1.0;
         /* Cheks if this.nature.WebGLRendererParameters.resolutionFactor if defined */
         if (this.nature.WebGLRendererParameters) {

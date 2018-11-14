@@ -123,8 +123,8 @@ class VLabPanel {
              * If inventory is present take it's size into account
              */
             let shiftLeft = 0;
-            if (this.vLab.Inventory !== undefined) {
-                shiftLeft += this.vLab.Inventory.opentButton.clientWidth / 2;
+            if (this.vLab.Inventory !== undefined && this.vLab.Inventory.button !== undefined) {
+                shiftLeft += this.vLab.Inventory.button.clientWidth / 2;
             }
 
             shiftLeft = 50 - (shiftLeft / this.vLab.DOMManager.container.clientWidth) * 100;
