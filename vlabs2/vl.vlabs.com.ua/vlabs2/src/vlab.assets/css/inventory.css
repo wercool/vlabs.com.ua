@@ -67,3 +67,18 @@ border: solid 1px #ff6016;
     background-color: #2385ac;
     border-radius: 50%;
 }
+#inventoryAddedThumbnail {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    top: 0;
+    left: calc(50% - 50px);
+    margin-top: -90px;
+    margin-left: 0;
+    border-radius: 0 50% 50% 50%;
+    transform: rotate(-135deg);
+    border: solid 2px #ffffff;
+    background-color: #747a7c;
+    background-repeat: no-repeat;
+    background-size: cover; 
+}

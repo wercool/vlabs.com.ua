@@ -28,6 +28,10 @@ class VLabInventory extends VLabScene {
          */
         this.name = 'VLabInventory';
         /**
+         * Interactables in the Inventory
+         */
+        this.items = {};
+        /**
          * Inventory open button
          */
         this.opentButton = undefined;
@@ -48,7 +52,7 @@ class VLabInventory extends VLabScene {
             this.vLab.SceneDispatcher.scenes.push(this);
 
             /**
-             * Build HTML elements
+             * Add inventory CSS
              */
             if (this.vLab.DOMManager.vLabPanel) {
                 if (this.vLab.DOMManager.vLabPanel.VLabPanelRightContainer) {
@@ -59,15 +63,21 @@ class VLabInventory extends VLabScene {
                     .then(() => {
 
                         /**
-                         * WebGLRenderer for rendering Inventory items for getting their thumbnails
+                         * WebGLRenderer, PerspectiveCamera for rendering Inventory items for getting their thumbnails
                          */
                         this.thumbsWebGLRenderer = new THREE.WebGLRenderer({
                             antialias: true,
                             precision: 'lowp'
                         });
-                        this.thumbsWebGLRenderer.setSize(50, 50, false);
-                        this.thumbsWebGLRenderer.domElement.style.width  = '50px';
-                        this.thumbsWebGLRenderer.domElement.style.height = '50px';
+                        this.thumbsWebGLRenderer.setSize(100, 100, false);
+                        this.thumbsWebGLRenderer.setClearColor(0x747a7c);
+                        this.thumbsWebGLRenderer.domElement.style.width  = '100px';
+                        this.thumbsWebGLRenderer.domElement.style.height = '100px';
+
+                        this.thumbsCanvas = document.createElement('canvas');
+                        this.thumbsCanvas.width  = 100;
+                        this.thumbsCanvas.height = 100;
+                        this.thumbsCanvasCtx = this.thumbsCanvas.getContext('2d');
 
                         this.thumbsCamera = new THREE.PerspectiveCamera(50, 1.0, 0.1, 10);
                         this.thumbsCamera.updateProjectionMatrix();
@@ -75,6 +85,11 @@ class VLabInventory extends VLabScene {
                         this.thumbsCamera.lookAt(new THREE.Vector3(0.0, 0.0, 0.0));
 
 
+                        /**
+                         * Build HTML elements
+                         */
+                        this.button = document.createElement('div');
+                        this.button.id = 'inventoryButton';
 
                         this.openButtonIcon = document.createElement('li');
                         this.openButtonIcon.id = 'inventoryOpenButtonIcon';
@@ -92,13 +107,14 @@ class VLabInventory extends VLabScene {
                         this.addedIcon.innerHTML = '+1';
                         this.addedIcon.style.opacity = 0.0;
 
-
-                        this.button = document.createElement('div');
-                        this.button.id = 'inventoryButton';
+                        this.addedThumbnail = document.createElement('div');
+                        this.addedThumbnail.id = 'inventoryAddedThumbnail';
+                        this.addedThumbnail.style.opacity = 0.0;
 
                         this.button.appendChild(this.openButtonIcon);
                         this.button.appendChild(this.closeButtonIcon);
                         this.button.appendChild(this.addedIcon);
+                        this.button.appendChild(this.addedThumbnail);
 
                         this.button.onclick = this.button.ontouchstart = this.onButtonHandler.bind(this);
                         this.button.onmouseover = this.onButtonMouseOverHandler.bind(this);
@@ -201,6 +217,8 @@ class VLabInventory extends VLabScene {
      */
     addInteractable(interactable) {
 
+        let self = this;
+
         let interactableVLabScene = interactable.vLabScene;
 
         let putObj = {
@@ -267,17 +285,61 @@ class VLabInventory extends VLabScene {
             type: 'interactablePut'
         });
 
-        this.addedIcon.style.opacity = 1.0;
-
-        new TWEEN.Tween(this.addedIcon.style)
-        .to({opacity: 0.0}, 2000)
-        .start();
-
         this.resetView();
 
         this.thumbsWebGLRenderer.render(this, this.thumbsCamera);
-        let imgData = this.thumbsWebGLRenderer.domElement.toDataURL();
-        console.log(imgData);
+
+        let animationTime = 2000;
+        let thumbnail = new Image(100, 100);
+        thumbnail.src = this.thumbsWebGLRenderer.domElement.toDataURL();
+        thumbnail.onload = function () {
+            let thumbnail = this;
+
+            self.thumbsCanvasCtx.clearRect(0, 0, 100, 100);
+            self.thumbsCanvasCtx.save();
+            self.thumbsCanvasCtx.translate(50, 50);
+            self.thumbsCanvasCtx.rotate(135.0 * Math.PI / 180);
+            self.thumbsCanvasCtx.drawImage(thumbnail, -50, -50);
+            self.addedThumbnail.style.backgroundImage = 'url("' + self.thumbsCanvas.toDataURL() + '")';
+            self.thumbsCanvasCtx.restore();
+            
+            self.addedThumbnail.style.setProperty('opacity', 1.0);
+
+            let marginTop = -90;
+            let width = 100;
+            let height = 100;
+            new TWEEN.Tween(self.addedThumbnail.style)
+            .to({opacity: 0.0}, animationTime)
+            .onUpdate(() => {
+                if (marginTop < 0) {
+                    marginTop += 1.5;
+                    width -= 1;
+                    height -= 1;
+                    self.addedThumbnail.style.setProperty('left', 'calc(50% - ' + Math.round(width / 2) + 'px)');
+                    self.addedThumbnail.style.setProperty('width',width + 'px');
+                    self.addedThumbnail.style.setProperty('height', height + 'px');
+                    self.addedThumbnail.style.setProperty('margin-top', Math.round(marginTop) + 'px');
+                } else {
+                    self.addedThumbnail.style.setProperty('opacity', 0.0);
+                }
+            })
+            .start();
+
+            self.addedIcon.style.opacity = 1.0;
+            new TWEEN.Tween(self.addedIcon.style)
+            .to({opacity: 0.0}, animationTime)
+            .start();
+
+
+            /**
+             * Add taken VLabSceneInteractable into this.items
+             */
+            self.items[interactable.vLabSceneObject.name] = {
+                interactable: interactable,
+                thumbnail: thumbnail
+            }
+        }
+
     }
 
     /**
