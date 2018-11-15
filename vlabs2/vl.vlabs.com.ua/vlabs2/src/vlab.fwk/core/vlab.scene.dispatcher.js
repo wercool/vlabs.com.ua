@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import VLab from './vlab';
+import * as THREEUtils from '../utils/three.utils';
 import VLabScene from "./vlab.scene";
 import VLabSceneInteractable from './vlab.scene.interactable';
 
@@ -117,6 +118,14 @@ class VLabSceneDispatcher {
         return new Promise((resolve, reject) => {
             this.scenes.forEach((vLabScene) => {
                 vLabScene.deactivate().then((deactivated) => {
+
+                    /**
+                     * Complete dispose of Scene assets if lowMemory is detected by vLabScene.manager.performanceManager
+                     */
+                    if (vLabScene.manager.performance.lowMemory === true) {
+                        THREEUtils.completeDispose(vLabScene);
+                    }
+
                     if (deactivated) {
                         vLabScene.onDeactivated.call(vLabScene);
 

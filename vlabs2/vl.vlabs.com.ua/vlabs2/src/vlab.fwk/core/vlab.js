@@ -2,6 +2,7 @@ import '@babel/polyfill';
 import * as THREE from 'three';
 import * as HTTPUtils from '../utils/http.utils';
 import * as VLabUtils from '../utils/vlab.utils.js';
+import * as THREEUtils from '../utils/three.utils';
 import VLabDOMManager from './vlab.dom.manager';
 import VLabEventDispatcher from './vlab.event.dispatcher';
 import VLabSceneDispatcher from './vlab.scene.dispatcher';
@@ -11,7 +12,7 @@ import VLabsFFClientManager from '../aux/ff.vlabs.client/manager';
  * Post Processing
  * https://vanruesc.github.io/postprocessing/public/docs/
  */
-import { EffectComposer, RenderPass, EffectPass, OutlineEffect } from "postprocessing";
+import { EffectComposer, Pass, RenderPass, EffectPass, OutlineEffect } from "postprocessing";
 
 var TWEEN = require('@tweenjs/tween.js');
 
@@ -61,6 +62,30 @@ class VLab {
          * @param {MeshBasicMaterial} respondentIntersectionPointMaterial
          */
         this.prefabs = {};
+        /**
+         * 
+         * 
+         * Extend Postprocessing
+         * Override Pass.prototype.setFullscreenMaterial to support PlaneBufferGeometry dispose
+         * 
+         * 
+         */
+        Pass.prototype.setFullscreenMaterial = function(material) {
+            var quad = this.quad;
+
+            if (quad !== null) {
+                quad.material = material;
+            } else {
+                this.quadGeometry = new THREE.PlaneBufferGeometry(2, 2);
+                quad = new THREE.Mesh(this.quadGeometry, material);
+                quad.frustumCulled = false;
+
+                if (this.scene !== null) {
+                    this.scene.add(quad);
+                    this.quad = quad;
+                }
+            }
+        };
     }
     /**
      * VLab initializer.
@@ -271,23 +296,35 @@ password: '123'
                         this.effectComposer = new EffectComposer(this.WebGLRenderer);
                     }
 
+                    this.effectComposer.reset();
+
                     if (this.effectComposer.renderer !== this.WebGLRenderer) {
                         this.effectComposer.replaceRenderer(this.WebGLRenderer);
                     }
 
+                    if (this.outlineEffect !== undefined) {
+                        this.outlineEffect.dispose();
+                    }
                     this.outlineEffect = new OutlineEffect(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera, {
                         edgeStrength: 2.0,
                         visibleEdgeColor: 0xffff00,
                         hiddenEdgeColor: 0xffff00,
                     });
 
+
+                    if (this.renderPass != undefined) {
+                        this.renderPass.dispose();
+                    }
                     this.renderPass = new RenderPass(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
                     this.renderPass.renderToScreen = true;
                     this.effectComposer.addPass(this.renderPass);
 
-                    this.outlinePass = new EffectPass(this.SceneDispatcher.currentVLabScene.currentCamer, this.outlineEffect);
+                    if (this.outlinePass != undefined) {
+                        this.outlinePass.dispose();
+                        THREEUtils.completeDispose(this.outlinePass.scene);
+                    }
+                    this.outlinePass = new EffectPass(this.SceneDispatcher.currentVLabScene.currentCamera, this.outlineEffect);
                     this.outlinePass.renderToScreen = false;
-                    this.effectComposer.addPass(this.outlinePass);
                 }
             }
         }

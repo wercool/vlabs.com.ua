@@ -54,7 +54,8 @@ class VLabSceneManager {
             performanceManagerInterval: null,
             lowFPSThreshold: 30,
             lowFPSDetected: 0,
-            lowMemoryThreshold: 50.0 * 1048576,
+            lowMemoryThreshold: 5.0 * 1048576,
+            lowMemoryDetected: 0,
             lowMemory: false
         };
     }
@@ -191,6 +192,7 @@ class VLabSceneManager {
                 if (preselectedInteractablesSceneObjects.length > 0) {
                     this.vLab.outlineEffect.setSelection(preselectedInteractablesSceneObjects);
                     if (!this.vLab.outlinePass.renderToScreen) {
+                        this.vLab.effectComposer.addPass(this.vLab.outlinePass);
                         this.vLab.renderPass.renderToScreen = false;
                         this.vLab.outlinePass.renderToScreen = true;
                     }
@@ -198,6 +200,7 @@ class VLabSceneManager {
             } else {
                 if (this.vLab.outlinePass.renderToScreen) {
                     this.vLab.outlineEffect.clearSelection();
+                    this.vLab.effectComposer.removePass(this.vLab.outlinePass);
                     this.vLab.outlinePass.renderToScreen = false;
                     this.vLab.renderPass.renderToScreen = true;
                 }
@@ -516,9 +519,14 @@ class VLabSceneManager {
         if (window.performance && window.performance.memory) {
             let memoryLeft = window.performance.memory.totalJSHeapSize - window.performance.memory.usedJSHeapSize;
             if (memoryLeft < this.performance.lowMemoryThreshold) {
-                this.performance.lowMemory = true;
+                if (this.performance.lowMemoryDetected > 5) {
+                    this.performance.lowMemoryDetected = 0;
+                    this.performance.lowMemory = true;
+                }
+                this.performance.lowMemoryDetected++;
             } else {
                 this.performance.lowMemory = false;
+                this.performance.lowMemoryDetected = 0;
             }
         }
     }
