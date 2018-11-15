@@ -52,3 +52,18 @@ border: solid 1px #ff6016;
     -ms-user-select: none;
     user-select: none;
 }
+#inventoryAddedIcon {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 20%;
+    left: 5%;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 16px;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    border: solid 2px #ffffff;
+    background-color: #2385ac;
+    border-radius: 50%;
+}

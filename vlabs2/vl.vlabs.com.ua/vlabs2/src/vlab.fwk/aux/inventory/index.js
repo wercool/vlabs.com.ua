@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import * as TWEEN from '@tweenjs/tween.js';
 import VLabScene from '../../core/vlab.scene';
 
 /**
@@ -56,6 +57,25 @@ class VLabInventory extends VLabScene {
                         href: '/vlab.assets/css/inventory.css'
                     })
                     .then(() => {
+
+                        /**
+                         * WebGLRenderer for rendering Inventory items for getting their thumbnails
+                         */
+                        this.thumbsWebGLRenderer = new THREE.WebGLRenderer({
+                            antialias: true,
+                            precision: 'lowp'
+                        });
+                        this.thumbsWebGLRenderer.setSize(50, 50, false);
+                        this.thumbsWebGLRenderer.domElement.style.width  = '50px';
+                        this.thumbsWebGLRenderer.domElement.style.height = '50px';
+
+                        this.thumbsCamera = new THREE.PerspectiveCamera(50, 1.0, 0.1, 10);
+                        this.thumbsCamera.updateProjectionMatrix();
+                        this.thumbsCamera.position.copy(new THREE.Vector3(0.5, 0.5, 0.5));
+                        this.thumbsCamera.lookAt(new THREE.Vector3(0.0, 0.0, 0.0));
+
+
+
                         this.openButtonIcon = document.createElement('li');
                         this.openButtonIcon.id = 'inventoryOpenButtonIcon';
                         this.openButtonIcon.className = 'material-icons';
@@ -67,12 +87,18 @@ class VLabInventory extends VLabScene {
                         this.closeButtonIcon.innerHTML = 'undo';
                         this.closeButtonIcon.classList.add('hidden');
 
+                        this.addedIcon = document.createElement('div');
+                        this.addedIcon.id = 'inventoryAddedIcon';
+                        this.addedIcon.innerHTML = '+1';
+                        this.addedIcon.style.opacity = 0.0;
+
 
                         this.button = document.createElement('div');
                         this.button.id = 'inventoryButton';
 
                         this.button.appendChild(this.openButtonIcon);
                         this.button.appendChild(this.closeButtonIcon);
+                        this.button.appendChild(this.addedIcon);
 
                         this.button.onclick = this.button.ontouchstart = this.onButtonHandler.bind(this);
                         this.button.onmouseover = this.onButtonMouseOverHandler.bind(this);
@@ -134,7 +160,12 @@ class VLabInventory extends VLabScene {
      */
     onDeactivated() {
         this.closeButtonIcon.classList.add('hidden');
-
+        this.resetView();
+    }
+    /**
+     * Sets this.currentCamera position and update this.currentControls.target
+     */
+    resetView() {
         this.currentCamera.position.copy(new THREE.Vector3(0.5, 0.5, 0.5));
 
         this.currentControls.target = new THREE.Vector3(0.0, 0.0, 0.0);
@@ -225,6 +256,8 @@ class VLabInventory extends VLabScene {
 
         this.add(interactable.vLabSceneObject);
 
+        interactable.vLabSceneObject.getObjectByName(interactable.vLabSceneObject.name + '_BOUNDS').visible = false;
+
         interactable.vLabSceneObject.visible = true;
 
         interactable.vLabSceneObject.lookAt(new THREE.Vector3(0.5, 0.5, 0.5));
@@ -233,6 +266,18 @@ class VLabInventory extends VLabScene {
             target: 'VLabScene',
             type: 'interactablePut'
         });
+
+        this.addedIcon.style.opacity = 1.0;
+
+        new TWEEN.Tween(this.addedIcon.style)
+        .to({opacity: 0.0}, 2000)
+        .start();
+
+        this.resetView();
+
+        this.thumbsWebGLRenderer.render(this, this.thumbsCamera);
+        let imgData = this.thumbsWebGLRenderer.domElement.toDataURL();
+        console.log(imgData);
     }
 
     /**

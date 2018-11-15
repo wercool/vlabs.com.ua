@@ -159,6 +159,13 @@
                     "enabled": true,
                     "action": "this.take()",
                     "args": null
+                },
+                {
+                    "label": "Take to Inventory",
+                    "icon": "<i class=\"material-icons\">next_week</i>",
+                    "enabled": true,
+                    "action": "this.takeToInventory()",
+                    "args": null
                 }
             ]
         },
