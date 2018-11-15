@@ -159,9 +159,11 @@ class VLabSceneDispatcher {
                             }
 
                             self.vLab.setupWebGLRenderer();
+                            self.vLab.configureWebGLRenderer();
                             self.vLab.resizeWebGLRenderer();
                             self.vLab.setupEffectComposer();
                             self.vLab.renderPaused = false;
+
                             setTimeout(() => {
                                 self.vLab.WebGLRendererCanvasOverlay.classList.remove('visible');
                                 self.vLab.WebGLRendererCanvasOverlay.classList.add('hidden');

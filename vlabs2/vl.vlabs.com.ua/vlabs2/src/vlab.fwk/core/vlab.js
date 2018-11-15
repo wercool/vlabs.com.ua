@@ -11,7 +11,7 @@ import VLabsFFClientManager from '../aux/ff.vlabs.client/manager';
  * Post Processing
  * https://vanruesc.github.io/postprocessing/public/docs/
  */
-import { EffectComposer, RenderPass, OutlinePass } from "postprocessing";
+import { EffectComposer, RenderPass, EffectPass, OutlineEffect } from "postprocessing";
 
 var TWEEN = require('@tweenjs/tween.js');
 
@@ -190,11 +190,11 @@ password: '123'
      * * Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters
      * * Configures THREE.WebGLRenderer according to this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters
      *   if this.SceneDispatcher.currentVLabScene.nature is defined
-     *
+     *  @param {boolean} forcedly
      * @memberof VLab
      */
-    setupWebGLRenderer() {
-        if (this.WebGLRendererCanvas === undefined) {
+    setupWebGLRenderer(forcedly) {
+        if (this.WebGLRendererCanvas == undefined) {
             /**
              * HTMLCanvasElement to render current VLabScene
              * @public
@@ -212,35 +212,45 @@ password: '123'
             this.DOMManager.WebGLContainer.appendChild(this.WebGLRendererCanvasOverlay);
         }
 
-        /**
-         * THREE.WebGLRenderer
-         * @see https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
-         * @public
-         */
-        this.WebGLRenderer = new THREE.WebGLRenderer({
-            canvas: this.WebGLRendererCanvas,
-            antialias: false,
-            powerPreference: 'high-performance',
-            precision: 'lowp'
-        });
-        this.WebGLRenderer.setPixelRatio(1.0);
-        if (this.getProdMode() || window.location.href.indexOf('localhost') > -1) {
-            this.WebGLRenderer.context.getShaderInfoLog = function () { return '' };
-            this.WebGLRenderer.context.getProgramInfoLog = function () { return '' };
-        }
+        if (this.WebGLRenderer == undefined || forcedly == true) {
+            /**
+             * THREE.WebGLRenderer
+             * @see https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer
+             * @public
+             */
+            this.WebGLRenderer = new THREE.WebGLRenderer({
+                canvas: this.WebGLRendererCanvas,
+                antialias: false,
+                powerPreference: 'high-performance',
+                precision: 'lowp'
+            });
 
-        /* Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters */
-        if (this.nature.WebGLRendererParameters) {
-            if (this.nature.WebGLRendererParameters.clearColor)
-                this.WebGLRenderer.setClearColor(parseInt(this.nature.WebGLRendererParameters.clearColor));
+            this.WebGLRenderer.setPixelRatio(1.0);
+
+            if (this.getProdMode() || window.location.href.indexOf('localhost') > -1) {
+                this.WebGLRenderer.context.getShaderInfoLog = function () { return '' };
+                this.WebGLRenderer.context.getProgramInfoLog = function () { return '' };
+            }
         }
-        /** Configures THREE.WebGLRenderer according to this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters
-         *  if this.SceneDispatcher.currentVLabScene.nature is defined
-         */
-        if (this.SceneDispatcher.currentVLabScene.nature) {
-            if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters) {
-                if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.clearColor)
-                    this.WebGLRenderer.setClearColor(parseInt(this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.clearColor));
+    }
+    /**
+     * Configure minor WebGLRenderer parameters
+     */
+    configureWebGLRenderer() {
+        if (this.WebGLRenderer !== undefined) {
+            /* Configures THREE.WebGLRenderer according to this.nature.WebGLRendererParameters */
+            if (this.nature.WebGLRendererParameters) {
+                if (this.nature.WebGLRendererParameters.clearColor)
+                    this.WebGLRenderer.setClearColor(parseInt(this.nature.WebGLRendererParameters.clearColor));
+            }
+            /** Configures THREE.WebGLRenderer according to this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters
+             *  if this.SceneDispatcher.currentVLabScene.nature is defined
+             */
+            if (this.SceneDispatcher.currentVLabScene.nature) {
+                if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters) {
+                    if (this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.clearColor)
+                        this.WebGLRenderer.setClearColor(parseInt(this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters.clearColor));
+                }
             }
         }
     }
@@ -248,7 +258,6 @@ password: '123'
      * Instantiates EffectComposer if not yet instantiated.
      */
     setupEffectComposer() {
-        if (this.outlinePass) this.outlinePass.clearSelection();
         if (this.nature.WebGLRendererParameters) {
             if (this.nature.WebGLRendererParameters.effectComposer) {
                 if (this.SceneDispatcher.currentVLabScene) {
@@ -258,18 +267,27 @@ password: '123'
                      * @inner
                      * @public
                      */
-                    this.effectComposer = new EffectComposer(this.WebGLRenderer);
+                    if (this.effectComposer == undefined) {
+                        this.effectComposer = new EffectComposer(this.WebGLRenderer);
+                    }
+
+                    if (this.effectComposer.renderer !== this.WebGLRenderer) {
+                        this.effectComposer.replaceRenderer(this.WebGLRenderer);
+                    }
+
+                    this.outlineEffect = new OutlineEffect(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera, {
+                        edgeStrength: 2.0,
+                        visibleEdgeColor: 0xffff00,
+                        hiddenEdgeColor: 0xffff00,
+                    });
 
                     this.renderPass = new RenderPass(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
                     this.renderPass.renderToScreen = true;
                     this.effectComposer.addPass(this.renderPass);
 
-                    this.outlinePass = new OutlinePass(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera, {
-                        edgeStrength: 2.0,
-                        visibleEdgeColor: 0xffff00,
-                        hiddenEdgeColor: 0xffff00,
-                    });
+                    this.outlinePass = new EffectPass(this.SceneDispatcher.currentVLabScene.currentCamer, this.outlineEffect);
                     this.outlinePass.renderToScreen = false;
+                    this.effectComposer.addPass(this.outlinePass);
                 }
             }
         }
@@ -302,6 +320,11 @@ password: '123'
         this.WebGLRenderer.setSize(this.DOMManager.WebGLContainer.clientWidth  * resolutionFactor, 
                                    this.DOMManager.WebGLContainer.clientHeight * resolutionFactor,
                                    false);
+
+        if (this.effectComposer != undefined) {
+            this.effectComposer.setSize(this.WebGLRenderer.getSize());
+        }
+
         this.WebGLRenderer.domElement.style.width  = this.DOMManager.WebGLContainer.clientWidth  + 'px';
         this.WebGLRenderer.domElement.style.height = this.DOMManager.WebGLContainer.clientHeight + 'px';
         /* Update this.SceneDispatcher.currentVLabScene.currentCamera aspect according to WebGLRenderer size */
@@ -324,7 +347,7 @@ password: '123'
                 type: 'framerequest',
                 target: this.WebGLRendererCanvas
             });
-            this.render();
+            this.render(time);
             TWEEN.update(time);
             if (this.nature.simpleStats) this.DOMManager.simpleStats.end();
             /*<dev>*/
@@ -339,14 +362,15 @@ password: '123'
      *
      * @memberof VLab
      */
-    render() {
+    render(time) {
+        let delta = this.clock.getDelta();
         this.WebGLRenderer.clear();
         if (this.effectComposer) {
-            this.effectComposer.render();
+            this.effectComposer.render(delta);
         } else {
             this.WebGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
         }
-        this.fps = 1 / this.clock.getDelta();
+        this.fps = 1 / delta;
         requestAnimationFrame(this.requestAnimationFrame.bind(this));
     }
 }

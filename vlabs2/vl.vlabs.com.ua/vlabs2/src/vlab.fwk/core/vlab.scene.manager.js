@@ -52,7 +52,10 @@ class VLabSceneManager {
          */
         this.performance = {
             performanceManagerInterval: null,
-            lowFPSDetected: 0
+            lowFPSThreshold: 30,
+            lowFPSDetected: 0,
+            lowMemoryThreshold: 50.0 * 1048576,
+            lowMemory: false
         };
     }
     /**
@@ -61,18 +64,20 @@ class VLabSceneManager {
      * @memberof VLabSceneManager
      */
     configure() {
+        /**
+         * Fix of glitch / weird rendering when {@link VLab#setupWebGLRenderer} forcedly called;
+         * Add extremely small Sprite to eliminate the glitch
+         * Comment and call {@link VLab#setupWebGLRenderer} with forcedly to see what happens without fix ;)
+         */
         if (this.vLabScene.getObjectByName('antiGlitchSprite') == undefined) {
-            /**
-             * Fix of glitch (?) weird rendering with Sprite
-             * Make Sprite rendered for a moment to eliminate the glitch
-             * Comment to see what happens without fix ;)
-             */
             var sprite = new THREE.Sprite();
             sprite.name = 'antiGlitchSprite';
             sprite.scale.set(1e-10, 1e-10, 1e-10);
             this.vLabScene.add(sprite);
         }
+
         if (this.configured) return Promise.resolve();
+
         return new Promise((resolve, reject) => {
             /**
              * Configure Scene background
@@ -183,16 +188,16 @@ class VLabSceneManager {
                         }
                     }
                 });
-                this.vLab.outlinePass.setSelection(preselectedInteractablesSceneObjects);
-                if (!this.vLab.outlinePass.renderToScreen) {
-                    this.vLab.effectComposer.addPass(this.vLab.outlinePass);
-                    this.vLab.renderPass.renderToScreen = false;
-                    this.vLab.outlinePass.renderToScreen = true;
+                if (preselectedInteractablesSceneObjects.length > 0) {
+                    this.vLab.outlineEffect.setSelection(preselectedInteractablesSceneObjects);
+                    if (!this.vLab.outlinePass.renderToScreen) {
+                        this.vLab.renderPass.renderToScreen = false;
+                        this.vLab.outlinePass.renderToScreen = true;
+                    }
                 }
             } else {
                 if (this.vLab.outlinePass.renderToScreen) {
-                    this.vLab.outlinePass.clearSelection();
-                    this.vLab.effectComposer.removePass(this.vLab.outlinePass);
+                    this.vLab.outlineEffect.clearSelection();
                     this.vLab.outlinePass.renderToScreen = false;
                     this.vLab.renderPass.renderToScreen = true;
                 }
@@ -481,7 +486,7 @@ class VLabSceneManager {
      * Performance manager
      */
     performanceManager() {
-        if (this.vLab.fps < 30) {
+        if (this.vLab.fps < this.performance.lowFPSThreshold) {
             if (this.performance.lowFPSDetected < 0) this.performance.lowFPSDetected = 0;
             if (this.performance.lowFPSDetected > 5) {
                 /**
@@ -503,6 +508,17 @@ class VLabSceneManager {
                 }
             } else {
                 if (this.performance.lowFPSDetected  > -10) this.performance.lowFPSDetected--;
+            }
+        }
+        /**
+         * Memory threshold check
+         */
+        if (window.performance && window.performance.memory) {
+            let memoryLeft = window.performance.memory.totalJSHeapSize - window.performance.memory.usedJSHeapSize;
+            if (memoryLeft < this.performance.lowMemoryThreshold) {
+                this.performance.lowMemory = true;
+            } else {
+                this.performance.lowMemory = false;
             }
         }
     }
