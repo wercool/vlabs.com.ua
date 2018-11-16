@@ -72,6 +72,9 @@ class VLabDOMManager {
             }).then(() => {
                 let materialIconsCSSFontPreloader = document.createElement('li');
                 materialIconsCSSFontPreloader.style.position = 'fixed';
+                materialIconsCSSFontPreloader.style.left = '50%';
+                materialIconsCSSFontPreloader.style.top = '50%';
+                materialIconsCSSFontPreloader.style.fontSize = '1px';
                 materialIconsCSSFontPreloader.style.zIndex = 0;
                 materialIconsCSSFontPreloader.className = 'material-icons';
                 materialIconsCSSFontPreloader.innerHTML = 'fiber_manual_record';
@@ -136,9 +139,9 @@ class VLabDOMManager {
                         this.simpleStats = new Stats();
                         this.simpleStats.domElement.id = 'simpleStats';
                         this.simpleStats.domElement.style.position = 'absolute';
+                        this.simpleStats.domElement.style.zIndex = 10000;
                         this.simpleStats.domElement.style.left = '0px';
                         this.simpleStats.domElement.style.top = '0px';
-                        this.simpleStats.domElement.style.zIndex = 3;
                         this.container.appendChild(this.simpleStats.domElement);
                         if (this.vLab.nature.simpleStats === false) this.simpleStats.domElement.style.display = 'none';
                     }

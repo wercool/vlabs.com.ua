@@ -32,6 +32,15 @@ class VLabInventory extends VLabScene {
          */
         this.items = {};
         /**
+         * Interactables in the Inventory
+         * {
+         *      interactable: interactable,
+         *      thumbnail: thumbnail,
+         *      container: itemContainer
+         * }
+         */
+        this.selectedItem = undefined;
+        /**
          * Inventory open button
          */
         this.opentButton = undefined;
@@ -39,6 +48,10 @@ class VLabInventory extends VLabScene {
          * Inventory opentButton icon
          */
         this.opentButtonIcon = undefined;
+        /**
+         * Thumbnail size
+         */
+        this.thumbnailSize = 200;
 
         /**
          * Initialize inventory; VLabInventory contructor called;
@@ -63,31 +76,51 @@ class VLabInventory extends VLabScene {
                     .then(() => {
 
                         /**
+                         * Disable pan on this.currentControls
+                         */
+                        this.currentControls.enablePan = false;
+
+                        /**
                          * WebGLRenderer, PerspectiveCamera for rendering Inventory items for getting their thumbnails
                          */
                         this.thumbsWebGLRenderer = new THREE.WebGLRenderer({
                             antialias: true,
                             precision: 'lowp'
                         });
-                        this.thumbsWebGLRenderer.setSize(100, 100, false);
+
+                        this.thumbsWebGLRenderer.setSize(this.thumbnailSize, this.thumbnailSize, false);
                         this.thumbsWebGLRenderer.setClearColor(0x747a7c);
-                        this.thumbsWebGLRenderer.domElement.style.width  = '100px';
-                        this.thumbsWebGLRenderer.domElement.style.height = '100px';
+                        this.thumbsWebGLRenderer.domElement.style.width  = this.thumbnailSize + 'px';
+                        this.thumbsWebGLRenderer.domElement.style.height = this.thumbnailSize + 'px';
 
                         this.thumbsCanvas = document.createElement('canvas');
-                        this.thumbsCanvas.width  = 100;
-                        this.thumbsCanvas.height = 100;
+                        this.thumbsCanvas.width  = this.thumbnailSize;
+                        this.thumbsCanvas.height = this.thumbnailSize;
                         this.thumbsCanvasCtx = this.thumbsCanvas.getContext('2d');
 
-                        this.thumbsCamera = new THREE.PerspectiveCamera(50, 1.0, 0.1, 10);
+                        this.thumbsCamera = new THREE.PerspectiveCamera(50, 1.0, 0.01, 10);
                         this.thumbsCamera.updateProjectionMatrix();
-                        this.thumbsCamera.position.copy(new THREE.Vector3(0.5, 0.5, 0.5));
+                        this.thumbsCamera.position.copy(new THREE.Vector3(1.0, 1.0, 1.0));
                         this.thumbsCamera.lookAt(new THREE.Vector3(0.0, 0.0, 0.0));
 
 
                         /**
                          * Build HTML elements
                          */
+                        this.inventoryContainer = document.createElement('div');
+                        this.inventoryContainer.id = 'inventoryContainer';
+                        this.inventoryContainer.style.display = 'none';
+
+                        this.inventoryContainerScrollArea = document.createElement('div');
+                        this.inventoryContainerScrollArea.id = 'inventoryContainerScrollArea';
+                        this.inventoryContainer.appendChild(this.inventoryContainerScrollArea);
+
+                        /**
+                         * Add this.inventoryContainer to this.DOMManager.container
+                         * {@link VLabDOMManager#container}
+                         */
+                        this.vLab.DOMManager.container.appendChild(this.inventoryContainer);
+
                         this.button = document.createElement('div');
                         this.button.id = 'inventoryButton';
 
@@ -139,15 +172,15 @@ class VLabInventory extends VLabScene {
                          */
 
                         /*<dev>*/
-                            var axesHelper = new THREE.AxesHelper(10);
-                            this.add(axesHelper);
+                            this.axesHelper = new THREE.AxesHelper(10);
+                            this.add(this.axesHelper);
                             console.info("10m AxesHelper added to VLabInventory");
                         /*</dev>*/
 
                         this.currentCamera.near = 0.01;
                         this.currentCamera.far = 10.0;
 
-                        this.currentCamera.position.copy(new THREE.Vector3(0.5, 0.5, 0.5));
+                        this.currentCamera.position.copy(new THREE.Vector3(1.0, 1.0, 1.0));
 
                         var pointLight = new THREE.PointLight(0xffffff, 2.0, 5.0);
                         pointLight.position.set(0.0, 2.5, 0.0);
@@ -169,12 +202,15 @@ class VLabInventory extends VLabScene {
      */
     onActivated() {
         this.closeButtonIcon.classList.remove('hidden');
+        this.inventoryContainer.style.display = 'block';
+        this.setSelectedItem();
     }
     /**
      * VLab Scene onDeactivated abstract function implementation.
      *
      */
     onDeactivated() {
+        this.inventoryContainer.style.display = 'none';
         this.closeButtonIcon.classList.add('hidden');
         this.resetView();
     }
@@ -182,7 +218,24 @@ class VLabInventory extends VLabScene {
      * Sets this.currentCamera position and update this.currentControls.target
      */
     resetView() {
-        this.currentCamera.position.copy(new THREE.Vector3(0.5, 0.5, 0.5));
+
+        let cameraPos = 1.0;
+
+        if (this.selectedItem !== undefined) {
+            this.selectedItem.interactable.vLabSceneObject.geometry.computeBoundingSphere();
+
+            /**
+             * Set camera position to 2 * bouding sphere radius
+             */
+            cameraPos = this.selectedItem.interactable.vLabSceneObject.geometry.boundingSphere.radius * 2;
+        }
+
+        if (cameraPos <= this.currentCamera.near) {
+            cameraPos = this.currentCamera.near * 2;
+        }
+
+        this.currentCamera.position.copy(new THREE.Vector3(cameraPos, cameraPos, cameraPos));
+        this.thumbsCamera.position.copy(new THREE.Vector3(cameraPos, cameraPos, cameraPos));
 
         this.currentControls.target = new THREE.Vector3(0.0, 0.0, 0.0);
         this.currentControls.reset();
@@ -211,11 +264,50 @@ class VLabInventory extends VLabScene {
         this.vLab.SceneDispatcher.currentVLabScene.dePreselectInteractables();
     }
     /**
+     * Sets selected Inventory item
+     * @param {Object} selectedItem     - if undefined, process this.selectedItem
+     */
+    setSelectedItem(selectedItem) {
+        for (let itemName in this.items) {
+            this.items[itemName].interactable.vLabSceneObject.visible = false;
+            if (this.items[itemName].container) {
+                this.selectedItem.container.removeAttribute('selected');
+                this.selectedItem.container.classList.remove('inventoryItemContainerSelected');
+            }
+        }
+        if (selectedItem !== undefined) {
+            this.selectedItem = selectedItem;
+        }
+
+        this.selectedItem.interactable.vLabSceneObject.getObjectByName(this.selectedItem.interactable.vLabSceneObject.name + '_BOUNDS').visible = false;
+
+        this.selectedItem.interactable.vLabSceneObject.visible = true;
+
+        this.resetView();
+
+        this.selectedItem.interactable.vLabSceneObject.lookAt(this.currentCamera.position.clone());
+
+        if ( this.selectedItem.container) {
+            this.selectedItem.container.setAttribute('selected', 'true');
+            this.selectedItem.container.classList.add('inventoryItemContainerSelected');
+
+            this.inventoryContainerScrollArea.scrollTop = this.selectedItem.container.offsetTop;
+        }
+    }
+    /**
+     * Sets selected Inventory item by interactable.vLabSceneObject.name
+     */
+    setSelectedItemByName(itemName) {
+        this.setSelectedItem(this.items[itemName]);
+    }
+    /**
      * Removes {interactable} from interactable.vLabScene.interactables;
      * Appends VLabSceneInteractable to this.VLabScene.interactables
      * @param {VLabSceneInteractable} interactable 
      */
     addInteractable(interactable) {
+
+        this.items[interactable.vLabSceneObject.name] = {};
 
         let self = this;
 
@@ -268,38 +360,52 @@ class VLabInventory extends VLabScene {
             this.appendInteractable(siblingInteractable);
         });
 
-        interactable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, 0.0, 0.0));
+        interactable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, 0.0, 0.0).sub(interactable.centerObject3D.position));
         interactable.vLabSceneObject.quaternion.copy(new THREE.Quaternion(0.0, 0.0, 0.0, 0.0));
         interactable.vLabSceneObject.scale.copy(new THREE.Vector3(1.0, 1.0, 1.0));
 
+        /**
+         * Add interactable.vLabSceneObject to this.Scene
+         */
         this.add(interactable.vLabSceneObject);
 
-        interactable.vLabSceneObject.getObjectByName(interactable.vLabSceneObject.name + '_BOUNDS').visible = false;
+        /**
+         * Add interactable of taken VLabSceneInteractable into this.items
+         */
+        this.items[interactable.vLabSceneObject.name]['interactable'] = interactable;
 
-        interactable.vLabSceneObject.visible = true;
-
-        interactable.vLabSceneObject.lookAt(new THREE.Vector3(0.5, 0.5, 0.5));
+        /**
+         * Set added as selected Inventory item
+         */
+        this.setSelectedItem(this.items[interactable.vLabSceneObject.name]);
 
         this.vLab.EventDispatcher.notifySubscribers({
             target: 'VLabScene',
             type: 'interactablePut'
         });
 
-        this.resetView();
+        /*<dev>*/
+            this.axesHelper.visible = false;
+        /*</dev>*/
 
+        this.thumbsWebGLRenderer.clear();
         this.thumbsWebGLRenderer.render(this, this.thumbsCamera);
 
+        /*<dev>*/
+            this.axesHelper.visible = true;
+        /*</dev>*/
+
         let animationTime = 2000;
-        let thumbnail = new Image(100, 100);
+        let thumbnail = new Image(this.thumbnailSize, this.thumbnailSize);
         thumbnail.src = this.thumbsWebGLRenderer.domElement.toDataURL();
         thumbnail.onload = function () {
             let thumbnail = this;
 
-            self.thumbsCanvasCtx.clearRect(0, 0, 100, 100);
+            self.thumbsCanvasCtx.clearRect(0, 0, self.thumbnailSize, self.thumbnailSize);
             self.thumbsCanvasCtx.save();
-            self.thumbsCanvasCtx.translate(50, 50);
+            self.thumbsCanvasCtx.translate(self.thumbnailSize / 2, self.thumbnailSize / 2);
             self.thumbsCanvasCtx.rotate(135.0 * Math.PI / 180);
-            self.thumbsCanvasCtx.drawImage(thumbnail, -50, -50);
+            self.thumbsCanvasCtx.drawImage(thumbnail, -self.thumbnailSize / 2, -self.thumbnailSize / 2);
             self.addedThumbnail.style.backgroundImage = 'url("' + self.thumbsCanvas.toDataURL() + '")';
             self.thumbsCanvasCtx.restore();
             
@@ -332,12 +438,26 @@ class VLabInventory extends VLabScene {
 
 
             /**
-             * Add taken VLabSceneInteractable into this.items
+             * VLabInventory Item object actualization
              */
-            self.items[interactable.vLabSceneObject.name] = {
-                interactable: interactable,
-                thumbnail: thumbnail
-            }
+
+            /**
+             * Add thumbnail of taken VLabSceneInteractable into this.items
+             */
+            self.items[interactable.vLabSceneObject.name]['thumbnail'] = thumbnail;
+
+            let itemContainer = document.createElement('div');
+            itemContainer.id = 'inventoryItemContainer_' + interactable.vLabSceneObject.name;
+            itemContainer.className = 'inventoryItemContainer';
+            itemContainer.style.backgroundImage = 'url("' + thumbnail.src + '")';
+            itemContainer.setAttribute('itemName', interactable.vLabSceneObject.name);
+            itemContainer.onclick = itemContainer.ontouchstart = self.onItemContainerHandler.bind(self);
+            self.inventoryContainerScrollArea.appendChild(itemContainer);
+
+            /**
+             * Add container of taken VLabSceneInteractable into this.items
+             */
+            self.items[interactable.vLabSceneObject.name]['container'] = itemContainer;
         }
 
     }
@@ -348,6 +468,26 @@ class VLabInventory extends VLabScene {
      */
     take(putObj) {
         console.log(putObj);
+    }
+    /**
+     * Handle itemContainer onclick / ontouchstart events
+     */
+    onItemContainerHandler(event) {
+        event.stopPropagation();
+        let itemContainer = event.target;
+        for (let itemName in this.items) {
+            if (itemName !== itemContainer.getAttribute('itemName')) {
+                this.items[itemName]['container'].removeAttribute('preSelected');
+                this.items[itemName]['container'].classList.remove('inventoryItemContainerPreSelected');
+            }
+        }
+
+        if (itemContainer.getAttribute('preSelected') === 'true') {
+            this.setSelectedItemByName(itemContainer.getAttribute('itemName'));
+        } else {
+            itemContainer.setAttribute('preSelected', 'true');
+            itemContainer.classList.add('inventoryItemContainerPreSelected');
+        }
     }
 }
 export default VLabInventory;

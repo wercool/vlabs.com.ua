@@ -1,20 +1,64 @@
 :root {
-    --screenDependentSize: 20mm;
+    --screenDependentContainerSize: 50mm;
+    --screenDependentButtonSize: 20mm;
 }
 @media (max-width: 600px) {
     :root {
-        --screenDependentSize: 20mm;
+        --screenDependentContainerSize: 50mm;
+        --screenDependentButtonSize: 20mm;
     }
 }
 @media (max-width: 400px) {
     :root {
-        --screenDependentSize: 15mm;
+        --screenDependentContainerSize: 30mm;
+        --screenDependentButtonSize: 15mm;
     }
+}
+#inventoryContainer {
+    z-index: 4;
+    position: absolute;
+    top: 0;
+    bottom: calc(22% + 2px);
+    left: 0;
+    width: var(--screenDependentContainerSize);
+border: solid 1px #ec16ff;
+}
+#inventoryContainerScrollArea {
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    left: 2px;
+    right: 2px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+border: solid 1px #161aff;
+}
+.inventoryItemContainer {
+    position: relative;
+    float: left;
+    width: calc(100% - 7px);
+    height: calc(var(--screenDependentContainerSize) - 10px);
+    padding: 2px;
+    margin-top: 2px;
+    background-color: #747a7c;
+    background-repeat: no-repeat;
+    background-size: cover;
+    cursor: pointer;
+    border: solid 1px #dddddd;
+    border-radius: 8px;
+    opacity: 0.95;
+}
+.inventoryItemContainerPreSelected {
+    box-shadow: 0 0 4px 1px yellow inset;
+}
+.inventoryItemContainerSelected {
+    box-shadow: 0 0 16px 2px rgb(91, 255, 25) inset;
 }
 #inventoryButton {
     z-index: 4;
-    width: var(--screenDependentSize);
-    height: var(--screenDependentSize);
+    width: var(--screenDependentButtonSize);
+    height: var(--screenDependentButtonSize);
     position: absolute;
     cursor: pointer;
     pointer-events: auto;
@@ -23,7 +67,7 @@
 border: solid 1px #ff6016;
 }
 #inventoryOpenButtonIcon {
-    font-size: var(--screenDependentSize);
+    font-size: var(--screenDependentButtonSize);
     color: #575757;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -43,7 +87,7 @@ border: solid 1px #ff6016;
     position: absolute;
     top: 30%;
     left: 25%;
-    font-size: calc(var(--screenDependentSize) / 2);
+    font-size: calc(var(--screenDependentButtonSize) / 2);
     color: #ffffff;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
