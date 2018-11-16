@@ -268,30 +268,32 @@ class VLabInventory extends VLabScene {
      * @param {Object} selectedItem     - if undefined, process this.selectedItem
      */
     setSelectedItem(selectedItem) {
-        for (let itemName in this.items) {
-            this.items[itemName].interactable.vLabSceneObject.visible = false;
-            if (this.items[itemName].container) {
-                this.selectedItem.container.removeAttribute('selected');
-                this.selectedItem.container.classList.remove('inventoryItemContainerSelected');
+        if (this.selectedItem !== undefined || selectedItem !== undefined) {
+            for (let itemName in this.items) {
+                this.items[itemName].interactable.vLabSceneObject.visible = false;
+                if (this.items[itemName].container) {
+                    this.selectedItem.container.removeAttribute('selected');
+                    this.selectedItem.container.classList.remove('inventoryItemContainerSelected');
+                }
             }
-        }
-        if (selectedItem !== undefined) {
-            this.selectedItem = selectedItem;
-        }
+            if (selectedItem !== undefined) {
+                this.selectedItem = selectedItem;
+            }
 
-        this.selectedItem.interactable.vLabSceneObject.getObjectByName(this.selectedItem.interactable.vLabSceneObject.name + '_BOUNDS').visible = false;
+            this.selectedItem.interactable.vLabSceneObject.getObjectByName(this.selectedItem.interactable.vLabSceneObject.name + '_BOUNDS').visible = false;
 
-        this.selectedItem.interactable.vLabSceneObject.visible = true;
+            this.selectedItem.interactable.vLabSceneObject.visible = true;
 
-        this.resetView();
+            this.resetView();
 
-        this.selectedItem.interactable.vLabSceneObject.lookAt(this.currentCamera.position.clone());
+            this.selectedItem.interactable.vLabSceneObject.lookAt(this.currentCamera.position.clone());
 
-        if ( this.selectedItem.container) {
-            this.selectedItem.container.setAttribute('selected', 'true');
-            this.selectedItem.container.classList.add('inventoryItemContainerSelected');
+            if ( this.selectedItem.container) {
+                this.selectedItem.container.setAttribute('selected', 'true');
+                this.selectedItem.container.classList.add('inventoryItemContainerSelected');
 
-            this.inventoryContainerScrollArea.scrollTop = this.selectedItem.container.offsetTop;
+                this.inventoryContainerScrollArea.scrollTop = this.selectedItem.container.offsetTop;
+            }
         }
     }
     /**
@@ -401,14 +403,26 @@ class VLabInventory extends VLabScene {
         thumbnail.onload = function () {
             let thumbnail = this;
 
+            /**
+             * Drop shape
+             */
+            // self.thumbsCanvasCtx.clearRect(0, 0, self.thumbnailSize, self.thumbnailSize);
+            // self.thumbsCanvasCtx.save();
+            // self.thumbsCanvasCtx.translate(self.thumbnailSize / 2, self.thumbnailSize / 2);
+            // self.thumbsCanvasCtx.rotate(135.0 * Math.PI / 180);
+            // self.thumbsCanvasCtx.drawImage(thumbnail, -self.thumbnailSize / 2, -self.thumbnailSize / 2);
+            // self.addedThumbnail.style.backgroundImage = 'url("' + self.thumbsCanvas.toDataURL() + '")';
+            // self.thumbsCanvasCtx.restore();
+
+            /**
+             * Rectangular shape
+             */
             self.thumbsCanvasCtx.clearRect(0, 0, self.thumbnailSize, self.thumbnailSize);
             self.thumbsCanvasCtx.save();
-            self.thumbsCanvasCtx.translate(self.thumbnailSize / 2, self.thumbnailSize / 2);
-            self.thumbsCanvasCtx.rotate(135.0 * Math.PI / 180);
-            self.thumbsCanvasCtx.drawImage(thumbnail, -self.thumbnailSize / 2, -self.thumbnailSize / 2);
+            self.thumbsCanvasCtx.drawImage(thumbnail, 0.0, 0.0);
             self.addedThumbnail.style.backgroundImage = 'url("' + self.thumbsCanvas.toDataURL() + '")';
             self.thumbsCanvasCtx.restore();
-            
+
             self.addedThumbnail.style.setProperty('opacity', 1.0);
 
             let marginTop = -90;
@@ -438,7 +452,11 @@ class VLabInventory extends VLabScene {
 
 
             /**
+             * 
+             * 
              * VLabInventory Item object actualization
+             * 
+             * 
              */
 
             /**

@@ -72,12 +72,12 @@ class VLabDOMManager {
             }).then(() => {
                 let materialIconsCSSFontPreloader = document.createElement('li');
                 materialIconsCSSFontPreloader.style.position = 'fixed';
-                materialIconsCSSFontPreloader.style.left = '50%';
-                materialIconsCSSFontPreloader.style.top = '50%';
-                materialIconsCSSFontPreloader.style.fontSize = '1px';
+                materialIconsCSSFontPreloader.style.left = 'calc(50% - 6px)';
+                materialIconsCSSFontPreloader.style.top = 'calc(50% - 6px)';
+                materialIconsCSSFontPreloader.style.fontSize = '12px';
                 materialIconsCSSFontPreloader.style.zIndex = 0;
                 materialIconsCSSFontPreloader.className = 'material-icons';
-                materialIconsCSSFontPreloader.innerHTML = 'fiber_manual_record';
+                materialIconsCSSFontPreloader.innerHTML = 'hourglass_empty';
                 document.body.appendChild(materialIconsCSSFontPreloader);
                 this.addStyle({
                     id: 'globalCSS',
