@@ -123,7 +123,7 @@ export default class CarrierTPWEM01 {
                                                             width: 256px; \
                                                             height: 256px; \
                                                             left: 2px; \
-                                                            top: 165px; \
+                                                            top: 240px; \
                                                             opacity: 0.50; \
                                                             z-index: 50000; \
                                                             z-index: 50000; \

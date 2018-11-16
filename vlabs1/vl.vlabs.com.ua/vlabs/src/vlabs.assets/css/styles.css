@@ -471,16 +471,34 @@ input:checked + .toggleSlider:before {
 .sttingsButton {
     position: absolute;
     cursor: pointer;
-    width: 10vmin;
-    height: 10vmin;
-    max-width: 48px;
-    max-height: 48px;
-    left: 85px;
-    top: 0px;
+    width: 80px;
+    height: 80px;
+    left: 0;
+    top: 50px;
     z-index: 50000;
     background-image: url("../img/settings.png");
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: cover;
+}
+
+.sttingsButtonPointer {
+    width: 96px;
+    height: 64px;
+    background-image: url("../img/left-left-v1.png");
+    background-repeat: no-repeat;
+    margin-left: 42px;
+    margin-top: 10px;
+
+    animation-name: bounceTabletButtonPointer;
+    animation-timing-function: ease-in-out;
+    animation-duration: 2.2s;
+    animation-iteration-count: infinite;
+
+    /* For Chrome & Safari */
+   -webkit-animation-name: bounceTabletButtonPointer;
+   -webkit-animation-timing-function: ease-in-out;
+   -webkit-animation-duration: 2.2s;
+   -webkit-animation-iteration-count: infinite;
 }
 
 .settingsViewContainer {
@@ -565,7 +583,7 @@ input:checked + .toggleSlider:before {
     max-width: 80px;
     max-height: 113px;
     left: 0px;
-    top: 50px;
+    top: 125px;
     z-index: 50000;
     background-image: url("../img/tablet.png");
     background-repeat: no-repeat;

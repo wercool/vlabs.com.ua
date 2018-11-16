@@ -235,7 +235,8 @@ export default class Tablet {
     }
 
     modeActivateButtonPressed() {
-        if (this.modeActivationButton.innerHTML == this.modeActivationButton.getAttribute('confirmInnerHTML')) {
+        // if (this.modeActivationButton.innerHTML == this.modeActivationButton.getAttribute('confirmInnerHTML')) {
+        if (true) {
             if (this.initObj.content.tabs[this.currentSelectedTabId].setModeCallBack !== undefined) {
                 this.initObj.content.tabs[this.currentSelectedTabId].setModeCallBack.call(this.context);
             }

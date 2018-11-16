@@ -21,6 +21,11 @@ export default class Settings {
         document.body.appendChild(this.settingsButton);
         this.settingsButton.style.display = 'none';
 
+        this.settingsButtonPointer = document.createElement('div');
+        this.settingsButtonPointer.id = this.context.name + 'settingsButtonPointer';
+        this.settingsButtonPointer.className = 'sttingsButtonPointer';
+        this.settingsButton.appendChild(this.settingsButtonPointer);
+
         this.container = document.createElement('div');
         this.container.id = this.context.name + 'SettingsViewContainer';
         this.container.className = 'settingsViewContainer';
@@ -86,6 +91,7 @@ export default class Settings {
     activate() {
         this.container.style.display = 'block';
         this.settingsButton.style.display = 'none';
+        this.settingsButtonPointer.style.display = 'none';
         if (this.vLabLocator.currentLocationVLab.statsTHREE) {
             this.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.display = 'none';
             this.vLabLocator.currentLocationVLab.statsTHREE.domElement.style.visibility = 'hidden';

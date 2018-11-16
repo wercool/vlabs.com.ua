@@ -95,10 +95,6 @@ export default class VlabHVACBaseHeatPump extends VLab {
         this.loadScene().then((vLabScene) => {
             this.setVLabScene(vLabScene);
 
-            if (this.vLabLocator.initObj.locationInitialized) {
-                this.vLabLocator.initObj.locationInitialized.call(this.vLabLocator.context, { location: this.name });
-            }
-
             this.light0 = new THREE.AmbientLight(0xffffff, 0.4);
             this.vLabScene.add(this.light0);
 
@@ -201,6 +197,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
                 target: new THREE.Vector3(0.0, 0.5, 0.0),
                 completeCallBack: this.serviceLocationPositioningCompleted
             });
+
+            if (this.vLabLocator.initObj.locationInitialized) {
+                this.onVLabResumeAndShow();
+                this.vLabLocator.initObj.locationInitialized.call(this.vLabLocator.context, { location: this.name });
+            }
 
             console.log(this.name + " initialized");
         }).catch(error => {

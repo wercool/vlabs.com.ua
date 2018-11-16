@@ -118,11 +118,11 @@ class HVACVLabBase {
                             },
                             {
                                 label: 'Look through Air Handler service panels',
-                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsAirHandlerLookThroughPanelsCheckbox"><span class="toggleSlider round"></span></label>'
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsAirHandlerLookThroughPanelsCheckbox" checked><span class="toggleSlider round"></span></label>'
                             },
                             {
                                 label: 'Look through Air Handler duct',
-                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsAirHandlerLookThroughDuctCheckbox"><span class="toggleSlider round"></span></label>'
+                                innerHTML: '<label class="switch"><input type="checkbox" id="SettingsAirHandlerLookThroughDuctCheckbox" checked><span class="toggleSlider round"></span></label>'
                             }
                         ]
                     },
@@ -281,12 +281,16 @@ class HVACVLabBase {
 
     onSettingsOpened() {
         this.vLabLocator.locations['HVACBaseAirHandler'].carrierTPWEM01.setOnScreenHelperDisplay(false);
+        this.tablet.tabletShortToast.style.display = 'none';
+        if (this.selectedModeStuckInInterval !== undefined) clearInterval(this.selectedModeStuckInInterval);
     }
 
     onSettingsClosed() {
         if (this.vLabLocator.currentLocationVLab == this.vLabLocator.locations['HVACBaseHeatPump']) {
             this.vLabLocator.locations['HVACBaseHeatPump'].toggleThermostatOnScreenHelper();
         }
+        if (this.selectedModeStuckInInterval !== undefined) clearInterval(this.selectedModeStuckInInterval);
+        this.selectedModeStuckInInterval = setInterval(this.selectedModeStuckInProcessor.bind(this), 1000);
     }
 
     onTabletOpened() {
@@ -318,9 +322,10 @@ class HVACVLabBase {
     }
 
     locationInitialized(initObj) {
-        // console.log(initObj.location);
         this.settings.showButton();
         this.tablet.showButton();
+
+        this.settingsClosed();
 
         if (this.selectedModeStuckInInterval !== undefined) clearInterval(this.selectedModeStuckInInterval);
         this.selectedModeStuckInInterval = setInterval(this.selectedModeStuckInProcessor.bind(this), 1000);
@@ -345,6 +350,7 @@ class HVACVLabBase {
         var SettingsHeatPumpRefrigerantAnimatedCheckbox = document.getElementById('SettingsHeatPumpRefrigerantAnimatedCheckbox');
 
         for (var locationName in this.locationInitObjs) {
+
             if (this.vLabLocator.locations[locationName] !== undefined) {
                 /* General Settings -> Resolution */
                 this.vLabLocator.locations[locationName].nature.resolutionFactor = (SettingsResolutionSlider.value / 100.0).toFixed(2);
@@ -359,6 +365,7 @@ class HVACVLabBase {
                 if (this.vLabLocator.locations[locationName].toggleSounds !== undefined) {
                     this.vLabLocator.locations[locationName].toggleSounds();
                 }
+
                 /* Indoor (Air Handler) Location Settings -> Ceiling ventilation grids airflow */
                 if (locationName == 'HVACBaseAirHandler') {
 
