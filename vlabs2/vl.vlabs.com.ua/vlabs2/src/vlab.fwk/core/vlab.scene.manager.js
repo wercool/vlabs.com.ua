@@ -54,10 +54,15 @@ class VLabSceneManager {
             performanceManagerInterval: null,
             lowFPSThreshold: 30,
             lowFPSDetected: 0,
-            lowMemoryThreshold: 5.0 * 1048576,
+            lowMemoryThreshold: 1.0 * 1048576,
             lowMemoryDetected: 0,
             lowMemory: false
         };
+        /**
+         * THREE.Clock
+         * @public
+         */
+        this.clock = new THREE.Clock();
     }
     /**
      * Configures VLab Scene with {@link VLabScene#nature}.
@@ -529,6 +534,44 @@ class VLabSceneManager {
                 this.performance.lowMemoryDetected = 0;
             }
         }
+    }
+    /**
+     * Return currently assigned {interactable} materials
+     * @param {VLabSceneInteractable} interactable
+     */
+    getInteractableMaterials(interactable) {
+        let interactableMaterials = {};
+        interactable.vLabSceneObject.traverse((sibling) => {
+            if (sibling.type == 'Mesh' && sibling.name.indexOf('_OUTLINE') == -1) {
+                interactableMaterials[sibling.uuid] = sibling.material;
+                let takenObjectMaterial = new THREE.MeshBasicMaterial();
+                if (sibling.material.map) {
+                    takenObjectMaterial.map = sibling.material.map;
+                } else {
+                    takenObjectMaterial.color = sibling.material.color;
+                }
+                takenObjectMaterial.side = sibling.material.side;
+                takenObjectMaterial.needsUpdate = true;
+                sibling.material = takenObjectMaterial;
+            }
+        });
+        return interactableMaterials;
+    }
+    /**
+     * Reset 'Take' items in menus of VLabSceneInteractables
+     */
+    resetTakeItemsInMenus() {
+        this.vLab.SceneDispatcher.scenes.forEach((vLabScene) => {
+            for (let interactableName in vLabScene.interactables) {
+                let menuItemId = 0;
+                vLabScene.interactables[interactableName].menu.forEach((menuItem) => {
+                    if (menuItem.label == 'Take') {
+                        vLabScene.interactables[interactableName].menu[menuItemId].enabled = true;
+                    }
+                    menuItemId++;
+                });
+            }
+        });
     }
 }
 export default VLabSceneManager;

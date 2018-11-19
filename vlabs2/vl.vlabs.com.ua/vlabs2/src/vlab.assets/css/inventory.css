@@ -21,7 +21,7 @@
     bottom: calc(22% + 2px);
     left: 0;
     width: var(--screenDependentContainerSize);
-border: solid 1px #ec16ff;
+/* border: solid 1px #ec16ff; */
 }
 #inventoryContainerScrollArea {
     position: absolute;
@@ -32,7 +32,7 @@ border: solid 1px #ec16ff;
     overflow-x: hidden;
     overflow-y: auto;
     scroll-behavior: smooth;
-border: solid 1px #161aff;
+/* border: solid 1px #161aff; */
 }
 .inventoryItemContainer {
     position: relative;
@@ -43,8 +43,9 @@ border: solid 1px #161aff;
     margin-top: 2px;
     background-color: #747a7c;
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: contain;
     cursor: pointer;
+    background-position: center;
     border: solid 1px #dddddd;
     border-radius: 8px;
     opacity: 0.95;
@@ -55,6 +56,20 @@ border: solid 1px #161aff;
 .inventoryItemContainerSelected {
     box-shadow: 0 0 16px 2px rgb(91, 255, 25) inset;
 }
+#inventoryExpandIcon {
+    z-index: 4;
+    position: absolute;
+    width: var(--screenDependentButtonSize);
+    height: var(--screenDependentButtonSize);
+    font-size: var(--screenDependentButtonSize);
+    top: calc(50% - var(--screenDependentButtonSize) * 1.5);
+    left: 4px;
+    color: rgb(228, 228, 228);
+    cursor: pointer;
+    pointer-events: auto;
+    border: solid 2px rgb(150, 150, 150);
+    border-radius: 10px;
+}
 #inventoryButton {
     z-index: 4;
     width: var(--screenDependentButtonSize);
@@ -64,7 +79,8 @@ border: solid 1px #161aff;
     pointer-events: auto;
     bottom: 0px;
     left: 0px;
-border: solid 1px #ff6016;
+    border: solid 2px rgb(150, 150, 150);
+    border-radius: 10px;
 }
 #inventoryOpenButtonIcon {
     font-size: var(--screenDependentButtonSize);
@@ -111,23 +127,6 @@ border: solid 1px #ff6016;
     background-color: #2385ac;
     border-radius: 50%;
 }
-/* Drop shape */
-/* #inventoryAddedThumbnail {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    top: 0;
-    left: calc(50% - 50px);
-    margin-top: -90px;
-    margin-left: 0;
-    border-radius: 0 50% 50% 50%;
-    transform: rotate(-135deg);
-    border: solid 2px #ffffff;
-    background-color: #747a7c;
-    background-repeat: no-repeat;
-    background-size: cover;
-    pointer-events: auto;
-} */
 #inventoryAddedThumbnail {
     position: absolute;
     width: 100px;
@@ -141,5 +140,34 @@ border: solid 1px #ff6016;
     background-color: #747a7c;
     background-repeat: no-repeat;
     background-size: cover;
+    pointer-events: none;
+}
+#inventoryTakeButton {
+    z-index: 4;
+    width: var(--screenDependentButtonSize);
+    height: var(--screenDependentButtonSize);
+    position: absolute;
+    cursor: pointer;
     pointer-events: auto;
+    top: 0px;
+    left: 0px;
+    border: solid 2px rgb(150, 150, 150);
+    border-radius: 10px;
+}
+#inventoryTakeButtonIcon {
+    font-size: calc(var(--screenDependentButtonSize) * 0.85);
+    color: #575757;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    text-shadow: 0px 1px 1px rgb(201, 201, 201),
+                 0px 2px 1px #a7a7a7,
+                 0px 3px 1px #ccc,
+                 0px 2px 1px #c5c5c5,
+                 0px 2px 1px #c1c1c1,
+                 0px 3px 1px rgb(119, 119, 119),
+                 0px 3px 1px #777;
 }

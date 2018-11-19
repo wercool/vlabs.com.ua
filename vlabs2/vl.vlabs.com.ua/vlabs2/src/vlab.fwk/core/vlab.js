@@ -354,20 +354,23 @@ password: '123'
             }
         }
         /* Sets WebGLRenderer size according to this.nature.WebGLRendererParameters.resolutionFactor if defined */
-        this.WebGLRenderer.setSize(this.DOMManager.WebGLContainer.clientWidth  * resolutionFactor, 
-                                   this.DOMManager.WebGLContainer.clientHeight * resolutionFactor,
-                                   false);
+        if (this.WebGLRenderer != undefined) {
+            this.WebGLRenderer.setSize(this.DOMManager.WebGLContainer.clientWidth  * resolutionFactor, 
+                                    this.DOMManager.WebGLContainer.clientHeight * resolutionFactor,
+                                    false);
 
-        if (this.effectComposer != undefined) {
-            this.effectComposer.setSize(this.WebGLRenderer.getSize());
+            this.WebGLRenderer.domElement.style.width  = this.DOMManager.WebGLContainer.clientWidth  + 'px';
+            this.WebGLRenderer.domElement.style.height = this.DOMManager.WebGLContainer.clientHeight + 'px';
         }
 
-        this.WebGLRenderer.domElement.style.width  = this.DOMManager.WebGLContainer.clientWidth  + 'px';
-        this.WebGLRenderer.domElement.style.height = this.DOMManager.WebGLContainer.clientHeight + 'px';
         /* Update this.SceneDispatcher.currentVLabScene.currentCamera aspect according to WebGLRenderer size */
         if (this.SceneDispatcher.currentVLabScene.currentCamera) {
             this.SceneDispatcher.currentVLabScene.currentCamera.aspect = (this.WebGLRendererCanvas.clientWidth / this.WebGLRendererCanvas.clientHeight);
             this.SceneDispatcher.currentVLabScene.currentCamera.updateProjectionMatrix();
+        }
+
+        if (this.effectComposer != undefined) {
+            this.effectComposer.setSize(this.WebGLRenderer.getSize());
         }
     }
     /**

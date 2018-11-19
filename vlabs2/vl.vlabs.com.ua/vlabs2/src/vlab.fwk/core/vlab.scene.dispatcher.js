@@ -265,30 +265,15 @@ class VLabSceneDispatcher {
      * 
      * @param {VLabSceneInteractable} takenInteractable
      */
-    setTakenInteractable(takenInteractable) {
+    setTakenInteractable(takenInteractable, putObjInsist) {
         this.takenInteractable = takenInteractable;
         this.takenInteractable.taken = true;
 
         this.takenInteractable.vLabSceneObject.visible = false;
 
-        let beforeTakenMaterials = {};
+        let beforeTakenMaterials = this.currentVLabScene.manager.getInteractableMaterials(takenInteractable);
 
-        this.takenInteractable.vLabSceneObject.traverse((sibling) => {
-            if (sibling.type == 'Mesh' && sibling.name.indexOf('_OUTLINE') == -1) {
-                beforeTakenMaterials[sibling.uuid] = sibling.material;
-                let takenObjectMaterial = new THREE.MeshBasicMaterial();
-                if (sibling.material.map) {
-                    takenObjectMaterial.map = sibling.material.map;
-                } else {
-                    takenObjectMaterial.color = sibling.material.color;
-                }
-                takenObjectMaterial.side = sibling.material.side;
-                takenObjectMaterial.needsUpdate = true;
-                sibling.material = takenObjectMaterial;
-            }
-        });
-
-        let putObj = {
+        let putObj = (putObjInsist !== undefined) ? putObjInsist :  {
             scene: this.currentVLabScene,
             parent: this.takenInteractable.vLabSceneObject.parent,
             position: this.takenInteractable.vLabSceneObject.position.clone(),
@@ -313,10 +298,10 @@ class VLabSceneDispatcher {
         this.takenInteractable.updateMenuWithMenuItem({
             label: 'Put back',
             icon: '<i class="material-icons">undo</i>',
-            enabled: true,
+            enabled: (this.currentVLabScene.constructor.name !== 'VLabInventory') ? true : false,
             action: this.takenInteractable.put,
             context: this.takenInteractable,
-            originalScene: this.currentVLabScene,
+            originalScene: (putObjInsist && putObjInsist.scene) ? putObjInsist.scene : this.currentVLabScene,
             args: putObj
         }, true);
 
@@ -326,6 +311,7 @@ class VLabSceneDispatcher {
         this.takenInteractable.vLabSceneObject.geometry.computeBoundingSphere();
         let scaleFactor = 0.01 / (this.takenInteractable.vLabSceneObject.geometry.boundingSphere.radius * this.takenInteractable.vLabSceneObject.scale.z);
         let untakenScale = this.takenInteractable.vLabSceneObject.scale.clone().z;
+        this.takenInteractable.vLabSceneObject.quaternion.copy(new THREE.Quaternion(0.0, 0.0, 0.0, 0.0));
         this.takenInteractable.vLabSceneObject.scale.multiplyScalar(scaleFactor);
         this.takenInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, -0.04, -0.11)).sub(this.takenInteractable.vLabSceneObject.geometry.boundingSphere.center.multiplyScalar(scaleFactor));
 
@@ -422,17 +408,11 @@ class VLabSceneDispatcher {
         this.takenInteractable.taken = false;
         this.takenInteractable = null;
 
-        this.scenes.forEach((vLabScene) => {
-            for (let interactableName in vLabScene.interactables) {
-                let menuItemId = 0;
-                vLabScene.interactables[interactableName].menu.forEach((menuItem) => {
-                    if (menuItem.label == 'Take') {
-                        vLabScene.interactables[interactableName].menu[menuItemId].enabled = true;
-                    }
-                    menuItemId++;
-                });
-            }
-        });
+        /**
+         * Reset 'Take' items in menus of VLabSceneInteractables
+         * {@link VLabSceneManager#resetTakeItemsInMenus}
+         */
+        this.currentVLabScene.manager.resetTakeItemsInMenus();
 
         this.vLab.EventDispatcher.notifySubscribers({
             target: 'VLabScene',
@@ -493,7 +473,7 @@ class VLabSceneDispatcher {
      */
     takeInteractableToInventory(interactable) {
         if (this.vLab.Inventory) {
-            this.vLab.Inventory.addInteractable(interactable);
+            return this.vLab.Inventory.addInteractable(interactable);
         }
     }
 }

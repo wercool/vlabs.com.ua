@@ -324,7 +324,10 @@ class VLabSceneInteractable {
      * @abstract
      */
     takeToInventory() {
-        this.vLab.SceneDispatcher.takeInteractableToInventory(this);
+        return new Promise((resolve) => {
+            this.vLab.SceneDispatcher.takeInteractableToInventory(this)
+            .then((inventoryItem) => resolve(inventoryItem));
+        });
     }
     /**
      * Selects this VLabSceneInteractable
@@ -591,6 +594,7 @@ class VLabSceneInteractable {
      * @abstract
      */
     touchstartHandler(event) {
+        event.stopPropagation();
         if (!this.action(event)) {
             if (this.intersection) {
                 if (this.preselectable && !this.preselected && !this.selected) {
@@ -615,6 +619,7 @@ class VLabSceneInteractable {
      * @abstract
      */
     touchendHandler(event) {
+        event.stopPropagation();
         if (this.intersection) {
             this.preselect();
         }
@@ -778,6 +783,8 @@ class VLabSceneInteractable {
             let yPos = menuCoords.y + (yPosDelta < 0 ? yPosDelta : 0);
             this.menuContainer.style.left = (xPos > 0 ? xPos : 0).toFixed(0) + 'px';
             this.menuContainer.style.top = (yPos > 0 ? yPos : 0).toFixed(0) + 'px';
+
+            this.vLabScene.manager.clock.getDelta();
         }
     }
     /**
@@ -785,8 +792,11 @@ class VLabSceneInteractable {
      */
     hideMenu() {
         if (this.menuContainer) {
-            this.vLab.DOMManager.container.removeChild(this.menuContainer);
-            this.menuContainer = null;
+            let delta = this.vLabScene.manager.clock.getDelta();
+            if (delta > 0.1) {
+                this.vLab.DOMManager.container.removeChild(this.menuContainer);
+                this.menuContainer = null;
+            }
         }
         /*<dev>*/
             this['DEV'].hideMenu();
