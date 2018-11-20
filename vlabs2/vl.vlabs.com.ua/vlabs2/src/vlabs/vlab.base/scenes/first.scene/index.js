@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import VLabScene from '../../../../vlab.fwk/core/vlab.scene';
 import VLabSceneTransitor from '../../../../vlab.fwk/aux/scene/vlab.scene.transitor';
 import VLabSceneLocator  from '../../../../vlab.fwk/aux/scene/vlab.scene.locator';
+import VLabZoomHelper  from '../../../../vlab.fwk/aux/scene/vlab.zoom.helper';
 
 class FirstScene extends VLabScene {
     constructor(iniObj) {
@@ -36,6 +37,13 @@ class FirstScene extends VLabScene {
             position: new THREE.Vector3(0.0, 0.0, 6.0),
             target: this.getObjectByName('OWONSmartDS7102').position.clone(),
             name: 'OsciloscopeViewLocation'
+        });
+
+        new VLabZoomHelper({
+            vLabScene: this,
+            position: new THREE.Vector3(-5.0, 0.0, 5.0),
+            tooltip: 'Zoom to<br/>BigSphereScale_025Test',
+            name: 'BigSphereScale_025Test'
         });
 
         this.interactables['PlaneTest'].addRespondent({
