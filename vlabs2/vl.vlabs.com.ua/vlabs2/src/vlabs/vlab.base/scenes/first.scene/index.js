@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import VLabScene from '../../../../vlab.fwk/core/vlab.scene';
 import VLabSceneTransitor from '../../../../vlab.fwk/aux/scene/vlab.scene.transitor';
+import VLabSceneLocator  from '../../../../vlab.fwk/aux/scene/vlab.scene.locator';
 
 class FirstScene extends VLabScene {
     constructor(iniObj) {
@@ -20,6 +21,21 @@ class FirstScene extends VLabScene {
             targetVLabScene: this.vLab.SceneDispatcher.getSceneByClassName('SecondScene'),
             position: new THREE.Vector3(4.0, 0.0, 0.0),
             tooltip: 'Go to <b>Second Scene</b>'
+        });
+
+        new VLabSceneLocator({
+            vLabScene: this,
+            position: this.currentCamera.position.clone(),
+            target: this.currentControls.target.clone(),
+            tooltip: 'Initial location',
+            name: 'InitialLocation'
+        });
+
+        new VLabSceneLocator({
+            vLabScene: this,
+            position: new THREE.Vector3(0.0, 0.0, 6.0),
+            target: this.getObjectByName('OWONSmartDS7102').position.clone(),
+            name: 'OsciloscopeViewLocation'
         });
 
         this.interactables['PlaneTest'].addRespondent({

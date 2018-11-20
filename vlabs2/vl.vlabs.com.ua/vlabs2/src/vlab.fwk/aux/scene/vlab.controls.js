@@ -12,6 +12,14 @@ class VLabControls {
 
         this.enabled = false;
         this.active = false;
+
+        /**
+         * THREE.Clock
+         * @public
+         */
+        this.clock = new THREE.Clock();
+
+        this.clock.getDelta();
     }
     /**
      * VLabControls update abstract function.
@@ -34,6 +42,13 @@ class VLabControls {
      * @abstract
      */
     reset() { console.log('reset() abstract method not implemented in ' + this.constructor.name); }
+    /**
+     * VLabControls set lookAt target.
+     *
+     * @memberof VLabControls
+     * @abstract
+     */
+    setTarget() { console.log('setTarget() abstract method not implemented in ' + this.constructor.name); }
     /**
      * VLabControls default event handler / router; could be overridden in inheritor.
      *

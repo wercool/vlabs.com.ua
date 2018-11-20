@@ -86,7 +86,7 @@ export function textureFromMaterialIcon(params) {
     let ctx = canvas.getContext('2d');
     canvas.width = canvas.height = params.sizeP2;
     ctx.font = params.sizeP2 + 'px Material Icons';
-    ctx.fillStyle = '#00ff00';
+    ctx.fillStyle = (params.color) ? params.color : '#00ff00';
     ctx.fillText(params.icon, 0, params.sizeP2);
 
     // ctx.strokeStyle = '#ff0000';

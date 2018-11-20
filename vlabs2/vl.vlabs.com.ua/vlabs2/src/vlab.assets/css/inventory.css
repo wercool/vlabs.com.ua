@@ -1,6 +1,9 @@
 :root {
     --screenDependentContainerSize: 50mm;
     --screenDependentButtonSize: 20mm;
+    --screenDependentButtonBorderRadius: 10px;
+    --screenDependentAddedIconSize: 16px;
+    --screenDependentAddedFontSize: 12px;
 }
 @media (max-width: 600px) {
     :root {
@@ -12,16 +15,34 @@
     :root {
         --screenDependentContainerSize: 30mm;
         --screenDependentButtonSize: 15mm;
+        --screenDependentAddedIconSize: 10px;
+        --screenDependentAddedFontSize: 8px;
+    }
+}
+@media (max-height: 600px) {
+    :root {
+        --screenDependentButtonSize: 12mm;
+        --screenDependentButtonBorderRadius: 8px;
+        --screenDependentAddedIconSize: 10px;
+        --screenDependentAddedFontSize: 6px;
+    }
+}
+@media (max-height: 400px) {
+    :root {
+        --screenDependentButtonSize: 8mm;
+        --screenDependentButtonBorderRadius: 4px;
+        --screenDependentAddedIconSize: 10px;
+        --screenDependentAddedFontSize: 6px;
     }
 }
 #inventoryContainer {
     z-index: 4;
     position: absolute;
     top: 0;
-    bottom: calc(22% + 2px);
+    bottom: calc(22% + 4px);
     left: 0;
     width: var(--screenDependentContainerSize);
-/* border: solid 1px #ec16ff; */
+/* border: 1px solid #ec16ff; */
 }
 #inventoryContainerScrollArea {
     position: absolute;
@@ -32,7 +53,10 @@
     overflow-x: hidden;
     overflow-y: auto;
     scroll-behavior: smooth;
-/* border: solid 1px #161aff; */
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 0px 2px 2px 2px #ffffff25;
+/* border: 1px solid #161aff; */
 }
 .inventoryItemContainer {
     position: relative;
@@ -46,7 +70,7 @@
     background-size: contain;
     cursor: pointer;
     background-position: center;
-    border: solid 1px #dddddd;
+    border: 1px solid #dddddd;
     border-radius: 8px;
     opacity: 0.95;
 }
@@ -67,7 +91,7 @@
     color: rgb(228, 228, 228);
     cursor: pointer;
     pointer-events: auto;
-    border: solid 2px rgb(150, 150, 150);
+    border: 1px solid rgb(150, 150, 150);
     border-radius: 10px;
 }
 #inventoryButton {
@@ -79,8 +103,8 @@
     pointer-events: auto;
     bottom: 0px;
     left: 0px;
-    border: solid 2px rgb(150, 150, 150);
-    border-radius: 10px;
+    border: 1px solid rgb(150, 150, 150);
+    border-radius: var(--screenDependentButtonBorderRadius);
 }
 #inventoryOpenButtonIcon {
     font-size: var(--screenDependentButtonSize);
@@ -114,16 +138,16 @@
 }
 #inventoryAddedIcon {
     position: absolute;
-    width: 16px;
-    height: 16px;
+    width: var(--screenDependentAddedIconSize);
+    height: var(--screenDependentAddedIconSize);
     top: 20%;
     left: 5%;
-    font-size: 12px;
+    font-size: var(--screenDependentAddedFontSize);
     font-weight: bold;
     line-height: 16px;
     color: rgb(255, 255, 255);
     text-align: center;
-    border: solid 2px #ffffff;
+    border: 2px solid #ffffff;
     background-color: #2385ac;
     border-radius: 50%;
 }
@@ -136,7 +160,7 @@
     margin-top: -90px;
     margin-left: 0;
     border-radius: 10px;
-    border: solid 2px #ffffff;
+    border: 2px solid #ffffff;
     background-color: #747a7c;
     background-repeat: no-repeat;
     background-size: cover;
@@ -151,8 +175,8 @@
     pointer-events: auto;
     top: 0px;
     left: 0px;
-    border: solid 2px rgb(150, 150, 150);
-    border-radius: 10px;
+    border: 1px solid rgb(150, 150, 150);
+    border-radius: var(--screenDependentButtonBorderRadius);
 }
 #inventoryTakeButtonIcon {
     font-size: calc(var(--screenDependentButtonSize) * 0.85);
@@ -165,9 +189,9 @@
     user-select: none;
     text-shadow: 0px 1px 1px rgb(201, 201, 201),
                  0px 2px 1px #a7a7a7,
-                 0px 3px 1px #ccc,
+                 0px 2px 1px #ccc,
                  0px 2px 1px #c5c5c5,
                  0px 2px 1px #c1c1c1,
-                 0px 3px 1px rgb(119, 119, 119),
-                 0px 3px 1px #777;
+                 0px 2px 1px rgb(119, 119, 119),
+                 0px 2px 1px #777;
 }

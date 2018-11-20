@@ -792,6 +792,9 @@ class VLabSceneInteractable {
      */
     hideMenu() {
         if (this.menuContainer) {
+            /**
+             * Press Event dumper
+             */
             let delta = this.vLabScene.manager.clock.getDelta();
             if (delta > 0.1) {
                 this.vLab.DOMManager.container.removeChild(this.menuContainer);

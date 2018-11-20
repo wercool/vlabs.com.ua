@@ -26,6 +26,10 @@ class VLabEventDispatcher {
                 keydown:    {},
                 message:    {}
             },
+            document: {
+                onfullscreenchange:     {},
+                onfullscreenerror:      {}
+            },
             WebGLRendererCanvas: {
                 mousedown:          {},
                 mouseup:            {},
@@ -77,6 +81,14 @@ class VLabEventDispatcher {
         window.addEventListener('resize',   this.onWindowResize.bind(this),     false);
         window.addEventListener('keydown',  this.onWindowKeyDown.bind(this),    false);
         window.addEventListener('message',  this.onWindowMessage.bind(this),    false);
+
+        /**
+         * Fullscreen change listeners
+         */
+        document.addEventListener('webkitfullscreenchange', this.onFullscreenchange.bind(this), false);
+        document.addEventListener('mozfullscreenchange', this.onFullscreenchange.bind(this), false);
+        document.addEventListener('fullscreenchange', this.onFullscreenchange.bind(this), false);
+        document.addEventListener('MSFullscreenChange', this.onFullscreenchange.bind(this), false);
     }
     /**
      * VLabEventDispatcher event subscription.
@@ -140,6 +152,16 @@ class VLabEventDispatcher {
                     this.eventSubscribers[event.target][event.type][eventSubscriberName].callback.call(this.eventSubscribers[event.target][event.type][eventSubscriberName].subscriber, event);
                 }
             break;
+            default:
+                /**
+                 * Fullscreen change event
+                 */
+                if (event.type == 'webkitfullscreenchange' || event.type == 'mozfullscreenchange' || event.type == 'fullscreenchange' || event.type == 'MSFullscreenChange') {
+                    for (let eventSubscriberName in this.eventSubscribers['document']['onfullscreenchange']) {
+                        this.eventSubscribers['document']['onfullscreenchange'][eventSubscriberName].callback.call(this.eventSubscribers['document']['onfullscreenchange'][eventSubscriberName].subscriber, event);
+                    }
+                }
+            break;
         }
         if (!this.vLab.renderPaused) {
             switch (event.target) {
@@ -186,6 +208,11 @@ class VLabEventDispatcher {
     onWindowMessage(event) {
         this.notifySubscribers(event);
     }
+    /* document event handlers */
+    onFullscreenchange(event) {
+        this.notifySubscribers(event);
+    }
+
     /* Mouse event handlers */
     onWebGLRendererCanvasMouseDown(event) {
         this.vLab.SceneDispatcher.currentVLabScene.eventCoords.set(event.x, event.y);

@@ -66,6 +66,22 @@ class VLabPanel {
                 this.VLabPanelRightContainer.id = 'VLabPanelRightContainer';
                 this.VLabPanelContainer.appendChild(this.VLabPanelRightContainer);
 
+                this.fullScreenButton = document.createElement('div');
+                this.fullScreenButton.id = 'fullscreenButton';
+                this.fullScreenButton.classList.add('material-icons', 'settingsButtons');
+                this.fullScreenButton.innerHTML = 'fullscreen';
+                this.fullScreenButton.onclick = this.fullScreenButton.touchend = this.vLab.DOMManager.requestFullscreen.bind(this.vLab.DOMManager);
+
+                this.VLabPanelRightContainer.appendChild(this.fullScreenButton);
+
+                this.settingsButton = document.createElement('div');
+                this.settingsButton.id = 'settingsButton';
+                this.settingsButton.classList.add('material-icons', 'settingsButtons');
+                this.settingsButton.innerHTML = 'settings';
+                // this.settingsButton.onclick = this.settingsButton.touchend = this.vLab.DOMManager.requestFullscreen.bind(this.vLab.DOMManager);
+
+                this.VLabPanelRightContainer.appendChild(this.settingsButton);
+
                 /**
                  * Subscrive to events
                  */
@@ -138,7 +154,8 @@ class VLabPanel {
     conformVLabPanelCenterContainer() {
         if (this.vLab.SceneDispatcher.takenInteractable) {
             let vLabContainerRatio = this.vLab.DOMManager.container.clientWidth / this.vLab.DOMManager.container.clientHeight;
-            this.VLabPanelCenterContainer.style.width = 'calc(20% / ' + vLabContainerRatio + ')';
+            let calcWidth = 20 / vLabContainerRatio;
+            this.VLabPanelCenterContainer.style.width = calcWidth + '%';
             this.VLabPanelCenterContainer.style.display = 'table-cell';
             this.VLabPanelLeftContainer.style.width = 'auto';
             this.VLabPanelRightContainer.style.width = 'auto';

@@ -25,6 +25,10 @@ class VLabDOMManager {
          */
         this.vLab = vLab;
         /**
+         * Name on VLabDOMManager
+         */
+        this.name = 'VLabDOMManager';
+        /**
          * VLab DOM CSS styles
          * @public
          */
@@ -156,6 +160,18 @@ class VLabDOMManager {
                         this.rendererStats.domElement.style.zIndex = 3;
                         this.container.appendChild(this.rendererStats.domElement);
                     /*</dev>*/
+
+                    /**
+                     * Subscrive to events
+                     */
+                    this.vLab.EventDispatcher.subscribe({
+                        subscriber: this,
+                        events: {
+                            document: {
+                                onfullscreenchange: this.onFullscreenchange
+                            },
+                        }
+                    });
 
                     /**
                      * 
@@ -320,6 +336,55 @@ class VLabDOMManager {
             this.VLabSceneSharedAssets.sceneLoader.classList.add('hidden');
             this.VLabSceneSharedAssets.sceneAutoLoader.style.display = 'inline';
             this.VLabSceneSharedAssets.sceneLoaderContainer.style.pointerEvents = 'none';
+        }
+    }
+    /**
+     * Request fullscreen
+     */
+    requestFullscreen(event) {
+        event.stopPropagation();
+        let fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
+        // in fullscreen mode fullscreenElement won't be null
+
+        if (fullscreenElement == null) {
+            if (this.container.requestFullscreen) {
+                this.container.requestFullscreen();
+            } else if (this.container.mozRequestFullScreen) { /* Firefox */
+                this.container.mozRequestFullScreen();
+            } else if (this.container.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                this.container.webkitRequestFullscreen();
+            } else if (this.container.msRequestFullscreen) { /* IE/Edge */
+                this.container.msRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+            }
+        }
+    }
+    /**
+     * Fullscreen change listener
+     */
+    onFullscreenchange(event) {
+        let fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
+        // in fullscreen mode fullscreenElement won't be null
+        if (fullscreenElement == null) {
+            /**
+             * Change this.vLabPanel.fullScreenButton icon if this.vLabPanel.fullScreenButton exists
+             */
+            if (this.vLabPanel.fullScreenButton !== undefined) {
+                this.vLabPanel.fullScreenButton.innerHTML = 'fullscreen';
+            }
+        } else {
+            if (this.vLabPanel.fullScreenButton !== undefined) {
+                this.vLabPanel.fullScreenButton.innerHTML = 'fullscreen_exit';
+            }
         }
     }
 }

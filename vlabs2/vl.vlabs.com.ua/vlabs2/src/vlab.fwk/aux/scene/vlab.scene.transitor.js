@@ -15,6 +15,7 @@ class VLabSceneTransitor extends VLabSceneInteractable {
      * @param {VLab}                initObj.vLabScene                 - VLabScene instance
      * @param {VLabScene}           initObj.targetVLabScene           - VLabScene instance which this VLabSceneTransitor transits to
      * @param {Vector3}             initObj.position                  - VLabSceneTransitor position in initObj.vLab.SceneDispatcher.currentVLabScene
+     * @param {number}              initObj.scaleFactor               - Scale factor for VLabSceneTransitor icon; default 1.0
      */
     constructor(initObj) {
         /**
@@ -41,10 +42,13 @@ class VLabSceneTransitor extends VLabSceneInteractable {
         this.selfInitObj = initObj;
         this.selfInitObj.scaleFactor = (initObj.scaleFactor) ? initObj.scaleFactor : 1.0;
 
+        /**
+         * Add to VLab prefabs if not exists yet
+         */
         if (!this.vLab.prefabs['VLabSceneTransitorPrefabs']) {
             this.vLab.prefabs['VLabSceneTransitorPrefabs'] = {};
 
-            let vLabSceneTransitorSpriteMaterialMap = VLabUtils.textureFromMaterialIcon({ icon: 'input', sizeP2: 64 });
+            let vLabSceneTransitorSpriteMaterialMap = VLabUtils.textureFromMaterialIcon({ icon: 'directions', sizeP2: 64 });
             vLabSceneTransitorSpriteMaterialMap.needsUpdate = true;
             this.vLab.prefabs['VLabSceneTransitorPrefabs']['VLabSceneTransitorSpriteMaterial'] = new THREE.SpriteMaterial({
                 map: vLabSceneTransitorSpriteMaterialMap,
@@ -61,6 +65,7 @@ class VLabSceneTransitor extends VLabSceneInteractable {
         vLabSceneTransitorInteractableObject.position.copy(this.selfInitObj.position);
         vLabSceneTransitorInteractableObject.scale.multiplyScalar(this.selfInitObj.scaleFactor);
         vLabSceneTransitorInteractableObject.name = 'VLabSceneTransitor_' + this.selfInitObj.targetVLabScene.name;
+
         this.vLabScene.add(vLabSceneTransitorInteractableObject);
 
         /**

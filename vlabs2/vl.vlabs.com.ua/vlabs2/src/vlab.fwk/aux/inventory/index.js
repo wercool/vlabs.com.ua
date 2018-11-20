@@ -249,6 +249,7 @@ class VLabInventory extends VLabScene {
         this.vLab.WebGLRendererCanvas.addEventListener('touchstart', this.onWebGLRendererCanvasPressed);
         this.expandInventoryItemList();
         this.updateTakeButtonState();
+        this.manager.clock.getDelta();
     }
     /**
      * VLab Scene onDeactivated abstract function implementation.
@@ -567,6 +568,8 @@ class VLabInventory extends VLabScene {
 
                 self.updateTakeButtonState();
 
+                self.setSelectedItem(self.items[interactable.vLabSceneObject.name]);
+
                 setTimeout(() => {
                     resolve(self.items[interactable.vLabSceneObject.name]);
                 }, 50);
@@ -577,28 +580,37 @@ class VLabInventory extends VLabScene {
      * Takes VLabSceneInteractable and sets it as taken
      */
     take() {
-        let beforeSwapSelectedItem = this.selectedItem;
         /**
-         * Swap if this.vLab.SceneDispatcher.takenInteractable
+         * Press Event dumper
          */
-        if (this.vLab.SceneDispatcher.takenInteractable) {
-            this.vLab.SceneDispatcher.takenInteractable.takeToInventory()
-            .then((inventoryItem) => {
-                this.setSelectedItem(inventoryItem);
-            });
+        let delta = this.manager.clock.getDelta();
+
+        if (delta > 0.25) {
+            let beforeSwapSelectedItem = this.selectedItem;
+            /**
+             * Swap if this.vLab.SceneDispatcher.takenInteractable
+             */
+            if (this.vLab.SceneDispatcher.takenInteractable) {
+                this.vLab.SceneDispatcher.takenInteractable.takeToInventory()
+                .then((inventoryItem) => {
+                    this.setSelectedItem(inventoryItem);
+                });
+            }
+            /**
+             * If Swap then select Inentory item that was selected before put of take Interactable to take it away (remove from Inventory)
+             */
+            if (beforeSwapSelectedItem) {
+                this.setSelectedItem(beforeSwapSelectedItem);
+            }
+            this.selectedItem.interactable.deSelect();
+            this.vLab.SceneDispatcher.setTakenInteractable(this.selectedItem.interactable, this.selectedItem.putObj);
+            this.inventoryContainerScrollArea.removeChild(this.selectedItem.container);
+            delete this.items[this.selectedItem.interactable.vLabSceneObject.name];
+            this.selectedItem = undefined;
+            this.updateTakeButtonState();
         }
-        /**
-         * If Swap then select Inentory item that was selected before put of take Interactable to take it away (remove from Inventory)
-         */
-        if (beforeSwapSelectedItem) {
-            this.setSelectedItem(beforeSwapSelectedItem);
-        }
-        this.selectedItem.interactable.deSelect();
-        this.vLab.SceneDispatcher.setTakenInteractable(this.selectedItem.interactable, this.selectedItem.putObj);
-        this.inventoryContainerScrollArea.removeChild(this.selectedItem.container);
-        delete this.items[this.selectedItem.interactable.vLabSceneObject.name];
-        this.selectedItem = undefined;
-        this.updateTakeButtonState();
+
+        this.manager.clock.getDelta();
     }
     /**
      * Handle itemContainer onclick / ontouchstart events

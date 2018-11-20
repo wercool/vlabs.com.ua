@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import * as TWEEN from '@tweenjs/tween.js';
 import VLabControls from './vlab.controls'
 
 /**
@@ -52,11 +53,32 @@ class VLabOrbitControls extends VLabControls {
         this.reset();
     }
     /**
+     * VLabControls setTarget abstract function implementation.
+     */
+    setTarget(target, duration = 1000) {
+        new TWEEN.Tween(this.target)
+        .to({x: target.x, y: target.y, z: target.z}, duration)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onUpdate(() => {
+            this.update();
+        })
+        .onComplete(() => {
+            this.update();
+        })
+        .start();
+    }
+    /**
      * VLabControls update abstract function implementation.
      *
      * @memberof VLabOrbitControls {@link VLabControls#update}
      */
     update() {
+        /**
+         * Update dumper (do not update if this.clock.getDelta() is too small, touch interface glitch)
+         */
+        let delta = this.clock.getDelta();
+        if (delta < 0.01) return;
+
         this.active = true;
 
         var offset = new THREE.Vector3();
