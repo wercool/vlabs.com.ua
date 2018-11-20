@@ -146,6 +146,7 @@ class VLabDOMManager {
                         this.simpleStats.domElement.style.zIndex = 10000;
                         this.simpleStats.domElement.style.left = '0px';
                         this.simpleStats.domElement.style.top = '0px';
+                        this.simpleStats.domElement.classList.add('nonSelectable');
                         this.container.appendChild(this.simpleStats.domElement);
                         if (this.vLab.nature.simpleStats === false) this.simpleStats.domElement.style.display = 'none';
                     }
@@ -158,6 +159,7 @@ class VLabDOMManager {
                         this.rendererStats.domElement.style.top = '0px';
                         this.rendererStats.domElement.style.right = '0px';
                         this.rendererStats.domElement.style.zIndex = 3;
+                        this.rendererStats.domElement.classList.add('nonSelectable');
                         this.container.appendChild(this.rendererStats.domElement);
                     /*</dev>*/
 

@@ -190,6 +190,8 @@ class VLabSceneDispatcher {
                                     vLabSceneClass: vLabScene.constructor.name
                                 });
 
+                                vLabScene.currentControls.update();
+
                                 resolve(vLabScene);
                             }, 250);
                         });

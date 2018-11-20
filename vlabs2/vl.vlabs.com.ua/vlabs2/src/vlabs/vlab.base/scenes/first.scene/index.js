@@ -42,6 +42,7 @@ class FirstScene extends VLabScene {
         new VLabZoomHelper({
             vLabScene: this,
             position: new THREE.Vector3(-5.0, 0.0, 5.0),
+            target: this.getObjectByName('BigSphereScale_025Test').position.clone(),
             tooltip: 'Zoom to<br/>BigSphereScale_025Test',
             name: 'BigSphereScale_025Test'
         });

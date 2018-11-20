@@ -89,3 +89,31 @@
     color: #d5daddcc;
     z-index: 10001;
 }
+/* Auxilaries */
+
+/* ZoomHelper */
+#zoomHelperStackContainer {
+    z-index: 4;
+    position: absolute;
+    text-align: center;
+    left: 20%;
+    right: 20%;
+    padding: 2px;
+    pointer-events: none;
+/* border: 1px solid red; */
+}
+.zoomHelperViewThumbnail {
+    border: 0.25mm solid rgba(238, 238, 238);
+    border-radius: 6px;
+    display: inline-block;
+    margin-left: 2px;
+    cursor: pointer;
+    pointer-events: auto;
+}
+.zoomHelperViewThumbnailIcon {
+    position: absolute;
+    font-size: 50px;
+    color: #ffffff83;
+    bottom: -25px;
+    left: calc(50% - 25px);
+}

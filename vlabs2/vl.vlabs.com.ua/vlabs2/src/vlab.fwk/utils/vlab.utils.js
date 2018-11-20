@@ -22,7 +22,7 @@ export function initializeVLabPrefabs(vLab) {
         vLabPrefabs['VLabSceneInteractablePrefabs'] = {};
         vLabPrefabs['VLabSceneInteractablePrefabs']['linePointGeometry'] = new THREE.SphereBufferGeometry(0.006, 3, 3);
         vLabPrefabs['VLabSceneInteractablePrefabs']['respondentReferenceLineMaterial'] = new THREE.LineBasicMaterial({ color: 0xfff6b7 });
-        vLabPrefabs['VLabSceneInteractablePrefabs']['respondentActionLineMaterial'] = new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 3.0 });
+        vLabPrefabs['VLabSceneInteractablePrefabs']['respondentActionLineMaterial'] = new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 2.0 });
         vLabPrefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial'] = new THREE.LineDashedMaterial({ color: 0xfff6b7, dashSize: 0.05, gapSize: 0.015 });
         vLabPrefabs['VLabSceneInteractablePrefabs']['respondentActionDashedLineMaterial'] = new THREE.LineDashedMaterial({ color: 0x91ff8e, dashSize: 0.05, gapSize: 0.015 });
         vLabPrefabs['VLabSceneInteractablePrefabs']['respondentIntersectionReferencePointMaterial'] = new THREE.MeshBasicMaterial({ color: 0xfff6b7, depthTest: false, side: THREE.BackSide });
