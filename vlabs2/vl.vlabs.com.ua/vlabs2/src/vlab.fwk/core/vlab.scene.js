@@ -105,6 +105,9 @@ class VLabScene extends THREE.Scene {
                     touchend:       this.onDefaultEventHandler,
                     touchmove:      this.onDefaultEventHandler,
                     framerequest:   this.onDefaultEventHandler,
+                },
+                window: {
+                    resize:     this.manager.onWindowResize,
                 }
             }
         };
@@ -224,6 +227,7 @@ class VLabScene extends THREE.Scene {
             this.manager.processInteractablesSelections();
             this.currentControls.depress();
             this.active = false;
+
             resolve(true);
         });
     }

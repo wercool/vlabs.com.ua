@@ -109,11 +109,14 @@
     margin-left: 2px;
     cursor: pointer;
     pointer-events: auto;
+    background-color: #747a7c;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
 }
 .zoomHelperViewThumbnailIcon {
-    position: absolute;
-    font-size: 50px;
-    color: #ffffff83;
-    bottom: -25px;
-    left: calc(50% - 25px);
+    font-family: 'Material Icons';
+    color: #ffffff93;
+    pointer-events: none;
+    margin: auto;
 }

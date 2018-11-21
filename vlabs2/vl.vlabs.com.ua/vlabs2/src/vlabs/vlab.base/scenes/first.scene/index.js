@@ -47,6 +47,14 @@ class FirstScene extends VLabScene {
             name: 'BigSphereScale_025Test'
         });
 
+        new VLabZoomHelper({
+            vLabScene: this,
+            position: this.getObjectByName('SmallSphereTest').position.clone().sub(new THREE.Vector3(0.25, -0.25, 0.25)),
+            target: this.getObjectByName('SmallSphereTest').position.clone(),
+            tooltip: 'Zoom to<br/>SmallSphereTest',
+            name: 'SmallSphereTest'
+        });
+
         this.interactables['PlaneTest'].addRespondent({
             interactable: this.interactables['Suzanne2'],
             callerInteractable: this.interactables['PlaneTest'],

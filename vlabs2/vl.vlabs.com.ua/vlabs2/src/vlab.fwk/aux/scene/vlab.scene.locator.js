@@ -97,6 +97,11 @@ class VLabSceneLocator extends VLabSceneInteractable {
      * Moves this.vLabScene to this.selfInitObj.position
      */
     move(initObj) {
+        /**
+         * Reset this.zoomHelperStack
+         */
+        this.vLabScene.manager.resetZoomHelperStack();
+
         new TWEEN.Tween(this.vLabScene.currentCamera.position)
         .to({x: initObj.position.x, y: initObj.position.y, z: initObj.position.z}, 1000)
         .easing(TWEEN.Easing.Quadratic.InOut)

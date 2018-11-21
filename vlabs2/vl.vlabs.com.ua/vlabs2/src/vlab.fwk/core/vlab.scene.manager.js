@@ -573,5 +573,32 @@ class VLabSceneManager {
             }
         });
     }
+    /**
+     * onWindowResize event handler
+     */
+    onWindowResize(event) {
+        /**
+         * See reference at {@link VLabZoomHelper}
+         */
+        if (this.zoomHelpersStack !== undefined) {
+            let ratio = this.vLab.WebGLRendererCanvas.width / this.vLab.WebGLRendererCanvas.height;
+            let viewThumbnailWidth = Math.round(this.vLab.WebGLRendererCanvas.width * 0.1);
+            let viewThumbnailHeight = Math.round(viewThumbnailWidth / ratio);
+            this.zoomHelpersStack.forEach((zoomHelper) => {
+                zoomHelper.beforeZoomState.viewThumbnail.style.width = viewThumbnailWidth + 'px';
+                zoomHelper.beforeZoomState.viewThumbnail.style.height = viewThumbnailHeight + 'px';
+                zoomHelper.beforeZoomState.viewThumbnailIcon.style.width = viewThumbnailWidth / 2 + 'px';
+                zoomHelper.beforeZoomState.viewThumbnailIcon.style.fontSize = zoomHelper.beforeZoomState.viewThumbnailIcon.style.width;
+            });
+        }
+    }
+    /**
+     * Reset zoomHelperStack
+     */
+    resetZoomHelperStack() {
+        if (this.vLabScene.zoomHelpersStack !== undefined && this.vLabScene.zoomHelpersStack.length > 0) {
+            this.vLabScene.zoomHelpersStack[0].clearStack();
+        }
+    }
 }
 export default VLabSceneManager;

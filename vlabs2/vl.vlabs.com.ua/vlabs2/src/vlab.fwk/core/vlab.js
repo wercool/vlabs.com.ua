@@ -404,8 +404,8 @@ password: '123'
      */
     render(time) {
         let delta = this.clock.getDelta();
-        this.WebGLRenderer.clear();
         if (this.effectComposer) {
+            this.WebGLRenderer.clear();
             this.effectComposer.render(delta);
         } else {
             this.WebGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);

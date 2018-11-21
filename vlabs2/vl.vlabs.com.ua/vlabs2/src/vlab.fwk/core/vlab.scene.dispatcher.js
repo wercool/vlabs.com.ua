@@ -146,6 +146,31 @@ class VLabSceneDispatcher {
                     this.vLab.WebGLRendererCanvasOverlay.classList.remove('hidden');
                     this.vLab.WebGLRendererCanvasOverlay.classList.add('visible');
                     this.sceneIsBeingActivated = vLabScene;
+
+                    /**
+                     * 
+                     * Special case of VLabScene is VLabInventory
+                     * 
+                     */
+                    if ((this.sceneIsBeingActivated.constructor.name == 'VLabInventory' 
+                        || this.currentVLabScene.constructor.name == 'VLabInventory')
+                     && this.vLab.DOMManager.container.zoomHelperStackContainer !== undefined) {
+                        if (this.sceneIsBeingActivated.constructor.name == 'VLabInventory') {
+                            this.vLab.DOMManager.container.zoomHelperStackContainer.style.display = 'none';
+                        }
+                        if (this.currentVLabScene.constructor.name == 'VLabInventory') {
+                            this.vLab.DOMManager.container.zoomHelperStackContainer.style.display = 'block';
+                        }
+                    } else {
+                        /**
+                         * Reset this.currentVLabScene.zoomHelperStack
+                         */
+                        if (this.currentVLabScene.manager) {
+                            this.currentVLabScene.manager.resetZoomHelperStack();
+                        }
+                    }
+
+
                     setTimeout(() => {
                         vLabScene.activate().then((vLabScene) => {
                             /**

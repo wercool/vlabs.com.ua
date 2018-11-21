@@ -69,9 +69,9 @@ class VLabZoomHelper extends VLabSceneInteractable {
             this.vLab.prefabs['VLabZoomHelperPrefabs']['VLabZoomHelperInteractableObjectGeometry'] = new THREE.SphereBufferGeometry(0.2, 4, 4);
 
             if (this.vLab.DOMManager.container.zoomHelperStackContainer == undefined) {
-                this.zoomHelperStackContainer = document.createElement('div');
-                this.zoomHelperStackContainer.id = 'zoomHelperStackContainer';
-                this.vLab.DOMManager.container.appendChild(this.zoomHelperStackContainer);
+                this.vLab.DOMManager.container.zoomHelperStackContainer = document.createElement('div');
+                this.vLab.DOMManager.container.zoomHelperStackContainer.id = 'zoomHelperStackContainer';
+                this.vLab.DOMManager.container.appendChild(this.vLab.DOMManager.container.zoomHelperStackContainer);
             }
         }
 
@@ -118,6 +118,8 @@ class VLabZoomHelper extends VLabSceneInteractable {
         }).then(() => {
             //initialization Promise resolved
         });
+
+        this.vLabScene.manager.clock.getDelta();
     }
     /**
      * Reposition this.selfInitObj.position
@@ -132,40 +134,62 @@ class VLabZoomHelper extends VLabSceneInteractable {
         this.deSelect();
         this.vLabSceneObject.visible = false;
 
+        /**
+         * Get this.vLab.WebGLRenderer current frame, disabling effectComposer
+         */
+        if (this.vLab.SceneDispatcher.takenInteractable) {
+            this.vLab.SceneDispatcher.takenInteractable.vLabSceneObject.visible = false;
+        }
+
         this.vLab.WebGLRenderer.render(this.vLabScene, this.vLabScene.currentCamera);
+
+        if (this.vLab.SceneDispatcher.takenInteractable) {
+            this.vLab.SceneDispatcher.takenInteractable.vLabSceneObject.visible = true;
+        }
 
         let currentVLabWebGLRendererFrameImage = new Image();
         currentVLabWebGLRendererFrameImage.src = this.vLab.WebGLRendererCanvas.toDataURL();
         currentVLabWebGLRendererFrameImage.onload = function() {
-            let ratio = currentVLabWebGLRendererFrameImage.width / currentVLabWebGLRendererFrameImage.height;
             let viewThumbnailCanvas = document.createElement('canvas');
             let viewThumbnailCanvasCtx = viewThumbnailCanvas.getContext('2d');
 
-            viewThumbnailCanvas.height = 100;
-            viewThumbnailCanvas.width = viewThumbnailCanvas.height * ratio;
+            let ratio = currentVLabWebGLRendererFrameImage.width / currentVLabWebGLRendererFrameImage.height;
+            viewThumbnailCanvas.width = Math.round(currentVLabWebGLRendererFrameImage.width * 0.1);
+            viewThumbnailCanvas.height = Math.round(viewThumbnailCanvas.width / ratio);
 
             viewThumbnailCanvasCtx.drawImage(currentVLabWebGLRendererFrameImage, 0, 0, viewThumbnailCanvas.width, viewThumbnailCanvas.height);
 
             let viewThumbnail = document.createElement('div');
             viewThumbnail.classList.add('zoomHelperViewThumbnail');
+
+            let viewThumbnailBackgroundImage = new Image();
+            viewThumbnailBackgroundImage.src = viewThumbnailCanvas.toDataURL();
+            viewThumbnailBackgroundImage.onload = function() {
+                viewThumbnail.style.backgroundImage = 'url("' + viewThumbnailBackgroundImage.src + '")';
+            }
             viewThumbnail.style.width = viewThumbnailCanvas.width + 'px';
             viewThumbnail.style.height = viewThumbnailCanvas.height + 'px';
-            viewThumbnail.style.backgroundImage = 'url("' + viewThumbnailCanvas.toDataURL() + '")';
-            viewThumbnail.classList.add('hidden');
+            viewThumbnail.style.display = 'none';
+            viewThumbnail.onclick = viewThumbnail.ontouchend = self.deactivate.bind(self);
 
             let viewThumbnailIcon = document.createElement('div');
-            viewThumbnailIcon.classList.add('material-icons', 'zoomHelperViewThumbnailIcon', 'nonSelectable');
-            viewThumbnailIcon.innerHTML = 'youtube_searched_for';
+            viewThumbnailIcon.classList.add('zoomHelperViewThumbnailIcon', 'nonSelectable');
+            viewThumbnailIcon.style.width = viewThumbnailCanvas.width / 2 + 'px';
+            viewThumbnailIcon.style.fontSize = viewThumbnailIcon.style.width;
+            viewThumbnailIcon.innerHTML = 'undo';
             viewThumbnail.appendChild(viewThumbnailIcon);
 
-            self.zoomHelperStackContainer.appendChild(viewThumbnail);
+            self.vLab.DOMManager.container.zoomHelperStackContainer.appendChild(viewThumbnail);
 
             self.beforeZoomState = {
                 viewThumbnail: viewThumbnail,
+                viewThumbnailIcon: viewThumbnailIcon,
                 currentCamera: {
                     position: self.vLabScene.currentCamera.position.clone()
                 },
-                currentControls: {},
+                currentControls: {
+                    target: self.vLabScene.currentControls.target.clone()
+                },
             };
 
             new TWEEN.Tween(self.vLabScene.currentCamera.position)
@@ -176,13 +200,58 @@ class VLabZoomHelper extends VLabSceneInteractable {
             })
             .onComplete(() => {
                 self.vLabScene.currentControls.update();
-                viewThumbnail.classList.remove('hidden');
-                console.log(self.vLabScene.zoomHelpersStack.indexOf(self));
+                viewThumbnail.style.display = 'inline-block';
                 self.vLabScene.zoomHelpersStack.push(self);
             })
             .start();
             self.vLabScene.currentControls.setTarget(initObj.target);
         };
+    }
+    /**
+     * Deactivates this zoomHelper
+     * @param {boolean} withoutAnimation        - not transition animation on true
+     */
+    deactivate(withoutAnimation) {
+        /**
+         * Press Event dumper
+         */
+        let delta = this.vLabScene.manager.clock.getDelta();
+        if (delta > 0.1) {
+            let revertPosition = this.beforeZoomState.currentCamera.position;
+            let revertControlsTarget = this.beforeZoomState.currentControls.target;
+
+            if (withoutAnimation == true) {
+                this.vLabScene.currentCamera.position.copy(revertPosition);
+                this.vLabScene.currentControls.target.copy(revertControlsTarget);
+                this.vLabScene.currentControls.update();
+            } else {
+                new TWEEN.Tween(this.vLabScene.currentCamera.position)
+                .to({x: revertPosition.x, y: revertPosition.y, z: revertPosition.z}, 1000)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .onUpdate(() => {
+                })
+                .onComplete(() => {
+                    this.vLabScene.currentControls.update();
+                    this.clearStack(this.vLabScene.zoomHelpersStack.indexOf(this));
+                })
+                .start();
+                this.vLabScene.currentControls.setTarget(revertControlsTarget);
+            }
+        }
+    }
+    /**
+     * Clear this.vLabScene.zoomHelpersStack
+     */
+    clearStack(fromIdx) {
+        if (fromIdx == undefined) {
+            this.vLabScene.zoomHelpersStack[0].deactivate(true);
+            fromIdx = 0;
+        }
+        let deletedZoomHelpers = this.vLabScene.zoomHelpersStack.splice(fromIdx);
+        deletedZoomHelpers.forEach((deletedZoomHelper) => {
+            this.vLab.DOMManager.container.zoomHelperStackContainer.removeChild(deletedZoomHelper.beforeZoomState.viewThumbnail);
+            deletedZoomHelper.vLabSceneObject.visible = true;
+        });
     }
 }
 export default VLabZoomHelper;
