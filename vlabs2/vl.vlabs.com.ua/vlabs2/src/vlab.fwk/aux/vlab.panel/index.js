@@ -82,6 +82,10 @@ class VLabPanel {
 
                 this.VLabPanelRightContainer.appendChild(this.settingsButton);
 
+                this.VLabPanelNotificationContainer = document.createElement('div');
+                this.VLabPanelNotificationContainer.id = 'VLabPanelNotificationContainer';
+                this.VLabPanelLeftContainer.appendChild(this.VLabPanelNotificationContainer);
+
                 /**
                  * Subscrive to events
                  */

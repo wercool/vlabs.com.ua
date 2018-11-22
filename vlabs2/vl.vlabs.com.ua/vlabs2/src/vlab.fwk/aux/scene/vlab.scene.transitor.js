@@ -40,6 +40,12 @@ class VLabSceneTransitor extends VLabSceneInteractable {
         super(interactableInitObj);
 
         this.selfInitObj = initObj;
+
+        /**
+         * Set name; needed for this.vLab.EventDispatcher.subscribe
+         */
+        this.name = 'VLabSceneTransitor_' + this.selfInitObj.targetVLabScene.name;
+
         this.selfInitObj.scaleFactor = (initObj.scaleFactor) ? initObj.scaleFactor : 1.0;
 
         /**
@@ -92,7 +98,34 @@ class VLabSceneTransitor extends VLabSceneInteractable {
                 },
                 tooltip: (this.selfInitObj.tooltip) ? this.selfInitObj.tooltip : undefined
             }
+        })
+        .then(() => {
+            if (this.selfInitObj.targetVLabScene.initObj.autoload == true && !this.selfInitObj.targetVLabScene.loaded) {
+                this.vLabSceneObject.visible = false;
+                this.vLab.EventDispatcher.subscribe({
+                    subscriber: this,
+                    events: {
+                        VLabScene: {
+                            loaded:      this.onTargetSceneLoaded,
+                        }
+                    }
+                });
+            }
         });
+    }
+    /**
+     * onTargetSceneLoaded
+     */
+    onTargetSceneLoaded(targetScene) {
+        this.vLab.EventDispatcher.unsubscribe({
+            subscriber: this,
+            events: {
+                VLabScene: {
+                    loaded:      this.onTargetSceneLoaded,
+                }
+            }
+        });
+        this.vLabSceneObject.visible = true;
     }
 }
 export default VLabSceneTransitor;

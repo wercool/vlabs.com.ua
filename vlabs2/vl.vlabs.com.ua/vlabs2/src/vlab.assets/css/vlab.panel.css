@@ -48,6 +48,13 @@
     width: auto;
 /* border: 1px solid blue; */
 }
+/* Notification container placed to the very left of VLabPanelLeftContainer */
+#VLabPanelNotificationContainer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+/* border: 1px solid blue; */
+}
 .settingsButtons {
     width: var(--screenDependentSettingsButtonSize);
     height: var(--screenDependentSettingsButtonSize);

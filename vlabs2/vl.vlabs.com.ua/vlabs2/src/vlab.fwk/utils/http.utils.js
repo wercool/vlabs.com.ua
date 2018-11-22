@@ -5,7 +5,7 @@ export function getJSONFromURL(url, passphrase) {
     return new Promise(function(resolve, reject) {
         var xhr = new XMLHttpRequest();
         xhr.onload = function() {
-            if (passphrase.length > 0) {
+            if (passphrase && passphrase.length > 0) {
                 var bytes = AES.decrypt(xhr.responseText, passphrase);
                 var decryptedResponseBody = bytes.toString(encUtf8);
                 resolve(JSON.parse(decryptedResponseBody));

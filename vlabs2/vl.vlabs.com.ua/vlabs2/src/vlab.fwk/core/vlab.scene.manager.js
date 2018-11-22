@@ -273,6 +273,13 @@ class VLabSceneManager {
                                     vLabScene.loaded = true;
                                     self.processGLTF(gltf).then(() => {
                                         gltf = null;
+
+                                        self.vLab.EventDispatcher.notifySubscribers({
+                                            target: 'VLabScene',
+                                            type: 'loaded',
+                                            vLabScene: vLabScene
+                                        });
+
                                         resolve(true);
                                     });
                                 },

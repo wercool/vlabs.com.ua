@@ -1,0 +1,8 @@
+{
+    "title": "Valter Test Scene",
+    "description": "Valter Test Scene",
+    "gltfURL": "./scenes/valter.scene/resources/3d/valter.scene.glb",
+    "WebGLRendererParameters": {
+        "clearColor": "0x91b1b5"
+    }
+}

@@ -7,8 +7,8 @@ import VLabZoomHelper  from '../../../../vlab.fwk/aux/scene/vlab.zoom.helper';
 class FirstScene extends VLabScene {
     constructor(iniObj) {
         super(iniObj);
-
     }
+
     onLoaded() {
         /**
          * Z-fighting
@@ -16,12 +16,19 @@ class FirstScene extends VLabScene {
         this.getObjectByName('Plane').material.polygonOffset = true;
         this.getObjectByName('Plane').material.polygonOffsetFactor = 1;
 
-
         new VLabSceneTransitor({
             vLabScene: this,
             targetVLabScene: this.vLab.SceneDispatcher.getSceneByClassName('SecondScene'),
             position: new THREE.Vector3(4.0, 0.0, 0.0),
             tooltip: 'Go to <b>Second Scene</b>'
+        });
+
+        new VLabSceneTransitor({
+            vLabScene: this,
+            targetVLabScene: this.vLab.SceneDispatcher.getSceneByClassName('ValterScene'),
+            position: new THREE.Vector3(4.0, 0.0, 2.0),
+            // scaleFactor: 0.5,
+            tooltip: 'Go to <b>Valter Scene</b>'
         });
 
         new VLabSceneLocator({

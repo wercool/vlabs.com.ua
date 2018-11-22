@@ -234,15 +234,16 @@ class VLabSceneDispatcher {
         if (this.autoloadScenesTimeout) clearTimeout(this.autoloadScenesTimeout);
         for (let vLabScene of this.scenes) {
             if (vLabScene.loading) {
-                this.autoloadScenesTimeout = setTimeout(this.autoloadScenes.bind(this), 250);
+                this.autoloadScenesTimeout = setTimeout(this.autoloadScenes.bind(this), 1000);
                 return;
             }
         }
         for (let vLabScene of this.scenes) {
             if (vLabScene.initObj.autoload && !vLabScene.loaded && !vLabScene.loading) {
                 vLabScene.manager.load().then(() => {
+                    vLabScene['justLoaded'] = true;
                     this.vLab.DOMManager.handleSceneLoadComplete();
-                    this.autoloadScenes.bind(this);
+                    this.autoloadScenes();
                 });
                 return;
             }

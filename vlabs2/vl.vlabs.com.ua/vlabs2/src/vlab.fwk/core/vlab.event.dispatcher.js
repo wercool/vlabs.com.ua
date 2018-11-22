@@ -45,7 +45,15 @@ class VLabEventDispatcher {
                 /**
                  *  {
                  *      target: 'VLabScene',
-                 *      type: 'deActivated',
+                 *      type: 'loaded',
+                 *      vLabScene: loaded vLabScene instance
+                 *  }
+                 */
+                loaded:          {},
+                /**
+                 *  {
+                 *      target: 'VLabScene',
+                 *      type: 'activated | deActivated',
                  *      vLabSceneClass: vLabScene.constructor.name
                  *  }
                  */

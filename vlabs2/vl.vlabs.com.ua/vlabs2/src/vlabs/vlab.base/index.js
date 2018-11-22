@@ -4,6 +4,7 @@ import VLab from '../../vlab.fwk/core/vlab';
 import VLabInventory   from    '../../vlab.fwk/aux/inventory/index';
 
 /* This VLab Scenes */
+import ValterScene   from    './scenes/valter.scene';
 import FirstScene   from    './scenes/first.scene';
 import SecondScene  from    './scenes/second.scene';
 import ThirdScene   from    './scenes/third.scene';
@@ -40,11 +41,20 @@ class BaseVLab extends VLab {
             vLab: this
         });
 
+        /* Valter scene */
+        this.SceneDispatcher.addScene({
+            class: ValterScene,
+            natureURL: './scenes/valter.scene/resources/vlab.scene.nature.json',
+            /**
+             * Set active: true for default VLabScene
+             */
+            active: true
+        });
         /* First scene */
         this.SceneDispatcher.addScene({
             class: FirstScene,
             natureURL: './scenes/first.scene/resources/vlab.scene.nature.json',
-            active: true
+            autoload: false,
         });
         /* Second scene */
         this.SceneDispatcher.addScene({
