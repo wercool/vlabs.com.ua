@@ -107,7 +107,7 @@ class VLabScene extends THREE.Scene {
                     framerequest:   this.onDefaultEventHandler,
                 },
                 window: {
-                    resize:     this.manager.onWindowResize,
+                    resize:     this.manager.onWindowResize.bind(this.manager),
                 }
             }
         };

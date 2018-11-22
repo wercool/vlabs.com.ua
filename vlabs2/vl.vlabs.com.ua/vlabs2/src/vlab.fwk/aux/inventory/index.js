@@ -92,6 +92,8 @@ class VLabInventory extends VLabScene {
                             antialias: true,
                             precision: 'lowp'
                         });
+                        this.thumbsWebGLRenderer.context.getShaderInfoLog = function () { return '' };
+                        this.thumbsWebGLRenderer.context.getProgramInfoLog = function () { return '' };
 
                         this.thumbsWebGLRenderer.setSize(this.thumbnailSize, this.thumbnailSize, false);
                         this.thumbsWebGLRenderer.setClearColor(0x747a7c);

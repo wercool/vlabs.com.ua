@@ -596,8 +596,8 @@ class VLabSceneManager {
      * Reset zoomHelperStack
      */
     resetZoomHelperStack() {
-        if (this.vLabScene.zoomHelpersStack !== undefined && this.vLabScene.zoomHelpersStack.length > 0) {
-            this.vLabScene.zoomHelpersStack[0].clearStack();
+        if (this.zoomHelpersStack !== undefined && this.zoomHelpersStack.length > 0) {
+            this.zoomHelpersStack[0].clearStack();
         }
     }
 }

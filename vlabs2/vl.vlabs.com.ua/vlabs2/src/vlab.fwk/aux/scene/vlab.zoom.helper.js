@@ -49,6 +49,11 @@ class VLabZoomHelper extends VLabSceneInteractable {
          */
         this.activated = false;
 
+        /**
+         * Re-render screenshot counter if empty rendered on this.vLab.WebGLRenderer.render(....)
+         */
+        this.screenshorRenrendering = 0;
+
         this.selfInitObj = initObj;
         this.selfInitObj.scaleFactor = (initObj.scaleFactor) ? initObj.scaleFactor : 1.0;
 
@@ -82,8 +87,8 @@ class VLabZoomHelper extends VLabSceneInteractable {
          * 
          * 
          */
-        if (this.vLabScene['zoomHelpersStack'] == undefined) {
-            this.vLabScene['zoomHelpersStack'] = [];
+        if (this.vLabScene.manager['zoomHelpersStack'] == undefined) {
+            this.vLabScene.manager['zoomHelpersStack'] = [];
         }
 
         let vLabZoomHelperInteractableObjectSprite = new THREE.Sprite(this.vLab.prefabs['VLabZoomHelperPrefabs']['VLabZoomHelperSpriteMaterial']);
@@ -134,22 +139,53 @@ class VLabZoomHelper extends VLabSceneInteractable {
         this.deSelect();
         this.vLabSceneObject.visible = false;
 
+        let currentVLabWebGLRendererFrameImage = new Image();
+
         /**
-         * Get this.vLab.WebGLRenderer current frame, disabling effectComposer
+         * Take RenderScreenshot, make takenInteractable invisible if present
          */
         if (this.vLab.SceneDispatcher.takenInteractable) {
             this.vLab.SceneDispatcher.takenInteractable.vLabSceneObject.visible = false;
         }
 
         this.vLab.WebGLRenderer.render(this.vLabScene, this.vLabScene.currentCamera);
+        currentVLabWebGLRendererFrameImage.src = this.vLab.WebGLRendererCanvas.toDataURL('image/jpeg');
 
         if (this.vLab.SceneDispatcher.takenInteractable) {
             this.vLab.SceneDispatcher.takenInteractable.vLabSceneObject.visible = true;
         }
 
-        let currentVLabWebGLRendererFrameImage = new Image();
-        currentVLabWebGLRendererFrameImage.src = this.vLab.WebGLRendererCanvas.toDataURL();
         currentVLabWebGLRendererFrameImage.onload = function() {
+
+            let viewThumbnailBackgroundImage = null;
+
+            /**
+             * Test for empty currentVLabWebGLRendererFrameImage
+             */
+            let viewThumbnailTestCanvas = document.createElement('canvas');
+            let viewThumbnailTestCanvasCtx = viewThumbnailTestCanvas.getContext('2d');
+            viewThumbnailTestCanvas.width = currentVLabWebGLRendererFrameImage.width;
+            viewThumbnailTestCanvas.height = currentVLabWebGLRendererFrameImage.height;
+            viewThumbnailTestCanvasCtx.beginPath();
+            viewThumbnailTestCanvasCtx.rect(0, 0, viewThumbnailTestCanvas.width, viewThumbnailTestCanvas.height);
+            viewThumbnailTestCanvasCtx.fillStyle = '#000000';
+            viewThumbnailTestCanvasCtx.fill();
+            let testImage = new Image();
+            testImage.src = viewThumbnailTestCanvas.toDataURL('image/jpeg');
+            if (testImage.src == currentVLabWebGLRendererFrameImage.src && self.screenshorRenrendering < 10) {
+                self.screenshorRenrendering++;
+                self.activate(initObj);
+                return;
+            } else {
+                if (self.screenshorRenrendering >= 10) {
+                    viewThumbnailBackgroundImage = self.vLab.prefabs['Generic']['Images']['prevLocation'];
+                }
+                self.screenshorRenrendering = 0;
+            }
+
+            let viewThumbnail = document.createElement('div');
+            viewThumbnail.classList.add('zoomHelperViewThumbnail');
+
             let viewThumbnailCanvas = document.createElement('canvas');
             let viewThumbnailCanvasCtx = viewThumbnailCanvas.getContext('2d');
 
@@ -157,16 +193,21 @@ class VLabZoomHelper extends VLabSceneInteractable {
             viewThumbnailCanvas.width = Math.round(currentVLabWebGLRendererFrameImage.width * 0.1);
             viewThumbnailCanvas.height = Math.round(viewThumbnailCanvas.width / ratio);
 
-            viewThumbnailCanvasCtx.drawImage(currentVLabWebGLRendererFrameImage, 0, 0, viewThumbnailCanvas.width, viewThumbnailCanvas.height);
+            if (viewThumbnailBackgroundImage === null) {
+    
+                viewThumbnailCanvasCtx.drawImage(currentVLabWebGLRendererFrameImage, 0, 0, viewThumbnailCanvas.width, viewThumbnailCanvas.height);
 
-            let viewThumbnail = document.createElement('div');
-            viewThumbnail.classList.add('zoomHelperViewThumbnail');
-
-            let viewThumbnailBackgroundImage = new Image();
-            viewThumbnailBackgroundImage.src = viewThumbnailCanvas.toDataURL();
-            viewThumbnailBackgroundImage.onload = function() {
+                viewThumbnailBackgroundImage = new Image();
+                viewThumbnailBackgroundImage.src = viewThumbnailCanvas.toDataURL();
+                viewThumbnailBackgroundImage.onload = function() {
+                    viewThumbnail.style.backgroundImage = 'url("' + viewThumbnailBackgroundImage.src + '")';
+                }
+            } else {
                 viewThumbnail.style.backgroundImage = 'url("' + viewThumbnailBackgroundImage.src + '")';
+                viewThumbnail.style.backgroundColor = '#000000';
+                viewThumbnail.style.backgroundSize = 'contain';
             }
+
             viewThumbnail.style.width = viewThumbnailCanvas.width + 'px';
             viewThumbnail.style.height = viewThumbnailCanvas.height + 'px';
             viewThumbnail.style.display = 'none';
@@ -176,7 +217,7 @@ class VLabZoomHelper extends VLabSceneInteractable {
             viewThumbnailIcon.classList.add('zoomHelperViewThumbnailIcon', 'nonSelectable');
             viewThumbnailIcon.style.width = viewThumbnailCanvas.width / 2 + 'px';
             viewThumbnailIcon.style.fontSize = viewThumbnailIcon.style.width;
-            viewThumbnailIcon.innerHTML = 'undo';
+            viewThumbnailIcon.innerHTML = 'youtube_searched_for';
             viewThumbnail.appendChild(viewThumbnailIcon);
 
             self.vLab.DOMManager.container.zoomHelperStackContainer.appendChild(viewThumbnail);
@@ -196,12 +237,11 @@ class VLabZoomHelper extends VLabSceneInteractable {
             .to({x: initObj.position.x, y: initObj.position.y, z: initObj.position.z}, 1000)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .onUpdate(() => {
-                self.deSelect();
             })
             .onComplete(() => {
                 self.vLabScene.currentControls.update();
                 viewThumbnail.style.display = 'inline-block';
-                self.vLabScene.zoomHelpersStack.push(self);
+                self.vLabScene.manager.zoomHelpersStack.push(self);
             })
             .start();
             self.vLabScene.currentControls.setTarget(initObj.target);
@@ -232,7 +272,7 @@ class VLabZoomHelper extends VLabSceneInteractable {
                 })
                 .onComplete(() => {
                     this.vLabScene.currentControls.update();
-                    this.clearStack(this.vLabScene.zoomHelpersStack.indexOf(this));
+                    this.clearStack(this.vLabScene.manager.zoomHelpersStack.indexOf(this));
                 })
                 .start();
                 this.vLabScene.currentControls.setTarget(revertControlsTarget);
@@ -240,14 +280,14 @@ class VLabZoomHelper extends VLabSceneInteractable {
         }
     }
     /**
-     * Clear this.vLabScene.zoomHelpersStack
+     * Clear this.vLabScene.manager.zoomHelpersStack
      */
     clearStack(fromIdx) {
         if (fromIdx == undefined) {
-            this.vLabScene.zoomHelpersStack[0].deactivate(true);
+            this.vLabScene.manager.zoomHelpersStack[0].deactivate(true);
             fromIdx = 0;
         }
-        let deletedZoomHelpers = this.vLabScene.zoomHelpersStack.splice(fromIdx);
+        let deletedZoomHelpers = this.vLabScene.manager.zoomHelpersStack.splice(fromIdx);
         deletedZoomHelpers.forEach((deletedZoomHelper) => {
             this.vLab.DOMManager.container.zoomHelperStackContainer.removeChild(deletedZoomHelper.beforeZoomState.viewThumbnail);
             deletedZoomHelper.vLabSceneObject.visible = true;

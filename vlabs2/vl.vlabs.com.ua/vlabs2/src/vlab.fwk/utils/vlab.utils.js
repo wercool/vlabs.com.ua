@@ -74,6 +74,12 @@ export function initializeVLabPrefabs(vLab) {
                 depthTest: false
             });
         });
+        vLabPrefabs['Generic']['Images'] = {};
+
+        vLabPrefabs['Generic']['Images']['prevLocation'] = new Image();
+        vLabPrefabs['Generic']['Images']['prevLocation'].src = '/vlab.assets/img/generic/prev-location.png';
+
+
         resolve(vLabPrefabs);
     });
 }

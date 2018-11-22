@@ -32,6 +32,10 @@ class VLab {
     constructor(initObj = {}) {
         this.initObj = initObj;
         /**
+         * Bind requestAnimationFrame to this
+         */
+        this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
+        /**
          * THREE.Clock
          * @public
          */
@@ -394,7 +398,7 @@ password: '123'
                 this.DOMManager.rendererStats.update(this.WebGLRenderer);
             /*</dev>*/
         } else {
-            setTimeout(this.requestAnimationFrame.bind(this), 250);
+            setTimeout(this.requestAnimationFrame, 250);
         }
     }
     /**
@@ -411,7 +415,7 @@ password: '123'
             this.WebGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
         }
         this.fps = 1 / delta;
-        requestAnimationFrame(this.requestAnimationFrame.bind(this));
+        requestAnimationFrame(this.requestAnimationFrame);
     }
 }
 export default VLab;
