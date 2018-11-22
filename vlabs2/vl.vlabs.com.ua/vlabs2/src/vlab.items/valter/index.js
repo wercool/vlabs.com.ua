@@ -14,6 +14,16 @@ class Valter extends VLabItem {
         super(initObj);
 
         this.initObj = initObj;
+
+        this.initialize();
+    }
+    /**
+     * VLabItem onInitialized abstract function implementation
+     */
+    onInitialized() {
+        console.log(this);
+        console.log(this.vLab);
+        this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
     }
 }
 export default Valter;

@@ -1,5 +1,9 @@
 import * as THREE from 'three';
 import * as HTTPUtils from '../utils/http.utils';
+import GLTFLoader from 'three-gltf-loader';
+import { ZipLoader } from '../utils/zip.loader';
+import * as THREEUtils from '../utils/three.utils';
+
 /**
  * VLabItem base class.
  * @class
@@ -19,7 +23,7 @@ class VLabItem {
          */
         this.vLab = this.initObj.vLab;
         /**
-         * VLabScene nature
+         * VLabItem nature
          * @public
          * @property {Object} nature                    - VLabItem nature loaded from constructor initObj.natureURL
          */
@@ -28,6 +32,10 @@ class VLabItem {
          * Name of VLabItem
          */
         this.name = this.initObj.name;
+        /**
+         * VLabItem Model (parent Object3D | Mesh)
+         */
+        this.vLabItemModel = undefined;
     }
     /**
      * Initialize VLab Item
@@ -36,6 +44,11 @@ class VLabItem {
         let self = this;
         return new Promise((resolve, reject) => {
 
+            /**
+             * THREE.LoadingManager instance
+             * @inner
+             */
+            this.loadingManager = new THREE.LoadingManager();
 
             HTTPUtils.getJSONFromURL(this.initObj.natureURL)
             .then((nature) => {
@@ -60,12 +73,24 @@ class VLabItem {
                     self.VLabPanelNotification.appendChild(self.VLabPanelNotificationLoader);
 
                     self.loadingBar = new ldBar(self.VLabPanelNotificationLoader);
-                    self.loadingBar.set(45.0);
 
                     self.vLab.DOMManager.vLabPanel.VLabPanelNotificationContainer.appendChild(self.VLabPanelNotification);
 
-                    self.onInitialized();
-                    resolve(this);
+                    /**
+                     * Load VLabItem model
+                     */
+                    self.load().then((vLabItemModel) => {
+                        this.vLabItemModel = vLabItemModel;
+                        this.vLab.DOMManager.vLabPanel.VLabPanelNotificationContainer.removeChild(this.VLabPanelNotification);
+
+                        delete this['loadingBar'];
+                        delete this['VLabPanelNotificationLoader'];
+                        delete this['VLabPanelNotification'];
+                        delete this['loadingManager'];
+
+                        self.onInitialized();
+                        resolve(this);
+                    });
                 });
             });
 
@@ -91,7 +116,87 @@ class VLabItem {
      * @memberof VLabItem
      */
     load() {
-
+        let self = this;
+        this.loadingManager.onProgress = this.loadingManagerProgress.bind(this);
+        return new Promise((resolve, reject) => {
+            this.loadZIP(this.nature.modelURL).then((gltfFile) => {
+                let loader = new GLTFLoader(self.loadingManager);
+                loader.load(
+                    gltfFile,
+                    function onLoad(gltf) {
+                        self.processGLTF(gltf)
+                        .then((vLabItemModel) => {
+                            resolve(vLabItemModel);
+                        });
+                    },
+                    function onProgress(xhr) {
+                        let progress = parseInt(xhr.loaded / xhr.total * 100);
+                        console.log(progress + '% loaded of VLabItem [' + self.name + '] model ');
+                        self.loadingBar.set(progress);
+                    },
+                    function onError(error) {
+                        console.error('An error happened while loading VLabItem [' + self.name + '] glTF assets:', error);
+                    }
+                );
+            });
+        });
+    }
+    /**
+     * Processes GLTF loaded object.
+     * 
+     * @async
+     * @memberof VLabItem
+     * @return { Promise }
+     */
+    processGLTF(gltf) {
+        return new Promise(function(resolve, reject) {
+            gltf.scene.traverse((child) => {
+                if (child.material) {
+                    let conformedMaterial = THREEUtils.conformMaterial(child.material);
+                    if (conformedMaterial !== undefined) {
+                        child.material = conformedMaterial;
+                    }
+                }
+            });
+            gltf.scene.children[0].parent = null;
+            resolve(gltf.scene.children[0]);
+        });
+    }
+    /**
+     * Loads ZIP archived scene file (model) if file name ended with .zip, else return non-modified url.
+     * 
+     * @async
+     * @memberof VLabItem
+     * @return { Promise }
+     */
+    loadZIP(url) {
+        let self = this;
+        return new Promise(function(resolve, reject) {
+            if (url.match(/\.zip$/)) {
+                new ZipLoader().load(
+                        url,
+                        function (xhr) {
+                            let progress = parseInt(xhr.loaded / xhr.total * 100);
+                            console.log(progress + '% loaded of zipped model VLabItem ' + self.name);
+                        },
+                    ).then(function(zip) {
+                        self.loadingManager.setURLModifier(zip.urlResolver);
+                        resolve(zip.find(/\.(gltf|glb)$/i)[0]);
+                    });
+            } else {
+                resolve(url);
+            }
+        });
+    }
+    /**
+     * LoadingManager onProgress
+     * Is used to show textures loading progress
+     */
+    loadingManagerProgress(item, loaded, total) {
+        this.VLabPanelNotificationLoader.style.color = '#ffff00';
+        let progress = parseInt(loaded / total * 100);
+        this.loadingBar.set(progress);
+        console.log('VLabItem [' + this.name + '] textures loaded by ' + progress + '%');
     }
     /**
      * Setup VLabItem HTML CSS styles accordingly to VLabItem nature.

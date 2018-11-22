@@ -34,10 +34,6 @@ class ValterScene extends VLabScene {
             vLab: this.vLab,
             natureURL: '/vlab.items/valter/resources/valter.nature.json',
             name: 'ValterVLabItem'
-        })
-        .initialize()
-        .then((valterVLabItem) => {
-            console.log(valterVLabItem);
         });
 
     }

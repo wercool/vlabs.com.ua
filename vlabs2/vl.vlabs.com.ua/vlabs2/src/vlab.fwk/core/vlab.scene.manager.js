@@ -2,9 +2,9 @@ import * as THREE from 'three';
 import VLab from './vlab';
 import VLabScene from './vlab.scene';
 import * as HTTPUtils from '../utils/http.utils';
+import * as THREEUtils from '../utils/three.utils';
 import GLTFLoader from 'three-gltf-loader';
 import { ZipLoader } from '../utils/zip.loader';
-import * as ObjectUtils from '../utils/object.utils';
 import VLabSceneInteractable from './vlab.scene.interactable';
 
 /**
@@ -370,7 +370,10 @@ class VLabSceneManager {
             });
             vLabScene.traverse((child) => {
                 if (child.material) {
-                    child.material = self.conformMaterial(child.material);
+                    let conformedMaterial = THREEUtils.conformMaterial(child.material, vLabScene);
+                    if (conformedMaterial !== undefined) {
+                        child.material = conformedMaterial;
+                    }
                 }
             });
             resolve();
@@ -413,63 +416,6 @@ class VLabSceneManager {
                     }
                 }
             }
-        }
-    }
-    /**
-     * Conforms material with VLab using material.userData
-     * 
-     * @memberof VLabSceneManager
-     * @argument {THREE.MeshStandardMaterial} material                - MeshStandardMaterial if glTF is loaded
-     * @argument {Object} material.userData
-     * @argument {String} material.userData.MeshBasicMaterial
-     * @argument {String} material.userData.MeshLambertMaterial
-     * @argument {String} material.userData.MeshPhongMaterial
-     * @returns { MeshBasicMaterial | MeshLambertMaterial | MeshPhongMaterial | MeshStandardMaterial }
-     */
-    conformMaterial(material) {
-        let existingMaterial = undefined;
-        this.vLabScene.traverse((child) => {
-            if (child.material) {
-                if (child.material.name === material.name && Object.keys(child.material.userData).length == 0) {
-                    existingMaterial = child.material;
-                }
-            }
-        });
-        if (existingMaterial !== undefined) return existingMaterial;
-
-        if (Object.keys(material.userData).length > 0) {
-            if (material.userData.MeshBasicMaterial) {
-                let _MeshBasicMaterial = new THREE.MeshBasicMaterial();
-                _MeshBasicMaterial = ObjectUtils.assign(_MeshBasicMaterial, material);
-                _MeshBasicMaterial.type = 'MeshBasicMaterial';
-                if (material.userData.MaterialSide) {
-                    _MeshBasicMaterial.side = material.userData.MaterialSide;
-                }
-                _MeshBasicMaterial.userData = {};
-                return _MeshBasicMaterial;
-            }
-            if (material.userData.MeshLambertMaterial) {
-                let _MeshLambertMaterial = new THREE.MeshLambertMaterial();
-                _MeshLambertMaterial = ObjectUtils.assign(_MeshLambertMaterial, material);
-                _MeshLambertMaterial.type = 'MeshLambertMaterial';
-                if (material.userData.MaterialSide) {
-                    _MeshLambertMaterial.side = material.userData.MaterialSide;
-                }
-                _MeshLambertMaterial.userData = {};
-                return _MeshLambertMaterial;
-            }
-            if (material.userData.MeshPhongMaterial) {
-                let _MeshPhongMaterial = new THREE.MeshPhongMaterial();
-                _MeshPhongMaterial = ObjectUtils.assign(_MeshPhongMaterial, material);
-                _MeshPhongMaterial.type = 'MeshPhongMaterial';
-                if (material.userData.MaterialSide) {
-                    _MeshPhongMaterial.side = material.userData.MaterialSide;
-                }
-                _MeshPhongMaterial.userData = {};
-                return _MeshPhongMaterial;
-            }
-        } else {
-            return material;
         }
     }
     /**
