@@ -68,6 +68,15 @@ class VLabSceneInteractable {
          * Bounding sphere center Object3D
          */
         this.centerObject3D = undefined;
+
+        /**
+         * Siblings
+         */
+        this.siblings = [];
+
+        /**
+         * Native function
+         */
         /**
          * This native action function
          */
@@ -80,6 +89,27 @@ class VLabSceneInteractable {
          * This native action funciton context
          */
         this.actionFunctionContext = undefined;
+
+        /**
+         * Preselection function
+         */
+        /**
+         * This preSelection action function
+         */
+        this.preSelectionActionFunction = undefined;
+        /**
+         * This preSelection action function
+         */
+        this.dePreSelectionActionFunction = undefined;
+        /**
+         * This preSelection action funciton args
+         */
+        this.preSelectionActionFunctionArgs = {};
+        /**
+         * This preSelection action funciton context
+         */
+        this.preSelectionActionFunctionContext = undefined;
+
         /**
          * Is this is a taken object in VLab
          */
@@ -108,6 +138,12 @@ class VLabSceneInteractable {
          * @default false
          */
         this.preselected = false;
+        /**
+         * If true then this.dePreselect will no de-preselect this
+         * @public
+         * @default false
+         */
+        this.keepPreseleciton = false;
         /**
          * If true then postprocessing pre-selection outline will not be shown, instead only bounds Sprtie will be shown
          * @public
@@ -248,6 +284,14 @@ class VLabSceneInteractable {
                         this.actionFunctionArgs = this.initObj.interactable.action.args;
                         this.actionFunctionContext = this.initObj.interactable.action.context;
                         this.selectable = false;
+                    }
+                }
+                if (this.initObj.interactable.preselectionAction !== undefined) {
+                    if (this.initObj.interactable.preselectionAction.function !== undefined) {
+                        this.preSelectionActionFunctionContext = this.initObj.interactable.preselectionAction.context;
+                        this.preSelectionActionFunctionArgs = this.initObj.interactable.preselectionAction.args;
+                        this.preSelectionActionFunction = this.initObj.interactable.preselectionAction.function;
+                        this.dePreSelectionActionFunction = this.initObj.interactable.preselectionAction.invfunction;
                     }
                 }
                 if (this.initObj.interactable.tooltip !== undefined) {
@@ -415,8 +459,9 @@ class VLabSceneInteractable {
      * Adds this instance to {@link VLabScene#preSelectedInteractables}
      * @abstract
      */
-    preselect() {
-        if (this.intersection) {
+    preselect(forced) {
+        if (this.intersection || forced == true) {
+            // console.log(this.vLabSceneObject.name, forced, '[', this.preselectable, !this.preselected, !this.selected, ']');
             if (this.preselectable && !this.preselected && !this.selected) {
                 this.removeRespondentsHelpers();
                 /**
@@ -428,6 +473,25 @@ class VLabSceneInteractable {
                 }
 
                 this.preselected = true;
+            }
+            /**
+             * Preselection action
+             */
+            if (this.preSelectionActionFunction) {
+                if (typeof this.preSelectionActionFunction == 'string') {
+                    this.preSelectionActionFunction = eval(this.preSelectionActionFunction);
+                }
+                let extendedActionFunctionArgs = ObjectUtils.merge(this.preSelectionActionFunctionArgs, {
+                    intersection: this.intersection
+                });
+                if (this.preSelectionActionFunctionContext) {
+                    if (typeof this.preSelectionActionFunctionContext == 'string') {
+                        this.preSelectionActionFunctionContext = eval(this.preSelectionActionFunctionContext);
+                    }
+                    this.preSelectionActionFunction.call(this.preSelectionActionFunctionContext, extendedActionFunctionArgs);
+                } else {
+                    this.preSelectionActionFunction.call(extendedActionFunctionArgs);
+                }
             }
             this.showTooltip();
             if (this.vLabScene.constructor.name !== 'VLabInventory') {
@@ -443,7 +507,8 @@ class VLabSceneInteractable {
      * @abstract
      */
     dePreselect() {
-        if (this.preselected) {
+        // console.log(this.vLabSceneObject.name + '.dePreselect()', '[', this.preselected, !this.keepPreseleciton, ']');
+        if (this.preselected && !this.keepPreseleciton) {
             let indexOfThisPreselected = this.vLabScene.preSelectedInteractables.indexOf(this);
             this.vLabScene.preSelectedInteractables.splice(indexOfThisPreselected, 1);
             this.vLabScene.manager.processInteractablesSelections();
@@ -451,6 +516,23 @@ class VLabSceneInteractable {
             this.hideTooltip();
             if (this.vLabScene.constructor.name !== 'VLabInventory') {
                 this.removeRespondentsHelpers();
+            }
+
+            /**
+             * de-preselection action
+             */
+            if (this.dePreSelectionActionFunction) {
+                if (typeof this.dePreSelectionActionFunction == 'string') {
+                    this.dePreSelectionActionFunction = eval(this.dePreSelectionActionFunction);
+                }
+                if (this.preSelectionActionFunctionContext) {
+                    if (typeof this.preSelectionActionFunctionContext == 'string') {
+                        this.preSelectionActionFunctionContext = eval(this.preSelectionActionFunctionContext);
+                    }
+                    this.dePreSelectionActionFunction.call(this.preSelectionActionFunctionContext);
+                } else {
+                    this.dePreSelectionActionFunction.call();
+                }
             }
         }
     }

@@ -1,5 +1,61 @@
 {
     "name": "Valter The Robot",
     "thumbnail": "/vlab.items/valter/resources/thumbnail.png",
-    "modelURL": "/vlab.items/valter/resources/3d/valter.glb"
+    "modelURL": "/vlab.items/valter/resources/3d/valter.glb",
+    "interactables": [
+        {
+            "name": "baseFrame",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "preselectionAction": {
+                "context": "this.vLab['Valter']",
+                "function": "this.vLab['Valter'].onBaseFramePreselection",
+                "invfunction": "this.vLab['Valter'].onBaseFrameDePreselection",
+                "args": {}
+            },
+            "siblings": [
+                "rightWheel",
+                "leftWheel",
+                "smallWheelArmatureLF",
+                "smallWheelLF",
+                "smallWheelArmatureRF",
+                "smallWheelRF",
+                "smallWheelArmatureRR",
+                "smallWheelRR",
+                "smallWheelArmatureLR",
+                "smallWheelLR"
+            ]
+        },
+        {
+            "name": "bodyFrame",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "torsoFrame",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "shoulderFrameR",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "shoulderFrameL",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "headFrame",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        }
+    ]
 }

@@ -112,6 +112,34 @@ class VLabItem {
      */
     onLoaded() { console.log('%c' + this.name + ' onLoaded abstract method not implemented', 'color: orange'); }
     /**
+     * Setup sibling interactables from this.nature
+     */
+    setupSiblingIneractables() {
+        return new Promise((resolve, reject) => {
+            /** 
+             * Configure VLabItem sibling interactables from VLabItem nature 
+             */
+            if (this.nature.interactables) {
+                // console.log('VLabItem [' + this.name + '] interactables: ', this.nature.interactables);
+                this.nature.interactables.forEach(async (interactableNatureObj) => {
+                    let interactable = await this.vLab.SceneDispatcher.currentVLabScene.addInteractable(interactableNatureObj);
+                    if (interactableNatureObj.siblings) {
+                        interactableNatureObj.siblings.forEach(async (interactableSiblingName) => {
+                            let interactableSiblingNatureObj = {};
+                            interactableSiblingNatureObj['name'] = interactableSiblingName;
+                            interactableSiblingNatureObj['intersectable'] = interactableNatureObj.intersectable;
+                            interactableSiblingNatureObj['preselectable'] = interactableNatureObj.preselectable;
+                            interactableSiblingNatureObj['selectable'] = interactableNatureObj.selectable;
+                            let interactableSibling = await this.vLab.SceneDispatcher.currentVLabScene.addInteractable(interactableSiblingNatureObj);
+                            interactable.siblings.push(interactableSibling);
+                        });
+                    }
+                });
+            }
+            resolve();
+        });
+    }
+    /**
      * Load 3D content from this.nature.modelURL
      * @memberof VLabItem
      */

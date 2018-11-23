@@ -339,7 +339,7 @@ class VLabSceneDispatcher {
         this.takenInteractable.vLabSceneObject.geometry.computeBoundingSphere();
         let scaleFactor = 0.01 / (this.takenInteractable.vLabSceneObject.geometry.boundingSphere.radius * this.takenInteractable.vLabSceneObject.scale.z);
         let untakenScale = this.takenInteractable.vLabSceneObject.scale.clone().z;
-        this.takenInteractable.vLabSceneObject.quaternion.copy(new THREE.Quaternion(0.0, 0.0, 0.0, 0.0));
+        this.takenInteractable.vLabSceneObject.quaternion.copy(new THREE.Quaternion(0.0, THREE.Math.degToRad(180.0), 0.0, 0.0));
         this.takenInteractable.vLabSceneObject.scale.multiplyScalar(scaleFactor);
         this.takenInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, -0.04, -0.11)).sub(this.takenInteractable.vLabSceneObject.geometry.boundingSphere.center.multiplyScalar(scaleFactor));
 

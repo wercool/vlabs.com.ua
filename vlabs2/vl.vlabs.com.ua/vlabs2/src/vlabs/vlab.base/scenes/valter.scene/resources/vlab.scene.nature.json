@@ -4,5 +4,16 @@
     "gltfURL": "./scenes/valter.scene/resources/3d/valter.scene.glb",
     "WebGLRendererParameters": {
         "clearColor": "0x91b1b5"
+    },
+    "cameras": {
+        "default": {
+            "type": "PerspectiveCamera",
+            "name": "Camera",
+            "position": {
+                "x": -3.0,
+                "y": 2.0,
+                "z": -3.0
+            }
+        }
     }
 }

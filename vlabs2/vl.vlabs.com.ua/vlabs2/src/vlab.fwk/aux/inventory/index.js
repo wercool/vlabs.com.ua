@@ -107,7 +107,7 @@ class VLabInventory extends VLabScene {
 
                         this.thumbsCamera = new THREE.PerspectiveCamera(50, 1.0, 0.01, 10);
                         this.thumbsCamera.updateProjectionMatrix();
-                        this.thumbsCamera.position.copy(new THREE.Vector3(1.0, 1.0, 1.0));
+                        this.thumbsCamera.position.copy(new THREE.Vector3(1.0, 0.0, 1.0));
                         this.thumbsCamera.lookAt(new THREE.Vector3(0.0, 0.0, 0.0));
 
 
@@ -223,8 +223,8 @@ class VLabInventory extends VLabScene {
 
                         this.currentCamera.position.copy(new THREE.Vector3(1.0, 1.0, 1.0));
 
-                        var pointLight = new THREE.PointLight(0xffffff, 2.0, 5.0);
-                        pointLight.position.set(0.0, 2.5, 0.0);
+                        var pointLight = new THREE.PointLight(0xffffff, 2.0, 20.0);
+                        pointLight.position.set(-pointLight.distance / 2, 2.5, -pointLight.distance / 2);
                         this.add(pointLight);
 
                         var ambientLight = new THREE.AmbientLight(0x404040, 2.0); // soft white light
@@ -289,8 +289,8 @@ class VLabInventory extends VLabScene {
             cameraPos = this.currentCamera.near * 2;
         }
 
-        this.currentCamera.position.copy(new THREE.Vector3(cameraPos, cameraPos, cameraPos));
-        this.thumbsCamera.position.copy(new THREE.Vector3(cameraPos, cameraPos, cameraPos));
+        this.currentCamera.position.copy(new THREE.Vector3(cameraPos, 0.0, cameraPos));
+        this.thumbsCamera.position.copy(new THREE.Vector3(cameraPos, 0.0, cameraPos));
 
         this.currentControls.target = new THREE.Vector3(0.0, 0.0, 0.0);
         this.currentControls.reset();
@@ -360,7 +360,8 @@ class VLabInventory extends VLabScene {
 
             this.resetView();
 
-            this.selectedItem.interactable.vLabSceneObject.lookAt(this.currentCamera.position.clone());
+            // this.selectedItem.interactable.vLabSceneObject.lookAt(this.currentCamera.position.clone());
+            this.selectedItem.interactable.vLabSceneObject.lookAt(new THREE.Vector3(-100.0, 0.0, -100.0));
 
             if ( this.selectedItem.container) {
                 this.selectedItem.container.setAttribute('selected', 'true');

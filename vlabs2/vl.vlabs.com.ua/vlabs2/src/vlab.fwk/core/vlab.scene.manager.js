@@ -503,6 +503,8 @@ class VLabSceneManager {
                 } else {
                     takenObjectMaterial.color = sibling.material.color;
                 }
+                takenObjectMaterial.transparent = interactableMaterials[sibling.uuid].transparent;
+                takenObjectMaterial.opacity = interactableMaterials[sibling.uuid].opacity;
                 takenObjectMaterial.side = sibling.material.side;
                 takenObjectMaterial.needsUpdate = true;
                 sibling.material = takenObjectMaterial;

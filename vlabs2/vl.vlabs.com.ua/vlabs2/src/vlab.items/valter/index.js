@@ -24,6 +24,35 @@ class Valter extends VLabItem {
         console.log(this);
         console.log(this.vLab);
         this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
+        this.setupSiblingIneractables();
+    }
+
+    /**
+     * this.nature.interactables ['baseFrame'] onBaseFramePreselection / onBaseFrameDePreselection
+     */
+    onBaseFramePreselection(params) {
+        let siblingInteractables = [];
+        let baseFrame = this.vLab.SceneDispatcher.currentVLabScene.interactables['baseFrame'];
+        baseFrame.siblings.forEach((siblingInteractable) => {
+            siblingInteractables.push(siblingInteractable);
+        });
+        siblingInteractables.push(this.vLab.SceneDispatcher.currentVLabScene.interactables['bodyFrame']);
+        siblingInteractables.forEach((siblingInteractable) => {
+            siblingInteractable.keepPreseleciton = true;
+            siblingInteractable.preselect(true);
+        });
+    }
+    onBaseFrameDePreselection() {
+        let siblingInteractables = [];
+        let baseFrame = this.vLab.SceneDispatcher.currentVLabScene.interactables['baseFrame'];
+        baseFrame.siblings.forEach((siblingInteractable) => {
+            siblingInteractables.push(siblingInteractable);
+        });
+        siblingInteractables.push(this.vLab.SceneDispatcher.currentVLabScene.interactables['bodyFrame']);
+        siblingInteractables.forEach((siblingInteractable) => {
+            siblingInteractable.keepPreseleciton = false;
+            siblingInteractable.dePreselect();
+        });
     }
 }
 export default Valter;
