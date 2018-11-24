@@ -39,12 +39,41 @@
             "preselectable": true,
             "selectable": false
         },
+
         {
-            "name": "shoulderFrameR",
+            "name": "torsoFrame",
             "intersectable": true,
             "preselectable": true,
             "selectable": false
         },
+
+
+        {
+            "name": "headFrame",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "headYawLink",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "headTiltLink",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "kinectHead",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+
+
         {
             "name": "shoulderFrameL",
             "intersectable": true,
@@ -52,7 +81,286 @@
             "selectable": false
         },
         {
-            "name": "headFrame",
+            "name": "armL",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "forearmRollLinkL",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "forearmFrameL",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "palmTiltL",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "palmL",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+
+        {
+            "name": "finger0P1L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger0P2L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger0P3L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger1P1L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger1P2L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger1P3L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger2P1L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger2P2L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger2P3L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger3P1L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger3P2L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger3P3L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger4P1L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger4P2L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger4P3L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger5P1L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger5P2L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger5P3L",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+
+        {
+            "name": "shoulderFrameR",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "armR",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "forearmRollLinkR",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "forearmFrameR",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "palmTiltR",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "palmR",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+
+        {
+            "name": "finger0P1R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger0P2R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger0P3R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger1P1R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger1P2R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger1P3R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger2P1R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger2P2R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger2P3R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger3P1R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger3P2R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger3P3R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger4P1R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger4P2R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger4P3R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger5P1R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger5P2R",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "finger5P3R",
             "intersectable": true,
             "preselectable": true,
             "selectable": false
