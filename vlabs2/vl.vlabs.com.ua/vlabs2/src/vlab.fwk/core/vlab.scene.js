@@ -225,7 +225,7 @@ class VLabScene extends THREE.Scene {
             clearInterval(this.manager.performance.performanceManagerInterval);
             this.deselectInteractables();
             this.manager.processInteractablesSelections();
-            this.currentControls.depress();
+            this.currentControls.suppress();
             this.active = false;
 
             resolve(true);
@@ -281,7 +281,7 @@ class VLabScene extends THREE.Scene {
      * onMouseOutEventHandler
      */
     onMouseOutEventHandler(event) {
-        this.currentControls.depress();
+        this.currentControls.suppress();
     }
     /**
      * VLab Scene default event handler / router.

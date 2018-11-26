@@ -22,6 +22,20 @@ class VLabControls {
         this.clock.getDelta();
     }
     /**
+     * VLabControls enable abstract function.
+     *
+     * @memberof VLabControls
+     * @abstract
+     */
+    enable() { console.log('enable() deactivate method not implemented in ' + this.constructor.name); }
+    /**
+     * VLabControls disable abstract function.
+     *
+     * @memberof VLabControls
+     * @abstract
+     */
+    disable() { console.log('disable() deactivate method not implemented in ' + this.constructor.name); }
+    /**
      * VLabControls update abstract function.
      *
      * @memberof VLabControls
@@ -29,12 +43,12 @@ class VLabControls {
      */
     update() { console.log('update() abstract method not implemented in ' + this.constructor.name); }
     /**
-     * VLabControls depress abstract function. Usually this method is called when other elements overlay and suppress MouseEvents on VLabScene
+     * VLabControls suppress abstract function. Usually this method is called when other elements overlay and suppress MouseEvents on VLabScene
      *
      * @memberof VLabControls
      * @abstract
      */
-    depress() { console.log('depress() abstract method not implemented in ' + this.constructor.name); }
+    suppress() { console.log('suppress() abstract method not implemented in ' + this.constructor.name); }
     /**
      * VLabControls reset abstract function.
      *

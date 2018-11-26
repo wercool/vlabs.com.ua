@@ -53,7 +53,24 @@ class VLabOrbitControls extends VLabControls {
         this.reset();
     }
     /**
+     * VLabControls enable abstract function implementation.
+     *
+     * @memberof VLabOrbitControls {@link VLabControls#update}
+     */
+    enable() {
+        this.enabled = true;
+    }
+    /**
+     * VLabControls disable abstract function implementation.
+     *
+     * @memberof VLabOrbitControls {@link VLabControls#update}
+     */
+    disable() {
+        this.enabled = false;
+     }
+    /**
      * VLabControls setTarget abstract function implementation.
+     * @memberof VLabOrbitControls {@link VLabControls#update}
      */
     setTarget(target, duration = 1000) {
         new TWEEN.Tween(this.target)
@@ -133,7 +150,7 @@ class VLabOrbitControls extends VLabControls {
      *
      * @memberof VLabOrbitControls
      */
-    depress () {
+    suppress () {
         this.state = this.STATE.NONE;
         this.active = false;
     }

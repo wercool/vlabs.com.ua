@@ -40,7 +40,7 @@ class DEVVLabSceneInteractable {
             /**
              * Depress current VLabControls
              */
-            this.vLabScene.currentControls.depress();
+            this.vLabScene.currentControls.suppress();
 
             this.menuContainer = document.createElement('div');
             this.menuContainer.id = this.vLabSceneInteractable.vLabSceneObject.name + '_MENU_DEV';

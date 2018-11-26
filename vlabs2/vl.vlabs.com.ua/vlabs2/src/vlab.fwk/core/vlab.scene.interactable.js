@@ -89,6 +89,14 @@ class VLabSceneInteractable {
          * This native action funciton context
          */
         this.actionFunctionContext = undefined;
+        /**
+         * This native action function activated
+         */
+        this.actionFunctionActivated  = false;
+        /**
+         * This native action invert function
+         */
+        this.actionInvFunction = undefined;
 
         /**
          * Preselection function
@@ -283,6 +291,20 @@ class VLabSceneInteractable {
                         this.actionFunction = this.initObj.interactable.action.function;
                         this.actionFunctionArgs = this.initObj.interactable.action.args;
                         this.actionFunctionContext = this.initObj.interactable.action.context;
+                        /**
+                         * By default native actionFunction is activated
+                         */
+                        this.actionFunctionActivated = true;
+                        /**
+                         * If defined then set defined value for this.actionFunctionActivated
+                         */
+                        if (this.initObj.interactable.action.activated !== undefined) {
+                            this.actionFunctionActivated = this.initObj.interactable.action.activated;
+                        }
+                        this.actionInvFunction = this.initObj.interactable.action.invfunction;
+                        /**
+                         * If there is an native function, this VLabSceneInteractable becomes non-selectable
+                         */
                         this.selectable = false;
                     }
                 }
@@ -329,18 +351,65 @@ class VLabSceneInteractable {
      */
     action(event) {
         if (this.intersection && this.preselected) {
-            if (this.actionFunction) {
+            if (this.actionFunction && this.actionFunctionActivated) {
+                /**
+                 * Native action function
+                 */
+                if (typeof this.actionFunction == 'string') {
+                    this.actionFunction = eval(this.actionFunction);
+                }
                 let extendedActionFunctionArgs = ObjectUtils.merge(this.actionFunctionArgs, {
                     event: event,
                     intersection: this.intersection
                 });
-                this.actionFunction.call(this.actionFunctionContext, extendedActionFunctionArgs);
+                /**
+                 * Native action function context
+                 */
+                if (this.actionFunctionContext) {
+                    if (typeof this.actionFunctionContext == 'string') {
+                        this.actionFunctionContext = eval(this.actionFunctionContext);
+                    }
+                    this.actionFunction.call(this.actionFunctionContext, extendedActionFunctionArgs);
+                } else {
+                    this.actionFunction.call(extendedActionFunctionArgs);
+                }
+
                 this.hideTooltip();
                 this.removeRespondentsHelpers();
                 return true;
             }
         }
         return false;
+    }
+    /**
+     * 
+     * Native invert action which calls this.actionInvFunction if defined
+     * Exectued this.actionFunctionActivated
+     */
+    actionInv(event) {
+        if (this.actionInvFunction && this.actionFunctionActivated) {
+            /**
+             * Native action invert function
+             */
+            if (typeof this.actionInvFunction == 'string') {
+                this.actionInvFunction = eval(this.actionInvFunction);
+            }
+            let extendedActionFunctionArgs = ObjectUtils.merge(this.actionFunctionArgs, {
+                event: event,
+                intersection: this.intersection
+            });
+            /**
+             * Native action function context
+             */
+            if (this.actionFunctionContext) {
+                if (typeof this.actionFunctionContext == 'string') {
+                    this.actionFunctionContext = eval(this.actionFunctionContext);
+                }
+                this.actionInvFunction.call(this.actionFunctionContext, extendedActionFunctionArgs);
+            } else {
+                this.actionInvFunction.call(extendedActionFunctionArgs);
+            }
+        }
     }
     /**
      * Makes VLabSceneInteractable.vLabSceneObject.visible = visibility; if defined
@@ -408,7 +477,6 @@ class VLabSceneInteractable {
                 }
                 return;
             }
-
             /**
              * Intersection
              */
@@ -623,8 +691,7 @@ class VLabSceneInteractable {
      */
     mousedownHandler(event) {
         /**
-         * do not react on middle mouse down
-         * do not react on right mouse down
+         * Left mouse button
          */
         if(event.button == 0) {
             if (!this.action(event)) {
@@ -632,8 +699,14 @@ class VLabSceneInteractable {
                 this.hideTooltip();
                 this.removeRespondentsHelpers();
             }
+        /**
+         * Middle mouse button
+         */
         } else if (event.button == 1){
             this.deSelect();
+        /**
+         * Right mouse button
+         */
         } else if (event.button == 2){
             this.deSelect();
             if (this.intersection) {
@@ -657,6 +730,7 @@ class VLabSceneInteractable {
                 this.preselect();
             }
         }
+        this.actionInv(event);
     }
     /**
      * Default mousemove event.type handler
@@ -665,8 +739,20 @@ class VLabSceneInteractable {
      * @abstract
      */
     mousemoveHandler(event) {
+        /**
+         * No mounse button pressed
+         */
         if(event.buttons == 0) {
             this.preselect();
+        } else {
+            /**
+             * Left mouse button pressed
+             */
+            if (event.button == 0) {
+                if (this.actionFunction && this.intersection) {
+                    this.action(event);
+                }
+            }
         }
     }
     /**
@@ -678,6 +764,9 @@ class VLabSceneInteractable {
     touchstartHandler(event) {
         event.stopPropagation();
         if (!this.action(event)) {
+            /**
+             * No native action
+             */
             if (this.intersection) {
                 if (this.preselectable && !this.preselected && !this.selected) {
                     this.preselect();
@@ -692,6 +781,7 @@ class VLabSceneInteractable {
                 }
                 this.hideMenu();
             }
+        } else {
         }
     }
     /**
@@ -705,6 +795,7 @@ class VLabSceneInteractable {
         if (this.intersection) {
             this.preselect();
         }
+        this.actionInv(event);
     }
     /**
      * Default touchmove event.type handler
@@ -715,9 +806,20 @@ class VLabSceneInteractable {
     touchmoveHandler(event) {
         if (this.vLab.EventDispatcher.eventHelpers.touchmoveDelta > 5
         || (this.vLab.SceneDispatcher.takenInteractable && this.vLab.EventDispatcher.eventHelpers.touchmoveDelta > 0)) {
-            this.dePreselect();
             if (!this.intersection) {
+                this.dePreselect();
                 this.hideMenu();
+            }
+        }
+
+        if (this !== this.vLab.SceneDispatcher.takenInteractable && this.preselected) {
+            /**
+             * One finger touch move
+             */
+            if (event.touches.length == 1) {
+                if (this.actionFunction && this.intersection) {
+                    this.action(event);
+                }
             }
         }
     }
@@ -829,7 +931,7 @@ class VLabSceneInteractable {
             /**
              * Depress current VLabControls
              */
-            this.vLabScene.currentControls.depress();
+            this.vLabScene.currentControls.suppress();
 
             this.menuContainer = document.createElement('div');
             this.menuContainer.id = this.vLabSceneObject.name + '_MENU';

@@ -105,3 +105,20 @@ export function textureFromMaterialIcon(params) {
 
     return new THREE.Texture(canvas);
 }
+
+export function getEventCoords(event) {
+    let currentActionInitialEventCoords = new THREE.Vector2();
+    /**
+     * one-fingered touch
+     */
+    if (event.touches && event.touches.length == 1) {
+        currentActionInitialEventCoords.set(event.touches[0].clientX, event.touches[0].clientY);
+    }
+    /**
+     * Mouse move
+     */
+    else {
+        currentActionInitialEventCoords.set(event.clientX, event.clientY);
+    }
+    return currentActionInitialEventCoords;
+}

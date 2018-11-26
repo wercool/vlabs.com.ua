@@ -221,7 +221,7 @@ class VLabInventory extends VLabScene {
                         this.currentCamera.near = 0.01;
                         this.currentCamera.far = 10.0;
 
-                        this.currentCamera.position.copy(new THREE.Vector3(1.0, 1.0, 1.0));
+                        this.currentCamera.position.copy(new THREE.Vector3(1.0, 0.0, 1.0));
 
                         var pointLight = new THREE.PointLight(0xffffff, 2.0, 20.0);
                         pointLight.position.set(-pointLight.distance / 2, 2.5, -pointLight.distance / 2);

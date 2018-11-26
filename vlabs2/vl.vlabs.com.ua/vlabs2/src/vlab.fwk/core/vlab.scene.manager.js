@@ -113,6 +113,13 @@ class VLabSceneManager {
                                     this.vLabScene.nature.cameras.default.position.z
                                 );
                             }
+                            if (this.vLabScene.nature.cameras.default.target) {
+                                this.vLabScene.currentControls.target.set(
+                                    this.vLabScene.nature.cameras.default.target.x,
+                                    this.vLabScene.nature.cameras.default.target.y,
+                                    this.vLabScene.nature.cameras.default.target.z
+                                );
+                            }
                         break;
                     }
                 }
