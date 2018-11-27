@@ -161,6 +161,21 @@ class Valter extends VLabItem {
         this.preActionInitialEventCoords = new THREE.Vector2();
         this.preActionInitialEventCoords.copy(currentActionInitialEventCoords);
     }
+    /**
+     * this.nature.interactables ['forearmFrameL'] interaction action function
+     */
+    forearmFrameLAction(event) {
+        let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
+
+        if (this.preActionInitialEventCoords !== undefined) {
+            this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
+
+            this.vLabItemModel.getObjectByName('forearmFrameL').rotateZ(0.04 * ((this.preActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
+        }
+
+        this.preActionInitialEventCoords = new THREE.Vector2();
+        this.preActionInitialEventCoords.copy(currentActionInitialEventCoords);
+    }
 
     /**
      * Left side

@@ -170,6 +170,12 @@
             "preselectable": true,
             "selectable": false
         },
+        {
+            "name": "palmPadR",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
 
         {
             "name": "finger0P1R",
@@ -332,7 +338,14 @@
             "name": "forearmFrameL",
             "intersectable": true,
             "preselectable": true,
-            "selectable": false
+            "selectable": false,
+            "action": {
+                "context": "this.vLab['Valter']",
+                "function": "this.vLab['Valter'].forearmFrameLAction",
+                "activated": true,
+                "invfunction": "this.vLab['Valter'].commonInvAction",
+                "args": {}
+            }
         },
         {
             "name": "palmTiltL",
@@ -342,6 +355,12 @@
         },
         {
             "name": "palmL",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
+            "name": "palmPadL",
             "intersectable": true,
             "preselectable": true,
             "selectable": false
