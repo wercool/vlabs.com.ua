@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import * as VLabUtils from '../../vlab.fwk/utils/vlab.utils';
+import * as THREEUtils from '../../vlab.fwk/utils/three.utils';
 import VLabItem from '../../vlab.fwk/core/vlab.item';
 /**
  * Valter VLabItem base class.
@@ -16,7 +17,23 @@ class Valter extends VLabItem {
 
         this.initObj = initObj;
 
-        this.initialize();
+        var textureLoader = new THREE.TextureLoader();
+
+        Promise.all([
+            textureLoader.load('/vlab.items/valter/resources/3d/textures/carbon_fibre.jpg')
+        ])
+        .then((result) => {
+            var cableSleeveMaterialTexture = result[0];
+            cableSleeveMaterialTexture.wrapS = cableSleeveMaterialTexture.wrapT = THREE.RepeatWrapping;
+            cableSleeveMaterialTexture.repeat.set(4, 1);
+            this.cableSleeveMaterial = new THREE.MeshLambertMaterial({
+                wireframe: false,
+                flatShading: false,
+                map: cableSleeveMaterialTexture
+            });
+
+            this.initialize();
+        });
     }
     /**
      * VLabItem onInitialized abstract function implementation
@@ -25,6 +42,7 @@ class Valter extends VLabItem {
         this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
         this.setupSiblingIneractables();
     }
+
 
     /**
      * this.nature.interactables ['baseFrame'] interaction action function

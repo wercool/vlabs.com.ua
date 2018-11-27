@@ -4,6 +4,12 @@
     "modelURL": "/vlab.items/valter/resources/3d/valter.glb",
     "interactables": [
         {
+            "name": "bigRedButton",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false
+        },
+        {
             "name": "baseFrame",
             "intersectable": true,
             "preselectable": true,

@@ -2,6 +2,15 @@ import * as THREE from 'three';
 import VLabScene from '../core/vlab.scene';
 import * as ObjectUtils from './object.utils';
 
+export function getObjectWorldPosition(obj) {
+    var worldPosition = new THREE.Vector3();
+
+    obj.updateMatrixWorld();
+    worldPosition.setFromMatrixPosition(obj.matrixWorld);
+
+    return worldPosition;
+}
+
 export function screenProjected2DCoordsOfObject(vLab, object3D) {
     let vector = new THREE.Vector3();
 
