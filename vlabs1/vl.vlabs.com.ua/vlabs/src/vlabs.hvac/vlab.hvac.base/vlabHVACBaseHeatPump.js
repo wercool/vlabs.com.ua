@@ -1056,7 +1056,7 @@ export default class VlabHVACBaseHeatPump extends VLab {
             iconRotation: THREE.Math.degToRad(0.0),
             iconOpacity: 0.4,
             action: this.heatPumpFrameServicePanelTakeOutInteractorHandler,
-            deactivated: true
+            deactivated: false
         });
 
         this.heatPumpCompressorLookThroughInteractor = new VLabInteractor({
@@ -1239,11 +1239,11 @@ export default class VlabHVACBaseHeatPump extends VLab {
             schematicPNG: 'resources/scene-heat-pump/textures/schematicHelpers/servicePanelWiringDiagram.png'
         });
 
-        if (this.nature.heatPumpFrameServicePanelTakeOutInteractor === true) {
-            this.heatPumpFrameServicePanelTakeOutInteractor.activate();
-        } else {
-            this.heatPumpFrameServicePanelTakeOutInteractor.deactivate();
-        }
+        // if (this.nature.heatPumpFrameServicePanelTakeOutInteractor === true) {
+        //     this.heatPumpFrameServicePanelTakeOutInteractor.activate();
+        // } else {
+        //     this.heatPumpFrameServicePanelTakeOutInteractor.deactivate();
+        // }
 
 
         this.ACDisconnectDoorHingeCodeLock = this.vLabScene.getObjectByName('ACDisconnectDoorHingeCodeLock');

@@ -896,7 +896,7 @@ export default class VlabHVACBaseAirHandler extends VLab {
             //Advanced mode
             if (this.vLabLocator.context.tablet.currentActiveTabId == 2) {
                 if (this.vLabLocator.context.advancedModeOperationProcessorTimeOut === undefined); {
-                    this.carrierTPWEM01.responsive = false;
+                    this.carrierTPWEM01.responsive = true;
                     this.vLabLocator.context.activatedMode = 'cool';
                     this.vLabLocator.context.advancedModeOperationProcessor();
                     setTimeout(this.startAirBlower.bind(this), 2000);
