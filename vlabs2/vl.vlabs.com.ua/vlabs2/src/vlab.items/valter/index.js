@@ -36,13 +36,142 @@ class Valter extends VLabItem {
         });
     }
     /**
-     * VLabItem onInitialized abstract function implementation
+     * VLabItem onInitialized abstract function implementation; called from super.initialize()
      */
     onInitialized() {
         this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
         this.setupSiblingIneractables();
+        this.setupFramesAndLinks();
     }
 
+    /**
+     * Sets up Valter's kinematics frames and links
+     */
+    setupFramesAndLinks() {
+        this.baseFrame      = this.vLabItemModel.getObjectByName('baseFrame');
+        this.bodyFrame      = this.vLabItemModel.getObjectByName('bodyFrame');
+        this.torsoFrame     = this.vLabItemModel.getObjectByName('torsoFrame');
+        this.headFrame      = this.vLabItemModel.getObjectByName('headFrame');
+
+        this.headTiltLink   = this.vLabItemModel.getObjectByName('headTiltLink');
+        this.headYawLink    = this.vLabItemModel.getObjectByName('headYawLink');
+
+        this.vLabItemModel.updateMatrixWorld();
+
+        this.ValterLinks = {
+            headTiltLink: {
+                value: this.headTiltLink.rotation.x,
+                min: 0.0,
+                max: 1.0,
+                step: 0.01
+            },
+            headYawLink: {
+                value: this.headYawLink.rotation.y,
+                min: -1.35,
+                max: 1.35,
+                step: 0.02
+            }
+        };
+        this.initializeCableSleeves();
+    }
+
+    /**
+     * 
+     * Valter links manipulation
+     * 
+     */
+    setHeadTiltLink(value) {
+        if (value >= this.ValterLinks.headTiltLink.min && value <= this.ValterLinks.headTiltLink.max) {
+            this.ValterLinks.headTiltLink.value = value;
+            this.headTiltLink.rotation.x = this.ValterLinks.headTiltLink.value * -1;
+            this.torsoFrameToHeadFrameCableGeometry.copy(new THREE.TubeBufferGeometry(this.getTorsoFrameToHeadFrameCableCurve(), this.torsoFrameToHeadFrameSleeveSegments, 0.01, 5));
+        }
+    }
+    setHeadYawLink(value) {
+        if (value >= this.ValterLinks.headYawLink.min && value <= this.ValterLinks.headYawLink.max) {
+            this.ValterLinks.headYawLink.value = value;
+            this.headYawLink.rotation.y = this.ValterLinks.headYawLink.value;
+            this.torsoFrameToHeadFrameCableGeometry.copy(new THREE.TubeBufferGeometry(this.getTorsoFrameToHeadFrameCableCurve(), this.torsoFrameToHeadFrameSleeveSegments, 0.01, 5));
+        }
+    }
+
+
+    /**
+     * Initialize Valter's cable sleeves assets
+     */
+    initializeCableSleeves() {
+        this.torsoFrameCableOutput = new THREE.Object3D();
+        this.torsoFrameCableOutput.position.set(0.0, 0.386, 0.102);
+        this.torsoFrame.add(this.torsoFrameCableOutput);
+
+        this.headFrameCableInput = new THREE.Object3D();
+        this.headFrameCableInput.position.set(0.0, 0.057, -0.1);
+        this.headFrame.add(this.headFrameCableInput);
+
+        this.torsoFrameToHeadFrameSleeveSegments = 16;
+
+        this.torsoFrameToHeadFrameCableGeometry = new THREE.TubeBufferGeometry(this.getTorsoFrameToHeadFrameCableCurve(), this.torsoFrameToHeadFrameSleeveSegments, 0.01, 5);
+        this.torsoFrameToHeadFrameCableMesh = new THREE.Mesh(this.torsoFrameToHeadFrameCableGeometry, this.cableSleeveMaterial);
+        this.torsoFrame.add(this.torsoFrameToHeadFrameCableMesh);
+
+
+
+        this.torsoFrameCableInputL = new THREE.Object3D();
+        this.torsoFrameCableInputL.position.set(-0.04, 0.139, 0.128);
+        this.torsoFrame.add(this.torsoFrameCableInputL);
+
+        this.torsoFrameCableInputR = new THREE.Object3D();
+        this.torsoFrameCableInputR.position.set(0.04, 0.139, 0.128);
+        this.torsoFrame.add(this.torsoFrameCableInputR);
+
+        this.bodyFrameCableOutputL = new THREE.Object3D();
+        this.bodyFrameCableOutputL.position.set(-0.083, 0.277, 0.119);
+        this.bodyFrame.add(this.bodyFrameCableOutputL);
+
+        this.bodyFrameCableOutputR = new THREE.Object3D();
+// var geometry = new THREE.SphereBufferGeometry(0.01, 10, 10);
+// var material = new THREE.MeshBasicMaterial({color: 0xffff00});
+// this.bodyFrameCableOutputR = new THREE.Mesh(geometry, material);
+        this.bodyFrameCableOutputR.position.set(0.083, 0.277, 0.119);
+        this.bodyFrame.add(this.bodyFrameCableOutputR);
+
+        this.bodyFrameToTorsoFrameSleeveSegments = 16;
+
+        this.bodyFrameToTorsoFrameCableGeometry = new THREE.TubeBufferGeometry(this.getBodyFrameToTorsoFrameCableCurve(), this.bodyFrameToTorsoFrameSleeveSegments, 0.01, 5);
+        this.bodyFrameToTorsoFrameCableMesh = new THREE.Mesh(this.bodyFrameToTorsoFrameCableGeometry, this.cableSleeveMaterial);
+        this.torsoFrame.add(this.bodyFrameToTorsoFrameCableMesh);
+    }
+    /**
+     * Dynamic torsoFrame to headFrame cable sleeve curve
+     */
+    getTorsoFrameToHeadFrameCableCurve() {
+        let xShift = 1 - ((this.ValterLinks.headYawLink.max - this.ValterLinks.headYawLink.value) / this.ValterLinks.headYawLink.max);
+        let zShift = (this.ValterLinks.headTiltLink.max - this.ValterLinks.headTiltLink.value) / this.ValterLinks.headTiltLink.max;
+        return new THREE.CatmullRomCurve3([
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableOutput)).add(new THREE.Vector3(0.0, 0.0, 0.0)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableOutput)).add(new THREE.Vector3(0.0, 0.02, 0.02)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableOutput)).add(new THREE.Vector3((0.1 * xShift), 0.15, (0.08 * zShift))),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.headFrameCableInput)).add(new THREE.Vector3((0.02 * xShift), 0.0, 0.02)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.headFrameCableInput)).add(new THREE.Vector3(0.0, 0.0, 0.0)),
+        ]);
+    }
+    /**
+     * Dynamic bodyFrame to torsoFrame cable sleeve curve (left and right)
+     */
+    getBodyFrameToTorsoFrameCableCurve() {
+        return new THREE.CatmullRomCurve3([
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputL)).add(new THREE.Vector3(0.0, 0.0, 0.0)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputL)).add(new THREE.Vector3(0.0, 0.0, 0.02)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableOutputL)).add(new THREE.Vector3(0.0, 0.0, 0.0)),
+        ]);
+    }
+
+
+    /**
+     * 
+     * Interactions
+     * 
+     */
 
     /**
      * this.nature.interactables ['baseFrame'] interaction action function
@@ -101,12 +230,11 @@ class Valter extends VLabItem {
             let deltaY = Math.abs(this.preActionInitialEventCoords.y - currentActionInitialEventCoords.y);
 
             if (deltaX > deltaY) {
-                this.vLabItemModel.getObjectByName('headYawLink').rotateY(0.02 * ((this.preActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
+                this.setHeadYawLink(this.ValterLinks.headYawLink.value + this.ValterLinks.headYawLink.step * ((this.preActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
             } else {
-                this.vLabItemModel.getObjectByName('headTiltLink').rotateX(0.01 * ((this.preActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
+                this.setHeadTiltLink(this.ValterLinks.headTiltLink.value + this.ValterLinks.headTiltLink.step * ((this.preActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? -1 : 1));
             }
         }
-
         this.preActionInitialEventCoords = new THREE.Vector2();
         this.preActionInitialEventCoords.copy(currentActionInitialEventCoords);
     }
