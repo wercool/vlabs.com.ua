@@ -97,6 +97,7 @@ class Valter extends VLabItem {
             this.ValterLinks.bodyFrameYaw.value = value;
             this.bodyFrame.rotation.y = this.ValterLinks.bodyFrameYaw.value;
             this.baseFrameToBodyFrameCableLGeometry.copy(new THREE.TubeBufferGeometry(this.getBaseFrameToBodyFrameCableLCurve(), this.baseFrameToBodyFrameSleeveSegments, 0.01, 5));
+            this.baseFrameToBodyFrameCableRGeometry.copy(new THREE.TubeBufferGeometry(this.getBaseFrameToBodyFrameCableRCurve(), this.baseFrameToBodyFrameSleeveSegments, 0.01, 5));
         }
     }
     setTorsoFrameTilt(value) {
@@ -187,11 +188,15 @@ class Valter extends VLabItem {
         this.bodyFrameCableInputR.position.set(0.037, 0.373, 0.175);
         this.bodyFrame.add(this.bodyFrameCableInputR);
 
-        this.baseFrameToBodyFrameSleeveSegments = 10;
+        this.baseFrameToBodyFrameSleeveSegments = 16;
 
         this.baseFrameToBodyFrameCableLGeometry = new THREE.TubeBufferGeometry(this.getBaseFrameToBodyFrameCableLCurve(), this.baseFrameToBodyFrameSleeveSegments, 0.01, 5);
         this.baseFrameToBodyFrameCableLMesh = new THREE.Mesh(this.baseFrameToBodyFrameCableLGeometry, this.cableSleeveMaterial);
         this.baseFrame.add(this.baseFrameToBodyFrameCableLMesh);
+
+        this.baseFrameToBodyFrameCableRGeometry = new THREE.TubeBufferGeometry(this.getBaseFrameToBodyFrameCableRCurve(), this.baseFrameToBodyFrameSleeveSegments, 0.01, 5);
+        this.baseFrameToBodyFrameCableRMesh = new THREE.Mesh(this.baseFrameToBodyFrameCableRGeometry, this.cableSleeveMaterial);
+        this.baseFrame.add(this.baseFrameToBodyFrameCableRMesh);
     }
     /**
      * Dynamic torsoFrame to headFrame cable sleeve curve
@@ -243,13 +248,26 @@ class Valter extends VLabItem {
         return new THREE.CatmullRomCurve3([
             this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputL)).add(new THREE.Vector3(0.0, -0.01, 0.0)),
             this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputL)).add(new THREE.Vector3(0.0, 0.04, 0.0)),
-            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputL)).add(new THREE.Vector3(0.0, 0.2, 0.075)),
-            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputL)).add(new THREE.Vector3(0.0, -0.05, 0.075)),
-            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputL)).add(new THREE.Vector3(0.0 + 0.02 * shift, -0.005, 0.02 + 0.1 * Math.abs())),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputL)).add(new THREE.Vector3(-0.1 * shift, 0.2, 0.075 - 0.085 * Math.abs(shift))),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputL)).add(new THREE.Vector3(-0.05 * shift, -0.05, 0.075)),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputL)).add(new THREE.Vector3(-0.05 * shift, 0.0, 0.02)),
             this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputL)).add(new THREE.Vector3(0.0, 0.0, 0.0)),
         ]);
     }
-
+    /**
+     * Dynamic baseFrame to bodyFrame cable sleeve curve (right)
+     */
+    getBaseFrameToBodyFrameCableRCurve() {
+        let shift = 1 + (this.ValterLinks.bodyFrameYaw.min - this.ValterLinks.bodyFrameYaw.value) / this.ValterLinks.bodyFrameYaw.max;
+        return new THREE.CatmullRomCurve3([
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputR)).add(new THREE.Vector3(0.0, -0.01, 0.0)),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputR)).add(new THREE.Vector3(0.0, 0.04, 0.0)),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputR)).add(new THREE.Vector3(-0.1 * shift, 0.2, 0.075 - 0.085 * Math.abs(shift))),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputR)).add(new THREE.Vector3(-0.05 * shift, -0.05, 0.075)),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputR)).add(new THREE.Vector3(-0.05 * shift, 0.0, 0.02)),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputR)).add(new THREE.Vector3(0.0, 0.0, 0.0)),
+        ]);
+    }
 
     /**
      * 
