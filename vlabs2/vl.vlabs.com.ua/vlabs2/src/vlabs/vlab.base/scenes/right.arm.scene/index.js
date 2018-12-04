@@ -5,9 +5,8 @@ import VLabSceneTransitor from '../../../../vlab.fwk/aux/scene/vlab.scene.transi
 /**
  * VLab Items
  */
-import Valter from '../../../../vlab.items/valter/index';
 
-class ValterScene extends VLabScene {
+class RightArmScene extends VLabScene {
     constructor(iniObj) {
         super(iniObj);
     }
@@ -24,24 +23,7 @@ class ValterScene extends VLabScene {
             tooltip: 'Go to <b>First Scene</b>'
         });
 
-        new VLabSceneTransitor({
-            vLabScene: this,
-            targetVLabScene: this.vLab.SceneDispatcher.getSceneByClassName('RightArmScene'),
-            position: new THREE.Vector3(-1.5, 1.0, 0.0),
-            scaleFactor: 0.5,
-            tooltip: 'Go to <b>RightArm Scene</b>'
-        });
-
-        /**
-         * Valter VLabItem
-         */
-        this.vLab['Valter'] = new Valter({
-            vLab: this.vLab,
-            natureURL: '/vlab.items/valter/resources/valter.nature.json',
-            name: 'ValterVLabItem'
-        });
-
     }
 }
 
-export default ValterScene;
+export default RightArmScene;

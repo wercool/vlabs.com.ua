@@ -8,6 +8,7 @@ import ValterScene   from    './scenes/valter.scene';
 import FirstScene   from    './scenes/first.scene';
 import SecondScene  from    './scenes/second.scene';
 import ThirdScene   from    './scenes/third.scene';
+import RightArmScene   from    './scenes/right.arm.scene';
 
 /**
  * VLab experimental/tutorial class.
@@ -66,6 +67,12 @@ class BaseVLab extends VLab {
         this.SceneDispatcher.addScene({
             class: ThirdScene,
             natureURL: './scenes/third.scene/resources/vlab.scene.nature.json',
+            autoload: false
+        });
+        /* RightArm Scene */
+        this.SceneDispatcher.addScene({
+            class: RightArmScene,
+            natureURL: './scenes/right.arm.scene/resources/vlab.scene.nature.json',
             autoload: false
         });
 
