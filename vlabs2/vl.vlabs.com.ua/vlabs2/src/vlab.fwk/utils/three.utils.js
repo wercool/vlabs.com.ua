@@ -157,6 +157,17 @@ export function conformMaterial(material, vLabScene) {
             if (material.userData.MaterialSide) {
                 _MeshStandardMaterial.side = material.userData.MaterialSide;
             }
+            if (material.userData.NomralMapToBumpMap) {
+                _MeshStandardMaterial.bumpMap = _MeshStandardMaterial.normalMap;
+                _MeshStandardMaterial.bumpScale = material.userData.bumpScale;
+                _MeshStandardMaterial.normalMap = null;
+            }
+            if (material.userData.metalness) {
+                _MeshStandardMaterial.metalness = material.userData.metalness;
+            }
+            if (material.userData.roughness) {
+                _MeshStandardMaterial.roughness = material.userData.roughness;
+            }
             _MeshStandardMaterial.userData = {};
             return _MeshStandardMaterial;
         }
