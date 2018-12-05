@@ -12,7 +12,7 @@ class RightArmScene extends VLabScene {
     }
 
     onLoaded() {
-        var ambientLight = new THREE.AmbientLight(0x404040, 2.0); // soft white light
+        var ambientLight = new THREE.AmbientLight(0x404040, 0.25); // soft white light
         this.add(ambientLight);
 
         new VLabSceneTransitor({

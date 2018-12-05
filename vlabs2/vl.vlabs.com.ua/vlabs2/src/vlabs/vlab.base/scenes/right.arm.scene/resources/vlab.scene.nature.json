@@ -3,16 +3,21 @@
     "description": "Right Arn Scene",
     "gltfURL": "./scenes/right.arm.scene/resources/3d/rightArm.glb",
     "WebGLRendererParameters": {
-        "clearColor": "0x91b1b5"
+        "clearColor": "0x0f0f0f"
     },
     "cameras": {
         "default": {
             "type": "PerspectiveCamera",
             "name": "Camera",
-            "position": {
+            "_position_forArm": {
                 "x": 1.0,
                 "y": 1.0,
                 "z": 1.0
+            },
+            "position": {
+                "x": 6.0,
+                "y": 1.0,
+                "z": 6.0
             },
             "target": {
                 "x": 0.0,
@@ -20,5 +25,253 @@
                 "z": 0.0
             }
         }
-    }
+    },
+    "interactables": [
+        {
+            "name": "humorus",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Humorus</i>"
+        },
+        {
+            "name": "radius",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Radius</i>"
+        },
+        {
+            "name": "ulna",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Ulna</i>"
+        },
+        {
+            "name": "scaphoid",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Scaphoid</i>"
+        },
+        {
+            "name": "lunate",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Lunate</i>"
+        },
+        {
+            "name": "capitate",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Capitate</i>"
+        },
+        {
+            "name": "hamate",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Hamate</i>"
+        },
+        {
+            "name": "triautrm",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Triautrm</i>"
+        },
+        {
+            "name": "pisiform",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Pisiform</i>"
+        },
+        {
+            "name": "trapzoid",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Trapzoid</i>"
+        },
+        {
+            "name": "trapzium",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Trapzium</i>"
+        },
+        {
+            "name": "metacpl1",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Thumb Metacarpal</i>"
+        },
+        {
+            "name": "phalng1p",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Thumb Proximal Phalanx</i>"
+        },
+        {
+            "name": "phalng1d",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Thumb Distal Phalanx</i>"
+        }
+
+,
+        {
+            "name": "mcarple2",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Index Metacarpal</i>"
+        },
+        {
+            "name": "phalanx2",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Index Proximal Phalanx</i>"
+        },
+        {
+            "name": "phalx2m",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Index Middle Phalanx</i>"
+        },
+        {
+            "name": "phalx2d",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Index Distal Phalanx</i>"
+        }
+
+,
+        {
+            "name": "mcarple3",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Middle Metacarpal</i>"
+        },
+        {
+            "name": "phalx3p",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Middle Proximal Phalanx</i>"
+        },
+        {
+            "name": "phalx3m",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Middle Middle Phalanx</i>"
+        },
+        {
+            "name": "phalx3d",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Middle Distal Phalanx</i>"
+        }
+,
+        {
+            "name": "mcarpal4",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Ring Metacarpal</i>"
+        },
+        {
+            "name": "phalx4p",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Ring Proximal Phalanx</i>"
+        },
+        {
+            "name": "phalx4m",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Ring Middle Phalanx</i>"
+        },
+        {
+            "name": "phalx4d",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Ring Distal Phalanx</i>"
+        }
+,
+        {
+            "name": "mcarpal5",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Small Metacarpal</i>"
+        },
+        {
+            "name": "phalx5p",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Small Proximal Phalanx</i>"
+        },
+        {
+            "name": "phalx5m",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Small Middle Phalanx</i>"
+        },
+        {
+            "name": "phalx5d",
+            "visibility": true,
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "<i>Small Distal Phalanx</i>"
+        }
+    ]
 }
