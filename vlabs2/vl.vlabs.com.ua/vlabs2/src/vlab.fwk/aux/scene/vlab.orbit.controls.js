@@ -50,6 +50,12 @@ class VLabOrbitControls extends VLabControls {
         this.minDistance = this.vLabScene.currentCamera.near;
         this.maxDistance = this.vLabScene.currentCamera.far;
 
+        this.lastPosition = new THREE.Vector3();
+        this.lastQuaternion = new THREE.Quaternion();
+
+        this.dumperPosMin = 1e-15;
+        this.dumperPosMax = 1.0;
+
         this.reset();
     }
     /**
@@ -102,8 +108,6 @@ class VLabOrbitControls extends VLabControls {
         // camera.up is the orbit axis
         var quat = new THREE.Quaternion().setFromUnitVectors(this.vLabScene.currentCamera.up, new THREE.Vector3(0, 1, 0));
         var quatInverse = quat.clone().inverse();
-        var lastPosition = new THREE.Vector3();
-        var lastQuaternion = new THREE.Quaternion();
         var position = this.vLabScene.currentCamera.position;
         offset.copy(position).sub(this.target);
 
@@ -136,14 +140,20 @@ class VLabOrbitControls extends VLabControls {
         // rotate offset back to "camera-up-vector-is-up" space
         offset.applyQuaternion(quatInverse);
 
-        position.copy(this.target).add(offset);
-
-        this.vLabScene.currentCamera.lookAt(this.target);
+        let newPos = new THREE.Vector3().copy(position).copy(this.target).add(offset);
+        let posDelta = this.lastPosition.distanceToSquared(newPos);
+        if (posDelta > this.dumperPosMin && posDelta < this.dumperPosMax || this.lastPosition.equals(new THREE.Vector3())) {
+            position.copy(newPos);
+            this.vLabScene.currentCamera.lookAt(this.target);
+        }
 
         this.sphericalDelta.set(0, 0, 0);
 
         this.scale = 1.0;
         this.panOffset.set(0, 0, 0);
+
+        this.lastPosition.copy(this.vLabScene.currentCamera.position);
+        this.lastQuaternion.copy(this.vLabScene.currentCamera.quaternion);
     }
     /**
      * Sets this.state = this.STATE.NONE
@@ -176,6 +186,9 @@ class VLabOrbitControls extends VLabControls {
         // current position in spherical coordinates
         this.spherical = new THREE.Spherical();
         this.sphericalDelta = new THREE.Spherical();
+
+        this.lastPosition = new THREE.Vector3();
+        this.lastQuaternion = new THREE.Quaternion();
     }
     /** 
      * rotating across whole screen goes 360 degrees around
@@ -226,6 +239,7 @@ class VLabOrbitControls extends VLabControls {
      * @memberof VLabOrbitControls
      */
     mousedownHandler(event) {
+        this.dumperPosMax = Infinity;
         if (!event.ctrlKey) {
             if (this.enabled) {
                 switch (event.button) {

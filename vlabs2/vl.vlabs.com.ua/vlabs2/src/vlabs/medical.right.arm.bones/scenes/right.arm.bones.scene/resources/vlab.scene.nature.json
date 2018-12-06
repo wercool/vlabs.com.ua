@@ -10,9 +10,9 @@
             "type": "PerspectiveCamera",
             "name": "Camera",
             "position": {
-                "x": 0.0,
+                "x": 8.0,
                 "y": 10.0,
-                "z": 22.0
+                "z": 20.0
             },
             "target": {
                 "x": 0.0,
@@ -28,7 +28,7 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": false,
-            "tooltip": "<i>Humorus</i>"
+            "tooltip": "<i>Humerus</i>"
         },
         {
             "name": "radius",
