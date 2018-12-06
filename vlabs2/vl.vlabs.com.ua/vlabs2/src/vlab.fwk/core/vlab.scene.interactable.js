@@ -82,6 +82,14 @@ class VLabSceneInteractable {
          */
         this.actionFunction = undefined;
         /**
+         * This native action function acts as manipulator ("pointer out" event is ignored when acting with this Interactable)
+         */
+        this.actionFunctionManipulator = false;
+        /**
+         * true, if this native action function acts as manipulator activated
+         */
+        this.actionFunctionManipulatorActivated = false;
+        /**
          * This native action funciton args
          */
         this.actionFunctionArgs = {};
@@ -289,6 +297,7 @@ class VLabSceneInteractable {
                 if (this.initObj.interactable.action !== undefined) {
                     if (this.initObj.interactable.action.function !== undefined) {
                         this.actionFunction = this.initObj.interactable.action.function;
+                        this.actionFunctionManipulator = this.initObj.interactable.action.manipulator;
                         this.actionFunctionArgs = this.initObj.interactable.action.args;
                         this.actionFunctionContext = this.initObj.interactable.action.context;
                         /**
@@ -350,7 +359,7 @@ class VLabSceneInteractable {
      * @returns {boolean} returns true if this.actionFunction has been actually called
      */
     action(event) {
-        if (this.intersection && this.preselected) {
+        if (this.intersection && this.preselected || this.actionFunctionManipulatorActivated) {
             if (this.actionFunction && this.actionFunctionActivated) {
                 /**
                  * Native action function
@@ -374,6 +383,10 @@ class VLabSceneInteractable {
                     this.actionFunction.call(extendedActionFunctionArgs);
                 }
 
+                if (this.actionFunctionManipulator == true) {
+                    this.actionFunctionManipulatorActivated = true;
+                }
+
                 this.hideTooltip();
                 this.removeRespondentsHelpers();
                 return true;
@@ -388,6 +401,7 @@ class VLabSceneInteractable {
      */
     actionInv(event) {
         if (this.actionInvFunction && this.actionFunctionActivated) {
+            this.actionFunctionManipulatorActivated = false;
             /**
              * Native action invert function
              */
@@ -749,7 +763,7 @@ class VLabSceneInteractable {
              * Left mouse button pressed
              */
             if (event.button == 0) {
-                if (this.actionFunction && this.intersection) {
+                if (this.actionFunction && this.intersection || (this.actionFunction && this.actionFunctionManipulatorActivated == true)) {
                     this.action(event);
                 }
             }
@@ -817,7 +831,7 @@ class VLabSceneInteractable {
              * One finger touch move
              */
             if (event.touches.length == 1) {
-                if (this.actionFunction && this.intersection) {
+                if (this.actionFunction && this.intersection || (this.actionFunction && this.actionFunctionManipulatorActivated == true)) {
                     this.action(event);
                 }
             }

@@ -1,0 +1,15 @@
+{
+    "name": "Right Arm Bones",
+    "styles": {
+    },
+    "WebGLRendererParameters": {
+        "resolutionFactor": 1.0,
+        "clearColor": "0x0f0f0f",
+        "effectComposer": true
+    },
+    "selections": {
+        "outlineHelperMesh": false,
+        "boundsSprite": true
+    },
+    "simpleStats": true
+}

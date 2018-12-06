@@ -1,7 +1,7 @@
 {
     "title": "Right Arm Scene",
     "description": "Right Arm Scene",
-    "gltfURL": "./scenes/right.arm.scene/resources/3d/rightArm.glb",
+    "gltfURL": "./scenes/right.arm.bones.scene/resources/3d/right.arm.bones.glb",
     "WebGLRendererParameters": {
         "clearColor": "0x0f0f0f"
     },
@@ -9,20 +9,15 @@
         "default": {
             "type": "PerspectiveCamera",
             "name": "Camera",
-            "_position_forArm": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-            },
             "position": {
-                "x": 6.0,
-                "y": 1.0,
-                "z": 6.0
+                "x": 0.0,
+                "y": 10.0,
+                "z": 22.0
             },
             "target": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 5.0
             }
         }
     },
@@ -41,7 +36,15 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": false,
-            "tooltip": "<i>Radius</i>"
+            "tooltip": "<i>Radius</i>",
+            "action": {
+                "context": "this.vLab.SceneDispatcher.currentVLabScene",
+                "function": "this.vLab.SceneDispatcher.currentVLabScene.radiusUlnaBonesAction",
+                "activated": true,
+                "manipulator": true,
+                "invfunction": "this.vLab.SceneDispatcher.currentVLabScene.commonInvAction",
+                "args": {}
+            }
         },
         {
             "name": "ulna",
@@ -49,7 +52,15 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": false,
-            "tooltip": "<i>Ulna</i>"
+            "tooltip": "<i>Ulna</i>",
+            "action": {
+                "context": "this.vLab.SceneDispatcher.currentVLabScene",
+                "function": "this.vLab.SceneDispatcher.currentVLabScene.radiusUlnaBonesAction",
+                "activated": true,
+                "manipulator": true,
+                "invfunction": "this.vLab.SceneDispatcher.currentVLabScene.commonInvAction",
+                "args": {}
+            }
         },
         {
             "name": "scaphoid",
@@ -57,7 +68,15 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": false,
-            "tooltip": "<i>Scaphoid</i>"
+            "tooltip": "<i>Scaphoid</i>",
+            "action": {
+                "context": "this.vLab.SceneDispatcher.currentVLabScene",
+                "function": "this.vLab.SceneDispatcher.currentVLabScene.scaphoidLunateBonesAction",
+                "activated": true,
+                "manipulator": true,
+                "invfunction": "this.vLab.SceneDispatcher.currentVLabScene.commonInvAction",
+                "args": {}
+            }
         },
         {
             "name": "lunate",
@@ -121,7 +140,15 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": false,
-            "tooltip": "<i>Thumb Metacarpal</i>"
+            "tooltip": "<i>Thumb Metacarpal</i>",
+            "action": {
+                "context": "this.vLab.SceneDispatcher.currentVLabScene",
+                "function": "this.vLab.SceneDispatcher.currentVLabScene.thumbMetacarpalBoneAction",
+                "activated": true,
+                "manipulator": true,
+                "invfunction": "this.vLab.SceneDispatcher.currentVLabScene.commonInvAction",
+                "args": {}
+            }
         },
         {
             "name": "phalng1p",
@@ -129,7 +156,15 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": false,
-            "tooltip": "<i>Thumb Proximal Phalanx</i>"
+            "tooltip": "<i>Thumb Proximal Phalanx</i>",
+            "action": {
+                "context": "this.vLab.SceneDispatcher.currentVLabScene",
+                "function": "this.vLab.SceneDispatcher.currentVLabScene.thumbProximalPhalanBoneAction",
+                "activated": true,
+                "manipulator": true,
+                "invfunction": "this.vLab.SceneDispatcher.currentVLabScene.commonInvAction",
+                "args": {}
+            }
         },
         {
             "name": "phalng1d",
@@ -137,17 +172,31 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": false,
-            "tooltip": "<i>Thumb Distal Phalanx</i>"
-        }
-
-,
+            "tooltip": "<i>Thumb Distal Phalanx</i>",
+            "action": {
+                "context": "this.vLab.SceneDispatcher.currentVLabScene",
+                "function": "this.vLab.SceneDispatcher.currentVLabScene.thumbDistalPhalanBoneAction",
+                "activated": true,
+                "manipulator": true,
+                "invfunction": "this.vLab.SceneDispatcher.currentVLabScene.commonInvAction",
+                "args": {}
+            }
+        },
         {
             "name": "mcarple2",
             "visibility": true,
             "intersectable": true,
             "preselectable": true,
             "selectable": false,
-            "tooltip": "<i>Index Metacarpal</i>"
+            "tooltip": "<i>Index Metacarpal</i>",
+            "action": {
+                "context": "this.vLab.SceneDispatcher.currentVLabScene",
+                "function": "this.vLab.SceneDispatcher.currentVLabScene.indexMetacarpalBoneAction",
+                "activated": true,
+                "manipulator": true,
+                "invfunction": "this.vLab.SceneDispatcher.currentVLabScene.commonInvAction",
+                "args": {}
+            }
         },
         {
             "name": "phalanx2",
@@ -155,7 +204,15 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": false,
-            "tooltip": "<i>Index Proximal Phalanx</i>"
+            "tooltip": "<i>Index Proximal Phalanx</i>",
+            "action": {
+                "context": "this.vLab.SceneDispatcher.currentVLabScene",
+                "function": "this.vLab.SceneDispatcher.currentVLabScene.indexProximalPhalanxBoneAction",
+                "activated": true,
+                "manipulator": true,
+                "invfunction": "this.vLab.SceneDispatcher.currentVLabScene.commonInvAction",
+                "args": {}
+            }
         },
         {
             "name": "phalx2m",
@@ -163,7 +220,15 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": false,
-            "tooltip": "<i>Index Middle Phalanx</i>"
+            "tooltip": "<i>Index Middle Phalanx</i>",
+            "action": {
+                "context": "this.vLab.SceneDispatcher.currentVLabScene",
+                "function": "this.vLab.SceneDispatcher.currentVLabScene.indexMiddlePhalanxBoneAction",
+                "activated": true,
+                "manipulator": true,
+                "invfunction": "this.vLab.SceneDispatcher.currentVLabScene.commonInvAction",
+                "args": {}
+            }
         },
         {
             "name": "phalx2d",
@@ -171,10 +236,16 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": false,
-            "tooltip": "<i>Index Distal Phalanx</i>"
-        }
-
-,
+            "tooltip": "<i>Index Distal Phalanx</i>",
+            "action": {
+                "context": "this.vLab.SceneDispatcher.currentVLabScene",
+                "function": "this.vLab.SceneDispatcher.currentVLabScene.indexDistalPhalanxBoneAction",
+                "activated": true,
+                "manipulator": true,
+                "invfunction": "this.vLab.SceneDispatcher.currentVLabScene.commonInvAction",
+                "args": {}
+            }
+        },
         {
             "name": "mcarple3",
             "visibility": true,
@@ -206,8 +277,7 @@
             "preselectable": true,
             "selectable": false,
             "tooltip": "<i>Middle Distal Phalanx</i>"
-        }
-,
+        },
         {
             "name": "mcarpal4",
             "visibility": true,
@@ -239,8 +309,7 @@
             "preselectable": true,
             "selectable": false,
             "tooltip": "<i>Ring Distal Phalanx</i>"
-        }
-,
+        },
         {
             "name": "mcarpal5",
             "visibility": true,
