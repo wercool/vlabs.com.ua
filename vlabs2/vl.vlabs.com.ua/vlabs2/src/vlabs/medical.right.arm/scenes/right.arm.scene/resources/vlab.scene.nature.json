@@ -1,0 +1,24 @@
+{
+    "title": "Right Arm Scene",
+    "description": "Right Arm Scene",
+    "gltfURL": "./scenes/right.arm.scene/resources/3d/right.arm.glb",
+    "WebGLRendererParameters": {
+        "clearColor": "0x0f0f0f"
+    },
+    "cameras": {
+        "default": {
+            "type": "PerspectiveCamera",
+            "name": "Camera",
+            "position": {
+                "x": 1.25,
+                "y": 0.5,
+                "z": 1.25
+            },
+            "target": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        }
+    }
+}

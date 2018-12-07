@@ -14,12 +14,6 @@ class RightArmBonesScene extends VLabScene {
     onLoaded() {
         var ambientLight = new THREE.AmbientLight(0x404040, 0.25); // soft white light
         this.add(ambientLight);
-
-        this.getObjectByName('elbowS1').material.depthTest = false;
-        this.getObjectByName('elbowS1').material.depthWrite = false;
-
-        this.getObjectByName('elbowS130').material.depthTest = false;
-        this.getObjectByName('elbowS130').material.depthWrite = false;
     }
     /**
      * Action-inv action

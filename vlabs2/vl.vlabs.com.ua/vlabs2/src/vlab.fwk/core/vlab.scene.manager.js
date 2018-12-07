@@ -363,18 +363,31 @@ class VLabSceneManager {
         let self = this;
         let vLabScene = this.vLabScene;
         return new Promise(function(resolve, reject) {
+            let glTFScene = gltf.scene
+
+            vLabScene.add(glTFScene);
+
+let animations = gltf.animations;
+if (animations.length > 0) {
+    self.animationMixer = new THREE.AnimationMixer(glTFScene);
+    setInterval(() => {
+        self.animationMixer.update(self.clock.getDelta());
+    }, 20);
+    self.defaultAction = self.animationMixer.clipAction(animations[0]);
+    self.defaultAction.play();
+}
+
             gltf.scene.traverse((child) => {
                 switch (child.type) {
-                    case 'Mesh':
-                        if (child.parent.constructor.name == 'Scene') {
-                            vLabScene.add(child.clone());
-                        }
-                    break;
                     case 'Object3D':
                         self.conformObject3D(child);
                     break;
                 }
             });
+
+            /**
+             * Conform materials
+             */
             vLabScene.traverse((child) => {
                 if (child.material) {
                     let conformedMaterial = THREEUtils.conformMaterial(child.material, vLabScene);
@@ -383,6 +396,7 @@ class VLabSceneManager {
                     }
                 }
             });
+
             resolve();
         });
     }

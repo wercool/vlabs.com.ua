@@ -1,6 +1,6 @@
 {
-    "title": "Right Arm Scene",
-    "description": "Right Arm Scene",
+    "title": "Right Arm Bones Scene",
+    "description": "Right Arm Bones Scene",
     "gltfURL": "./scenes/right.arm.bones.scene/resources/3d/right.arm.bones.glb",
     "WebGLRendererParameters": {
         "clearColor": "0x0f0f0f"

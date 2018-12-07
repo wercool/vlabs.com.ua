@@ -254,6 +254,8 @@ password: '123'
                 precision: 'lowp'
             });
 
+            this.WebGLRenderer.gammaOutput = true;
+
             this.WebGLRenderer.setPixelRatio(1.0);
 
             if (this.getProdMode() || window.location.href.indexOf('localhost') > -1) {
