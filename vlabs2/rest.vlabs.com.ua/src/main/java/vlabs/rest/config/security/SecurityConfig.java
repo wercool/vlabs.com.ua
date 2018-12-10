@@ -16,6 +16,7 @@ public class SecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/resources/**",
             "/actuator/**",
+            "/api/public/**",
             "/api/auth/**",
             "/api/aux/**",
             "/favicon.ico"
