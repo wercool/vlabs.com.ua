@@ -16,6 +16,8 @@ class FirstScene extends VLabScene {
         this.getObjectByName('Plane').material.polygonOffset = true;
         this.getObjectByName('Plane').material.polygonOffsetFactor = 1;
 
+        this.vLab.WebGLRenderer.gammaFactor = 1.25;
+
         new VLabSceneTransitor({
             vLabScene: this,
             targetVLabScene: this.vLab.SceneDispatcher.getSceneByClassName('SecondScene'),

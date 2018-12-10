@@ -13,7 +13,7 @@ class ValterScene extends VLabScene {
     }
 
     onLoaded() {
-        var ambientLight = new THREE.AmbientLight(0x404040, 2.0); // soft white light
+        var ambientLight = new THREE.AmbientLight(0x404040, 1.25); // soft white light
         this.add(ambientLight);
 
         new VLabSceneTransitor({
