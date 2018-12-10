@@ -45,7 +45,8 @@ export class HelpClipComponent implements OnInit {
       if (!helpclip.id) {
         return;
       }
-      this.vLabEmbedSafeURL = this.sanitizer.bypassSecurityTrustResourceUrl(environment.vlabsHost + '/' + helpclip.alias + '/index.html');
+      // this.vLabEmbedSafeURL = this.sanitizer.bypassSecurityTrustResourceUrl(environment.vlabsHost + '/' + helpclip.alias + '/index.html');
+      this.vLabEmbedSafeURL = this.sanitizer.bypassSecurityTrustResourceUrl(helpclip.path);
       this.helpClipReadyToStart = true;
   }
 
