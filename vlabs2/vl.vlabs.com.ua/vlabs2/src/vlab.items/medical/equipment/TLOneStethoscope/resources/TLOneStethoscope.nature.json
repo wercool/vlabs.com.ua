@@ -2,6 +2,13 @@
     "name": "Thinklabs One Stethoscope",
     "thumbnail": "/vlab.items/medical/equipment/TLOneStethoscope/resources/thumbnail.png",
     "modelURL": "/vlab.items/medical/equipment/TLOneStethoscope/resources/3d/TLOneStethoscope.glb",
+    "addToInvnentory": true,
     "interactables": [
+        {
+            "name": "TLOneStethoscope",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true
+        }
     ]
 }

@@ -351,6 +351,8 @@ class VLabSceneInteractable {
             this.addOutlineHelperMesh();
             this.addBoundsSprite();
             this.setVisibility();
+        } else {
+            console.error('VLabSceneInteractable->setVLabSceneObject: No Scene object find for the given interactable initObj', this.initObj.interactable);
         }
     }
     /**

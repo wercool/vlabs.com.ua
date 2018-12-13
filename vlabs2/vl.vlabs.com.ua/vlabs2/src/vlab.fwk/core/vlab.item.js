@@ -36,6 +36,10 @@ class VLabItem {
          * VLabItem Model (parent Object3D | Mesh)
          */
         this.vLabItemModel = undefined;
+        /**
+         * Sibling Interactables
+         */
+        this.interactables = [];
     }
     /**
      * Initialize VLab Item
@@ -112,32 +116,60 @@ class VLabItem {
      */
     onLoaded() { console.log('%c' + this.name + ' onLoaded abstract method not implemented', 'color: orange'); }
     /**
-     * Setup sibling interactables from this.nature
+     * Setup interactables from this.nature
      */
-    setupSiblingIneractables() {
+    setupInteractables() {
         return new Promise((resolve, reject) => {
             /** 
              * Configure VLabItem sibling interactables from VLabItem nature 
              */
             if (this.nature.interactables) {
                 // console.log('VLabItem [' + this.name + '] interactables: ', this.nature.interactables);
-                this.nature.interactables.forEach(async (interactableNatureObj) => {
-                    let interactable = await this.vLab.SceneDispatcher.currentVLabScene.addInteractable(interactableNatureObj);
-                    if (interactableNatureObj.siblings) {
-                        interactableNatureObj.siblings.forEach(async (interactableSiblingName) => {
-                            let interactableSiblingNatureObj = {};
-                            interactableSiblingNatureObj['name'] = interactableSiblingName;
-                            interactableSiblingNatureObj['intersectable'] = interactableNatureObj.intersectable;
-                            interactableSiblingNatureObj['preselectable'] = interactableNatureObj.preselectable;
-                            interactableSiblingNatureObj['selectable'] = interactableNatureObj.selectable;
-                            let interactableSibling = await this.vLab.SceneDispatcher.currentVLabScene.addInteractable(interactableSiblingNatureObj);
-                            interactable.siblings.push(interactableSibling);
-                        });
+                let addInteractablePromises = [];
+                for (const interactableId in this.nature.interactables) {
+                    let interactableNatureObj = this.nature.interactables[interactableId];
+                    let addInteractablePromise = this.vLab.SceneDispatcher.currentVLabScene.addInteractable(interactableNatureObj);
+                    addInteractablePromises.push(addInteractablePromise);
+                }
+                Promise.all(addInteractablePromises)
+                .then((addedInteractables) => {
+                    this.interactables.push(...addedInteractables);
+
+                    /**
+                     * Setup sibling interactables
+                     */
+                    for (const interactableId in this.nature.interactables) {
+                        let interactableNatureObj = this.nature.interactables[interactableId];
+                        if (interactableNatureObj.siblings) {
+                            let interactable = this.getInteractableByName(interactableNatureObj.name);
+                            interactableNatureObj.siblings.forEach(async (interactableSiblingName) => {
+                                let interactableSiblingNatureObj = {};
+                                interactableSiblingNatureObj['name'] = interactableSiblingName;
+                                interactableSiblingNatureObj['intersectable'] = interactableNatureObj.intersectable;
+                                interactableSiblingNatureObj['preselectable'] = interactableNatureObj.preselectable;
+                                interactableSiblingNatureObj['selectable'] = interactableNatureObj.selectable;
+                                let interactableSibling = await this.vLab.SceneDispatcher.currentVLabScene.addInteractable(interactableSiblingNatureObj);
+                                interactable.siblings.push(interactableSibling);
+                            });
+                        }
                     }
+
+                    resolve(this.interactables);
                 });
+            } else {
+                resolve(this.interactables);
             }
-            resolve();
         });
+    }
+    /**
+     * Get VLabItemInteractable by vLabSceneObjectName
+     */
+    getInteractableByName(name) {
+        for (let interactable of this.interactables) {
+            if (interactable.vLabSceneObject.name == name) {
+                return interactable;
+            }
+        }
     }
     /**
      * Load 3D content from this.nature.modelURL

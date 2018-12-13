@@ -40,7 +40,7 @@ class Valter extends VLabItem {
      */
     onInitialized() {
         this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
-        this.setupSiblingIneractables();
+        this.setupInteractables();
         this.setupFramesAndLinks();
     }
 

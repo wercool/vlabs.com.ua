@@ -1,5 +1,8 @@
 import VLab from '../../vlab.fwk/core/vlab';
 
+/* This VLab Auxilaries */
+import VLabInventory   from    '../../vlab.fwk/aux/inventory/index';
+
 /* This VLab Scenes */
 import BasicsOfLungSoundsScene   from    './scenes/base.scene';
 
@@ -27,6 +30,11 @@ class BasicsOfLungSounds extends VLab {
      * @memberof BasicsOfLungSounds
      */
     bootstrap(iniObj) {
+        /* VLab Inventory */
+        this.Inventory = new VLabInventory({
+            vLab: this
+        });
+
         /* BasicsOfLungSounds Scene */
         this.SceneDispatcher.addScene({
             class: BasicsOfLungSoundsScene,

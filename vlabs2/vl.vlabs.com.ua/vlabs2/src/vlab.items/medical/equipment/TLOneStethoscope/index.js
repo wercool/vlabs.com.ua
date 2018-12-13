@@ -15,6 +15,8 @@ class TLOneStethoscope extends VLabItem {
 
         this.initObj = initObj;
 
+        this.name = this.initObj.name ? this.initObj.name : 'TLOneStethoscope';
+
         var textureLoader = new THREE.TextureLoader();
 
         Promise.all([
@@ -38,7 +40,15 @@ class TLOneStethoscope extends VLabItem {
      */
     onInitialized() {
         this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
-        this.setupSiblingIneractables();
+        this.setupInteractables()
+        .then((interactables) => {
+            /**
+             * Conditionally add to Inventory interactables (for VLabItem by default this.interactables[0] (this.vLabScenObject in the root of [0] Interactable) is added to Inventory)
+             */
+            if (this.nature.addToInvnentory == true) {
+                this.vLab.Inventory.addInteractable(this.interactables[0]);
+            }
+        });
     }
 }
 export default TLOneStethoscope;

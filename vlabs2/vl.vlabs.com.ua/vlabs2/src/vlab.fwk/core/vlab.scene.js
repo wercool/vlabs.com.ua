@@ -330,7 +330,7 @@ class VLabScene extends THREE.Scene {
             });
             this.interactables[interactableObj.name].initialize()
             .then((vLabSceneInteractable) => {
-                resolve(vLabSceneInteractable)
+                resolve(vLabSceneInteractable);
             });
         });
     }

@@ -20,5 +20,13 @@
                 "z": 0.0
             }
         }
-    }
+    },
+    "interactables": [
+        {
+            "name": "maleBody",
+            "intersectable": true,
+            "preselectable": false,
+            "selectable": false
+        }
+    ]
 }
