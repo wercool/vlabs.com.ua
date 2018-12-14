@@ -392,7 +392,7 @@ class VLabScene extends THREE.Scene {
             }
 
             /**
-             * Check is this.intersectedInteractables[0] is among this.selectedInteractables respondents
+             * Check if this.intersectedInteractables[0] is among this.selectedInteractables respondents
              * If so check if this.selectedInteractable(s) has this.intersectedInteractables[0] action function
              * Call this.selectedInteractable(s) respondent action function
              */
@@ -405,6 +405,7 @@ class VLabScene extends THREE.Scene {
                                     && selectedInteractableRespondent.callerInteractable == selectedInteractable
                                     && ((this.intersectedInteractables[0].preselectable && this.intersectedInteractables[0].preselected) || !this.intersectedInteractables[0].preselectable)
                                 ) {
+                                    this.intersectedInteractables[0].lastTouchRaycasterIntersection = this.intersectedInteractables[0].intersectionRaycaster;
                                     if (selectedInteractableRespondent.action) {
                                         selectedInteractableRespondent.action.call(selectedInteractableRespondent);
                                     }
@@ -445,9 +446,16 @@ class VLabScene extends THREE.Scene {
             }
             this.interactablesRaycaster.setFromCamera(this.eventCoordsNormalized, this.currentCamera);
             let intersectedInteractablesIntersections = this.interactablesRaycaster.intersectObjects(this.intersectableInteractables);
+
             intersectedInteractablesIntersections.forEach((intersectedInteractablesIntersection) => {
                 let intersectedInteractable = this.interactables[intersectedInteractablesIntersection.object.name];
-                if (intersectedInteractable) this.intersectedInteractables.push(intersectedInteractable);
+                /**
+                * By default only first Mesh intersections taken
+                */
+                if (this.intersectedInteractables.indexOf(intersectedInteractable) == -1) {
+                    intersectedInteractable.intersectionRaycaster = intersectedInteractablesIntersection;
+                    if (intersectedInteractable) this.intersectedInteractables.push(intersectedInteractable);
+                }
             });
         }
     }

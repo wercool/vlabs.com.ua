@@ -143,6 +143,12 @@ class VLabSceneInteractable {
          */
         this.intersection = null;
         /**
+         * Raycaster intersection object of object passed to {@link VLabSceneInteractable#intersectionHandler} from {@link VLabScene#processInteractables}
+         * @public
+         * @default null
+         */
+        this.intersectionRaycaster = null;
+        /**
          * If true then this will be added to the {@link VLabScene#preSelectedInteractables}
          * @public
          * @default false
@@ -228,6 +234,10 @@ class VLabSceneInteractable {
          * Shown respondents
          */
         this.shownRespondents = [];
+        /**
+         * Last click / touch intersection
+         */
+        this.lastTouchRaycasterIntersection = undefined;
     }
     /**
      * Initialize VLabSceneInteractable.
@@ -361,6 +371,10 @@ class VLabSceneInteractable {
      * @returns {boolean} returns true if this.actionFunction has been actually called
      */
     action(event) {
+        if (this.intersection) {
+            this.lastTouchRaycasterIntersection = this.intersectionRaycaster;
+        }
+
         if (this.intersection && this.preselected || this.actionFunctionManipulatorActivated) {
             if (this.actionFunction && this.actionFunctionActivated) {
                 /**
@@ -1186,87 +1200,117 @@ class VLabSceneInteractable {
                 if (respondent.callerInteractable == this && respondent.interactable.vLabScene == this.vLab.SceneDispatcher.currentVLabScene) {
                     if (respondent.interactable) {
                         if (respondent.interactable.vLabSceneObject) {
-                            let thisOrigin = this.vLabSceneObject.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0));
-                            let respondentOrigin = respondent.interactable.vLabSceneObject.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0));
-                            let respondentDirection = respondentOrigin.clone().sub(thisOrigin.clone()).normalize();
 
-                            raycaster.set(thisOrigin, respondentDirection);
-                            let respondentIntersections = raycaster.intersectObject(respondent.interactable.vLabSceneObject);
-
-                            if (respondentIntersections.length > 0) {
-                                if (this.preselected) {
-                                    let respondentCSSCLass = 'respondentReferenceTooltip';
-                                    let interactableIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['interactableIntersectionReferencePointMaterial'];
-                                    let respondentLineMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial'];
-                                    let respondentIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentIntersectionReferencePointMaterial'];
-
-                                    if (respondent.initObj.action !== undefined) {
-                                        respondentCSSCLass = 'respondentActionTooltip';
-                                        interactableIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['interactableIntersectionActionPointMaterial'];
-                                        respondentLineMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentActionLineMaterial'];
-                                        respondentIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentIntersectionActionPointMaterial'];
-                                    }
-
-                                    let respondentIntersectionPointMesh = new THREE.Mesh(this.vLab.prefabs['VLabSceneInteractablePrefabs']['linePointGeometry'], respondentIntersectionPointMaterial);
-                                    respondentIntersectionPointMesh.position.copy(respondentIntersections[0].point);
-                                    respondentIntersectionPointMesh.scale.multiplyScalar(0.5 * respondentIntersections[0].point.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
-                                    this.vLabScene.add(respondentIntersectionPointMesh);
-
-                                    /**
-                                     * Show this interactable intersection point of line, connecting with this respondent
-                                     */
-                                    raycaster.set(respondentIntersectionPointMesh.position.clone(), respondentDirection.clone().negate());
-                                    let thisIntersections = raycaster.intersectObject(this.vLabSceneObject);
-                                    let thisIntersectionPoint = thisOrigin;
-                                    if (thisIntersections.length > 0) {
-                                        thisIntersectionPoint = thisIntersections[0].point;
-                                    }
-
-                                    let thisPointMeshPosition = new THREE.Vector3().addVectors(thisIntersectionPoint, (!this.taken) ? respondentDirection.clone().multiplyScalar(0.02) : new THREE.Vector3());
-                                    let thisPointMesh = new THREE.Mesh(this.vLab.prefabs['VLabSceneInteractablePrefabs']['linePointGeometry'], interactableIntersectionPointMaterial);
-                                    thisPointMesh.position.copy(thisPointMeshPosition);
-                                    let scale = 0.1;
-                                    if (!this.taken) {
-                                        scale = 2.0 / (1 / thisIntersectionPoint.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
-                                        if (scale > 3.0) scale = 3.0;
-                                    }
-                                    thisPointMesh.scale.multiplyScalar(scale);
-                                    this.vLabScene.add(thisPointMesh);
-
-                                    let lineGeometry = new THREE.Geometry();
-                                    lineGeometry.vertices.push(
-                                        thisPointMeshPosition,
-                                        respondentIntersections[0].point
-                                    );
-
-                                    let line = new THREE.Line(lineGeometry, respondentLineMaterial);
-                                    if (respondentLineMaterial === this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial']) {
-                                        line = new THREE.LineSegments(lineGeometry, this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial']);
-                                        line.computeLineDistances();
-                                    } else {
-                                        line = new THREE.Line(lineGeometry, respondentLineMaterial);
-                                    }
-
-                                    this.vLabScene.add(line);
-
-                                    this.respondentPreselectionHelpers.push(lineGeometry);
-                                    this.respondentPreselectionHelpers.push(respondentIntersectionPointMesh);
-                                    this.respondentPreselectionHelpers.push(thisPointMesh);
-                                    this.respondentPreselectionHelpers.push(line);
-
-                                    this.shownRespondents.push({
-                                        respondent: respondent,
-                                        respondentIntersectionPointMesh: respondentIntersectionPointMesh,
-                                        respondentCSSCLass: respondentCSSCLass,
-                                        interactable: respondent.interactable,
-                                        preselectionTooltip: respondent.preselectionTooltip
-                                    });
-
-                                    respondent.preselectionAction.call(respondent);
-                                    this.showRespondents();
-
+                            /**
+                             * Respondent extras - particularQualities
+                             */
+                            let showRespondents = true;
+                            /**
+                             * showHelpersOnlyWhenTaken
+                             */
+                            if (respondent.interactable.initObj.interactable.respondentExtras
+                            && respondent.interactable.initObj.interactable.respondentExtras.particularQualities
+                            && respondent.interactable.initObj.interactable.respondentExtras.particularQualities[this.vLabSceneObject.name]) {
+                                if (respondent.interactable.initObj.interactable.respondentExtras.particularQualities[this.vLabSceneObject.name]['showHelpersOnlyWhenTaken'] == true
+                                && !this.taken) {
+                                    showRespondents = false;
                                 }
                             }
+
+                            if (showRespondents) {
+
+                                let thisOrigin = this.vLabSceneObject.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0));
+
+                                let respondentOffset = new THREE.Vector3(0.0, 0.0, 0.0);
+                                /**
+                                 * Respondent extras - origin offset
+                                 */
+                                if (respondent.interactable.initObj.interactable.respondentExtras && respondent.interactable.initObj.interactable.respondentExtras.offset) {
+                                    respondentOffset = eval(respondent.interactable.initObj.interactable.respondentExtras.offset);
+                                }
+                                let respondentOrigin = respondent.interactable.vLabSceneObject.localToWorld(respondentOffset);
+                                let respondentDirection = respondentOrigin.clone().sub(thisOrigin.clone()).normalize();
+
+                                raycaster.set(thisOrigin, respondentDirection);
+                                let respondentIntersections = raycaster.intersectObject(respondent.interactable.vLabSceneObject);
+
+                                if (respondentIntersections.length > 0) {
+                                    if (this.preselected) {
+                                        let respondentCSSCLass = 'respondentReferenceTooltip';
+                                        let interactableIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['interactableIntersectionReferencePointMaterial'];
+                                        let respondentLineMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial'];
+                                        let respondentIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentIntersectionReferencePointMaterial'];
+
+                                        if (respondent.initObj.action !== undefined) {
+                                            respondentCSSCLass = 'respondentActionTooltip';
+                                            interactableIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['interactableIntersectionActionPointMaterial'];
+                                            respondentLineMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentActionLineMaterial'];
+                                            respondentIntersectionPointMaterial = this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentIntersectionActionPointMaterial'];
+                                        }
+
+                                        let respondentIntersectionPointMesh = new THREE.Mesh(this.vLab.prefabs['VLabSceneInteractablePrefabs']['linePointGeometry'], respondentIntersectionPointMaterial);
+                                        respondentIntersectionPointMesh.position.copy(respondentIntersections[0].point);
+                                        respondentIntersectionPointMesh.scale.multiplyScalar(0.5 * respondentIntersections[0].point.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
+                                        this.vLabScene.add(respondentIntersectionPointMesh);
+
+                                        /**
+                                         * Show this interactable intersection point of line, connecting with this respondent
+                                         */
+                                        raycaster.set(respondentIntersectionPointMesh.position.clone(), respondentDirection.clone().negate());
+                                        let thisIntersections = raycaster.intersectObject(this.vLabSceneObject);
+                                        let thisIntersectionPoint = thisOrigin;
+                                        if (thisIntersections.length > 0) {
+                                            thisIntersectionPoint = thisIntersections[0].point;
+                                        }
+
+                                        let thisPointMeshPosition = new THREE.Vector3().addVectors(thisIntersectionPoint, (!this.taken) ? respondentDirection.clone().multiplyScalar(0.02) : new THREE.Vector3());
+                                        let thisPointMesh = new THREE.Mesh(this.vLab.prefabs['VLabSceneInteractablePrefabs']['linePointGeometry'], interactableIntersectionPointMaterial);
+                                        thisPointMesh.position.copy(thisPointMeshPosition);
+                                        let scale = 0.01;
+                                        if (!this.taken) {
+                                            scale = 2.0 / (1 / thisIntersectionPoint.distanceTo(this.vLabScene.currentCamera.localToWorld(new THREE.Vector3(0.0, 0.0, 0.0))));
+                                            if (scale > 3.0) scale = 3.0;
+                                        }
+                                        thisPointMesh.scale.multiplyScalar(scale);
+                                        this.vLabScene.add(thisPointMesh);
+
+                                        let lineGeometry = new THREE.Geometry();
+                                        lineGeometry.vertices.push(
+                                            thisPointMeshPosition,
+                                            respondentIntersections[0].point
+                                        );
+
+                                        let line = new THREE.Line(lineGeometry, respondentLineMaterial);
+                                        if (respondentLineMaterial === this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial']) {
+                                            line = new THREE.LineSegments(lineGeometry, this.vLab.prefabs['VLabSceneInteractablePrefabs']['respondentReferenceDashedLineMaterial']);
+                                            line.computeLineDistances();
+                                        } else {
+                                            line = new THREE.Line(lineGeometry, respondentLineMaterial);
+                                        }
+
+                                        this.vLabScene.add(line);
+
+                                        this.respondentPreselectionHelpers.push(lineGeometry);
+                                        this.respondentPreselectionHelpers.push(respondentIntersectionPointMesh);
+                                        this.respondentPreselectionHelpers.push(thisPointMesh);
+                                        this.respondentPreselectionHelpers.push(line);
+
+                                        this.shownRespondents.push({
+                                            respondent: respondent,
+                                            respondentIntersectionPointMesh: respondentIntersectionPointMesh,
+                                            respondentCSSCLass: respondentCSSCLass,
+                                            interactable: respondent.interactable,
+                                            preselectionTooltip: respondent.preselectionTooltip
+                                        });
+
+                                        respondent.preselectionAction.call(respondent);
+                                        this.showRespondents();
+
+                                    }
+                                }
+
+                            } //if (showRespondents)
+
                         }
                     }
                 }

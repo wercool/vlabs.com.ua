@@ -50,7 +50,7 @@ class VLabSceneInteractableRespondent {
      */
     action() {
         if (this.initObj.action) {
-            this.initObj.action.function.call(this.initObj.action.context, this.initObj.action.params);
+            this.initObj.action.function.call(this.initObj.action.context, this.initObj.action.args);
         }
     }
     /**
@@ -59,7 +59,7 @@ class VLabSceneInteractableRespondent {
      */
     preselectionAction() {
         if (this.initObj.preselectionAction) {
-            this.initObj.preselectionAction.function.call(this.initObj.preselectionAction.context, this.initObj.preselectionAction.params);
+            this.initObj.preselectionAction.function.call(this.initObj.preselectionAction.context, this.initObj.preselectionAction.args);
         }
     }
     /**
@@ -68,7 +68,7 @@ class VLabSceneInteractableRespondent {
      */
     dePreselectionAction() {
         if (this.initObj.dePreselectionAction) {
-            this.initObj.dePreselectionAction.function.call(this.initObj.dePreselectionAction.context, this.initObj.dePreselectionAction.params);
+            this.initObj.dePreselectionAction.function.call(this.initObj.dePreselectionAction.context, this.initObj.dePreselectionAction.args);
         }
     }
 }

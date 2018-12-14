@@ -13,7 +13,16 @@ class DEVVLabSceneInteractable {
 
         this.menu = [
             {
-                label: "Move",
+                label: 'Trace',
+                enabled: true,
+                selected: false,
+                icon: '<i class=\"material-icons\">description</i>',
+                action: () => {
+                    console.log(this.vLabSceneInteractable);
+                }
+            },
+            {
+                label: 'Move',
                 enabled: true,
                 selected: false,
                 icon: '<img src="/vlab.assets/img/dev/vlab.scene.interactable.dev/axis.png" height="32px"/>',

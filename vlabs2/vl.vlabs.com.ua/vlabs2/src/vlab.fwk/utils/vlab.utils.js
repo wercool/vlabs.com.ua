@@ -122,3 +122,13 @@ export function getEventCoords(event) {
     }
     return currentActionInitialEventCoords;
 }
+
+export function loadImage(imagePath) {
+    return new Promise(resolve => {
+        let image = new Image();
+        image.onload = () => {
+            resolve(image);
+        };
+        image.src = imagePath;
+    });
+}

@@ -323,15 +323,20 @@ class VLabSceneDispatcher {
 
         this.takenInteractable.removeMenuItem('Take');
 
-        this.takenInteractable.updateMenuWithMenuItem({
-            label: 'Put back',
-            icon: '<i class="material-icons">undo</i>',
-            enabled: (this.currentVLabScene.constructor.name !== 'VLabInventory') ? true : false,
-            action: this.takenInteractable.put,
-            context: this.takenInteractable,
-            originalScene: (putObjInsist && putObjInsist.scene) ? putObjInsist.scene : this.currentVLabScene,
-            args: putObj
-        }, true);
+        /**
+         * Do not add 'Put back' if putObj.poision == 0
+         */
+        if (!putObj.position.equals(new THREE.Vector3())) {
+            this.takenInteractable.updateMenuWithMenuItem({
+                label: 'Put back',
+                icon: '<i class="material-icons">undo</i>',
+                enabled: (this.currentVLabScene.constructor.name !== 'VLabInventory') ? true : false,
+                action: this.takenInteractable.put,
+                context: this.takenInteractable,
+                originalScene: (putObjInsist && putObjInsist.scene) ? putObjInsist.scene : this.currentVLabScene,
+                args: putObj
+            }, true);
+        }
 
         /**
          * Resize taken object to fit it into camera

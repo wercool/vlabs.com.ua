@@ -93,6 +93,16 @@ class VLabItem {
                         delete this['loadingManager'];
 
                         self.onInitialized();
+
+                        /**
+                         * Notify event subscribers
+                         */
+                        this.vLab.EventDispatcher.notifySubscribers({
+                            target: 'VLabItem',
+                            type: 'initialized',
+                            vLabItem: this
+                        });
+
                         resolve(this);
                     });
                 });
@@ -153,6 +163,15 @@ class VLabItem {
                             });
                         }
                     }
+
+                    /**
+                     * Notify event subscribers
+                     */
+                    this.vLab.EventDispatcher.notifySubscribers({
+                        target: 'VLabItem',
+                        type: 'interactablesInitialized',
+                        vLabItem: this
+                    });
 
                     resolve(this.interactables);
                 });

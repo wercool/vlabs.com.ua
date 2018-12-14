@@ -26,7 +26,15 @@
             "name": "maleBody",
             "intersectable": true,
             "preselectable": false,
-            "selectable": false
+            "selectable": false,
+            "respondentExtras": {
+                "offset": "new THREE.Vector3(0.0, 0.0, -1.35)",
+                "particularQualities": {
+                    "TLOneStethoscope": {
+                        "showHelpersOnlyWhenTaken": true
+                    }
+                }
+            }
         }
     ]
 }

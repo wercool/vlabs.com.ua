@@ -46,7 +46,8 @@ class TLOneStethoscope extends VLabItem {
              * Conditionally add to Inventory interactables (for VLabItem by default this.interactables[0] (this.vLabScenObject in the root of [0] Interactable) is added to Inventory)
              */
             if (this.nature.addToInvnentory == true) {
-                this.vLab.Inventory.addInteractable(this.interactables[0]);
+                // this.vLab.Inventory.addInteractable(this.interactables[0]);
+                this.interactables[0].takeToInventory();
             }
         });
     }

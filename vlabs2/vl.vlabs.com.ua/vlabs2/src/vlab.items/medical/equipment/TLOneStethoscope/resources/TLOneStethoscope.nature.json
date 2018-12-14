@@ -8,7 +8,17 @@
             "name": "TLOneStethoscope",
             "intersectable": true,
             "preselectable": true,
-            "selectable": true
+            "selectable": true,
+            "tooltip": "Thinklabs One Digital Stethoscope",
+            "menu": [
+                {
+                    "label": "Take to Inventory",
+                    "icon": "<i class=\"material-icons\">next_week</i>",
+                    "enabled": true,
+                    "action": "this.takeToInventory()",
+                    "args": null
+                }
+            ]
         }
     ]
 }

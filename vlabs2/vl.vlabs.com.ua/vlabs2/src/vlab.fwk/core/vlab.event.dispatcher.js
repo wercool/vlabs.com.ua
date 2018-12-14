@@ -76,6 +76,10 @@ class VLabEventDispatcher {
             },
             VLabInventory: {
                 ready:          {},
+            },
+            VLabItem: {
+                initialized:                 {},
+                interactablesInitialized:    {},
             }
         };
         /**
@@ -156,6 +160,7 @@ class VLabEventDispatcher {
             break;
             case 'VLabScene':
             case 'VLabInventory':
+            case 'VLabItem':
                 for (let eventSubscriberName in this.eventSubscribers[event.target][event.type]) {
                     this.eventSubscribers[event.target][event.type][eventSubscriberName].callback.call(this.eventSubscribers[event.target][event.type][eventSubscriberName].subscriber, event);
                 }
