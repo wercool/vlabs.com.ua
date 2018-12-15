@@ -435,6 +435,12 @@ class VLabInventory extends VLabScene {
                         type: 'interactablePut'
                     });
 
+                    this.vLab.EventDispatcher.notifySubscribers({
+                        target: 'VLabInventory',
+                        type: 'putToInventory',
+                        interactable: interactable
+                    });
+
                     this.manager.resetTakeItemsInMenus();
                 }
             }
@@ -487,6 +493,12 @@ class VLabInventory extends VLabScene {
             this.vLab.EventDispatcher.notifySubscribers({
                 target: 'VLabScene',
                 type: 'interactablePut'
+            });
+
+            this.vLab.EventDispatcher.notifySubscribers({
+                target: 'VLabInventory',
+                type: 'putToInventory',
+                interactable: interactable
             });
 
             /*<dev>*/

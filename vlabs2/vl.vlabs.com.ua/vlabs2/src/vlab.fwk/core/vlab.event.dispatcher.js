@@ -76,6 +76,7 @@ class VLabEventDispatcher {
             },
             VLabInventory: {
                 ready:          {},
+                putToInventory: {}
             },
             VLabItem: {
                 initialized:                 {},
