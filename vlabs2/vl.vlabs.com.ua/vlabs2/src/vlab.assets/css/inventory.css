@@ -93,6 +93,12 @@
     pointer-events: auto;
     border: 1px solid rgb(150, 150, 150);
     border-radius: 10px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 #inventoryButton {
     z-index: 4;
@@ -105,6 +111,12 @@
     left: 0px;
     border: 1px solid rgb(150, 150, 150);
     border-radius: var(--screenDependentButtonBorderRadius);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 #inventoryOpenButtonIcon {
     font-size: var(--screenDependentButtonSize);
@@ -122,6 +134,12 @@
                  0px 2px 1px #c1c1c1,
                  0px 3px 1px rgb(119, 119, 119),
                  0px 3px 1px #777;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 #inventoryCloseButtonIcon {
     position: absolute;
@@ -150,6 +168,12 @@
     border: 2px solid #ffffff;
     background-color: #2385ac;
     border-radius: 50%;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 #inventoryAddedThumbnail {
     position: absolute;
@@ -165,6 +189,12 @@
     background-repeat: no-repeat;
     background-size: cover;
     pointer-events: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 #inventoryTakeButton {
     z-index: 4;

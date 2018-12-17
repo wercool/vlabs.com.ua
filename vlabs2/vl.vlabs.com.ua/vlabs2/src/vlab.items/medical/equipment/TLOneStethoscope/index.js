@@ -15,6 +15,8 @@ class TLOneStethoscope extends VLabItem {
 
         this.initObj = initObj;
 
+        this.vLab = this.initObj.vLab;
+
         this.name = this.initObj.name ? this.initObj.name : 'TLOneStethoscope';
 
         var textureLoader = new THREE.TextureLoader();
@@ -43,13 +45,65 @@ class TLOneStethoscope extends VLabItem {
         this.setupInteractables()
         .then((interactables) => {
             /**
-             * Conditionally add to Inventory interactables (for VLabItem by default this.interactables[0] (this.vLabScenObject in the root of [0] Interactable) is added to Inventory)
+             * Conditionally add to Inventory interactables
+             * (for VLabItem by default this.interactables[0] (this.vLabScenObject in the root of [0] Interactable) is added to Inventory)
              */
             if (this.nature.addToInvnentory == true) {
-                // this.vLab.Inventory.addInteractable(this.interactables[0]);
                 this.interactables[0].takeToInventory();
+                this.interactables[0]['vLabItem'] = this;
             }
         });
+
+        /**
+         * Event subscriptions
+         */
+        this.vLab.EventDispatcher.subscribe({
+            subscriber: this,
+            events: {
+                VLabSceneInteractable: {
+                    transitTakenInteractable:         this.onTransitTakenInteractable
+                }
+            }
+        });
+    }
+    setEnvMap(envSphereMapReflection) {
+        let TLOneStethoscope = this.vLabItemModel.getObjectByName('TLOneStethoscope');
+        TLOneStethoscope.material.envMap = envSphereMapReflection;
+        TLOneStethoscope.material.needsUpdate = true;
+    }
+    /**
+     * onTaken
+     */
+    onTaken() {
+        if (this.earphonesOverlay == undefined) {
+            this.vLab.DOMManager.addStyle({
+                id: 'TLOneStethoscopeOverlayCSS',
+                href: '/vlab.items/medical/equipment/TLOneStethoscope/resources/assets/style.css'
+            }).then(() => {
+                this.earphonesOverlay = document.createElement('div');
+                this.earphonesOverlay.id = 'TLOneStethoscopeOverlay';
+                this.vLab.DOMManager.container.appendChild(this.earphonesOverlay);
+            });
+        } else {
+            this.earphonesOverlay.style.display = 'block';
+        }
+    }
+    /**
+     * onTakenOut
+     */
+    onTakenOut() {
+        if (this.earphonesOverlay != undefined) {
+            this.earphonesOverlay.style.display = 'none';
+        }
+    }
+    /**
+     * onTransitTakenInteractable
+     * called from this.vLab.SceneDispatcher.transitTakenInteractable
+     */
+    onTransitTakenInteractable(event) {
+        // console.log(event);
+        let envSphereMapReflection = event.toScene.envSphereMapReflection ? event.toScene.envSphereMapReflection : null;
+        this.setEnvMap(envSphereMapReflection);
     }
 }
 export default TLOneStethoscope;

@@ -162,8 +162,45 @@ class VLabSceneManager {
                 });
             }
 
-            this.configured = true;
-            resolve();
+            if (this.vLabScene.nature.environment) {
+                if (this.vLabScene.nature.environment.fog) {
+                    let fog = new THREE.Fog(parseInt(this.vLabScene.nature.environment.fog.color), 
+                                            this.vLabScene.nature.environment.fog.near,
+                                            this.vLabScene.nature.environment.fog.far);
+                    this.vLabScene.fog = fog;
+                }
+                if (this.vLabScene.nature.environment.map) {
+                    let textureLoader = new THREE.TextureLoader();
+                    Promise.all([
+                        textureLoader.load(this.vLabScene.nature.environment.map),
+                        textureLoader.load(this.vLabScene.nature.environment.mapReflection),
+                    ]).then((result) => {
+                        // EnvSphere
+                        this.vLabScene['envSphereMap'] = result[0];
+                        this.vLabScene['envSphereMap'].mapping = THREE.EquirectangularReflectionMapping;
+
+                        this.vLabScene['envSphereMapReflection'] = result[1];
+                        this.vLabScene['envSphereMapReflection'].mapping = THREE.EquirectangularReflectionMapping;
+
+                        let envSphereGeometry = new THREE.SphereBufferGeometry(this.vLabScene.nature.environment.radius, 60, 40);
+                        // invert the geometry on the x-axis so that all of the faces point inward
+                        envSphereGeometry.scale(-1, 1, 1);
+                        let envSpehreMaterial = new THREE.MeshBasicMaterial( {
+                            map: this.vLabScene['envSphereMap']
+                        });
+                        this.vLabScene['envSphereMesh']  = new THREE.Mesh(envSphereGeometry, envSpehreMaterial);
+                        this.vLabScene['envSphereMesh'].name = "envSpehreMesh";
+                        this.vLabScene.add(this.vLabScene['envSphereMesh']);
+
+
+                        this.configured = true;
+                        resolve();
+                    });
+                }
+            } else {
+                this.configured = true;
+                resolve();
+            }
         });
     }
     /**
@@ -511,13 +548,20 @@ if (animations.length > 0) {
     }
     /**
      * Return currently assigned {interactable} materials
+     * Assigns taken materials to the interactable
      * @param {VLabSceneInteractable} interactable
      */
-    getInteractableMaterials(interactable) {
+    getInteractableMaterialsAndSetTakenMaterials(interactable) {
         let interactableMaterials = {};
         interactable.vLabSceneObject.traverse((sibling) => {
             if (sibling.type == 'Mesh' && sibling.name.indexOf('_OUTLINE') == -1) {
+                /**
+                 * Store before taken materials
+                 */
                 interactableMaterials[sibling.uuid] = sibling.material;
+                /**
+                 * Assign taken materials to the interactable
+                 */
                 let takenObjectMaterial = new THREE.MeshBasicMaterial();
                 if (sibling.material.map) {
                     takenObjectMaterial.map = sibling.material.map;

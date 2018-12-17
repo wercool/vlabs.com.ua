@@ -229,6 +229,7 @@ class VLabItem {
      */
     processGLTF(gltf) {
         return new Promise(function(resolve, reject) {
+            // console.log(gltf.scene);
             gltf.scene.traverse((child) => {
                 if (child.material) {
                     let conformedMaterial = THREEUtils.conformMaterial(child.material);

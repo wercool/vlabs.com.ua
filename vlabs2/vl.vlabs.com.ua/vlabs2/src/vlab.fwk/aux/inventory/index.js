@@ -207,7 +207,6 @@ class VLabInventory extends VLabScene {
                             type: 'ready'
                         });
 
-
                         /**
                          * Initialized THREE initial assets
                          */
@@ -291,6 +290,18 @@ class VLabInventory extends VLabScene {
 
         this.currentCamera.position.copy(new THREE.Vector3(cameraPos, 0.0, cameraPos));
         this.thumbsCamera.position.copy(new THREE.Vector3(cameraPos, 0.0, cameraPos));
+
+        /**
+         * Interactable nature.inventory.viewBias
+         */
+        if (this.selectedItem) {
+            if (this.selectedItem.interactable.initObj.interactable.inventory) {
+                if (this.selectedItem.interactable.initObj.interactable.inventory.viewBias) {
+                    let viewBias = eval(this.selectedItem.interactable.initObj.interactable.inventory.viewBias);
+                    this.currentCamera.position.add(viewBias);
+                }
+            }
+        }
 
         this.currentControls.target = new THREE.Vector3(0.0, 0.0, 0.0);
         this.currentControls.reset();
@@ -397,7 +408,6 @@ class VLabInventory extends VLabScene {
                 position: interactable.vLabSceneObject.position.clone(),
                 quaternion: interactable.vLabSceneObject.quaternion.clone(),
                 scale: interactable.vLabSceneObject.scale.clone(),
-                materials: this.manager.getInteractableMaterials(interactable)
             };
 
             /**
@@ -443,6 +453,9 @@ class VLabInventory extends VLabScene {
 
                     this.manager.resetTakeItemsInMenus();
                 }
+            } else {
+                putObj['materials'] = this.manager.getInteractableMaterialsAndSetTakenMaterials(interactable);
+                interactable.vLabSceneObject.userData['beforeTakenState'] = putObj;
             }
 
             interactable.deSelect(true);
@@ -505,8 +518,21 @@ class VLabInventory extends VLabScene {
                 this.axesHelper.visible = false;
             /*</dev>*/
 
-            this.thumbsWebGLRenderer.clear();
-            this.thumbsWebGLRenderer.render(this, this.thumbsCamera);
+
+            /**
+             * Interactable nature.inventory.thumbnail
+             */
+            let natureThumbnail = undefined;
+            if (interactable.initObj.interactable.inventory) {
+                if (interactable.initObj.interactable.inventory.thumbnail) {
+                    natureThumbnail = interactable.initObj.interactable.inventory.thumbnail;
+                }
+            }
+
+            if (natureThumbnail == undefined) {
+                this.thumbsWebGLRenderer.clear();
+                this.thumbsWebGLRenderer.render(this, this.thumbsCamera);
+            }
 
             /*<dev>*/
                 this.axesHelper.visible = true;
@@ -514,7 +540,7 @@ class VLabInventory extends VLabScene {
 
             let animationTime = 2000;
             let thumbnail = new Image(this.thumbnailSize, this.thumbnailSize);
-            thumbnail.src = this.thumbsWebGLRenderer.domElement.toDataURL();
+            thumbnail.src = natureThumbnail ? natureThumbnail : this.thumbsWebGLRenderer.domElement.toDataURL();
             thumbnail.onload = function () {
                 let thumbnail = this;
 
@@ -524,7 +550,7 @@ class VLabInventory extends VLabScene {
                 self.thumbsCanvasCtx.clearRect(0, 0, self.thumbnailSize, self.thumbnailSize);
                 self.thumbsCanvasCtx.save();
                 self.thumbsCanvasCtx.drawImage(thumbnail, 0.0, 0.0);
-                self.addedThumbnail.style.backgroundImage = 'url("' + self.thumbsCanvas.toDataURL() + '")';
+                self.addedThumbnail.style.backgroundImage = 'url("' + (natureThumbnail ? natureThumbnail : self.thumbsCanvas.toDataURL()) + '")';
                 self.thumbsCanvasCtx.restore();
 
                 self.addedThumbnail.style.setProperty('opacity', 1.0);
@@ -618,7 +644,11 @@ class VLabInventory extends VLabScene {
                 this.setSelectedItem(beforeSwapSelectedItem);
             }
             this.selectedItem.interactable.deSelect();
+            /**
+             * Set interactable as taken
+             */
             this.vLab.SceneDispatcher.setTakenInteractable(this.selectedItem.interactable, this.selectedItem.putObj);
+
             this.inventoryContainerScrollArea.removeChild(this.selectedItem.container);
             delete this.items[this.selectedItem.interactable.vLabSceneObject.name];
             this.selectedItem = undefined;

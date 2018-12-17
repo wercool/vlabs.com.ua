@@ -109,7 +109,7 @@ export function conformMaterial(material, vLabScene) {
         }
 
         if (material.userData.MeshBasicMaterial || (material instanceof THREE.MeshBasicMaterial)) {
-            let typeChanged = (material instanceof THREE.MeshBasicMaterial);
+            let typeChanged = !(material instanceof THREE.MeshBasicMaterial);
             let _MeshBasicMaterial = (!typeChanged) ? material : new THREE.MeshBasicMaterial();
             if (typeChanged) {
                 _MeshBasicMaterial = ObjectUtils.assign(_MeshBasicMaterial, material);
@@ -122,7 +122,7 @@ export function conformMaterial(material, vLabScene) {
             return _MeshBasicMaterial;
         }
         if (material.userData.MeshLambertMaterial || (material instanceof THREE.MeshLambertMaterial)) {
-            let typeChanged = (material instanceof THREE.MeshLambertMaterial);
+            let typeChanged = !(material instanceof THREE.MeshLambertMaterial);
             let _MeshLambertMaterial = (!typeChanged) ? material : new THREE.MeshLambertMaterial();
             if (typeChanged) {
                 _MeshLambertMaterial = ObjectUtils.assign(_MeshLambertMaterial, material);
@@ -135,7 +135,7 @@ export function conformMaterial(material, vLabScene) {
             return _MeshLambertMaterial;
         }
         if (material.userData.MeshPhongMaterial || (material instanceof THREE.MeshPhongMaterial)) {
-            let typeChanged = (material instanceof THREE.MeshPhongMaterial);
+            let typeChanged = !(material instanceof THREE.MeshPhongMaterial);
             let _MeshPhongMaterial = (!typeChanged) ? material : new THREE.MeshPhongMaterial();
             if (typeChanged) {
                 _MeshPhongMaterial = ObjectUtils.assign(_MeshPhongMaterial, material);
@@ -148,7 +148,7 @@ export function conformMaterial(material, vLabScene) {
             return _MeshPhongMaterial;
         }
         if (material.userData.MeshStandardMaterial || (material instanceof THREE.MeshStandardMaterial)) {
-            let typeChanged = (material instanceof THREE.MeshStandardMaterial);
+            let typeChanged = !(material instanceof THREE.MeshStandardMaterial);
             let _MeshStandardMaterial = (!typeChanged) ? material : new THREE.MeshStandardMaterial();
             if (typeChanged) {
                 _MeshStandardMaterial = ObjectUtils.assign(_MeshStandardMaterial, material);

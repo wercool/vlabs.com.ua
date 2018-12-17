@@ -299,9 +299,12 @@ class VLabSceneDispatcher {
 
         this.takenInteractable.vLabSceneObject.visible = false;
 
-        let beforeTakenMaterials = this.currentVLabScene.manager.getInteractableMaterials(takenInteractable);
+        let beforeTakenMaterials = this.currentVLabScene.manager.getInteractableMaterialsAndSetTakenMaterials(takenInteractable);
 
-        let putObj = (putObjInsist !== undefined) ? putObjInsist :  {
+        /**
+         * use putObjInsist if defined otherwise create putObj
+         */
+        let putObj = (putObjInsist !== undefined) ? putObjInsist : {
             scene: this.currentVLabScene,
             parent: this.takenInteractable.vLabSceneObject.parent,
             position: this.takenInteractable.vLabSceneObject.position.clone(),
@@ -324,9 +327,9 @@ class VLabSceneDispatcher {
         this.takenInteractable.removeMenuItem('Take');
 
         /**
-         * Do not add 'Put back' if putObj.poision == 0
+         * Do not add 'Put back' if distanceTo(new THREE.Vector3()) > 0.001
          */
-        if (!putObj.position.equals(new THREE.Vector3())) {
+        if (putObj.position.distanceTo(new THREE.Vector3()) > 0.001) {
             this.takenInteractable.updateMenuWithMenuItem({
                 label: 'Put back',
                 icon: '<i class="material-icons">undo</i>',
@@ -498,6 +501,14 @@ class VLabSceneDispatcher {
             if ((this.takenInteractable.selection && this.takenInteractable.selection.hold) && toScene.selectedInteractables.indexOf(this.takenInteractable) == -1) {
                 toScene.selectedInteractables.push(this.takenInteractable);
             }
+
+            this.vLab.EventDispatcher.notifySubscribers({
+                target: 'VLabSceneInteractable',
+                type: 'transitTakenInteractable',
+                interactable: this.takenInteractable,
+                fromScene: fromScene,
+                toScene: toScene
+            });
         }
     }
     /**
