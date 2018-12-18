@@ -1,0 +1,28 @@
+#HeadphonesOverlayL {
+    position: absolute;
+    z-index: 3;
+    width: 100%;
+    height: 50%;
+    left: 0;
+    pointer-events: none;
+    background-image: url('/vlab.items/headphones/resources/assets/earphones-l.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position-y: top;
+    background-position-x: left;
+    display: none;
+}
+#HeadphonesOverlayR {
+    position: absolute;
+    z-index: 3;
+    width: 100%;
+    height: 50%;
+    right: 0;
+    pointer-events: none;
+    background-image: url('/vlab.items/headphones/resources/assets/earphones-r.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position-y: top;
+    background-position-x: right;
+    display: none;
+}

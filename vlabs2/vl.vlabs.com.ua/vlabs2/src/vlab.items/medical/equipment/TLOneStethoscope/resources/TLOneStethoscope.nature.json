@@ -23,6 +23,38 @@
                 "viewBias": "new THREE.Vector3(0.0, 0.1, 0.0)",
                 "thumbnail": "/vlab.items/medical/equipment/TLOneStethoscope/resources/assets/thumbnail.png"
             }
+        },
+        {
+            "name": "TLOneStethoscope_headphones",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "visible": false,
+            "tooltip": "Generic Headphones attached",
+            "menu": [
+                {
+                    "inventory": true,
+                    "label": "Take to Inventory",
+                    "icon": "<i class=\"material-icons\">next_week</i>",
+                    "enabled": true,
+                    "action": "this.vLab['TLOneStethoscope'].takeHeadphonesToInventory()",
+                    "args": null
+                }
+            ]
+        },
+        {
+            "name": "TLOneStethoscopeButtonVolumeMinus",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "Volume <b style=\"font-size: 20px;\">-</b>"
+        },
+        {
+            "name": "TLOneStethoscopeButtonVolumePlus",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "tooltip": "Volume <b style=\"font-size: 20px;\">+</b>"
         }
     ]
 }

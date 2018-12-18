@@ -5,6 +5,7 @@ import * as VLabUTILS from '../../../../vlab.fwk/utils/vlab.utils';
  * VLab Items
  */
 import TLOneStethoscope from '../../../../vlab.items/medical/equipment/TLOneStethoscope/index';
+import HeadphonesGeneric from '../../../../vlab.items/headphones/index'
 
 class BasicsOfLungSoundsScene extends VLabScene {
     constructor(iniObj) {
@@ -45,10 +46,13 @@ class BasicsOfLungSoundsScene extends VLabScene {
      * Called once scene is loaded
      */
     onLoaded() {
-        var ambientLight = new THREE.AmbientLight(0x404040, 1.0); // soft white light
+        var ambientLight = new THREE.AmbientLight(0x404040, 0.5); // soft white light
         this.add(ambientLight);
 
         this.vLab.WebGLRenderer.gammaFactor = 2.0;
+
+        this.currentControls.minDistance = 0.4;
+        this.currentControls.maxDistance = 1.0;
 
         /**
          * Event subscriptions
@@ -57,7 +61,8 @@ class BasicsOfLungSoundsScene extends VLabScene {
             subscriber: this,
             events: {
                 VLabScene: {
-                    interactableTaken:         this.onInteractableTaken
+                    interactableTaken:         this.onInteractableTaken,
+                    interactablePut:           this.onInteractablePut,
                 },
                 VLabItem: {
                     initialized:                this.onInitializedVLabItem,
@@ -104,7 +109,7 @@ class BasicsOfLungSoundsScene extends VLabScene {
         });
 
         /**
-         * Valter VLabItem
+         * TLOneStethoscope VLabItem
          */
         this.vLab['TLOneStethoscope'] = new TLOneStethoscope({
             vLab: this.vLab,
@@ -121,6 +126,9 @@ class BasicsOfLungSoundsScene extends VLabScene {
             case 'TLOneStethoscope':
                 this.actualizedTLOneStethoscope(event.vLabItem);
             break;
+            case 'HeadphonesGeneric':
+                this.actualizeHeadphonesGeneric(event.vLabItem);
+            break;
         }
     }
 
@@ -135,10 +143,60 @@ class BasicsOfLungSoundsScene extends VLabScene {
                 context: this
             }
         });
+        /**
+         * HeadphonesGeneric VLabItem
+         */
+        this.vLab['HeadphonesGeneric'] = new HeadphonesGeneric({
+            vLab: this.vLab,
+            natureURL: '/vlab.items/headphones/resources/headphones.nature.json',
+            name: 'HeadphonesGenericVLabItem'
+        });
+    }
+
+    actualizeHeadphonesGeneric(HeadphonesGeneric) {
+        HeadphonesGeneric.interactables[0].addRespondent({
+            interactable: this.vLab['TLOneStethoscope'].interactables[0],
+            callerInteractable: this.vLab['HeadphonesGeneric'].interactables[0],
+            preselectionTooltip: 'Generic Headphones could be applied',
+            action: {
+                function: this.HeadphonesGeneric_ACTION_TLOneStethoscope,
+                args: {},
+                context: this
+            }
+        });
+    }
+
+    HeadphonesGeneric_ACTION_TLOneStethoscope(params) {
+        let self = this;
+        this.vLab['TLOneStethoscope'].headphonesApplied = true;
+        this.vLab['TLOneStethoscope'].interactables[0].vLabSceneObject.getObjectByName('headphonesJack').visible = true;
+        if (this.vLab.SceneDispatcher.currentVLabScene.constructor.name == 'VLabInventory') {
+            this.vLab['TLOneStethoscope'].interactables[0].vLabSceneObject.getObjectByName('TLOneStethoscope_headphones').visible = true;
+            this.vLab['TLOneStethoscope'].interactables[0].initObj.interactable.inventory.viewBias = "new THREE.Vector3(0.15, 0.25, 0.15)";
+            setTimeout(() => {
+                self.vLab.Inventory.resetView();
+            }, 100)
+        } else {
+            this.vLab['HeadphonesGeneric'].onApplied();
+        }
+        this.vLab.SceneDispatcher.putTakenInteractable({
+            parent: this,
+            visibility: false
+        });
+        this.vLab.Inventory.updateTakeButtonState();
+        this.vLab['TLOneStethoscope'].interactables[0].deSelect();
+        if (this.vLab.SceneDispatcher.currentVLabScene.constructor.name != 'VLabInventory') {
+            this.auscultationSounds.lungs.audio.play();
+            this.auscultationSounds.heart.audio.play();
+            this.auscultationSounds.stomach.audio.play();
+        }
     }
 
     TLOneStethoscope_ACTION_maleBody(params) {
         // console.log(this.interactables['maleBody'].lastTouchRaycasterIntersection);
+        if (this.interactables['maleBody'].lastTouchRaycasterIntersection == undefined) {
+            return;
+        }
 
         let point = this.interactables['maleBody'].lastTouchRaycasterIntersection.point.clone();
         let normal = this.interactables['maleBody'].lastTouchRaycasterIntersection.face.normal.clone();
@@ -192,10 +250,6 @@ class BasicsOfLungSoundsScene extends VLabScene {
 
                 this.vLab['TLOneStethoscope'].setEnvMap(this['maleBodyAppliedEnvMap']);
 
-                this.auscultationSounds.lungs.audio.play();
-                this.auscultationSounds.heart.audio.play();
-                this.auscultationSounds.stomach.audio.play();
-
                 /*<dev>*/
                     // this.add(this.mouseHelper);
     
@@ -203,7 +257,15 @@ class BasicsOfLungSoundsScene extends VLabScene {
                     // this.add(normalHelper);
                 /*</dev>*/
             }
-    
+
+            this.auscultationSounds.lungs.audio.play();
+            this.auscultationSounds.heart.audio.play();
+            this.auscultationSounds.stomach.audio.play();
+
+            if (!this.vLab['TLOneStethoscope'].interactables[0].vLabSceneObject.getObjectByName('headphonesJack').visible) {
+                this.muteSound();
+            }
+
             let lookAtPoint = normal.clone();
             lookAtPoint.transformDirection(this.interactables['maleBody'].vLabSceneObject.matrixWorld);
             lookAtPoint.multiplyScalar(10);
@@ -233,6 +295,16 @@ class BasicsOfLungSoundsScene extends VLabScene {
     onInteractablePutToInventory(event) {
         this.muteSound();
         this.vLab['TLOneStethoscope'].onTakenOut();
+    }
+
+    onInteractablePut(event) {
+        if (this.interactables['maleBody'].lastTouchRaycasterIntersection != undefined &&
+            this.vLab.SceneDispatcher.currentVLabScene.constructor.name != 'VLabInventory' &&
+            this.vLab['TLOneStethoscope'].headphonesApplied) {
+            this.auscultationSounds.lungs.audio.play();
+            this.auscultationSounds.heart.audio.play();
+            this.auscultationSounds.stomach.audio.play();
+        }
     }
 
     muteSound() {

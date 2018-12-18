@@ -326,20 +326,15 @@ class VLabSceneDispatcher {
 
         this.takenInteractable.removeMenuItem('Take');
 
-        /**
-         * Do not add 'Put back' if distanceTo(new THREE.Vector3()) > 0.001
-         */
-        if (putObj.position.distanceTo(new THREE.Vector3()) > 0.001) {
-            this.takenInteractable.updateMenuWithMenuItem({
-                label: 'Put back',
-                icon: '<i class="material-icons">undo</i>',
-                enabled: (this.currentVLabScene.constructor.name !== 'VLabInventory') ? true : false,
-                action: this.takenInteractable.put,
-                context: this.takenInteractable,
-                originalScene: (putObjInsist && putObjInsist.scene) ? putObjInsist.scene : this.currentVLabScene,
-                args: putObj
-            }, true);
-        }
+        this.takenInteractable.updateMenuWithMenuItem({
+            label: 'Put back',
+            icon: '<i class="material-icons">undo</i>',
+            enabled: (this.currentVLabScene.constructor.name !== 'VLabInventory') ? true : false,
+            action: this.takenInteractable.put,
+            context: this.takenInteractable,
+            originalScene: (putObjInsist && putObjInsist.scene) ? putObjInsist.scene : this.currentVLabScene,
+            args: putObj
+        }, true);
 
         /**
          * Resize taken object to fit it into camera
@@ -419,6 +414,9 @@ class VLabSceneDispatcher {
             putObj.parent.add(this.takenInteractable.vLabSceneObject);
         } else {
             this.vLabScene.add(this.takenInteractable.vLabSceneObject);
+        }
+        if (putObj.visibility !== undefined) {
+            this.takenInteractable.vLabSceneObject.visible = putObj.visibility;
         }
 
         this.takenInteractable.boundsSprite.position.copy(new THREE.Vector3(0.0, 0.0, 0.0));

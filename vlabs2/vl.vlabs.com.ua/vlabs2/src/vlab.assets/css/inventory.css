@@ -42,6 +42,12 @@
     bottom: calc(22% + 4px);
     left: 0;
     width: var(--screenDependentContainerSize);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 /* border: 1px solid #ec16ff; */
 }
 #inventoryContainerScrollArea {
@@ -56,6 +62,12 @@
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     box-shadow: 0px 2px 2px 2px #ffffff25;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 /* border: 1px solid #161aff; */
 }
 .inventoryItemContainer {
@@ -73,6 +85,12 @@
     border: 1px solid #dddddd;
     border-radius: 8px;
     opacity: 0.95;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 .inventoryItemContainerPreSelected {
     box-shadow: 0 0 4px 1px yellow inset;

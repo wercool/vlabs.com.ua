@@ -1,0 +1,23 @@
+{
+    "name": "Headphones",
+    "modelURL": "/vlab.items/headphones/resources/3d/headphones.glb",
+    "addToInvnentory": true,
+    "interactables": [
+        {
+            "name": "headphones",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "tooltip": "Generic Headphones",
+            "menu": [
+                {
+                    "label": "Take to Inventory",
+                    "icon": "<i class=\"material-icons\">next_week</i>",
+                    "enabled": true,
+                    "action": "this.takeToInventory()",
+                    "args": null
+                }
+            ]
+        }
+    ]
+}

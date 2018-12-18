@@ -1,6 +1,6 @@
 {
     "title": "Basics of Lung Sounds",
-    "description": "Basics of Lung Sounds",
+    "description": "Lungs auscultation is the process of listening to lung sounds, usually with a stethoscope. Physicians and nurses commonly auscultate lungs. Heart sounds, abdominal sounds and carotid bruit can also be auscultated.",
     "gltfURL": "./scenes/base.scene/resources/3d/base.scene.glb",
     "WebGLRendererParameters": {
         "clearColor": "0x0f0f0f"
@@ -10,9 +10,9 @@
             "type": "PerspectiveCamera",
             "name": "Camera",
             "position": {
-                "x": 0.5,
-                "y": 1.6,
-                "z": 0.5
+                "x": 0.6,
+                "y": 1.55,
+                "z": 0.6
             },
             "target": {
                 "x": 0.0,

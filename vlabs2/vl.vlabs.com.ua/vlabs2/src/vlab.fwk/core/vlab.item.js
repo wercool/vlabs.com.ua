@@ -237,6 +237,10 @@ class VLabItem {
                         child.material = conformedMaterial;
                     }
                 }
+
+                if (child.userData && child.userData.hidden) {
+                    child.visible = false;
+                }
             });
             gltf.scene.children[0].parent = null;
             resolve(gltf.scene.children[0]);

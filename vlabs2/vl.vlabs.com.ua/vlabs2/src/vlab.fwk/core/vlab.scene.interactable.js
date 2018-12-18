@@ -341,6 +341,9 @@ class VLabSceneInteractable {
                 if (this.initObj.interactable.menu !== undefined) {
                     this.menu = this.initObj.interactable.menu;
                 }
+                if (this.initObj.interactable.visible !== undefined) {
+                    this.vLabSceneObject.visible = this.initObj.interactable.visible;
+                }
                 resolve(this);
             });
         });
@@ -484,7 +487,13 @@ class VLabSceneInteractable {
      * @abstract
      */
     select(selectionObj) {
-        if (this.vLabScene.constructor.name !== 'VLabInventory' || this.taken) {
+        let inventoryMenu = false;
+        this.menu.forEach((menuItem) => {
+            if (menuItem.inventory == true) {
+                inventoryMenu = true;
+            }
+        });
+        if (this.vLabScene.constructor.name !== 'VLabInventory' || (this.vLabScene.constructor.name == 'VLabInventory' && inventoryMenu) || this.taken) {
             /**
              * Selection
              */
@@ -525,7 +534,7 @@ class VLabSceneInteractable {
                         this.selected = true;
                         this.dePreselect();
                     }
-                } else if (this.selectable && this.selected) {
+                } else if (this.selectable && this.selected || inventoryMenu) {
                     this.showMenu();
                 }
             } else {
@@ -592,9 +601,10 @@ class VLabSceneInteractable {
                 }
             }
             this.showTooltip();
-            if (this.vLabScene.constructor.name !== 'VLabInventory') {
-                this.showRespondents();
-            }
+            // if (this.vLabScene.constructor.name !== 'VLabInventory') {
+            //     this.showRespondents();
+            // }
+            this.showRespondents();
         } else {
             this.dePreselect();
         }
@@ -612,9 +622,12 @@ class VLabSceneInteractable {
             this.vLabScene.manager.processInteractablesSelections();
             this.preselected = false;
             this.hideTooltip();
-            if (this.vLabScene.constructor.name !== 'VLabInventory') {
-                this.removeRespondentsHelpers();
-            }
+            this.hideMenu();
+
+            // if (this.vLabScene.constructor.name !== 'VLabInventory') {
+            //     this.removeRespondentsHelpers();
+            // }
+            this.removeRespondentsHelpers();
 
             /**
              * de-preselection action
@@ -968,25 +981,36 @@ class VLabSceneInteractable {
             this.menuContainer.className = 'interactableMenu';
 
             this.menu.forEach((menuItem) => {
-                let menuItemDIV = document.createElement('div');
-                menuItemDIV.className = 'interactableMenuItem';
-                menuItemDIV.innerHTML = '<div class="interactableMenuIcon">' + (menuItem.icon ? menuItem.icon : '<i class=\"material-icons\">code</i>') + '</div>' + menuItem.label;
-
                 /**
                  * Check special conditions on particular Menu Items by menuItem.label
                  */
+                let ommitMenuItem = false;
                 switch (menuItem.label) {
                     case 'Take to Inventory':
                         if (this.vLab.Inventory == undefined) menuItem.enabled = false;
                     break;
+                    /**
+                     * Disable 'Put back' if distanceTo(new THREE.Vector3()) > 0.001
+                     */
+                    case 'Put back':
+                        if (menuItem.args.position.distanceTo(new THREE.Vector3()) <= 0.001) {
+                            ommitMenuItem = true;
+                        }
+                    break;
                 }
 
-                if (menuItem.enabled !== undefined && !menuItem.enabled) {
-                    menuItemDIV.style.opacity = 0.1;
-                } else {
-                    menuItemDIV.onmousedown = menuItemDIV.ontouchstart = this.callMenuAction.bind(this, menuItem);
+                if (!ommitMenuItem) {
+                    let menuItemDIV = document.createElement('div');
+                    menuItemDIV.className = 'interactableMenuItem';
+                    menuItemDIV.innerHTML = '<div class="interactableMenuIcon">' + (menuItem.icon ? menuItem.icon : '<i class=\"material-icons\">code</i>') + '</div>' + menuItem.label;
+    
+                    if (menuItem.enabled !== undefined && !menuItem.enabled) {
+                        menuItemDIV.style.opacity = 0.1;
+                    } else {
+                        menuItemDIV.onmousedown = menuItemDIV.ontouchstart = this.callMenuAction.bind(this, menuItem);
+                    }
+                    this.menuContainer.appendChild(menuItemDIV);
                 }
-                this.menuContainer.appendChild(menuItemDIV);
             });
 
             this.vLab.DOMManager.container.appendChild(this.menuContainer);
@@ -1129,6 +1153,7 @@ class VLabSceneInteractable {
         let shiftY = 0;
 
         if (!this.tooltipContainer 
+        && !this.menuContainer
         && (this.tooltip != '' || (shownRespondent !== undefined && shownRespondent.preselectionTooltip != ''))
         && !this.selected
         || (this.selected && (shownRespondent !== undefined && shownRespondent.preselectionTooltip != ''))) {

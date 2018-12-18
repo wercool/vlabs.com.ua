@@ -621,6 +621,7 @@ class VLabInventory extends VLabScene {
      * Takes VLabSceneInteractable and sets it as taken
      */
     take() {
+        let self = this;
         /**
          * Press Event dumper
          */
@@ -655,6 +656,13 @@ class VLabInventory extends VLabScene {
             this.updateTakeButtonState();
         }
 
+        setTimeout(() => {
+            for (let itemName in self.items) {
+                self.setSelectedItemByName(itemName);
+                break;
+            }
+        }, 200);
+
         this.manager.clock.getDelta();
     }
     /**
@@ -685,24 +693,26 @@ class VLabInventory extends VLabScene {
          * Collapse if there is this.selectedItem
          */
         if (this.selectedItem) {
-            if (this.inventoryContainer.getAttribute('collapsed') === 'false') {
-                this.inventoryContainer.style.opacity = 1.0;
-                new TWEEN.Tween(this.inventoryContainer.style)
-                .to({opacity: 0.0}, 250)
-                .onUpdate(() => {
-                    this.inventoryContainer.style.top = 200 * (1 - this.inventoryContainer.style.opacity) + 'px';
-                    this.inventoryContainer.style.bottom = 'calc(22% + ' + (2 + 200 * (1 - this.inventoryContainer.style.opacity)) + 'px' + ')';
-                })
-                .onComplete(() => {
-                    this.inventoryContainer.style.display = 'none';
-                    if (Object.keys(this.items).length > 0) {
-                        this.inventoryExpandIcon.style.display = 'block';
-                    } else {
-                        this.inventoryExpandIcon.style.display = 'none';
-                    }
-                    this.inventoryContainer.setAttribute('collapsed', 'true');
-                })
-                .start();
+            if (this.vLab.DOMManager.container.clientWidth < 640) {
+                if (this.inventoryContainer.getAttribute('collapsed') === 'false') {
+                    this.inventoryContainer.style.opacity = 1.0;
+                    new TWEEN.Tween(this.inventoryContainer.style)
+                    .to({opacity: 0.0}, 250)
+                    .onUpdate(() => {
+                        this.inventoryContainer.style.top = 200 * (1 - this.inventoryContainer.style.opacity) + 'px';
+                        this.inventoryContainer.style.bottom = 'calc(22% + ' + (2 + 200 * (1 - this.inventoryContainer.style.opacity)) + 'px' + ')';
+                    })
+                    .onComplete(() => {
+                        this.inventoryContainer.style.display = 'none';
+                        if (Object.keys(this.items).length > 0) {
+                            this.inventoryExpandIcon.style.display = 'block';
+                        } else {
+                            this.inventoryExpandIcon.style.display = 'none';
+                        }
+                        this.inventoryContainer.setAttribute('collapsed', 'true');
+                    })
+                    .start();
+                }
             }
         }
     }

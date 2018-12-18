@@ -19,6 +19,8 @@ class TLOneStethoscope extends VLabItem {
 
         this.name = this.initObj.name ? this.initObj.name : 'TLOneStethoscope';
 
+        this.headphonesApplied = false;
+
         var textureLoader = new THREE.TextureLoader();
 
         Promise.all([
@@ -75,25 +77,22 @@ class TLOneStethoscope extends VLabItem {
      * onTaken
      */
     onTaken() {
-        if (this.earphonesOverlay == undefined) {
-            this.vLab.DOMManager.addStyle({
-                id: 'TLOneStethoscopeOverlayCSS',
-                href: '/vlab.items/medical/equipment/TLOneStethoscope/resources/assets/style.css'
-            }).then(() => {
-                this.earphonesOverlay = document.createElement('div');
-                this.earphonesOverlay.id = 'TLOneStethoscopeOverlay';
-                this.vLab.DOMManager.container.appendChild(this.earphonesOverlay);
-            });
-        } else {
-            this.earphonesOverlay.style.display = 'block';
+        this.setEnvMap(this.vLab.SceneDispatcher.currentVLabScene.envSphereMapReflection);
+        this.interactables[0].vLabSceneObject.getObjectByName('TLOneStethoscope_headphones').visible = false;
+        if (this.headphonesApplied) {
+            this.vLab['HeadphonesGeneric'].onApplied();
         }
     }
     /**
      * onTakenOut
      */
     onTakenOut() {
-        if (this.earphonesOverlay != undefined) {
-            this.earphonesOverlay.style.display = 'none';
+        if (this.headphonesApplied) {
+            this.interactables[0].initObj.interactable.inventory.viewBias = "new THREE.Vector3(0.15, 0.25, 0.15)";
+            this.interactables[0].vLabSceneObject.getObjectByName('TLOneStethoscope_headphones').visible = true;
+            this.vLab['HeadphonesGeneric'].hideHeadphonesOverlay();
+        } else {
+            this.interactables[0].initObj.interactable.inventory.viewBias = "new THREE.Vector3(0.0, 0.1, 0.0)";
         }
     }
     /**
@@ -104,6 +103,15 @@ class TLOneStethoscope extends VLabItem {
         // console.log(event);
         let envSphereMapReflection = event.toScene.envSphereMapReflection ? event.toScene.envSphereMapReflection : null;
         this.setEnvMap(envSphereMapReflection);
+    }
+    takeHeadphonesToInventory() {
+        this.headphonesApplied = false;
+        this.interactables[0].vLabSceneObject.getObjectByName('TLOneStethoscope_headphones').visible = false;
+        this.interactables[0].vLabSceneObject.getObjectByName('headphonesJack').visible = false;
+        this.interactables[0].initObj.interactable.inventory.viewBias = "new THREE.Vector3(0.0, 0.1, 0.0)";
+        this.vLab.Inventory.resetView();
+        this.vLab.Inventory.addInteractable(this.vLab['HeadphonesGeneric'].interactables[0]);
+        this.vLab['HeadphonesGeneric'].interactables[0].vLabSceneObject.visible = true;
     }
 }
 export default TLOneStethoscope;
