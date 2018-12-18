@@ -91,6 +91,24 @@ class VLabOrbitControls extends VLabControls {
         .start();
     }
     /**
+     * Set azimutal restrictions from current this.spherical.theta
+     */
+    setAzimutalRestrictionsFromCurrentTheta(pd, nd) {
+        this.minAzimuthAngle = this.spherical.theta + nd;
+        this.maxAzimuthAngle = this.spherical.theta + pd;
+
+        if (Math.abs(this.minAzimuthAngle) > Math.PI) this.minAzimuthAngle = Math.PI;
+        if (Math.abs(this.maxAzimuthAngle) > Math.PI) this.maxAzimuthAngle = Math.PI;
+    }
+    /**
+     * this.minAzimuthAngle = -Infinity; // radians
+     * this.maxAzimuthAngle = Infinity; // radians
+     */
+    resetAzimutalRestrictions() {
+        this.minAzimuthAngle = -Infinity;
+        this.maxAzimuthAngle = Infinity;
+    }
+    /**
      * VLabControls update abstract function implementation.
      *
      * @memberof VLabOrbitControls {@link VLabControls#update}
@@ -142,6 +160,7 @@ class VLabOrbitControls extends VLabControls {
 
         let newPos = new THREE.Vector3().copy(position).copy(this.target).add(offset);
         let posDelta = this.lastPosition.distanceToSquared(newPos);
+
         if (posDelta > this.dumperPosMin && posDelta < this.dumperPosMax || this.lastPosition.equals(new THREE.Vector3())) {
             position.copy(newPos);
             this.vLabScene.currentCamera.lookAt(this.target);
@@ -154,6 +173,12 @@ class VLabOrbitControls extends VLabControls {
 
         this.lastPosition.copy(this.vLabScene.currentCamera.position);
         this.lastQuaternion.copy(this.vLabScene.currentCamera.quaternion);
+
+        this.vLabScene.vLab.EventDispatcher.notifySubscribers({
+            target: 'VLabScene',
+            type: 'currentControlsUpdated'
+        });
+
     }
     /**
      * Sets this.state = this.STATE.NONE

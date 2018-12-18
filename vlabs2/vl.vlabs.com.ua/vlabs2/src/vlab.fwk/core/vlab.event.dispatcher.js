@@ -72,7 +72,14 @@ class VLabEventDispatcher {
                  *      type: 'interactablePut'
                  *  }
                  */
-                interactablePut:    {}
+                interactablePut:    {},
+                /**
+                 *  {
+                 *      target: 'VLabScene',
+                 *      type: 'currentControlsUpdated'
+                 *  }
+                 */
+                currentControlsUpdated:     {}
             },
             VLabInventory: {
                 ready:          {},

@@ -118,6 +118,9 @@ class VLabScene extends THREE.Scene {
          */
         this.currentCamera = new THREE.PerspectiveCamera(50, this.vLab.WebGLRendererCanvas.clientWidth / this.vLab.WebGLRendererCanvas.clientHeight, 0.1, 100);
         this.add(this.currentCamera);
+        this.currentCameraCenterObject3D = new THREE.Object3D();
+        this.currentCameraCenterObject3D.position.set(0.0, 0.0, 0.0);
+        this.currentCamera.add(this.currentCameraCenterObject3D);
         /**
          * This current Scene controls; default is {@link VLabOrbitControls} instance
          * could be configured later at {@link VLabSceneManager#configure} from VLabScene nature

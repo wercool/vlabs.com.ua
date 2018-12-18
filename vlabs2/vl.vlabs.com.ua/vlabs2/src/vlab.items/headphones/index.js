@@ -104,5 +104,8 @@ class HeadphonesGeneric extends VLabItem {
         this.earphonesOverlayL.style.display = 'block';
         this.earphonesOverlayR.style.display = 'block';
     }
+    isVisible() {
+        return (this.earphonesOverlayL !== undefined && this.earphonesOverlayL.style.display == 'block');
+    }
 }
 export default HeadphonesGeneric;

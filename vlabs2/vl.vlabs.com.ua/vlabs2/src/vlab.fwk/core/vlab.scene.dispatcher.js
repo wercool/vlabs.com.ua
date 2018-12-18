@@ -405,8 +405,11 @@ class VLabSceneDispatcher {
         if (putObj.materials) {
             this.takenInteractable.vLabSceneObject.traverse((sibling) => {
                 if (sibling.type == 'Mesh' && sibling.name.indexOf('_OUTLINE') == -1) {
-                    sibling.material = putObj.materials[sibling.uuid];
-                    sibling.material.needsUpdate = true;
+                    let material = putObj.materials[sibling.uuid];
+                    if (material) {
+                        sibling.material = material;
+                        sibling.material.needsUpdate = true;
+                    }
                 }
             });
         }

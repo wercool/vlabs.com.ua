@@ -47,14 +47,26 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": false,
-            "tooltip": "Volume <b style=\"font-size: 20px;\">-</b>"
+            "tooltip": "Volume <b style=\"font-size: 20px;\">-</b>",
+            "action": {
+                "context": "this.vLab['TLOneStethoscope']",
+                "function": "this.vLab['TLOneStethoscope'].volumeDecrease",
+                "activated": true,
+                "args": {}
+            }
         },
         {
             "name": "TLOneStethoscopeButtonVolumePlus",
             "intersectable": true,
             "preselectable": true,
             "selectable": false,
-            "tooltip": "Volume <b style=\"font-size: 20px;\">+</b>"
+            "tooltip": "Volume <b style=\"font-size: 20px;\">+</b>",
+            "action": {
+                "context": "this.vLab['TLOneStethoscope']",
+                "function": "this.vLab['TLOneStethoscope'].volumeIncrease",
+                "activated": true,
+                "args": {}
+            }
         }
     ]
 }
