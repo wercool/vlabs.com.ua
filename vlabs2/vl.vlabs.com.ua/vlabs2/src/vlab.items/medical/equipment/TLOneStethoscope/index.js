@@ -22,7 +22,9 @@ class TLOneStethoscope extends VLabItem {
 
         this.headphonesApplied = false;
 
-        this.volume = 0.5;
+        this.volume = 0.0;
+
+        this.on = false;
 
         var textureLoader = new THREE.TextureLoader();
 
@@ -37,6 +39,8 @@ class TLOneStethoscope extends VLabItem {
                 flatShading: false
             });
 
+            this.lightTexture = results[0];
+
             this.initialize();
         });
     }
@@ -47,6 +51,16 @@ class TLOneStethoscope extends VLabItem {
         this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
         this.setupInteractables()
         .then((interactables) => {
+
+            this.defaultTLOneStethoscopeScreenTexture = this.vLabItemModel.getObjectByName('TLOneStethoscopeScreen').material.map.clone();
+
+            this.updateScreen();
+
+// this.TLOneStethoscopeCanvas.style.position = 'absolute';
+// this.TLOneStethoscopeCanvas.style.zIndex = '100';
+
+// this.vLab.DOMManager.container.appendChild(this.TLOneStethoscopeCanvas);
+
             /**
              * Conditionally add to Inventory interactables
              * (for VLabItem by default this.interactables[0] (this.vLabScenObject in the root of [0] Interactable) is added to Inventory)
@@ -58,7 +72,6 @@ class TLOneStethoscope extends VLabItem {
 
             this.cableJack = this.interactables[0].vLabSceneObject.getObjectByName('headphonesJack');
             this.updateCable();
-
         });
 
         /**
@@ -182,7 +195,9 @@ class TLOneStethoscope extends VLabItem {
         this.buttonPressedTimeout = setTimeout(() => {
             self.interactables[0].vLabSceneObject.getObjectByName('TLOneStethoscopeButtonVolumeMinus').translateZ(-0.0005);
             self.buttonPressedTimeout = undefined;
+            self.on = true;
         }, 150);
+        this.updateScreen();
     }
     /**
      * volumeIncrease
@@ -200,7 +215,37 @@ class TLOneStethoscope extends VLabItem {
         this.buttonPressedTimeout = setTimeout(() => {
             self.interactables[0].vLabSceneObject.getObjectByName('TLOneStethoscopeButtonVolumePlus').translateZ(0.0005);
             self.buttonPressedTimeout = undefined;
+            self.on = true;
         }, 150);
+        this.updateScreen();
+    }
+
+    updateScreen() {
+        if (this.TLOneStethoscopeCanvas == undefined) {
+            this.TLOneStethoscopeCanvas = document.createElement('canvas');
+            this.TLOneStethoscopeCanvas.width = this.defaultTLOneStethoscopeScreenTexture.image.width;
+            this.TLOneStethoscopeCanvas.height = this.defaultTLOneStethoscopeScreenTexture.image.height;
+            this.TLOneStethoscopeCanvasCtx = this.TLOneStethoscopeCanvas.getContext('2d');
+        }
+        this.TLOneStethoscopeCanvasCtx.drawImage(this.defaultTLOneStethoscopeScreenTexture.image, 0, 0, this.defaultTLOneStethoscopeScreenTexture.image.width, this.defaultTLOneStethoscopeScreenTexture.image.height);
+        if (this.on) {
+            /**
+             * Volume
+             */
+            this.TLOneStethoscopeCanvasCtx.drawImage(this.lightTexture.image, 48 + 128 * this.volume, 156, 32, 32);
+            /**
+             * On
+             */
+            this.TLOneStethoscopeCanvasCtx.drawImage(this.lightTexture.image, 76, 130, 32, 32);
+            /**
+             * Hz
+             */
+            this.TLOneStethoscopeCanvasCtx.drawImage(this.lightTexture.image, 80, 75, 32, 32);
+            this.TLOneStethoscopeCanvasCtx.drawImage(this.lightTexture.image, 92, 75, 32, 32);
+        }
+
+        this.vLabItemModel.getObjectByName('TLOneStethoscopeScreen').material.map.image = this.TLOneStethoscopeCanvas;
+        this.vLabItemModel.getObjectByName('TLOneStethoscopeScreen').material.map.needsUpdate = true;
     }
 }
 export default TLOneStethoscope;
