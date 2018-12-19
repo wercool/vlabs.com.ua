@@ -17,6 +17,27 @@
                     "enabled": true,
                     "action": "this.takeToInventory()",
                     "args": null
+                },
+                {
+                    "label": "Volume <b>+</b>",
+                    "icon": "<i class=\"material-icons\">volume_up</i>",
+                    "enabled": true,
+                    "action": "this.vLab['TLOneStethoscope'].volumeIncrease()",
+                    "args": null
+                },
+                {
+                    "label": "Volume <b>-</b>",
+                    "icon": "<i class=\"material-icons\">volume_down</i>",
+                    "enabled": true,
+                    "action": "this.vLab['TLOneStethoscope'].volumeDecrease()",
+                    "args": null
+                },
+                {
+                    "label": "Deselect",
+                    "icon": "<i class=\"material-icons\" style=\"color: red;\">not_interested</i>",
+                    "enabled": true,
+                    "action": "this.deSelect()",
+                    "args": null
                 }
             ],
             "inventory" :{

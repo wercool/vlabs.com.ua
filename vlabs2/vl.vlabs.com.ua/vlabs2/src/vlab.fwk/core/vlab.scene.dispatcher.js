@@ -442,9 +442,6 @@ class VLabSceneDispatcher {
 
         delete this.takenInteractable.vLabSceneObject.userData['beforeTakenState'];
 
-        this.takenInteractable.taken = false;
-        this.takenInteractable = null;
-
         /**
          * Reset 'Take' items in menus of VLabSceneInteractables
          * {@link VLabSceneManager#resetTakeItemsInMenus}
@@ -453,8 +450,14 @@ class VLabSceneDispatcher {
 
         this.vLab.EventDispatcher.notifySubscribers({
             target: 'VLabScene',
-            type: 'interactablePut'
+            type: 'interactablePut',
+            args: {
+                interactable: this.takenInteractable
+            }
         });
+
+        this.takenInteractable.taken = false;
+        this.takenInteractable = null;
     }
     /**
      * Taken VLabSceneInteractable transition between VLabScenes

@@ -84,7 +84,8 @@ class TLOneStethoscope extends VLabItem {
                     transitTakenInteractable:         this.onTransitTakenInteractable
                 },
                 VLabScene: {
-                    currentControlsUpdated:           this.onCurrentControlsUpdated.bind(this)
+                    currentControlsUpdated:           this.onCurrentControlsUpdated.bind(this),
+                    interactablePut:                  this.onInteractablePut
                 }
             }
         });
@@ -139,7 +140,9 @@ class TLOneStethoscope extends VLabItem {
         this.vLab.Inventory.addInteractable(this.vLab['HeadphonesGeneric'].interactables[0]);
         this.vLab['HeadphonesGeneric'].interactables[0].vLabSceneObject.visible = true;
     }
-
+    /**
+     * updateCable()
+     */
     updateCable() {
         this.vLabItemModel.updateMatrixWorld();
         if (this.cableMesh == undefined) {
@@ -246,6 +249,16 @@ class TLOneStethoscope extends VLabItem {
 
         this.vLabItemModel.getObjectByName('TLOneStethoscopeScreen').material.map.image = this.TLOneStethoscopeCanvas;
         this.vLabItemModel.getObjectByName('TLOneStethoscopeScreen').material.map.needsUpdate = true;
+    }
+    /**
+     * onInteractablePut
+     */
+    onInteractablePut(event) {
+        if (event.args && event.args.interactable) {
+            if (event.args.interactable.vLabSceneObject.name == 'TLOneStethoscope') {
+                this.updateCable();
+            }
+        }
     }
 }
 export default TLOneStethoscope;

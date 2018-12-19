@@ -20,11 +20,48 @@ class BasicsOfLungSoundsScene extends VLabScene {
             stomach: {}
         };
 
+        this.lungsSounds = [
+            {
+                path: 'vesicular.mp3',
+                desc: ''
+            },
+            {
+                path: 'crackles-fine.mp3',
+                desc: ''
+            },
+            {
+                path: 'crackles-coarse.mp3',
+                desc: ''
+            },
+            {
+                path: 'wheeze.mp3',
+                desc: ''
+            },
+            {
+                path: 'rhonchi.mp3',
+                desc: ''
+            },
+            {
+                path: 'bronchial.mp3',
+                desc: ''
+            },
+            {
+                path: 'pleural-rubs.mp3',
+                desc: ''
+            },
+            {
+                path: 'bronchovesicular.mp3',
+                desc: ''
+            }
+        ];
+
+        this.lungsSoundsID = Math.floor(Math.random() * 8);
+
         this.auscultationSounds = {
             lungs: {
                 audio: new Audio(),
                 volume: 0.0,
-                normal: './resources/auscultationSounds/lungs/vesicular.mp3',
+                normal: './resources/auscultationSounds/lungs/' + this.lungsSounds[this.lungsSoundsID]['path'],
             },
             heart: {
                 audio: new Audio(),
