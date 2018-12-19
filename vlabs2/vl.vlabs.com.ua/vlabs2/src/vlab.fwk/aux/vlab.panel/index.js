@@ -8,7 +8,7 @@ class VLabPanel {
    /**
     * VLabPanel constructor
     * @constructor
-    * @param {Object}    initObj                           - VLabScene initialization object
+    * @param {Object}    initObj                           - VLabPanel initialization object
     * @param {VLab}      initObj.vLab                      - VLab instance
     */
     constructor(initObj) {

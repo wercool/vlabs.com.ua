@@ -91,6 +91,9 @@ class VLabEventDispatcher {
             },
             VLabSceneInteractable: {
                 transitTakenInteractable:    {}
+            },
+            VLabQuiz: {
+                quizTimedOut:                {}
             }
         };
         /**
@@ -173,6 +176,7 @@ class VLabEventDispatcher {
             case 'VLabInventory':
             case 'VLabItem':
             case 'VLabSceneInteractable':
+            case 'VLabQuiz':
                 for (let eventSubscriberName in this.eventSubscribers[event.target][event.type]) {
                     this.eventSubscribers[event.target][event.type][eventSubscriberName].callback.call(this.eventSubscribers[event.target][event.type][eventSubscriberName].subscriber, event);
                 }

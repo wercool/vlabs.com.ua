@@ -40,6 +40,7 @@ class VLabSceneInteractable {
      * @param {boolean}             [initObj.interactable.menu.item.enabled]    - Menu item enabled
      * @param {string | Function}   [initObj.interactable.menu.item.action]     - Menu item action
      * @param {Object}              [initObj.interactable.menu.item.args]       - Menu item action args
+     * @param {boolean}             [initObj.interactable.noPutBack]            - Menu item Put Back ommit if true
      * @param {Object}              [interactable.style]                        - CSS style for particular VLabScene Interactable
      * @param {string}              [interactable.style.id]                     - CSS style link id
      * @param {string}              [interactable.style.href]                   - CSS style link href
@@ -990,13 +991,18 @@ class VLabSceneInteractable {
                         if (this.vLab.Inventory == undefined) menuItem.enabled = false;
                     break;
                     /**
-                     * Disable 'Put back' if distanceTo(new THREE.Vector3()) > 0.001
+                     * Ommit 'Put back' if distanceTo(new THREE.Vector3()) > 0.001
+                     * Ommit 'Put back' if this.initObj.interactable.noPutBack == true
                      */
                     case 'Put back':
-                        if (menuItem.args.position.distanceTo(new THREE.Vector3()) <= 0.001) {
+                        if (this.initObj.interactable.noPutBack == true ||
+                            menuItem.args.position.distanceTo(new THREE.Vector3()) <= 0.001) {
                             ommitMenuItem = true;
                         }
                     break;
+                    /**
+                     * Do not add if this.nature.noPutBack
+                     */
                 }
 
                 if (!ommitMenuItem) {

@@ -70,7 +70,7 @@ class VLabInventory extends VLabScene {
             this.vLab.SceneDispatcher.scenes.push(this);
 
             /**
-             * Add inventory CSS
+             * Add Inventory CSS
              */
             if (this.vLab.DOMManager.vLabPanel) {
                 if (this.vLab.DOMManager.vLabPanel.VLabPanelRightContainer) {

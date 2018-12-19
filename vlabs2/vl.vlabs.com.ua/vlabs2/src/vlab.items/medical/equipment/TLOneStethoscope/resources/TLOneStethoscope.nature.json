@@ -40,6 +40,7 @@
                     "args": null
                 }
             ],
+            "noPutBack": true,
             "inventory" :{
                 "viewBias": "new THREE.Vector3(0.0, 0.1, 0.0)",
                 "thumbnail": "/vlab.items/medical/equipment/TLOneStethoscope/resources/assets/thumbnail.png"

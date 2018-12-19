@@ -23,39 +23,64 @@ class BasicsOfLungSoundsScene extends VLabScene {
         this.lungsSounds = [
             {
                 path: 'vesicular.mp3',
-                desc: ''
+                shortDesc: 'No, normal, vesicular breath.',
+                desc: 'Vesicular breath sounds are soft and low pitched with a rustling quality during inspiration and are even softer during expiration. These are the most commonly auscultated breath sounds, normally heard over most of the lung surface.'
             },
             {
                 path: 'crackles-fine.mp3',
-                desc: ''
+                shortDesc: 'Crackles (rales) can be heard in both phases of respiration.',
+                desc: 'Crackles, previously termed rales, can be heard in both phases of respiration. Early inspiratory and expiratory crackles are the hallmark of chronic bronchitis. Late inspiratory crackles may mean pneumonia, CHF, or atelectasis.'
             },
             {
                 path: 'crackles-coarse.mp3',
-                desc: ''
+                shortDesc: 'Coarse crackles are discontinuous, brief, popping lung sounds.',
+                desc: 'Coarse crackles are discontinuous, brief, popping lung sounds. Compared to fine crackles they are louder, lower in pitch and last longer. Late inspiratory crackles may mean pneumonia, CHF, or atelectasis.'
             },
             {
                 path: 'wheeze.mp3',
-                desc: ''
+                shortDesc: 'Wheezes are adventitious lung sounds that are continuous with a musical quality. Wheezes can be high or low pitched.',
+                desc: 'expiratory wheezes are heard over most of the chest wall. This may indicate widespread airflow obstruction, for example in patients with asthma.'
             },
             {
                 path: 'rhonchi.mp3',
-                desc: ''
+                shortDesc: 'Rhonchi occur in the bronchi.',
+                desc: 'Low pitched wheezes (rhonchi) are continuous, both inspiratory and expiratory, low pitched adventitious lung sounds that are similar to wheezes. They often have a snoring, gurgling or rattle-like quality. '
             },
             {
                 path: 'bronchial.mp3',
-                desc: ''
+                shortDesc: 'Bronchial breath sounds',
+                desc: 'Bronchial breath sounds are considered abnormal if heard over the peripheral lung fields. Bronchial breath sounds other than close to the trachea may indicate pneumonia, atelectasis, pleural effusions.'
             },
             {
                 path: 'pleural-rubs.mp3',
-                desc: ''
+                shortDesc: 'Pleural rubs are discontinuous or continuous, creaking or grating sounds.',
+                desc: 'They are produced because two inflamed surfaces are sliding by one another, such as in pleurisy.'
             },
             {
                 path: 'bronchovesicular.mp3',
+                shortDesc: 'Bronchovesicular breath sounds',
+                desc: 'These are abnormal in the lung periphery and may indicate an early infiltrate or partial atelectasis'
+            }
+        ];
+        this.lungsSoundsID = Math.floor(Math.random() * 8);
+
+        console.log(this.lungsSoundsID, this.lungsSounds[this.lungsSoundsID].shortDesc);
+
+        this.heartSounds = [
+            {
+                path: 'normal.mp3',
                 desc: ''
             }
         ];
+        this.heartSoundsID = 0;
 
-        this.lungsSoundsID = Math.floor(Math.random() * 8);
+        this.stomachSounds = [
+            {
+                path: 'normal1.mp3',
+                desc: ''
+            }
+        ];
+        this.stomachSoundsID = 0;
 
         this.auscultationSounds = {
             lungs: {
@@ -66,12 +91,12 @@ class BasicsOfLungSoundsScene extends VLabScene {
             heart: {
                 audio: new Audio(),
                 volume: 0.0,
-                normal: './resources/auscultationSounds/heart/normal.mp3',
+                normal: './resources/auscultationSounds/heart/' + this.heartSounds[this.heartSoundsID]['path'],
             },
             stomach: {
                 audio: new Audio(),
                 volume: 0.0,
-                normal: './resources/auscultationSounds/stomach/normal1.mp3',
+                normal: './resources/auscultationSounds/stomach/' + this.stomachSounds[this.stomachSoundsID]['path'],
             }
         };
 
@@ -158,6 +183,11 @@ class BasicsOfLungSoundsScene extends VLabScene {
             natureURL: '/vlab.items/medical/equipment/TLOneStethoscope/resources/TLOneStethoscope.nature.json',
             name: 'TLOneStethoscopeVLabItem'
         });
+
+        /**
+         * Add Quiz
+         */
+        this.vLab.addQuiz(this);
     }
 
     onInitializedVLabItem(event) {

@@ -2,6 +2,7 @@ import VLab from '../../vlab.fwk/core/vlab';
 
 /* This VLab Auxilaries */
 import VLabInventory   from    '../../vlab.fwk/aux/inventory/index';
+import VLabQuiz from '../../vlab.fwk/aux/quiz/index';
 
 /* This VLab Scenes */
 import ValterScene   from    './scenes/valter.scene';
@@ -26,6 +27,7 @@ class BaseVLab extends VLab {
      */
     constructor(initObj = {}) {
         super(initObj);
+        this.name = initObj.name;
         super.initialize().then((iniObj) => { this.bootstrap(iniObj); }, (error) => { console.error(error); });
     }
     /**
@@ -110,6 +112,80 @@ class BaseVLab extends VLab {
         // }, 40000);
 
         console.log(this);
+
+        this.vLabQuiz = new VLabQuiz({
+            vLab: this
+        });
+        this.vLabQuiz.initialize()
+        .then(() => {
+
+            this.vLabQuiz.quizData.description = 'Test Quiz description............';
+            this.vLabQuiz.quizData.questions.push(
+                {
+                    type: 'select',
+                    text: 'Question 1 text',
+                    data: [
+                        {
+                            label: 'Answer1',
+                            value: 'answer1'
+                        },
+                        {
+                            label: 'Answer2',
+                            value: 'answer2'
+                        },
+                        {
+                            label: 'Answer3',
+                            value: 'answer3'
+                        },
+                        {
+                            label: 'Answer4',
+                            value: 'answer4'
+                        }
+                    ],
+                    correct: 3
+                },
+                {
+                    type: 'select',
+                    text: 'Question 2 text',
+                    data: [
+                        {
+                            label: 'Answer1',
+                            value: 'answer1'
+                        },
+                        {
+                            label: 'Answer2',
+                            value: 'answer2'
+                        },
+                        {
+                            label: 'Answer3',
+                            value: 'answer3'
+                        },
+                        {
+                            label: 'Answer4',
+                            value: 'answer4'
+                        }
+                    ],
+                    correct: 3
+                }
+            );
+
+            this.vLabQuiz.startTimedOut();
+        });
+
+        this.EventDispatcher.subscribe({
+            subscriber: this,
+            events: {
+                VLabQuiz: {
+                    quizTimedOut:         this.onQuizTimedOut
+                }
+            }
+        });
+    }
+    /**
+     * onQuizTimedOut
+     */
+    onQuizTimedOut(event) {
+        this.vLabQuiz.openQuizPanel();
     }
 }
 

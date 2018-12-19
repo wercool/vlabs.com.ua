@@ -143,7 +143,7 @@ class VLabDOMManager {
                         this.simpleStats = new Stats();
                         this.simpleStats.domElement.id = 'simpleStats';
                         this.simpleStats.domElement.style.position = 'absolute';
-                        this.simpleStats.domElement.style.zIndex = 10000;
+                        this.simpleStats.domElement.style.zIndex = 100;
                         this.simpleStats.domElement.style.left = '0px';
                         this.simpleStats.domElement.style.top = '0px';
                         this.simpleStats.domElement.classList.add('nonSelectable');
