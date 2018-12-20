@@ -372,7 +372,8 @@ class VLabSceneDispatcher {
 
         this.vLab.EventDispatcher.notifySubscribers({
             target: 'VLabScene',
-            type: 'interactableTaken'
+            type: 'interactableTaken',
+            interactable: this.takenInteractable
         });
     }
     /**

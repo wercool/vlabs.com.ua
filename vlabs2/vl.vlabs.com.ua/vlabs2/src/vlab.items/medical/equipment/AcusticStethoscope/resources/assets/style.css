@@ -1,0 +1,30 @@
+#AcusticStethoscopeOverlayL {
+    position: absolute;
+    z-index: 3;
+    width: 30%;
+    height: 70%;
+    left: 0;
+    bottom: 0;
+    pointer-events: none;
+    background-image: url('/vlab.items/medical/equipment/AcusticStethoscope/resources/assets/ear.plug-l.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position-y: bottom;
+    background-position-x: left;
+    display: none;
+}
+#AcusticStethoscopeOverlayR {
+    position: absolute;
+    z-index: 3;
+    width: 30%;
+    height: 70%;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background-image: url('/vlab.items/medical/equipment/AcusticStethoscope/resources/assets/ear.plug-r.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position-y: bottom;
+    background-position-x: right;
+    display: none;
+}

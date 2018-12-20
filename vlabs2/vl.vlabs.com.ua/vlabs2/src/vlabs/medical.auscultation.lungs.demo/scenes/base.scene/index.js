@@ -5,7 +5,8 @@ import * as VLabUTILS from '../../../../vlab.fwk/utils/vlab.utils';
  * VLab Items
  */
 import TLOneStethoscope from '../../../../vlab.items/medical/equipment/TLOneStethoscope/index';
-import HeadphonesGeneric from '../../../../vlab.items/headphones/index'
+import HeadphonesGeneric from '../../../../vlab.items/headphones/index';
+import AcusticStethoscope from '../../../../vlab.items/medical/equipment/AcusticStethoscope/index';
 
 class BasicsOfLungSoundsScene extends VLabScene {
     constructor(iniObj) {
@@ -185,6 +186,15 @@ class BasicsOfLungSoundsScene extends VLabScene {
         });
 
         /**
+         * AcusticStethoscope VLabItem
+         */
+        this.vLab['AcusticStethoscope'] = new AcusticStethoscope({
+            vLab: this.vLab,
+            natureURL: '/vlab.items/medical/equipment/AcusticStethoscope/resources/acusticStethoscope.nature.json',
+            name: 'AcusticStethoscopeVLabItem'
+        });
+
+        /**
          * Add Quiz
          */
         this.vLab.addQuiz(this);
@@ -200,6 +210,9 @@ class BasicsOfLungSoundsScene extends VLabScene {
             break;
             case 'HeadphonesGeneric':
                 this.actualizeHeadphonesGeneric(event.vLabItem);
+            break;
+            case 'AcusticStethoscope':
+                this.actualizeAcusticStethoscope(event.vLabItem);
             break;
         }
     }
@@ -232,6 +245,29 @@ class BasicsOfLungSoundsScene extends VLabScene {
             preselectionTooltip: 'Generic Headphones could be applied',
             action: {
                 function: this.HeadphonesGeneric_ACTION_TLOneStethoscope,
+                args: {},
+                context: this
+            }
+        });
+    }
+
+    actualizeAcusticStethoscope(AcusticStethoscope) {
+        AcusticStethoscope.interactables[0].addRespondent({
+            interactable: this.interactables['maleBody'],
+            callerInteractable: this.vLab['AcusticStethoscope'].interactables[0],
+            preselectionTooltip: 'Acustic Stethoscope could be applied',
+            action: {
+                function: this.AcusticStethoscope_ACTION_maleBody,
+                args: {},
+                context: this
+            }
+        });
+        AcusticStethoscope.interactables[1].addRespondent({
+            interactable: this.interactables['maleBody'],
+            callerInteractable: this.vLab['AcusticStethoscope'].interactables[1],
+            preselectionTooltip: 'Acustic Stethoscope could be applied',
+            action: {
+                function: this.AcusticStethoscope_ACTION_maleBody,
                 args: {},
                 context: this
             }
@@ -286,7 +322,7 @@ class BasicsOfLungSoundsScene extends VLabScene {
         };
         let allowedMapPixelWeight = (allowedMapPixel.r + allowedMapPixel.g + allowedMapPixel.b) / 3;
 
-        if (allowedMapPixelWeight > 127) {
+        if (allowedMapPixelWeight > 127 && !this.vLab['AcusticStethoscope'].applied) {
 
             let lungsSoundVolumeMapPixel = { 
                 r: this.TLOneStethoscopeMaleBodyMaps['lungs'].getImageData(xy.x, xy.y, 1, 1).data[0],
@@ -365,16 +401,123 @@ class BasicsOfLungSoundsScene extends VLabScene {
                 // this.mouseHelper.lookAt(lookAtPoint);
             /*</dev>*/
         }
+        this.vLab['AcusticStethoscope'].interactables[0].canBeTakenFromInventory = false;
+    }
+
+    AcusticStethoscope_ACTION_maleBody(params) {
+        let self = this;
+        let point = this.interactables['maleBody'].lastTouchRaycasterIntersection.point.clone();
+        let normal = this.interactables['maleBody'].lastTouchRaycasterIntersection.face.normal.clone();
+        let uv = this.interactables['maleBody'].lastTouchRaycasterIntersection.uv;
+        let xy = new THREE.Vector2(Math.round(1023 * uv.x), Math.round(1023 * uv.y));
+        // console.log(uv, xy);
+        // console.log(this.TLOneStethoscopeMaleBodyMaps['applicable'].getImageData(xy.x, xy.y, 1, 1).data);
+        let allowedMapPixel = { 
+            r: this.TLOneStethoscopeMaleBodyMaps['applicable'].getImageData(xy.x, xy.y, 1, 1).data[0],
+            g: this.TLOneStethoscopeMaleBodyMaps['applicable'].getImageData(xy.x, xy.y, 1, 1).data[1],
+            b: this.TLOneStethoscopeMaleBodyMaps['applicable'].getImageData(xy.x, xy.y, 1, 1).data[2]
+        };
+        let allowedMapPixelWeight = (allowedMapPixel.r + allowedMapPixel.g + allowedMapPixel.b) / 3;
+
+        if (allowedMapPixelWeight > 127) {
+
+
+            let lungsSoundVolumeMapPixel = { 
+                r: this.TLOneStethoscopeMaleBodyMaps['lungs'].getImageData(xy.x, xy.y, 1, 1).data[0],
+                g: this.TLOneStethoscopeMaleBodyMaps['lungs'].getImageData(xy.x, xy.y, 1, 1).data[1],
+                b: this.TLOneStethoscopeMaleBodyMaps['lungs'].getImageData(xy.x, xy.y, 1, 1).data[2],
+                a: this.TLOneStethoscopeMaleBodyMaps['lungs'].getImageData(xy.x, xy.y, 1, 1).data[3],
+            };
+            this.auscultationSounds.lungs.volume = (lungsSoundVolumeMapPixel.r + lungsSoundVolumeMapPixel.g + lungsSoundVolumeMapPixel.b) / (3 * 255);
+
+            let heartSoundVolumeMapPixel = { 
+                r: this.TLOneStethoscopeMaleBodyMaps['heart'].getImageData(xy.x, xy.y, 1, 1).data[0],
+                g: this.TLOneStethoscopeMaleBodyMaps['heart'].getImageData(xy.x, xy.y, 1, 1).data[1],
+                b: this.TLOneStethoscopeMaleBodyMaps['heart'].getImageData(xy.x, xy.y, 1, 1).data[2],
+                a: this.TLOneStethoscopeMaleBodyMaps['heart'].getImageData(xy.x, xy.y, 1, 1).data[3],
+            };
+            this.auscultationSounds.heart.volume = (heartSoundVolumeMapPixel.r + heartSoundVolumeMapPixel.g + heartSoundVolumeMapPixel.b) / (3 * 255);
+
+            let stomachSoundVolumeMapPixel = { 
+                r: this.TLOneStethoscopeMaleBodyMaps['stomach'].getImageData(xy.x, xy.y, 1, 1).data[0],
+                g: this.TLOneStethoscopeMaleBodyMaps['stomach'].getImageData(xy.x, xy.y, 1, 1).data[1],
+                b: this.TLOneStethoscopeMaleBodyMaps['stomach'].getImageData(xy.x, xy.y, 1, 1).data[2],
+                a: this.TLOneStethoscopeMaleBodyMaps['stomach'].getImageData(xy.x, xy.y, 1, 1).data[3],
+            };
+            this.auscultationSounds.stomach.volume = (stomachSoundVolumeMapPixel.r + stomachSoundVolumeMapPixel.g + stomachSoundVolumeMapPixel.b) / (3 * 255);
+
+            this.auscultationSounds.lungs.audio.volume = this.auscultationSounds.lungs.volume * 0.2;
+            this.auscultationSounds.heart.audio.volume = this.auscultationSounds.heart.volume * 0.2;
+            this.auscultationSounds.stomach.audio.volume = this.auscultationSounds.stomach.volume * 0.2;
+
+            if (!this.vLab['AcusticStethoscope'].applied) {
+                this.vLab['AcusticStethoscope'].interactables[0].put({
+                    parent: this,
+                    position: undefined,
+                    quaterninon: new THREE.Quaternion(),
+                    scale: new THREE.Vector3(1.0, 1.0, 1.0),
+                    materials: this.vLab['AcusticStethoscope'].vLabItemModel.userData['beforeTakenState'].materials
+                });
+
+                this.vLab['AcusticStethoscope'].interactables[0].vLabSceneObject.visible = false;
+            }
+
+            let lookAtPoint = normal.clone();
+            lookAtPoint.transformDirection(this.interactables['maleBody'].vLabSceneObject.matrixWorld);
+            lookAtPoint.multiplyScalar(10);
+            lookAtPoint.add(point);
+
+            if (!this.vLab['AcusticStethoscope'].applied) {
+                this.AcusticStethoscopeSensor = this.vLab['AcusticStethoscope'].interactables[1].vLabSceneObject;
+                this.vLab['AcusticStethoscope'].interactables[0].vLabSceneObject.remove(this.AcusticStethoscopeSensor);
+                this.vLab.SceneDispatcher.currentVLabScene.add(this.AcusticStethoscopeSensor);
+                this.AcusticStethoscopeSensor.visible = true;
+            }
+
+            this.vLab['AcusticStethoscope'].interactables[1].vLabSceneObject.position.copy(point);
+            this.vLab['AcusticStethoscope'].interactables[1].vLabSceneObject.lookAt(lookAtPoint);
+            this.vLab['AcusticStethoscope'].interactables[1].vLabSceneObject.rotateX(0.5 * Math.PI);
+            this.vLab['AcusticStethoscope'].interactables[1].vLabSceneObject.rotateY(0.5 * Math.PI);
+
+            this.vLab['AcusticStethoscope'].interactables[1].vLabSceneObject.visible = true;
+
+            this.vLab['AcusticStethoscope'].onApplied();
+        }
+        self.vLab['AcusticStethoscope'].updateTube();
+
+        this.vLab.SceneDispatcher.currentVLabScene.currentControls.setAzimutalRestrictionsFromCurrentTheta(0.5, -0.5);
+
+        this.auscultationSounds.lungs.audio.play();
+        this.auscultationSounds.heart.audio.play();
+        this.auscultationSounds.stomach.audio.play();
+
+        this.vLab['TLOneStethoscope'].interactables[0].canBeTakenFromInventory = false;
     }
 
     onInteractableTaken(event) {
-        this.muteSound();
-        this.vLab['TLOneStethoscope'].onTaken();
+        if (event.interactable.vLabItem == this.vLab['TLOneStethoscope']) {
+            this.muteSound();
+            this.vLab['TLOneStethoscope'].onTaken();
+        }
+        if (event.interactable.vLabItem == this.vLab['AcusticStethoscope']) {
+            this.muteSound();
+            this.vLab['AcusticStethoscope'].onTakenOut();
+        }
     }
 
     onInteractablePutToInventory(event) {
-        this.muteSound();
-        this.vLab['TLOneStethoscope'].onTakenOut();
+        if (event.interactable.vLabItem) {
+            if (event.interactable.vLabItem == this.vLab['TLOneStethoscope']) {
+                this.muteSound();
+                this.vLab['TLOneStethoscope'].onTakenOut();
+                this.vLab['AcusticStethoscope'].interactables[0].canBeTakenFromInventory = true;
+            }
+            if (event.interactable.vLabItem == this.vLab['AcusticStethoscope']) {
+                this.muteSound();
+                this.vLab['AcusticStethoscope'].onTakenOut();
+                this.vLab['TLOneStethoscope'].interactables[0].canBeTakenFromInventory = true;
+            }
+        }
     }
 
     onInteractablePut(event) {

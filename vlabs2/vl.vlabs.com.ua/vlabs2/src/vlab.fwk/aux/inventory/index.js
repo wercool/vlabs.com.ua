@@ -621,6 +621,9 @@ class VLabInventory extends VLabScene {
      * Takes VLabSceneInteractable and sets it as taken
      */
     take() {
+        if (!this.selectedItem.interactable.canBeTakenFromInventory) return;
+
+
         let self = this;
         /**
          * Press Event dumper

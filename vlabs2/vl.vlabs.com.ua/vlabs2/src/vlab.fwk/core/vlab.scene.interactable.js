@@ -28,6 +28,9 @@ class VLabSceneInteractable {
      * @param {boolean}             [initObj.interactable.preselecatble]        - If true mouseover and touchstart will preselect this.vLabSceneObject 
      * @param {boolean}             [initObj.interactable.boundsOnly]           - If true pre-selectionwill always show only selection bounds Sprite only
      * @param {boolean}             [initObj.interactable.selectable]           - If true mousedown and touchstart will select this.vLabSceneObject if it is preselectable and already preselected or if it is not preselectable
+     * @param {boolean}             [initObj.interactable.visible]              - Interactable vLabSceneObject is visible / not visible
+     * @param {boolean}             [initObj.interactable.showRespondents]      - Show Interactable respondents
+     *
      * @param {Object}              [initObj.interactable.action]               - Native action; if defined then VLabSceneInteractable.selectble is set to false; native action will be called instead of selection
      * @param {Function}            [initObj.interactable.action.function]      - This function reference will be called on native action
      * @param {Function}            [initObj.interactable.action.args]          - Native function arguments
@@ -227,6 +230,10 @@ class VLabSceneInteractable {
          */
         this.respondents = [];
         /**
+         * Whether to show respondents
+         */
+        this.showRespondentsFlag = true;
+        /**
          * Lines drawn from `this` to it's respondents; THREE.Line instances
          * respondentIntersectionPoint(s)
          */
@@ -239,6 +246,10 @@ class VLabSceneInteractable {
          * Last click / touch intersection
          */
         this.lastTouchRaycasterIntersection = undefined;
+        /**
+         * Whether or not could be taken from Inventory
+         */
+        this.canBeTakenFromInventory = true;
     }
     /**
      * Initialize VLabSceneInteractable.
@@ -344,6 +355,9 @@ class VLabSceneInteractable {
                 }
                 if (this.initObj.interactable.visible !== undefined) {
                     this.vLabSceneObject.visible = this.initObj.interactable.visible;
+                }
+                if (this.initObj.interactable.showRespondents !== undefined) {
+                    this.showRespondentsFlag = this.initObj.interactable.showRespondents;
                 }
                 resolve(this);
             });
@@ -1225,6 +1239,8 @@ class VLabSceneInteractable {
      * Shows respondents (if responder function is present), e.g. VLabSceneInteractables ("respondent" is an object in a current scene, with which one `this` can interact)
      */
     showRespondents() {
+        if (!this.showRespondentsFlag) return;
+
         let raycaster = new THREE.Raycaster();
         if (this.shownRespondents.length == 0) {
             this.respondents.forEach((respondent) => {

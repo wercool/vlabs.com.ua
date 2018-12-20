@@ -117,7 +117,7 @@ gulp.task('build', gulp.series('sync-vlab-assets',
     .pipe(gulpif(initObj.mode != 'prod', sourcemaps.init({loadMaps: true})))
     .pipe(gulpif(initObj.mode != 'prod', sourcemaps.write('./maps')))
     .pipe(gulpif(initObj.mode == 'prod', replace(/<dev>(.+?)<\/dev>/msig, '')))
-    .pipe(gulpif(initObj.mode == 'prod', replace(/console.log((.+?));/msig, '')))
+    .pipe(gulpif(initObj.mode == 'prod', replace(/console.log\((.+?)\);/msig, '')))
     .pipe(gulpif(initObj.mode == 'prod', minify({
             mangle: false
         }
