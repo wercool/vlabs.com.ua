@@ -1,6 +1,7 @@
 {
     "name": "Headphones",
     "modelURL": "/vlab.items/headphones/resources/3d/headphones.glb",
+    "thumbnail": "/vlab.items/headphones/resources/resources/thumbnail.png",
     "addToInvnentory": true,
     "interactables": [
         {
