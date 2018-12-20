@@ -396,6 +396,9 @@ class BasicsOfLungSoundsScene extends VLabScene {
                 this.vLab.SceneDispatcher.currentVLabScene.currentControls.resetAzimutalRestrictions();
             }
 
+            this.vLab['TLOneStethoscope'].cableMesh.material = this.vLab['TLOneStethoscope'].cableMaterial;
+            this.vLab['TLOneStethoscope'].cableMesh.material.needsUpdate = true;
+
             /*<dev>*/
                 // this.mouseHelper.position.copy(point);
                 // this.mouseHelper.lookAt(lookAtPoint);
