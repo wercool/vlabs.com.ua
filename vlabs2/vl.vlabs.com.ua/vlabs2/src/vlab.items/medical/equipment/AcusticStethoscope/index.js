@@ -102,7 +102,7 @@ class AcusticStethoscope extends VLabItem {
     getTubeCurve() {
         return new THREE.CatmullRomCurve3([
             this.sensor.worldToLocal(THREEUtils.getObjectWorldPosition(this.tubeInput)).add(new THREE.Vector3(0.0, 0.0, 0.0)),
-            this.sensor.worldToLocal(THREEUtils.getObjectWorldPosition(this.tubeInput)).add(new THREE.Vector3(-0.01, 0.0, 0.0)),
+            this.sensor.worldToLocal(THREEUtils.getObjectWorldPosition(this.tubeInput)).add(new THREE.Vector3(-0.01, 0.005, 0.0)),
             this.sensor.worldToLocal(THREEUtils.getObjectWorldPosition(this.tubeInput)).add(new THREE.Vector3(-0.05, 0.01, 0.0)),
             this.sensor.worldToLocal(THREEUtils.getObjectWorldPosition(this.vLab.SceneDispatcher.currentVLabScene.currentCameraCenterObject3D).add(new THREE.Vector3(0.0, -0.5, 0.0))),
         ]);
@@ -116,14 +116,16 @@ class AcusticStethoscope extends VLabItem {
                 id: 'AcusticStethoscopeOverlayCSS',
                 href: '/vlab.items/medical/equipment/AcusticStethoscope/resources/assets/style.css'
             }).then(() => {
-                this.acusticStethoscopeOverlayL = document.createElement('div');
-                this.acusticStethoscopeOverlayL.id = 'AcusticStethoscopeOverlayL';
-                this.acusticStethoscopeOverlayL.classList.add('nonSelectable');
-                this.vLab.DOMManager.container.appendChild(this.acusticStethoscopeOverlayL);
-                this.acusticStethoscopeOverlayR = document.createElement('div');
-                this.acusticStethoscopeOverlayR.id = 'AcusticStethoscopeOverlayR';
-                this.acusticStethoscopeOverlayR.classList.add('nonSelectable');
-                this.vLab.DOMManager.container.appendChild(this.acusticStethoscopeOverlayR);
+                if (!this.acusticStethoscopeOverlayL) {
+                    this.acusticStethoscopeOverlayL = document.createElement('div');
+                    this.acusticStethoscopeOverlayL.id = 'AcusticStethoscopeOverlayL';
+                    this.acusticStethoscopeOverlayL.classList.add('nonSelectable');
+                    this.vLab.DOMManager.container.appendChild(this.acusticStethoscopeOverlayL);
+                    this.acusticStethoscopeOverlayR = document.createElement('div');
+                    this.acusticStethoscopeOverlayR.id = 'AcusticStethoscopeOverlayR';
+                    this.acusticStethoscopeOverlayR.classList.add('nonSelectable');
+                    this.vLab.DOMManager.container.appendChild(this.acusticStethoscopeOverlayR);
+                }
                 this.showAcusticStethoscopeOverlay();
             });
         } else {

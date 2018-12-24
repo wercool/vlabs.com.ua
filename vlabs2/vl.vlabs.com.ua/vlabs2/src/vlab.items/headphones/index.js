@@ -82,14 +82,16 @@ class HeadphonesGeneric extends VLabItem {
                 id: 'HeadphonesOverlayCSS',
                 href: '/vlab.items/headphones/resources/assets/style.css'
             }).then(() => {
-                this.earphonesOverlayL = document.createElement('div');
-                this.earphonesOverlayL.id = 'HeadphonesOverlayL';
-                this.earphonesOverlayL.classList.add('nonSelectable');
-                this.vLab.DOMManager.container.appendChild(this.earphonesOverlayL);
-                this.earphonesOverlayR = document.createElement('div');
-                this.earphonesOverlayR.id = 'HeadphonesOverlayR';
-                this.earphonesOverlayR.classList.add('nonSelectable');
-                this.vLab.DOMManager.container.appendChild(this.earphonesOverlayR);
+                if (!this.earphonesOverlayL) {
+                    this.earphonesOverlayL = document.createElement('div');
+                    this.earphonesOverlayL.id = 'HeadphonesOverlayL';
+                    this.earphonesOverlayL.classList.add('nonSelectable');
+                    this.vLab.DOMManager.container.appendChild(this.earphonesOverlayL);
+                    this.earphonesOverlayR = document.createElement('div');
+                    this.earphonesOverlayR.id = 'HeadphonesOverlayR';
+                    this.earphonesOverlayR.classList.add('nonSelectable');
+                    this.vLab.DOMManager.container.appendChild(this.earphonesOverlayR);
+                }
                 this.showHeadphonesOverlay();
             });
         } else {

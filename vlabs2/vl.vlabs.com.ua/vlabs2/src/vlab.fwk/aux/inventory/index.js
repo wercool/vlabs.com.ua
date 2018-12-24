@@ -592,7 +592,8 @@ class VLabInventory extends VLabScene {
                 /**
                  * Add thumbnail of taken VLabSceneInteractable into this.items
                  */
-                self.items[interactable.vLabSceneObject.name]['thumbnail'] = thumbnail;
+                // self.items[interactable.vLabSceneObject.name]['thumbnail'] = thumbnail;
+                self.updateThumbnail(interactable, thumbnail);
 
                 let itemContainer = document.createElement('div');
                 itemContainer.id = 'inventoryItemContainer_' + interactable.vLabSceneObject.name;
@@ -745,6 +746,19 @@ class VLabInventory extends VLabScene {
             this.setSelectedItem();
         })
         .start();
+    }
+    /**
+     * Update thumbnail
+     */
+    updateThumbnail(interactable, thumbnail) {
+        this.items[interactable.vLabSceneObject.name]['thumbnail'] = thumbnail;
+    }
+    /**
+     * Update thumbnail by changing src
+     */
+    updateThumbnailSrc(interactable, thumbnailSRC) {
+        this.items[interactable.vLabSceneObject.name]['container'].style.backgroundImage = 'url("' + thumbnailSRC + '")';
+
     }
 }
 export default VLabInventory;

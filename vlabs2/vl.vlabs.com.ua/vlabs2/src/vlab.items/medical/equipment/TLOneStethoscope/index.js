@@ -139,6 +139,11 @@ class TLOneStethoscope extends VLabItem {
         this.vLab.Inventory.resetView();
         this.vLab.Inventory.addInteractable(this.vLab['HeadphonesGeneric'].interactables[0]);
         this.vLab['HeadphonesGeneric'].interactables[0].vLabSceneObject.visible = true;
+
+        this.interactables[0].initObj.interactable.inventory.thumbnail = "/vlab.items/medical/equipment/TLOneStethoscope/resources/assets/thumbnail.png";
+        if (this.vLab.Inventory) {
+            this.vLab.Inventory.updateThumbnailSrc(this.interactables[0], this.interactables[0].initObj.interactable.inventory.thumbnail);
+        }
     }
     /**
      * updateCable()

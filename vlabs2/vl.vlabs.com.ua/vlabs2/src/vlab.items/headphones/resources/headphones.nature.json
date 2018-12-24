@@ -10,6 +10,7 @@
             "preselectable": true,
             "selectable": true,
             "tooltip": "Generic Headphones",
+            "shallowForm": true,
             "menu": [
                 {
                     "label": "Take to Inventory",

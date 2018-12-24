@@ -501,7 +501,7 @@ class VLabSceneInteractable {
      * };
      * @abstract
      */
-    select(selectionObj) {
+    select(selectionObj, forced) {
         let inventoryMenu = false;
         this.menu.forEach((menuItem) => {
             if (menuItem.inventory == true) {
@@ -534,7 +534,7 @@ class VLabSceneInteractable {
             /**
              * Intersection
              */
-            if (this.intersection) {
+            if (this.intersection || forced == true) {
                 if (this.selectable && !this.selected) {
                     if (this.preselectable && this.preselected || !this.preselectable) {
                         let currentlySelectedInteractable = this.vLabScene.manager.getCurrentlySelectedInteractable();
@@ -1066,7 +1066,9 @@ class VLabSceneInteractable {
     /**
      * Calls menu item action; eval(event.target.menuItem.action) or call event.target.menuItem.action in event.target.menuItem.context
      */
-    callMenuAction(menuItem) {
+    callMenuAction(menuItem, event) {
+        event.preventDefault();
+        event.stopPropagation();
         if (typeof menuItem.action == 'string') {
             eval(menuItem.action);
         } else {

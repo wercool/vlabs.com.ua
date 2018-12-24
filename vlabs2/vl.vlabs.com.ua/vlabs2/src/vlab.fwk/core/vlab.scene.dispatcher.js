@@ -427,7 +427,7 @@ class VLabSceneDispatcher {
         this.takenInteractable.boundsSprite.scale.copy(new THREE.Vector3(1.0, 1.0, 1.0).multiplyScalar(2 * this.takenInteractable.vLabSceneObject.geometry.boundingSphere.radius));
         this.takenInteractable.centerObject3D.add(this.takenInteractable.boundsSprite);
 
-        this.takenInteractable.vLabSceneObject.visible = true;
+        this.takenInteractable.vLabSceneObject.visible = true;  
 
         this.takenInteractable.removeMenuItem('Put back');
 
@@ -459,6 +459,8 @@ class VLabSceneDispatcher {
 
         this.takenInteractable.taken = false;
         this.takenInteractable = null;
+
+        this.vLab.DOMManager.vLabPanel.conform();
     }
     /**
      * Taken VLabSceneInteractable transition between VLabScenes

@@ -62,6 +62,11 @@ class VLabPanel {
                 this.VLabPanelCenterContainer.id = 'VLabPanelCenterContainer';
                 this.VLabPanelContainer.appendChild(this.VLabPanelCenterContainer);
 
+                this.VLabPanelCenterContainerReactiveDIV = document.createElement('div');
+                this.VLabPanelCenterContainerReactiveDIV.id = 'VLabPanelCenterContainerReactiveDIV';
+                this.VLabPanelCenterContainer.appendChild(this.VLabPanelCenterContainerReactiveDIV);
+                this.VLabPanelCenterContainerReactiveDIV.onclick = this.VLabPanelCenterContainerReactiveDIV.ontouchend = this.VLabPanelCenterContainerReactiveDIV.onmousemove = this.takenInteractableHandleGuesture.bind(this);
+
                 this.VLabPanelRightContainer = document.createElement('div');
                 this.VLabPanelRightContainer.id = 'VLabPanelRightContainer';
                 this.VLabPanelContainer.appendChild(this.VLabPanelRightContainer);
@@ -70,7 +75,7 @@ class VLabPanel {
                 this.fullScreenButton.id = 'fullscreenButton';
                 this.fullScreenButton.classList.add('material-icons', 'settingsButtons');
                 this.fullScreenButton.innerHTML = 'fullscreen';
-                this.fullScreenButton.onclick = this.fullScreenButton.touchend = this.vLab.DOMManager.requestFullscreen.bind(this.vLab.DOMManager);
+                this.fullScreenButton.onclick = this.fullScreenButton.ontouchend = this.vLab.DOMManager.requestFullscreen.bind(this.vLab.DOMManager);
 
                 this.VLabPanelRightContainer.appendChild(this.fullScreenButton);
 
@@ -78,7 +83,7 @@ class VLabPanel {
                 this.settingsButton.id = 'settingsButton';
                 this.settingsButton.classList.add('material-icons', 'settingsButtons');
                 this.settingsButton.innerHTML = 'settings';
-                // this.settingsButton.onclick = this.settingsButton.touchend = this.vLab.DOMManager.requestFullscreen.bind(this.vLab.DOMManager);
+                // this.settingsButton.onclick = this.settingsButton.ontouchend = this.vLab.DOMManager.requestFullscreen.bind(this.vLab.DOMManager);
 
                 this.VLabPanelRightContainer.appendChild(this.settingsButton);
 
@@ -163,6 +168,11 @@ class VLabPanel {
             this.VLabPanelCenterContainer.style.display = 'table-cell';
             this.VLabPanelLeftContainer.style.width = 'auto';
             this.VLabPanelRightContainer.style.width = 'auto';
+            if(this.vLab.SceneDispatcher.takenInteractable.initObj.interactable.shallowForm == true) {
+                this.VLabPanelCenterContainerReactiveDIV.style.display = 'block';
+            } else {
+                this.VLabPanelCenterContainerReactiveDIV.style.display = 'none';
+            }
         } else {
             this.VLabPanelCenterContainer.style.display = 'none';
         }
@@ -201,6 +211,31 @@ class VLabPanel {
      */
     onVLabSceneDeActivated(event) {
         this.hide();
+    }
+    /**
+     * Conditionally if this.vLab.SceneDispatcher.takenInteractable.initObj.shallowForm = true
+     * If this.vLab.SceneDispatcher.takenInteractable is too shallow VLabPanelCenterContainerReactiveDIV dispatches preSeleciton, seleciton methods of interactable
+     */
+    takenInteractableHandleGuesture(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (this.vLab.SceneDispatcher.takenInteractable) {
+            if(this.vLab.SceneDispatcher.takenInteractable.initObj.interactable.shallowForm == true) {
+                if (event.type == 'touchend') {
+                    if (!this.vLab.SceneDispatcher.takenInteractable.preselected && !this.vLab.SceneDispatcher.takenInteractable.selected) {
+                        this.vLab.SceneDispatcher.takenInteractable.preselect(true);
+                    } else {
+                        this.vLab.SceneDispatcher.takenInteractable.select(null, true);
+                    }
+                }
+                if (event.type == 'mousemove') {
+                    this.vLab.SceneDispatcher.takenInteractable.preselect(true);
+                }
+                if (event.type == 'click') {
+                    this.vLab.SceneDispatcher.takenInteractable.select(null, true);
+                }
+            }
+        }
     }
 }
 export default VLabPanel;

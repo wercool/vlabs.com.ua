@@ -9,6 +9,7 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": true,
+            "shallowForm": true,
             "tooltip": "Generic Acustic Stethoscope",
             "menu": [
                 {

@@ -21,6 +21,11 @@
             }
         }
     },
+    "controls": {
+        "default" : {
+            "enablePan": false
+        }
+    },
     "environment": {
         "map": "./scenes/base.scene/resources/envMaps/envMap.jpeg",
         "mapReflection": "./scenes/base.scene/resources/envMaps/envMap-reflection.jpeg",
