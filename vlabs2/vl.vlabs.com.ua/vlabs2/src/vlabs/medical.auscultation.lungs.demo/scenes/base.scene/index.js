@@ -410,7 +410,8 @@ class BasicsOfLungSoundsScene extends VLabScene {
     }
 
     AcusticStethoscope_ACTION_maleBody(params) {
-        if (this.interactables['maleBody'].lastTouchRaycasterIntersection == undefined) {
+        if (this.interactables['maleBody'].lastTouchRaycasterIntersection == undefined
+        || !this.vLab['AcusticStethoscope'].interactables[0].selected) {
             return;
         }
 
