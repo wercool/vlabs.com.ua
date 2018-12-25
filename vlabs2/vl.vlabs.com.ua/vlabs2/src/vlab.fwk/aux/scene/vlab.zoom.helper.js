@@ -50,6 +50,11 @@ class VLabZoomHelper extends VLabSceneInteractable {
         this.activated = false;
 
         /**
+         * Conditional visibility on deactivation
+         */
+        this.conditionalDeactivationVisibility = true;
+
+        /**
          * Re-render screenshot counter if empty rendered on this.vLab.WebGLRenderer.render(....)
          */
         this.screenshorRenrendering = 0;
@@ -91,10 +96,10 @@ class VLabZoomHelper extends VLabSceneInteractable {
             this.vLabScene.manager['zoomHelpersStack'] = [];
         }
 
-        let vLabZoomHelperInteractableObjectSprite = new THREE.Sprite(this.vLab.prefabs['VLabZoomHelperPrefabs']['VLabZoomHelperSpriteMaterial']);
-        vLabZoomHelperInteractableObjectSprite.scale.set(0.3, 0.3, 0.3);
+        this.vLabZoomHelperInteractableObjectSprite = new THREE.Sprite(this.vLab.prefabs['VLabZoomHelperPrefabs']['VLabZoomHelperSpriteMaterial']);
+        this.vLabZoomHelperInteractableObjectSprite.scale.set(0.3, 0.3, 0.3);
         let vLabZoomHelperInteractableObject = new THREE.Mesh(this.vLab.prefabs['VLabZoomHelperPrefabs']['VLabZoomHelperInteractableObjectGeometry'], this.vLab.prefabs['Generic']['TransparentMeshBasicMaterial']);
-        vLabZoomHelperInteractableObject.add(vLabZoomHelperInteractableObjectSprite);
+        vLabZoomHelperInteractableObject.add(this.vLabZoomHelperInteractableObjectSprite);
         vLabZoomHelperInteractableObject.position.copy(this.selfInitObj.position);
         vLabZoomHelperInteractableObject.scale.multiplyScalar(this.selfInitObj.scaleFactor);
         vLabZoomHelperInteractableObject.name = 'VLabZoomHelper_' + (this.selfInitObj.name ? this.selfInitObj.name : StringUtils.getRandomString(5));
@@ -113,6 +118,7 @@ class VLabZoomHelper extends VLabSceneInteractable {
                 preselectable: true,
                 selectable: false,
                 boundsOnly: true,
+                visible: this.initObj.visibility,
                 action: {
                     function: this.activate,
                     args: this.selfInitObj,
@@ -290,8 +296,20 @@ class VLabZoomHelper extends VLabSceneInteractable {
         let deletedZoomHelpers = this.vLabScene.manager.zoomHelpersStack.splice(fromIdx);
         deletedZoomHelpers.forEach((deletedZoomHelper) => {
             this.vLab.DOMManager.container.zoomHelperStackContainer.removeChild(deletedZoomHelper.beforeZoomState.viewThumbnail);
-            deletedZoomHelper.vLabSceneObject.visible = true;
+            deletedZoomHelper.vLabSceneObject.visible = this.conditionalDeactivationVisibility;
         });
+    }
+    /**
+     * Set target
+     */
+    setTarget(target) {
+        this.selfInitObj.target = target;
+    }
+    /**
+     * Set target
+     */
+    setViewPosition(position) {
+        this.selfInitObj.position = position;
     }
 }
 export default VLabZoomHelper;

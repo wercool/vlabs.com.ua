@@ -44,32 +44,37 @@ class AcusticStethoscope extends VLabItem {
      * VLabItem onInitialized abstract function implementation; called from super.initialize()
      */
     onInitialized() {
-        this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
-        this.setupInteractables()
-        .then((interactables) => {
-            /**
-             * Conditionally add to Inventory interactables
-             * (for VLabItem by default this.interactables[0] (this.vLabScenObject in the root of [0] Interactable) is added to Inventory)
-             */
-            if (this.nature.addToInvnentory == true) {
-                this.interactables[0].takeToInventory();
-                this.interactables[0]['vLabItem'] = this;
-            }
-
-            this.sensor =  this.interactables[1].vLabSceneObject;
-        });
-
-
-        /**
-         * Event subscriptions
-         */
-        this.vLab.EventDispatcher.subscribe({
-            subscriber: this,
-            events: {
-                VLabScene: {
-                    currentControlsUpdated:           this.onCurrentControlsUpdated.bind(this),
+        this.vLab.DOMManager.addStyle({
+            id: 'AcusticStethoscopeOverlayCSS',
+            href: '/vlab.items/medical/equipment/AcusticStethoscope/resources/assets/style.css'
+        }).then(() => {
+            this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
+            this.setupInteractables()
+            .then((interactables) => {
+                /**
+                 * Conditionally add to Inventory interactables
+                 * (for VLabItem by default this.interactables[0] (this.vLabScenObject in the root of [0] Interactable) is added to Inventory)
+                 */
+                if (this.nature.addToInvnentory == true) {
+                    this.interactables[0].takeToInventory();
+                    this.interactables[0]['vLabItem'] = this;
                 }
-            }
+
+                this.sensor =  this.interactables[1].vLabSceneObject;
+            });
+
+
+            /**
+             * Event subscriptions
+             */
+            this.vLab.EventDispatcher.subscribe({
+                subscriber: this,
+                events: {
+                    VLabScene: {
+                        currentControlsUpdated:           this.onCurrentControlsUpdated.bind(this),
+                    }
+                }
+            });
         });
     }
 
@@ -111,26 +116,17 @@ class AcusticStethoscope extends VLabItem {
      * onApplied() - applied to something
      */
     onApplied() {
-        if (this.acusticStethoscopeOverlayL == undefined) {
-            this.vLab.DOMManager.addStyle({
-                id: 'AcusticStethoscopeOverlayCSS',
-                href: '/vlab.items/medical/equipment/AcusticStethoscope/resources/assets/style.css'
-            }).then(() => {
-                if (!this.acusticStethoscopeOverlayL) {
-                    this.acusticStethoscopeOverlayL = document.createElement('div');
-                    this.acusticStethoscopeOverlayL.id = 'AcusticStethoscopeOverlayL';
-                    this.acusticStethoscopeOverlayL.classList.add('nonSelectable');
-                    this.vLab.DOMManager.container.appendChild(this.acusticStethoscopeOverlayL);
-                    this.acusticStethoscopeOverlayR = document.createElement('div');
-                    this.acusticStethoscopeOverlayR.id = 'AcusticStethoscopeOverlayR';
-                    this.acusticStethoscopeOverlayR.classList.add('nonSelectable');
-                    this.vLab.DOMManager.container.appendChild(this.acusticStethoscopeOverlayR);
-                }
-                this.showAcusticStethoscopeOverlay();
-            });
-        } else {
-            this.showAcusticStethoscopeOverlay();
+        if (!this.acusticStethoscopeOverlayL) {
+            this.acusticStethoscopeOverlayL = document.createElement('div');
+            this.acusticStethoscopeOverlayL.id = 'AcusticStethoscopeOverlayL';
+            this.acusticStethoscopeOverlayL.classList.add('nonSelectable');
+            this.vLab.DOMManager.container.appendChild(this.acusticStethoscopeOverlayL);
+            this.acusticStethoscopeOverlayR = document.createElement('div');
+            this.acusticStethoscopeOverlayR.id = 'AcusticStethoscopeOverlayR';
+            this.acusticStethoscopeOverlayR.classList.add('nonSelectable');
+            this.vLab.DOMManager.container.appendChild(this.acusticStethoscopeOverlayR);
         }
+        this.showAcusticStethoscopeOverlay();
     }
     /**
      * onTakenOut

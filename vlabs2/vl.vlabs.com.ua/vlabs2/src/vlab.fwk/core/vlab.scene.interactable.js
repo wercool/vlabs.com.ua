@@ -467,6 +467,13 @@ class VLabSceneInteractable {
         this.vLabSceneObject.visible = (visibility !== undefined) ? visibility : ((this.initObj.interactable.visibility !== undefined) ? this.initObj.interactable.visibility : true);
     }
     /**
+     * Sets VLabSceneInteractable.vLabSceneObject.position
+     * @param {THREE.Vector3} position
+     */
+    setPosition(position) {
+        this.vLabSceneObject.position.copy(position);
+    }
+    /**
      * Calls {@link VLabSceneDispatcher#putTakenInteractable}
      * @abstract
      */

@@ -24,6 +24,10 @@
             "inventory" :{
                 "viewBias": "new THREE.Vector3(0.0, 0.4, 0.0)",
                 "thumbnail": "/vlab.items/medical/equipment/AcusticStethoscope/resources/assets/thumbnail.png"
+            },
+            "takenState": {
+                "scaleFactor": 0.06,
+                "positionBias": "new THREE.Vector3(-0.005, -0.003, -0.002)"
             }
         },
         {

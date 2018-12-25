@@ -93,6 +93,7 @@ class TLOneStethoscope extends VLabItem {
     setEnvMap(envSphereMapReflection) {
         let TLOneStethoscope = this.vLabItemModel.getObjectByName('TLOneStethoscope');
         TLOneStethoscope.material.envMap = envSphereMapReflection;
+        // console.log(TLOneStethoscope.material);
         TLOneStethoscope.material.needsUpdate = true;
     }
     /**

@@ -41,29 +41,34 @@ class HeadphonesGeneric extends VLabItem {
      * VLabItem onInitialized abstract function implementation; called from super.initialize()
      */
     onInitialized() {
-        this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
-        this.setupInteractables()
-        .then((interactables) => {
-            /**
-             * Conditionally add to Inventory interactables
-             * (for VLabItem by default this.interactables[0] (this.vLabScenObject in the root of [0] Interactable) is added to Inventory)
-             */
-            if (this.nature.addToInvnentory == true) {
-                this.interactables[0].takeToInventory();
-                this.interactables[0]['vLabItem'] = this;
-            }
-        });
-
-        /**
-         * Event subscriptions
-         */
-        this.vLab.EventDispatcher.subscribe({
-            subscriber: this,
-            events: {
-                VLabSceneInteractable: {
-                    transitTakenInteractable:         this.onTransitTakenInteractable
+        this.vLab.DOMManager.addStyle({
+            id: 'HeadphonesOverlayCSS',
+            href: '/vlab.items/headphones/resources/assets/style.css'
+        }).then(() => {
+            this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
+            this.setupInteractables()
+            .then((interactables) => {
+                /**
+                 * Conditionally add to Inventory interactables
+                 * (for VLabItem by default this.interactables[0] (this.vLabScenObject in the root of [0] Interactable) is added to Inventory)
+                 */
+                if (this.nature.addToInvnentory == true) {
+                    this.interactables[0].takeToInventory();
+                    this.interactables[0]['vLabItem'] = this;
                 }
-            }
+            });
+
+            /**
+             * Event subscriptions
+             */
+            this.vLab.EventDispatcher.subscribe({
+                subscriber: this,
+                events: {
+                    VLabSceneInteractable: {
+                        transitTakenInteractable:         this.onTransitTakenInteractable
+                    }
+                }
+            });
         });
     }
     /**
@@ -77,26 +82,17 @@ class HeadphonesGeneric extends VLabItem {
      * onApplied() - plugged to some output (show headphones overlay)
      */
     onApplied() {
-        if (this.earphonesOverlayL == undefined) {
-            this.vLab.DOMManager.addStyle({
-                id: 'HeadphonesOverlayCSS',
-                href: '/vlab.items/headphones/resources/assets/style.css'
-            }).then(() => {
-                if (!this.earphonesOverlayL) {
-                    this.earphonesOverlayL = document.createElement('div');
-                    this.earphonesOverlayL.id = 'HeadphonesOverlayL';
-                    this.earphonesOverlayL.classList.add('nonSelectable');
-                    this.vLab.DOMManager.container.appendChild(this.earphonesOverlayL);
-                    this.earphonesOverlayR = document.createElement('div');
-                    this.earphonesOverlayR.id = 'HeadphonesOverlayR';
-                    this.earphonesOverlayR.classList.add('nonSelectable');
-                    this.vLab.DOMManager.container.appendChild(this.earphonesOverlayR);
-                }
-                this.showHeadphonesOverlay();
-            });
-        } else {
-            this.showHeadphonesOverlay();
+        if (!this.earphonesOverlayL) {
+            this.earphonesOverlayL = document.createElement('div');
+            this.earphonesOverlayL.id = 'HeadphonesOverlayL';
+            this.earphonesOverlayL.classList.add('nonSelectable');
+            this.vLab.DOMManager.container.appendChild(this.earphonesOverlayL);
+            this.earphonesOverlayR = document.createElement('div');
+            this.earphonesOverlayR.id = 'HeadphonesOverlayR';
+            this.earphonesOverlayR.classList.add('nonSelectable');
+            this.vLab.DOMManager.container.appendChild(this.earphonesOverlayR);
         }
+        this.showHeadphonesOverlay();
     }
     hideHeadphonesOverlay() {
         this.earphonesOverlayL.style.display = 'none';

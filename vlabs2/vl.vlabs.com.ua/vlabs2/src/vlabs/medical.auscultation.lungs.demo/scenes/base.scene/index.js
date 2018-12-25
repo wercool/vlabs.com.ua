@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import VLabScene from '../../../../vlab.fwk/core/vlab.scene';
 import * as VLabUTILS from '../../../../vlab.fwk/utils/vlab.utils';
+import VLabZoomHelper  from '../../../../vlab.fwk/aux/scene/vlab.zoom.helper';
 /**
  * VLab Items
  */
 import TLOneStethoscope from '../../../../vlab.items/medical/equipment/TLOneStethoscope/index';
 import HeadphonesGeneric from '../../../../vlab.items/headphones/index';
 import AcusticStethoscope from '../../../../vlab.items/medical/equipment/AcusticStethoscope/index';
+import MercuryThermometer from '../../../../vlab.items/medical/equipment/MercuryThermometer/index';
 
 class BasicsOfLungSoundsScene extends VLabScene {
     constructor(iniObj) {
@@ -19,6 +21,10 @@ class BasicsOfLungSoundsScene extends VLabScene {
             lungs: {},
             heart: {},
             stomach: {}
+        };
+
+        this.MercuryThermometerMaleBodyMaps = {
+            applicable: {},
         };
 
         this.lungsSounds = [
@@ -155,7 +161,7 @@ class BasicsOfLungSoundsScene extends VLabScene {
             VLabUTILS.loadImage('./resources/maleBodyMaps/applicable.jpg'),
             VLabUTILS.loadImage('./resources/maleBodyMaps/heart.jpg'),
             VLabUTILS.loadImage('./resources/maleBodyMaps/lungs.jpg'),
-            VLabUTILS.loadImage('./resources/maleBodyMaps/stomach.jpg')
+            VLabUTILS.loadImage('./resources/maleBodyMaps/stomach.jpg'),
         ])
         .then((result) => {
             result.forEach((image) => {
@@ -166,6 +172,17 @@ class BasicsOfLungSoundsScene extends VLabScene {
                 let mapImageDataName = image.src.substring(image.src.lastIndexOf('/') + 1).split('.').slice(0, -1).join('.');
                 this.TLOneStethoscopeMaleBodyMaps[mapImageDataName] = canvas.getContext('2d');
             });
+        });
+        Promise.all([
+            VLabUTILS.loadImage('./resources/maleBodyMaps/mercutyThermometer-applicable.jpg'),
+        ])
+        .then((results) => {
+                let applicableMapImage = results[0];
+                let canvas = document.createElement('canvas');
+                canvas.width = applicableMapImage.width;
+                canvas.height = applicableMapImage.height;
+                canvas.getContext('2d').drawImage(applicableMapImage, 0, 0, applicableMapImage.width, applicableMapImage.height);
+                this.MercuryThermometerMaleBodyMaps['applicable'] = canvas.getContext('2d');
         });
 
         Promise.all([
@@ -195,6 +212,15 @@ class BasicsOfLungSoundsScene extends VLabScene {
         });
 
         /**
+         * MercuryThermometer VLabItem
+         */
+        this.vLab['MercuryThermometer'] = new MercuryThermometer({
+            vLab: this.vLab,
+            natureURL: '/vlab.items/medical/equipment/MercuryThermometer/resources/mercuryThermometer.nature.json',
+            name: 'MercuryThermometerVLabItem'
+        });
+
+        /**
          * Add Quiz
          */
         this.vLab.addQuiz(this);
@@ -213,6 +239,9 @@ class BasicsOfLungSoundsScene extends VLabScene {
             break;
             case 'AcusticStethoscope':
                 this.actualizeAcusticStethoscope(event.vLabItem);
+            break;
+            case 'MercuryThermometer':
+                this.actualizeMercuryThermometer(event.vLabItem);
             break;
         }
     }
@@ -272,6 +301,29 @@ class BasicsOfLungSoundsScene extends VLabScene {
                 context: this
             }
         });
+    }
+
+    actualizeMercuryThermometer(MercuryThermometer) {
+        MercuryThermometer.interactables[0].addRespondent({
+            interactable: this.interactables['maleBody'],
+            callerInteractable: this.vLab['MercuryThermometer'].interactables[0],
+            preselectionTooltip: 'Mercury Thermometer could be applied',
+            action: {
+                function: this.MercuryThermometer_ACTION_maleBody,
+                args: {},
+                context: this
+            }
+        });
+        this.MercuryThermometerVLabZoomHelper = new VLabZoomHelper({
+            vLabScene: this,
+            position: new THREE.Vector3(0.0, 0.0, 0.0),
+            target: this.vLab['MercuryThermometer'].interactables[0].vLabSceneObject.position,
+            tooltip: 'Zoom to<br/>Mercury Thermometer',
+            scaleFactor: 0.1,
+            visibility: false,
+            name: 'MercuryThermometerVLabZoomHelper'
+        });
+        this.MercuryThermometerVLabZoomHelper.conditionalDeactivationVisibility = true;
     }
 
     HeadphonesGeneric_ACTION_TLOneStethoscope(params) {
@@ -513,6 +565,11 @@ class BasicsOfLungSoundsScene extends VLabScene {
             this.vLab['AcusticStethoscope'].onTakenOut();
             this.vLab['TLOneStethoscope'].interactables[0].canBeTakenFromInventory = true;
         }
+        if (event.interactable.vLabItem == this.vLab['MercuryThermometer']) {
+            this.vLab['MercuryThermometer'].onTakenOut();
+            this.MercuryThermometerVLabZoomHelper.conditionalDeactivationVisibility = false;
+            this.MercuryThermometerVLabZoomHelper.setVisibility(false);
+        }
     }
 
     onInteractablePutToInventory(event) {
@@ -526,6 +583,11 @@ class BasicsOfLungSoundsScene extends VLabScene {
                 this.muteSound();
                 this.vLab['AcusticStethoscope'].onTakenOut();
                 this.vLab['TLOneStethoscope'].interactables[0].canBeTakenFromInventory = true;
+            }
+            if (event.interactable.vLabItem == this.vLab['MercuryThermometer']) {
+                this.vLab['MercuryThermometer'].onTakenOut();
+                this.MercuryThermometerVLabZoomHelper.conditionalDeactivationVisibility = false;
+                this.MercuryThermometerVLabZoomHelper.setVisibility(false);
             }
         }
     }
@@ -562,6 +624,69 @@ class BasicsOfLungSoundsScene extends VLabScene {
         this.auscultationSounds.stomach.audio.volume = this.auscultationSounds.stomach.volume * this.vLab['TLOneStethoscope'].volume;
     }
 
+    MercuryThermometer_ACTION_maleBody(params) {
+        if (!this.vLab['MercuryThermometer'].applied) {
+            let point = this.interactables['maleBody'].lastTouchRaycasterIntersection.point.clone();
+            let normal = this.interactables['maleBody'].lastTouchRaycasterIntersection.face.normal.clone();
+            let uv = this.interactables['maleBody'].lastTouchRaycasterIntersection.uv;
+            let xy = new THREE.Vector2(Math.round(1023 * uv.x), Math.round(1023 * uv.y));
+            // console.log(uv, xy);
+            // console.log(this.TLOneStethoscopeMaleBodyMaps['applicable'].getImageData(xy.x, xy.y, 1, 1).data);
+            let allowedMapPixel = { 
+                r: this.MercuryThermometerMaleBodyMaps['applicable'].getImageData(xy.x, xy.y, 1, 1).data[0],
+                g: this.MercuryThermometerMaleBodyMaps['applicable'].getImageData(xy.x, xy.y, 1, 1).data[1],
+                b: this.MercuryThermometerMaleBodyMaps['applicable'].getImageData(xy.x, xy.y, 1, 1).data[2]
+            };
+            let allowedMapPixelWeight = (allowedMapPixel.r + allowedMapPixel.g + allowedMapPixel.b) / 3;
+            if (allowedMapPixelWeight > 127) {
+                let putPosition = new THREE.Vector3();
+                let lookAtPos = new THREE.Vector3();
+                let zoomHelperPosition = new THREE.Vector3();
+                let zoomHelperViewPosition = new THREE.Vector3();
+                let zoomHelperTarget = new THREE.Vector3();
+                /** Right Armpit */
+                if (xy.x > 500) {
+                    putPosition = new THREE.Vector3(0.153, 1.389, -0.051);
+                    lookAtPos = putPosition.clone().add(new THREE.Vector3(0.008, 0.002, 0.02));
+
+                    zoomHelperPosition = putPosition.clone().sub(new THREE.Vector3(-0.06, -0.02, -0.1));
+                    zoomHelperViewPosition = putPosition.clone().sub(new THREE.Vector3(-0.01, -0.1, 0.0));
+                    zoomHelperTarget = putPosition.clone().add(new THREE.Vector3(0.02, -0.1, -0.08));
+                }
+                /** Left Armpit */
+                else {
+                    putPosition = new THREE.Vector3(-0.153, 1.384, -0.042);
+                    lookAtPos = putPosition.clone().add(new THREE.Vector3(-0.008, 0.002, 0.02));
+
+                    zoomHelperPosition = putPosition.clone().sub(new THREE.Vector3(0.06, -0.02, -0.1));
+                    zoomHelperViewPosition = putPosition.clone().sub(new THREE.Vector3(-0.01, -0.1, 0.0));
+                    zoomHelperTarget = putPosition.clone().add(new THREE.Vector3(0.02, -0.1, -0.08));
+                }
+                
+                this.vLab['MercuryThermometer'].interactables[0].put({
+                    parent: this,
+                    position: putPosition.clone(),
+                    quaterninon: new THREE.Quaternion(),
+                    scale: new THREE.Vector3(1.0, 1.0, 1.0),
+                    materials: this.vLab['MercuryThermometer'].vLabItemModel.userData['beforeTakenState'].materials
+                });
+
+                this.vLab['MercuryThermometer'].vLabItemModel.lookAt(lookAtPos);
+                this.vLab['MercuryThermometer'].setEnvMap(this['maleBodyAppliedEnvMap']);
+
+                this.vLab['MercuryThermometer'].setTemperature(36.6);
+
+                this.vLab['MercuryThermometer'].onApplied();
+
+
+                this.MercuryThermometerVLabZoomHelper.setTarget(zoomHelperTarget);
+                this.MercuryThermometerVLabZoomHelper.setPosition(zoomHelperPosition);
+                this.MercuryThermometerVLabZoomHelper.setViewPosition(zoomHelperViewPosition);
+                this.MercuryThermometerVLabZoomHelper.setVisibility(true);
+                this.MercuryThermometerVLabZoomHelper.conditionalDeactivationVisibility = true;
+            }
+        }
+    }
 }
 
 export default BasicsOfLungSoundsScene;

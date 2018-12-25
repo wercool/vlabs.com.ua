@@ -343,8 +343,22 @@ class VLabSceneDispatcher {
         let scaleFactor = 0.01 / (this.takenInteractable.vLabSceneObject.geometry.boundingSphere.radius * this.takenInteractable.vLabSceneObject.scale.z);
         let untakenScale = this.takenInteractable.vLabSceneObject.scale.clone().z;
         this.takenInteractable.vLabSceneObject.quaternion.copy(new THREE.Quaternion(0.0, THREE.Math.degToRad(180.0), 0.0, 0.0));
-        this.takenInteractable.vLabSceneObject.scale.multiplyScalar(scaleFactor);
+
+        if (this.takenInteractable.initObj.interactable.takenState && this.takenInteractable.initObj.interactable.takenState.scaleFactor) {
+            this.takenInteractable.vLabSceneObject.scale.multiplyScalar(this.takenInteractable.initObj.interactable.takenState.scaleFactor);
+        } else {
+            this.takenInteractable.vLabSceneObject.scale.multiplyScalar(scaleFactor);
+        }
+
         this.takenInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, -0.04, -0.11)).sub(this.takenInteractable.vLabSceneObject.geometry.boundingSphere.center.multiplyScalar(scaleFactor));
+
+        this.takenInteractable.boundsSprite.position.copy(this.takenInteractable.vLabSceneObject.position.clone().add(this.takenInteractable.centerObject3D.position.clone().multiplyScalar(scaleFactor)));
+        this.takenInteractable.boundsSprite.scale.multiplyScalar(scaleFactor * untakenScale);
+        this.currentVLabScene.currentCamera.add(this.takenInteractable.boundsSprite);
+
+        if (this.takenInteractable.initObj.interactable.takenState && this.takenInteractable.initObj.interactable.takenState.positionBias) {
+            this.takenInteractable.vLabSceneObject.position.add(eval(this.takenInteractable.initObj.interactable.takenState.positionBias));
+        }
 
         this.takenInteractable.vLabSceneObject.rotation.y -= 0.2;
         this.takenInteractableSceneObjectTween = new TWEEN.Tween(this.takenInteractable.vLabSceneObject.rotation)
@@ -353,10 +367,6 @@ class VLabSceneDispatcher {
         .yoyo(true)
         .easing(TWEEN.Easing.Quadratic.InOut)
         .start();
-
-        this.takenInteractable.boundsSprite.position.copy(this.takenInteractable.vLabSceneObject.position.clone().add(this.takenInteractable.centerObject3D.position.clone().multiplyScalar(scaleFactor)));
-        this.takenInteractable.boundsSprite.scale.multiplyScalar(scaleFactor * untakenScale);
-        this.currentVLabScene.currentCamera.add(this.takenInteractable.boundsSprite);
 
         this.scenes.forEach((vLabScene) => {
             for (let interactableName in vLabScene.interactables) {

@@ -478,7 +478,11 @@ class VLabInventory extends VLabScene {
                 this.appendInteractable(siblingInteractable);
             });
 
-            interactable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, 0.0, 0.0).sub(interactable.centerObject3D.position));
+            if (interactable.initObj.interactable.inventory && interactable.initObj.interactable.inventory.position) {
+                interactable.vLabSceneObject.position.copy(eval(interactable.initObj.interactable.inventory.position));
+            } else {
+                interactable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, 0.0, 0.0).sub(interactable.centerObject3D.position));
+            }
             interactable.vLabSceneObject.quaternion.copy(new THREE.Quaternion(0.0, 0.0, 0.0, 0.0));
             interactable.vLabSceneObject.scale.copy(new THREE.Vector3(1.0, 1.0, 1.0));
 

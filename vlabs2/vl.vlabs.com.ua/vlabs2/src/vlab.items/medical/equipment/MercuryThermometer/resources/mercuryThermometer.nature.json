@@ -1,0 +1,35 @@
+{
+    "name": "Mercury Thermometer",
+    "modelURL": "/vlab.items/medical/equipment/MercuryThermometer/resources/3d/mercuryThermometer.glb",
+    "thumbnail": "/vlab.items/medical/equipment/MercuryThermometer/resources/thumbnail.png",
+    "addToInvnentory": true,
+    "interactables": [
+        {
+            "name": "mercuryThermometer",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "shallowForm": true,
+            "tooltip": "Generic Mercury Thermometer",
+            "menu": [
+                {
+                    "label": "Take to Inventory",
+                    "icon": "<i class=\"material-icons\">next_week</i>",
+                    "enabled": true,
+                    "action": "this.takeToInventory()",
+                    "args": null
+                }
+            ],
+            "noPutBack": true,
+            "inventory" :{
+                "position": "new THREE.Vector3(0.075, 0.0, 0.075)",
+                "viewBias": "new THREE.Vector3(-0.3, 0.15, -0.15)",
+                "thumbnail": "/vlab.items/medical/equipment/MercuryThermometer/resources/thumbnail.png"
+            },
+            "takenState": {
+                "scaleFactor": 0.25,
+                "positionBias": "new THREE.Vector3(0.0, -0.01, 0.0)"
+            }
+        }
+    ]
+}
