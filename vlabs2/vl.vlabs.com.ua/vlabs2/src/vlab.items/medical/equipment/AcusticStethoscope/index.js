@@ -55,9 +55,11 @@ class AcusticStethoscope extends VLabItem {
                  * Conditionally add to Inventory interactables
                  * (for VLabItem by default this.interactables[0] (this.vLabScenObject in the root of [0] Interactable) is added to Inventory)
                  */
-                if (this.nature.addToInvnentory == true) {
-                    this.interactables[0].takeToInventory();
-                    this.interactables[0]['vLabItem'] = this;
+                if (this.vLab.Inventory) {
+                    if (this.nature.addToInvnentory == true) {
+                        this.interactables[0].takeToInventory();
+                        this.interactables[0]['vLabItem'] = this;
+                    }
                 }
 
                 this.sensor =  this.interactables[1].vLabSceneObject;

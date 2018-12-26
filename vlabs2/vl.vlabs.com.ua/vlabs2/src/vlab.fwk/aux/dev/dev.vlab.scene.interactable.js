@@ -22,6 +22,26 @@ class DEVVLabSceneInteractable {
                 }
             },
             {
+                label: 'Trace Position',
+                enabled: true,
+                selected: false,
+                icon: '<i class=\"material-icons\">description</i>',
+                action: () => {
+                    console.log(this.vLabSceneInteractable.vLabSceneObject.position);
+                    console.log('new THREE.Vector3(' + this.vLabSceneInteractable.vLabSceneObject.position.x.toFixed(3) + ', ' + this.vLabSceneInteractable.vLabSceneObject.position.y.toFixed(3) + ', ' + this.vLabSceneInteractable.vLabSceneObject.position.z.toFixed(3) + ')');
+                }
+            },
+            {
+                label: 'Trace Quaternion',
+                enabled: true,
+                selected: false,
+                icon: '<i class=\"material-icons\">description</i>',
+                action: () => {
+                    console.log(this.vLabSceneInteractable.vLabSceneObject.quaternion);
+                    console.log('new THREE.Quaternion(' + this.vLabSceneInteractable.vLabSceneObject.quaternion.x.toFixed(3) + ', ' + this.vLabSceneInteractable.vLabSceneObject.quaternion.y.toFixed(3) + ', ' + this.vLabSceneInteractable.vLabSceneObject.quaternion.z.toFixed(3) + ', ' + this.vLabSceneInteractable.vLabSceneObject.quaternion.w.toFixed(3) + ')');
+                }
+            },
+            {
                 label: 'Move',
                 enabled: true,
                 selected: false,
@@ -29,6 +49,27 @@ class DEVVLabSceneInteractable {
                 action: (menuItem) => {
                     if (!this.manipulationControl) {
                         this.manipulationControl = new TransformControls(this.vLabScene.currentCamera, this.vLab.WebGLRendererCanvas);
+                        this.manipulationControl.setSize(1.0);
+                        this.vLabScene.add(this.manipulationControl);
+                        this.manipulationControl.attach(this.vLabSceneInteractable.vLabSceneObject);
+                        menuItem.selected = true;
+                    } else {
+                        this.manipulationControl.detach();
+                        this.manipulationControl = null;
+                        menuItem.selected = false;
+                    }
+                },
+                context: this
+            },
+            {
+                label: 'Rotate',
+                enabled: true,
+                selected: false,
+                icon: '<i class=\"material-icons\">settings_backup_restore</i>',
+                action: (menuItem) => {
+                    if (!this.manipulationControl) {
+                        this.manipulationControl = new TransformControls(this.vLabScene.currentCamera, this.vLab.WebGLRendererCanvas);
+                        this.manipulationControl.setMode('rotate');
                         this.manipulationControl.setSize(1.0);
                         this.vLabScene.add(this.manipulationControl);
                         this.manipulationControl.attach(this.vLabSceneInteractable.vLabSceneObject);

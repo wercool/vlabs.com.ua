@@ -1,0 +1,54 @@
+{
+    "name": "Pneumatic Sphygmomanometer",
+    "modelURL": "/vlab.items/medical/equipment/PneumaticSphygmomanometer/resources/3d/pneumaticSphygmomanometer.glb",
+    "thumbnail": "/vlab.items/medical/equipment/PneumaticSphygmomanometer/resources/thumbnail.png",
+    "addToInvnentory": false,
+    "interactables": [
+        {
+            "name": "pneumaticSphygmomanometerMeterCasePlastic",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "shallowForm": true,
+            "tooltip": "Pneumatic Sphygmomanometer",
+            "menu": [
+                {
+                    "label": "Take to Inventory",
+                    "icon": "<i class=\"material-icons\">next_week</i>",
+                    "enabled": true,
+                    "action": "this.takeToInventory()",
+                    "args": null
+                }
+            ],
+            "noPutBack": true,
+            "inventory" :{
+            },
+            "takenState": {
+            }
+        },
+        {
+            "name": "pneumaticSphygmomanometerMeterrubberBulb",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "shallowForm": true,
+            "tooltip": "Rubber Bulb"
+        },
+        {
+            "name": "pneumaticSphygmomanometerMeterValve",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "shallowForm": true,
+            "tooltip": "Sphygmomanometer Valve"
+        },
+        {
+            "name": "pneumaticSphygmomanometerCuff",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "shallowForm": true,
+            "tooltip": "Sphygmomanometer Cuff"
+        }
+    ]
+}
