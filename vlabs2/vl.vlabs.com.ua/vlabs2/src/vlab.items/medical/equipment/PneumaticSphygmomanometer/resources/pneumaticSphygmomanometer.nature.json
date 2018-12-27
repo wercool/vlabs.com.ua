@@ -31,7 +31,7 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": true,
-            "shallowForm": true,
+            "shallowForm": false,
             "tooltip": "Rubber Bulb"
         },
         {
@@ -39,7 +39,7 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": true,
-            "shallowForm": true,
+            "shallowForm": false,
             "tooltip": "Sphygmomanometer Valve"
         },
         {
@@ -47,8 +47,21 @@
             "intersectable": true,
             "preselectable": true,
             "selectable": true,
-            "shallowForm": true,
-            "tooltip": "Sphygmomanometer Cuff"
+            "shallowForm": false,
+            "tooltip": "<b>Sphygmomanometer Cuff</b>",
+            "preselectionAction": {
+                "context": "this.vLab.SceneDispatcher.currentVLabScene",
+                "function": "this.vLab.SceneDispatcher.currentVLabScene.onPneumaticSphygmomanometerCuffPreselection",
+                "invfunction": "this.vLab.SceneDispatcher.currentVLabScene.onPneumaticSphygmomanometerCuffDePreselection",
+                "args": {}
+            }
+        },
+        {
+            "name": "pneumaticSphygmomanometerCuffPutDummy",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "shallowForm": false
         }
     ]
 }

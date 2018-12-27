@@ -23,7 +23,7 @@
     },
     "controls": {
         "default" : {
-            "__enablePan": false
+            "enablePan": false
         }
     },
     "environment": {
