@@ -150,14 +150,29 @@ class VLabItem {
                      */
                     for (const interactableId in this.nature.interactables) {
                         let interactableNatureObj = this.nature.interactables[interactableId];
+                        let interactable = this.getInteractableByName(interactableNatureObj.name);
                         if (interactableNatureObj.siblings) {
-                            let interactable = this.getInteractableByName(interactableNatureObj.name);
-                            interactableNatureObj.siblings.forEach(async (interactableSiblingName) => {
-                                let interactableSiblingNatureObj = {};
-                                interactableSiblingNatureObj['name'] = interactableSiblingName;
-                                interactableSiblingNatureObj['intersectable'] = interactableNatureObj.intersectable;
-                                interactableSiblingNatureObj['preselectable'] = interactableNatureObj.preselectable;
-                                interactableSiblingNatureObj['selectable'] = interactableNatureObj.selectable;
+                            let interactableSiblingNatureObjs = [];
+                            if (interactableNatureObj.siblings.constructor == Array) {
+                                interactableNatureObj.siblings.forEach((interactableSiblingName) => {
+                                    let interactableSiblingNatureObj = {};
+                                    interactableSiblingNatureObj['name'] = interactableSiblingName;
+                                    interactableSiblingNatureObj['intersectable'] = interactableNatureObj.intersectable;
+                                    interactableSiblingNatureObj['preselectable'] = interactableNatureObj.preselectable;
+                                    interactableSiblingNatureObj['selectable'] = interactableNatureObj.selectable;
+                                    interactableSiblingNatureObjs.push(interactableSiblingNatureObj);
+                                });
+                            } else {
+                                for (let siblingInteractableName in interactableNatureObj.siblings) {
+                                    let interactableSiblingNatureObj = interactableNatureObj.siblings[siblingInteractableName];
+                                    interactableSiblingNatureObj['name'] = siblingInteractableName;
+                                    interactableSiblingNatureObj['intersectable'] = (interactableSiblingNatureObj.intersectable !== undefined) ? interactableSiblingNatureObj.intersectable : interactableNatureObj.intersectable;
+                                    interactableSiblingNatureObj['preselectable'] = (interactableSiblingNatureObj.preselectable !== undefined) ? interactableSiblingNatureObj.preselectable : interactableNatureObj.preselectable;
+                                    interactableSiblingNatureObj['selectable'] = (interactableSiblingNatureObj.selectable !== undefined) ? interactableSiblingNatureObj.selectable : interactableNatureObj.selectable;
+                                    interactableSiblingNatureObjs.push(interactableSiblingNatureObj);
+                                }
+                            }
+                            interactableSiblingNatureObjs.forEach(async (interactableSiblingNatureObj) => {
                                 let interactableSibling = await this.vLab.SceneDispatcher.currentVLabScene.addInteractable(interactableSiblingNatureObj);
                                 interactable.siblings.push(interactableSibling);
                             });

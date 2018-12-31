@@ -110,6 +110,25 @@ class VLabSceneInteractable {
          */
         this.actionInvFunction = undefined;
 
+
+        /**
+         * Selection function
+         */
+        /**
+         * This selection action function
+         */
+        this.selectionActionFunction = undefined;
+        /**
+        /**
+         * This selection action funciton args
+         */
+        this.selectionActionFunctionArgs = {};
+        /**
+         * This selection action funciton context
+         */
+        this.selectionActionFunctionContext = undefined;
+
+
         /**
          * Preselection function
          */
@@ -169,7 +188,7 @@ class VLabSceneInteractable {
          * @public
          * @default false
          */
-        this.keepPreseleciton = false;
+        this.keepPreselection = false;
         /**
          * If true then postprocessing pre-selection outline will not be shown, instead only bounds Sprtie will be shown
          * @public
@@ -337,6 +356,14 @@ class VLabSceneInteractable {
                          * If there is an native function, this VLabSceneInteractable becomes non-selectable
                          */
                         this.selectable = false;
+                    }
+                }
+
+                if (this.initObj.interactable.selectionAction !== undefined) {
+                    if (this.initObj.interactable.selectionAction.function !== undefined) {
+                        this.selectionActionFunctionContext = this.initObj.interactable.selectionAction.context;
+                        this.selectionActionFunctionArgs = this.initObj.interactable.selectionAction.args;
+                        this.selectionActionFunction = this.initObj.interactable.selectionAction.function;
                     }
                 }
                 if (this.initObj.interactable.preselectionAction !== undefined) {
@@ -522,21 +549,24 @@ class VLabSceneInteractable {
             if (selectionObj != undefined) {
                 this.selection =  ObjectUtils.merge(this.selection, selectionObj);
 
-                if (this.selection.hold == true) {
-                    this.updateMenuWithMenuItem({
-                        label: 'Hold selection',
-                        icon: '<i class="material-icons" style="color: #ff0000;">adjust</i>',
-                        action: 'this.select({hold: false})'
-                    });
-                } else {
-                    this.updateMenuWithMenuItem({
-                        label: 'Hold selection',
-                        icon: '<i class="material-icons">adjust</i>',
-                        action: 'this.select({hold: true})'
-                    });
-                    this.deSelect(true);
+
+                if (this.selection.hold !== undefined) {
+                    if (this.selection.hold == true) {
+                        this.updateMenuWithMenuItem({
+                            label: 'Hold selection',
+                            icon: '<i class="material-icons" style="color: #ff0000;">adjust</i>',
+                            action: 'this.select({hold: false})'
+                        });
+                    } else {
+                        this.updateMenuWithMenuItem({
+                            label: 'Hold selection',
+                            icon: '<i class="material-icons">adjust</i>',
+                            action: 'this.select({hold: true})'
+                        });
+                        this.deSelect(true);
+                    }
+                    return;
                 }
-                return;
             }
             /**
              * Intersection
@@ -559,6 +589,26 @@ class VLabSceneInteractable {
                 } else if (this.selectable && this.selected || inventoryMenu) {
                     this.showMenu();
                 }
+
+                /**
+                 * Selection action
+                 */
+                if (!(selectionObj && selectionObj.selectionAction == false)) {
+                    if (this.selectionActionFunction) {
+                        if (typeof this.selectionActionFunction == 'string') {
+                            this.selectionActionFunction = eval(this.selectionActionFunction);
+                        }
+                        if (this.selectionActionFunctionContext) {
+                            if (typeof this.selectionActionFunctionContext == 'string') {
+                                this.selectionActionFunctionContext = eval(this.selectionActionFunctionContext);
+                            }
+                            this.selectionActionFunction.call(this.selectionActionFunctionContext, this.selectionActionFunctionArgs);
+                        } else {
+                            this.selectionActionFunction.call(this.selectionActionFunctionArgs);
+                        }
+                    }
+                }
+
             } else {
                 /**
                  * No intersection
@@ -588,7 +638,7 @@ class VLabSceneInteractable {
      * Adds this instance to {@link VLabScene#preSelectedInteractables}
      * @abstract
      */
-    preselect(forced) {
+    preselect(forced, preselectionObj) {
         if (this.intersection || forced == true) {
             // console.log(this.vLabSceneObject.name, forced, '[', this.preselectable, !this.preselected, !this.selected, ']');
             if (this.preselectable && !this.preselected && !this.selected) {
@@ -606,23 +656,28 @@ class VLabSceneInteractable {
             /**
              * Preselection action
              */
-            if (this.preSelectionActionFunction) {
-                if (typeof this.preSelectionActionFunction == 'string') {
-                    this.preSelectionActionFunction = eval(this.preSelectionActionFunction);
-                }
-                let extendedActionFunctionArgs = ObjectUtils.merge(this.preSelectionActionFunctionArgs, {
-                    intersection: this.intersection
-                });
-                if (this.preSelectionActionFunctionContext) {
-                    if (typeof this.preSelectionActionFunctionContext == 'string') {
-                        this.preSelectionActionFunctionContext = eval(this.preSelectionActionFunctionContext);
+            if (!(preselectionObj && preselectionObj.preselectionAction == false)) {
+                if (this.preSelectionActionFunction) {
+                    if (typeof this.preSelectionActionFunction == 'string') {
+                        this.preSelectionActionFunction = eval(this.preSelectionActionFunction);
                     }
-                    this.preSelectionActionFunction.call(this.preSelectionActionFunctionContext, extendedActionFunctionArgs);
-                } else {
-                    this.preSelectionActionFunction.call(extendedActionFunctionArgs);
+                    let extendedActionFunctionArgs = ObjectUtils.merge(this.preSelectionActionFunctionArgs, {
+                        callerInteractable: this,
+                        intersection: this.intersection
+                    });
+                    if (this.preSelectionActionFunctionContext) {
+                        if (typeof this.preSelectionActionFunctionContext == 'string') {
+                            this.preSelectionActionFunctionContext = eval(this.preSelectionActionFunctionContext);
+                        }
+                        this.preSelectionActionFunction.call(this.preSelectionActionFunctionContext, extendedActionFunctionArgs);
+                    } else {
+                        this.preSelectionActionFunction.call(extendedActionFunctionArgs);
+                    }
                 }
             }
-            this.showTooltip();
+            if (!(preselectionObj && preselectionObj.tooltip == false)) {
+                this.showTooltip();
+            }
             // if (this.vLabScene.constructor.name !== 'VLabInventory') {
             //     this.showRespondents();
             // }
@@ -637,8 +692,8 @@ class VLabSceneInteractable {
      * @abstract
      */
     dePreselect() {
-        // console.log(this.vLabSceneObject.name + '.dePreselect()', '[', this.preselected, !this.keepPreseleciton, ']');
-        if (this.preselected && !this.keepPreseleciton) {
+        // console.log(this.vLabSceneObject.name + '.dePreselect()', '[', this.preselected, !this.keepPreselection, ']');
+        if (this.preselected && !this.keepPreselection) {
             let indexOfThisPreselected = this.vLabScene.preSelectedInteractables.indexOf(this);
             this.vLabScene.preSelectedInteractables.splice(indexOfThisPreselected, 1);
             this.vLabScene.manager.processInteractablesSelections();
@@ -654,6 +709,10 @@ class VLabSceneInteractable {
             /**
              * de-preselection action
              */
+            let extendedActionFunctionArgs = ObjectUtils.merge(this.preSelectionActionFunctionArgs, {
+                callerInteractable: this
+            });
+
             if (this.dePreSelectionActionFunction) {
                 if (typeof this.dePreSelectionActionFunction == 'string') {
                     this.dePreSelectionActionFunction = eval(this.dePreSelectionActionFunction);
@@ -662,9 +721,9 @@ class VLabSceneInteractable {
                     if (typeof this.preSelectionActionFunctionContext == 'string') {
                         this.preSelectionActionFunctionContext = eval(this.preSelectionActionFunctionContext);
                     }
-                    this.dePreSelectionActionFunction.call(this.preSelectionActionFunctionContext);
+                    this.dePreSelectionActionFunction.call(this.preSelectionActionFunctionContext, extendedActionFunctionArgs);
                 } else {
-                    this.dePreSelectionActionFunction.call();
+                    this.dePreSelectionActionFunction.call(extendedActionFunctionArgs);
                 }
             }
         }
@@ -1401,6 +1460,38 @@ class VLabSceneInteractable {
         }
         this.shownRespondents = [];
     }
+    /**
+     *   _____ _ _     _ _ 
+     *  / ____(_) |   | (_)
+     * | (___  _| |__ | |_ _ __   __ _ ___ 
+     *  \___ \| | '_ \| | | '_ \ / _` / __|
+     *  ____) | | |_) | | | | | | (_| \__ \
+     * |_____/|_|_.__/|_|_|_| |_|\__, |___/
+    *                            __/ |
+    *                           |___/
+    */
+
+    /**
+    * Preselects sibling Interactables
+    */
+    preselectSibligns() {
+        for (let siblingInteractableName in this.siblings) {
+            let siblingInteractable = this.siblings[siblingInteractableName];
+            siblingInteractable.keepPreselection = true;
+            siblingInteractable.preselect(true);
+        }
+    }
+
+    /**
+    * dePreselect sibling Interactables
+    */
+   dePreselectSibligns() {
+    for (let siblingInteractableName in this.siblings) {
+        let siblingInteractable = this.siblings[siblingInteractableName];
+        siblingInteractable.keepPreselection = false;
+        siblingInteractable.dePreselect();
+    }
+}
 
 }
 export default VLabSceneInteractable;

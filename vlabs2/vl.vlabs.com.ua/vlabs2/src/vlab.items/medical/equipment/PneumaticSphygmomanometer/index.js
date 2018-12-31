@@ -97,5 +97,53 @@ class PneumaticSphygmomanometer extends VLabItem {
      */
     onTakenOut() {
     }
+    /**
+     * meterGaugePreselection
+     */
+    meterGaugePreselection(params) {
+        let callerInteractable = params.callerInteractable;
+
+        this.getInteractableByName('pneumaticSphygmomanometerMeterGlass').preselectSibligns();
+
+        let assemblyInteractables = [];
+        if (callerInteractable !== this.getInteractableByName('pneumaticSphygmomanometerMeterGlass')) assemblyInteractables.push(this.getInteractableByName('pneumaticSphygmomanometerMeterGlass'));
+        if (callerInteractable !== this.getInteractableByName('pneumaticSphygmomanometerMeterCasePlastic')) assemblyInteractables.push(this.getInteractableByName('pneumaticSphygmomanometerMeterCasePlastic'));
+        assemblyInteractables.forEach((assemblyInteractable) => {
+            assemblyInteractable.keepPreselection = true;
+            assemblyInteractable.preselect(true, {
+                preselectionAction: false,
+                tooltip: false
+            });
+        });
+    }
+    /**
+     * meterGaugeDePreselection
+     */
+    meterGaugeDePreselection(params) {
+        let callerInteractable = (params) ? params.callerInteractable : undefined;
+        if (callerInteractable) callerInteractable.dePreselectSibligns();
+        this.getInteractableByName('pneumaticSphygmomanometerMeterGlass').dePreselectSibligns();
+        let assemblyInteractables = [];
+        assemblyInteractables.push(this.getInteractableByName('pneumaticSphygmomanometerMeterGlass'));
+        assemblyInteractables.push(this.getInteractableByName('pneumaticSphygmomanometerMeterCasePlastic'));
+        assemblyInteractables.forEach((assemblyInteractable) => {
+            assemblyInteractable.keepPreselection = false;
+            assemblyInteractable.dePreselect();
+        });
+    }
+    /**
+     * meterGaugeSelection
+     */
+    meterGaugeSelection() {
+        this.interactables[0].select({selectionAction: false}, true);
+        this.interactables[0].showMenu();
+    }
+    /**
+     * take
+     */
+    take(interactableFromAssembly) {
+        this.meterGaugeDePreselection();
+        console.log(interactableFromAssembly);
+    }
 }
 export default PneumaticSphygmomanometer;

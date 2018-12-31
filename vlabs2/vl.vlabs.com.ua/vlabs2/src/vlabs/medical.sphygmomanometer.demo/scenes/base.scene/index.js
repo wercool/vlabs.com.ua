@@ -125,7 +125,7 @@ class SphygmomanometerDemoScene extends VLabScene {
     }
     onPneumaticSphygmomanometerCuffPreselection() {
         this.pneumaticSphygmomanometerCuffPutDummy.visible = true;
-        this.pneumaticSphygmomanometerCuffPutDummyInteractable.keepPreseleciton = true;
+        this.pneumaticSphygmomanometerCuffPutDummyInteractable.keepPreselection = true;
         this.pneumaticSphygmomanometerCuffPutDummyInteractable.preselect(true);
     }
     onPneumaticSphygmomanometerCuffDePreselection() {

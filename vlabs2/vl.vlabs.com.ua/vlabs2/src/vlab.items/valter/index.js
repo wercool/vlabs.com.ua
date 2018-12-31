@@ -566,7 +566,7 @@ class Valter extends VLabItem {
         siblingInteractables.push(this.vLab.SceneDispatcher.currentVLabScene.interactables['finger5P3L']);
 
         siblingInteractables.forEach((siblingInteractable) => {
-            siblingInteractable.keepPreseleciton = true;
+            siblingInteractable.keepPreselection = true;
             siblingInteractable.preselect(true);
         });
     }
@@ -645,7 +645,7 @@ class Valter extends VLabItem {
         siblingInteractables.push(this.vLab.SceneDispatcher.currentVLabScene.interactables['finger5P3L']);
 
         siblingInteractables.forEach((siblingInteractable) => {
-            siblingInteractable.keepPreseleciton = false;
+            siblingInteractable.keepPreselection = false;
             siblingInteractable.dePreselect();
         });
     }

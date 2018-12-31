@@ -8,23 +8,64 @@
             "name": "pneumaticSphygmomanometerMeterCasePlastic",
             "intersectable": true,
             "preselectable": true,
-            "selectable": false,
+            "selectable": true,
             "shallowForm": true,
             "tooltip": "Pneumatic Sphygmomanometer",
-            "menu": [
-                {
-                    "label": "Take to Inventory",
-                    "icon": "<i class=\"material-icons\">next_week</i>",
-                    "enabled": true,
-                    "action": "this.takeToInventory()",
-                    "args": null
-                }
-            ],
             "noPutBack": true,
+            "preselectionAction": {
+                "context": "this.vLab['PneumaticSphygmomanometer']",
+                "function": "this.vLab['PneumaticSphygmomanometer'].meterGaugePreselection",
+                "invfunction": "this.vLab['PneumaticSphygmomanometer'].meterGaugeDePreselection",
+                "args": {}
+            },
             "inventory" :{
             },
             "takenState": {
-            }
+            },
+            "menu": [
+                {
+                    "label": "Take",
+                    "icon": "<i class=\"material-icons\">pan_tool</i>",
+                    "enabled": true,
+                    "action": "this.vLab['PneumaticSphygmomanometer'].take(this)",
+                    "args": null
+                }
+            ]
+        },
+        {
+            "name": "pneumaticSphygmomanometerMeterGlass",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": false,
+            "selectionAction": {
+                "context": "this.vLab['PneumaticSphygmomanometer']",
+                "function": "this.vLab['PneumaticSphygmomanometer'].meterGaugeSelection",
+                "args": {}
+            },
+            "tooltip": "Pneumatic Sphygmomanometer",
+            "preselectionAction": {
+                "context": "this.vLab['PneumaticSphygmomanometer']",
+                "function": "this.vLab['PneumaticSphygmomanometer'].meterGaugePreselection",
+                "invfunction": "this.vLab['PneumaticSphygmomanometer'].meterGaugeDePreselection",
+                "args": {}
+            },
+            "siblings": {
+                "pneumaticSphygmomanometerMeterCaseMetal": {
+                    "intersectable": false
+                },
+                "pneumaticSphygmomanometerMeterCaseOutletMetal": {
+                    "intersectable": false
+                }
+            },
+            "menu": [
+                {
+                    "label": "Take",
+                    "icon": "<i class=\"material-icons\">pan_tool</i>",
+                    "enabled": true,
+                    "action": "this.vLab['PneumaticSphygmomanometer'].take(this)",
+                    "args": null
+                }
+            ]
         },
         {
             "name": "pneumaticSphygmomanometerMeterrubberBulb",
@@ -48,7 +89,7 @@
             "preselectable": true,
             "selectable": true,
             "shallowForm": false,
-            "tooltip": "<b>Sphygmomanometer Cuff</b>",
+            "tooltip": "Sphygmomanometer Cuff",
             "preselectionAction": {
                 "context": "this.vLab.SceneDispatcher.currentVLabScene",
                 "function": "this.vLab.SceneDispatcher.currentVLabScene.onPneumaticSphygmomanometerCuffPreselection",
