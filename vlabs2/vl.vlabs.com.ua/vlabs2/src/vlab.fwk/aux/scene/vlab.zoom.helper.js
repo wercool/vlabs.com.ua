@@ -18,6 +18,8 @@ class VLabZoomHelper extends VLabSceneInteractable {
      * @param {VLab}                initObj.vLabScene                 - VLabScene instance
      * @param {Vector3}             initObj.position                  - VLabZoomHelper position in initObj.vLab.SceneDispatcher.currentVLabScene
      * @param {number}              initObj.scaleFactor               - Scale factor for VLabSceneTransitor icon; default 1.0
+     * @param {Vector3}             initObj.target                    - THREE.Vector3 of point to look at
+     * @param {boolean}             initObj.addToStack                - If defined and false - do not add to ZoomHelper Stack
      */
     constructor(initObj) {
         /**
@@ -118,7 +120,7 @@ class VLabZoomHelper extends VLabSceneInteractable {
                 preselectable: true,
                 selectable: false,
                 boundsOnly: true,
-                visible: this.initObj.visibility,
+                visible: this.selfInitObj.visibility,
                 action: {
                     function: this.activate,
                     args: this.selfInitObj,
@@ -135,123 +137,160 @@ class VLabZoomHelper extends VLabSceneInteractable {
     /**
      * Reposition this.selfInitObj.position
      */
+    activateWithSelfInitObj() {
+        return this.activate(this.selfInitObj);
+    }
+    /**
+     * Reposition this.selfInitObj.position
+     */
     activate(initObj) {
-        let self = this;
-        /**
-         * Get current VLab WebGLRenderer Frame Image
-         * Save current this.vLabScene.currentCamera.position
-         * Save current this.vLabScene.currentControls params
-         */
-        this.deSelect();
-        this.vLabSceneObject.visible = false;
-
-        let currentVLabWebGLRendererFrameImage = new Image();
-
-        /**
-         * Take RenderScreenshot, make takenInteractable invisible if present
-         */
-        if (this.vLab.SceneDispatcher.takenInteractable) {
-            this.vLab.SceneDispatcher.takenInteractable.vLabSceneObject.visible = false;
-        }
-
-        this.vLab.WebGLRenderer.render(this.vLabScene, this.vLabScene.currentCamera);
-        currentVLabWebGLRendererFrameImage.src = this.vLab.WebGLRendererCanvas.toDataURL('image/jpeg');
-
-        if (this.vLab.SceneDispatcher.takenInteractable) {
-            this.vLab.SceneDispatcher.takenInteractable.vLabSceneObject.visible = true;
-        }
-
-        currentVLabWebGLRendererFrameImage.onload = function() {
-
-            let viewThumbnailBackgroundImage = null;
+        return new Promise((resolve) => {
+            let self = this;
+            /**
+             * Get current VLab WebGLRenderer Frame Image
+             * Save current this.vLabScene.currentCamera.position
+             * Save current this.vLabScene.currentControls params
+             */
+            this.deSelect();
+            this.vLabSceneObject.visible = false;
 
             /**
-             * Test for empty currentVLabWebGLRendererFrameImage
+             * Do not add to stack if defined
              */
-            let viewThumbnailTestCanvas = document.createElement('canvas');
-            let viewThumbnailTestCanvasCtx = viewThumbnailTestCanvas.getContext('2d');
-            viewThumbnailTestCanvas.width = currentVLabWebGLRendererFrameImage.width;
-            viewThumbnailTestCanvas.height = currentVLabWebGLRendererFrameImage.height;
-            viewThumbnailTestCanvasCtx.beginPath();
-            viewThumbnailTestCanvasCtx.rect(0, 0, viewThumbnailTestCanvas.width, viewThumbnailTestCanvas.height);
-            viewThumbnailTestCanvasCtx.fillStyle = '#000000';
-            viewThumbnailTestCanvasCtx.fill();
-            let testImage = new Image();
-            testImage.src = viewThumbnailTestCanvas.toDataURL('image/jpeg');
-            if (testImage.src == currentVLabWebGLRendererFrameImage.src && self.screenshorRenrendering < 10) {
-                self.screenshorRenrendering++;
-                self.activate(initObj);
+            if (this.selfInitObj.addToStack === false) {
+                this.beforeZoomState = {
+                    currentCamera: {
+                        position: this.vLabScene.currentCamera.position.clone()
+                    },
+                    currentControls: {
+                        target: this.vLabScene.currentControls.target.clone()
+                    },
+                };
+
+                new TWEEN.Tween(this.vLabScene.currentCamera.position)
+                .to({x: initObj.position.x, y: initObj.position.y, z: initObj.position.z}, 1000)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .onUpdate(() => {
+                })
+                .onComplete(() => {
+                    this.vLabScene.currentControls.update();
+                    resolve();
+                })
+                .start();
+                this.vLabScene.currentControls.setTarget(initObj.target);
+
                 return;
-            } else {
-                if (self.screenshorRenrendering >= 10) {
-                    viewThumbnailBackgroundImage = self.vLab.prefabs['Generic']['Images']['prevLocation'];
-                }
-                self.screenshorRenrendering = 0;
             }
 
-            let viewThumbnail = document.createElement('div');
-            viewThumbnail.classList.add('zoomHelperViewThumbnail');
+            let currentVLabWebGLRendererFrameImage = new Image();
 
-            let viewThumbnailCanvas = document.createElement('canvas');
-            let viewThumbnailCanvasCtx = viewThumbnailCanvas.getContext('2d');
+            /**
+             * Take RenderScreenshot, make takenInteractable invisible if present
+             */
+            if (this.vLab.SceneDispatcher.takenInteractable) {
+                this.vLab.SceneDispatcher.takenInteractable.vLabSceneObject.visible = false;
+            }
 
-            let ratio = currentVLabWebGLRendererFrameImage.width / currentVLabWebGLRendererFrameImage.height;
-            viewThumbnailCanvas.width = Math.round(currentVLabWebGLRendererFrameImage.width * 0.1);
-            viewThumbnailCanvas.height = Math.round(viewThumbnailCanvas.width / ratio);
+            this.vLab.WebGLRenderer.render(this.vLabScene, this.vLabScene.currentCamera);
+            currentVLabWebGLRendererFrameImage.src = this.vLab.WebGLRendererCanvas.toDataURL('image/jpeg');
 
-            if (viewThumbnailBackgroundImage === null) {
-    
-                viewThumbnailCanvasCtx.drawImage(currentVLabWebGLRendererFrameImage, 0, 0, viewThumbnailCanvas.width, viewThumbnailCanvas.height);
+            if (this.vLab.SceneDispatcher.takenInteractable) {
+                this.vLab.SceneDispatcher.takenInteractable.vLabSceneObject.visible = true;
+            }
 
-                viewThumbnailBackgroundImage = new Image();
-                viewThumbnailBackgroundImage.src = viewThumbnailCanvas.toDataURL();
-                viewThumbnailBackgroundImage.onload = function() {
+            currentVLabWebGLRendererFrameImage.onload = function() {
+
+                let viewThumbnailBackgroundImage = null;
+
+                /**
+                 * Test for empty currentVLabWebGLRendererFrameImage
+                 */
+                let viewThumbnailTestCanvas = document.createElement('canvas');
+                let viewThumbnailTestCanvasCtx = viewThumbnailTestCanvas.getContext('2d');
+                viewThumbnailTestCanvas.width = currentVLabWebGLRendererFrameImage.width;
+                viewThumbnailTestCanvas.height = currentVLabWebGLRendererFrameImage.height;
+                viewThumbnailTestCanvasCtx.beginPath();
+                viewThumbnailTestCanvasCtx.rect(0, 0, viewThumbnailTestCanvas.width, viewThumbnailTestCanvas.height);
+                viewThumbnailTestCanvasCtx.fillStyle = '#000000';
+                viewThumbnailTestCanvasCtx.fill();
+                let testImage = new Image();
+                testImage.src = viewThumbnailTestCanvas.toDataURL('image/jpeg');
+                if (testImage.src == currentVLabWebGLRendererFrameImage.src && self.screenshorRenrendering < 10) {
+                    self.screenshorRenrendering++;
+                    self.activate(initObj);
+                    return;
+                } else {
+                    if (self.screenshorRenrendering >= 10) {
+                        viewThumbnailBackgroundImage = self.vLab.prefabs['Generic']['Images']['prevLocation'];
+                    }
+                    self.screenshorRenrendering = 0;
+                }
+
+                let viewThumbnail = document.createElement('div');
+                viewThumbnail.classList.add('zoomHelperViewThumbnail');
+
+                let viewThumbnailCanvas = document.createElement('canvas');
+                let viewThumbnailCanvasCtx = viewThumbnailCanvas.getContext('2d');
+
+                let ratio = currentVLabWebGLRendererFrameImage.width / currentVLabWebGLRendererFrameImage.height;
+                viewThumbnailCanvas.width = Math.round(currentVLabWebGLRendererFrameImage.width * 0.1);
+                viewThumbnailCanvas.height = Math.round(viewThumbnailCanvas.width / ratio);
+
+                if (viewThumbnailBackgroundImage === null) {
+        
+                    viewThumbnailCanvasCtx.drawImage(currentVLabWebGLRendererFrameImage, 0, 0, viewThumbnailCanvas.width, viewThumbnailCanvas.height);
+
+                    viewThumbnailBackgroundImage = new Image();
+                    viewThumbnailBackgroundImage.src = viewThumbnailCanvas.toDataURL();
+                    viewThumbnailBackgroundImage.onload = function() {
+                        viewThumbnail.style.backgroundImage = 'url("' + viewThumbnailBackgroundImage.src + '")';
+                    }
+                } else {
                     viewThumbnail.style.backgroundImage = 'url("' + viewThumbnailBackgroundImage.src + '")';
+                    viewThumbnail.style.backgroundColor = '#000000';
+                    viewThumbnail.style.backgroundSize = 'contain';
                 }
-            } else {
-                viewThumbnail.style.backgroundImage = 'url("' + viewThumbnailBackgroundImage.src + '")';
-                viewThumbnail.style.backgroundColor = '#000000';
-                viewThumbnail.style.backgroundSize = 'contain';
-            }
 
-            viewThumbnail.style.width = viewThumbnailCanvas.width + 'px';
-            viewThumbnail.style.height = viewThumbnailCanvas.height + 'px';
-            viewThumbnail.style.display = 'none';
-            viewThumbnail.onclick = viewThumbnail.ontouchend = self.deactivate.bind(self);
+                viewThumbnail.style.width = viewThumbnailCanvas.width + 'px';
+                viewThumbnail.style.height = viewThumbnailCanvas.height + 'px';
+                viewThumbnail.style.display = 'none';
+                viewThumbnail.onclick = viewThumbnail.ontouchend = self.deactivate.bind(self);
 
-            let viewThumbnailIcon = document.createElement('div');
-            viewThumbnailIcon.classList.add('zoomHelperViewThumbnailIcon', 'nonSelectable');
-            viewThumbnailIcon.style.width = viewThumbnailCanvas.width / 2 + 'px';
-            viewThumbnailIcon.style.fontSize = viewThumbnailIcon.style.width;
-            viewThumbnailIcon.innerHTML = 'youtube_searched_for';
-            viewThumbnail.appendChild(viewThumbnailIcon);
+                let viewThumbnailIcon = document.createElement('div');
+                viewThumbnailIcon.classList.add('zoomHelperViewThumbnailIcon', 'nonSelectable');
+                viewThumbnailIcon.style.width = viewThumbnailCanvas.width / 2 + 'px';
+                viewThumbnailIcon.style.fontSize = viewThumbnailIcon.style.width;
+                viewThumbnailIcon.innerHTML = 'youtube_searched_for';
+                viewThumbnail.appendChild(viewThumbnailIcon);
 
-            self.vLab.DOMManager.container.zoomHelperStackContainer.appendChild(viewThumbnail);
+                self.vLab.DOMManager.container.zoomHelperStackContainer.appendChild(viewThumbnail);
 
-            self.beforeZoomState = {
-                viewThumbnail: viewThumbnail,
-                viewThumbnailIcon: viewThumbnailIcon,
-                currentCamera: {
-                    position: self.vLabScene.currentCamera.position.clone()
-                },
-                currentControls: {
-                    target: self.vLabScene.currentControls.target.clone()
-                },
+                self.beforeZoomState = {
+                    viewThumbnail: viewThumbnail,
+                    viewThumbnailIcon: viewThumbnailIcon,
+                    currentCamera: {
+                        position: self.vLabScene.currentCamera.position.clone()
+                    },
+                    currentControls: {
+                        target: self.vLabScene.currentControls.target.clone()
+                    },
+                };
+
+                new TWEEN.Tween(self.vLabScene.currentCamera.position)
+                .to({x: initObj.position.x, y: initObj.position.y, z: initObj.position.z}, 1000)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .onUpdate(() => {
+                })
+                .onComplete(() => {
+                    self.vLabScene.currentControls.update();
+                    viewThumbnail.style.display = 'inline-block';
+                    self.vLabScene.manager.zoomHelpersStack.push(self);
+                    resolve();
+                })
+                .start();
+                self.vLabScene.currentControls.setTarget(initObj.target);
             };
-
-            new TWEEN.Tween(self.vLabScene.currentCamera.position)
-            .to({x: initObj.position.x, y: initObj.position.y, z: initObj.position.z}, 1000)
-            .easing(TWEEN.Easing.Quadratic.InOut)
-            .onUpdate(() => {
-            })
-            .onComplete(() => {
-                self.vLabScene.currentControls.update();
-                viewThumbnail.style.display = 'inline-block';
-                self.vLabScene.manager.zoomHelpersStack.push(self);
-            })
-            .start();
-            self.vLabScene.currentControls.setTarget(initObj.target);
-        };
+        });
     }
     /**
      * Deactivates this zoomHelper

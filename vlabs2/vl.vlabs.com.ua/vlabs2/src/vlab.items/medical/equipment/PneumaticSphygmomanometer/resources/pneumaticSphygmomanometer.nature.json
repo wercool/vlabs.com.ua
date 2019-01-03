@@ -73,7 +73,12 @@
             "preselectable": true,
             "selectable": true,
             "shallowForm": false,
-            "tooltip": "Rubber Bulb"
+            "tooltip": "Rubber Bulb",
+            "preselectionAction": {
+                "context": "this.vLab['PneumaticSphygmomanometer']",
+                "function": "this.vLab['PneumaticSphygmomanometer'].meterGaugeDePreselection",
+                "args": {}
+            }
         },
         {
             "name": "pneumaticSphygmomanometerMeterValve",
@@ -103,6 +108,22 @@
             "preselectable": true,
             "selectable": false,
             "shallowForm": false
+        },
+        {
+            "name": "pneumaticSphygmomanometerCuffPut",
+            "intersectable": true,
+            "preselectable": true,
+            "selectable": true,
+            "shallowForm": false,
+            "menu": [
+                {
+                    "label": "Take",
+                    "icon": "<i class=\"material-icons\">pan_tool</i>",
+                    "enabled": true,
+                    "action": "this.vLab['PneumaticSphygmomanometer'].take(this)",
+                    "args": null
+                }
+            ]
         }
     ]
 }

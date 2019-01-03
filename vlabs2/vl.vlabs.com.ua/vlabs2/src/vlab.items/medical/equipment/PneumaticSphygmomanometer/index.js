@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import VLabItem from '../../../../vlab.fwk/core/vlab.item';
+import * as THREEUtils from '../../../../vlab.fwk/utils/three.utils';
+
 /**
  * PneumaticSphygmomanometer VLabItem base class.
  * @class
@@ -19,6 +21,8 @@ class PneumaticSphygmomanometer extends VLabItem {
 
         this.name = this.initObj.name ? this.initObj.name : 'PneumaticSphygmomanometer';
 
+        this.applied = false;
+
         var textureLoader = new THREE.TextureLoader();
 
         Promise.all([
@@ -26,7 +30,7 @@ class PneumaticSphygmomanometer extends VLabItem {
         .then((result) => {
 
             this.tubeMaterial = new THREE.MeshPhongMaterial({
-                color: 0x0d1d3d,
+                color: 0x050505,
                 shininess: 80.0,
                 wireframe: false,
                 flatShading: false,
@@ -53,6 +57,7 @@ class PneumaticSphygmomanometer extends VLabItem {
                 this.interactables[0].takeToInventory();
                 this.interactables[0]['vLabItem'] = this;
             }
+            this.updateTube();
         });
 
         /**
@@ -61,13 +66,63 @@ class PneumaticSphygmomanometer extends VLabItem {
         this.vLab.EventDispatcher.subscribe({
             subscriber: this,
             events: {
+                window: {
+                    resize: this.repositionPutInFronOfCameraOnScreenWidth
+                },
                 VLabSceneInteractable: {
                     transitTakenInteractable:         this.onTransitTakenInteractable
+                },
+                VLabScene: {
+                    currentControlsUpdated:           this.onCurrentControlsUpdated.bind(this),
                 }
             }
         });
     }
+    /**
+     * updateTube()
+     */
+    updateTube() {
+        this.vLabItemModel.updateMatrixWorld();
+        if (this.tubeMesh == undefined) {
+            this.tubeInput = new THREE.Object3D();
+// var geometry = new THREE.SphereBufferGeometry(0.005, 16, 16);
+// var material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+// this.tubeInput = new THREE.Mesh(geometry, material);
 
+            this.tubeInput.position.set(0.0, 0.0, 0,0);
+            this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterTubeOtlet').add(this.tubeInput);
+
+            this.cuffTubeInput = new THREE.Object3D();
+// var geometry = new THREE.SphereBufferGeometry(0.003, 16, 16);
+// var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+// this.cuffTubeInput = new THREE.Mesh(geometry, material);
+
+            this.cuffTubeInput.position.set(-0.018, -0.045, 0.095);
+            this.vLab.SceneDispatcher.currentVLabScene.getObjectByName('pneumaticSphygmomanometerCuffPut').add(this.cuffTubeInput);
+
+            this.tubeGeometry = new THREE.TubeBufferGeometry(this.getTubeCurve(), 12, 0.003, 5);
+            this.tubeMesh = new THREE.Mesh(this.tubeGeometry, this.tubeMaterial);
+            this.tubeMesh.name = 'pneumaticSphygmomanometerDynamicTube';
+            this.tubeInput.add(this.tubeMesh);
+        }
+        if (this.applied) {
+            this.tubeMesh.visible = true;
+            this.tubeGeometry.copy(new THREE.TubeBufferGeometry(this.getTubeCurve(), 12, 0.003, 5));
+        } else {
+            this.tubeMesh.visible = false;
+        }
+    }
+    /**
+     * Dynamic cablecurve
+     */
+    getTubeCurve() {
+        return new THREE.CatmullRomCurve3([
+            this.tubeInput.worldToLocal(THREEUtils.getObjectWorldPosition(this.tubeInput)).add(new THREE.Vector3(0.0, 0.0, 0.0)),
+            this.tubeInput.worldToLocal(THREEUtils.getObjectWorldPosition(this.tubeInput)).add(new THREE.Vector3(-0.04, 0.0, 0.0)),
+            this.tubeInput.worldToLocal(THREEUtils.getObjectWorldPosition(this.cuffTubeInput)).add(new THREE.Vector3(0.0, 0.05, 0.0)),
+            this.tubeInput.worldToLocal(THREEUtils.getObjectWorldPosition(this.cuffTubeInput)).add(new THREE.Vector3(0.0, -0.02, 0.01)),
+        ]);
+    }
     /**
      * onTransitTakenInteractable
      * called from this.vLab.SceneDispatcher.transitTakenInteractable
@@ -144,6 +199,55 @@ class PneumaticSphygmomanometer extends VLabItem {
     take(interactableFromAssembly) {
         this.meterGaugeDePreselection();
         console.log(interactableFromAssembly);
+    }
+    putInFontOfCamera() {
+        this.applied = true;
+
+        this.vLabItemModel.userData['beforeTakenState'] = {
+            "position": this.vLabItemModel.position.clone(),
+            "quaternion": this.vLabItemModel.quaternion.clone()
+        };
+
+        this.getInteractableByName('pneumaticSphygmomanometerMeterGlass').intersectable = false;
+
+        this.vLab.SceneDispatcher.currentVLabScene.remove(this.vLabItemModel);
+        this.vLab.SceneDispatcher.currentVLabScene.currentCamera.add(this.vLabItemModel);
+
+        this.vLabItemModel.position.copy(new THREE.Vector3(-0.115, 0.029, -0.188));
+
+        this.putInFontOfCameraPosition = this.vLabItemModel.position.clone();
+
+        this.vLabItemModel.quaternion.copy(new THREE.Quaternion(0.110, 0.638, 0.741, -0.180));
+
+        this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerTube').visible = false;
+
+        this.repositionPutInFronOfCameraOnScreenWidth();
+    }
+
+    repositionPutInFronOfCameraOnScreenWidth() {
+        if (this.applied) {
+            let shift = (1600 - this.vLab.DOMManager.WebGLContainer.clientWidth) / 14000;
+            if (this.vLab.DOMManager.WebGLContainer.clientWidth < 800 && this.vLab.DOMManager.WebGLContainer.clientWidth > 360) {
+                shift = (1600 - this.vLab.DOMManager.WebGLContainer.clientWidth) / 10000;
+            }
+            if (this.vLab.DOMManager.WebGLContainer.clientWidth > 360 && this.vLab.DOMManager.WebGLContainer.clientWidth < 500) {
+                shift = (1600 - this.vLab.DOMManager.WebGLContainer.clientWidth) / 12000;
+            }
+            if (this.vLab.DOMManager.WebGLContainer.clientWidth > 800 && this.vLab.DOMManager.WebGLContainer.clientWidth < 1200) {
+                shift = (1600 - this.vLab.DOMManager.WebGLContainer.clientWidth) / 7000;
+            }
+            this.vLabItemModel.position.copy(this.putInFontOfCameraPosition.clone().add(new THREE.Vector3(shift, 0.0, 0.0)));
+            this.updateTube();
+        }
+    }
+
+    /**
+     * onCurrentControlsUpdated
+     */
+    onCurrentControlsUpdated(event) {
+        if (this.applied) {
+            this.updateTube();
+        }
     }
 }
 export default PneumaticSphygmomanometer;

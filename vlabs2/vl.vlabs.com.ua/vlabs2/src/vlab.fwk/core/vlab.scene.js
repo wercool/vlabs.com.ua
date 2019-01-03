@@ -207,6 +207,10 @@ class VLabScene extends THREE.Scene {
                             var axesHelper = new THREE.AxesHelper(10);
                             this.add(axesHelper);
                             console.info("10m AxesHelper");
+
+                            // var cameraHelper = new THREE.CameraHelper(this.currentCamera);
+                            // this.add(cameraHelper);
+                            // console.info("Camera Helper");
                         /*</dev>*/
                     }
                     resolve(this);

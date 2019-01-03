@@ -705,14 +705,12 @@ class VLabSceneInteractable {
             //     this.removeRespondentsHelpers();
             // }
             this.removeRespondentsHelpers();
-
             /**
              * de-preselection action
              */
             let extendedActionFunctionArgs = ObjectUtils.merge(this.preSelectionActionFunctionArgs, {
                 callerInteractable: this
             });
-
             if (this.dePreSelectionActionFunction) {
                 if (typeof this.dePreSelectionActionFunction == 'string') {
                     this.dePreSelectionActionFunction = eval(this.dePreSelectionActionFunction);

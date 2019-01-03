@@ -91,6 +91,25 @@ class VLabOrbitControls extends VLabControls {
         .start();
     }
     /**
+     * Set polar restrictions from current this.spherical.phi
+     */
+    setPolarRestrictionsFromCurrentPhi(pd, nd) {
+        this.prevPolarRestrictions = new THREE.Vector2(this.minPolarAngle, this.maxPolarAngle);
+        this.minPolarAngle = this.spherical.phi + nd;
+        this.maxPolarAngle = this.spherical.phi + pd;
+
+        if (Math.abs(this.minPolarAngle) > Math.PI) this.minPolarAngle = Math.PI;
+        if (Math.abs(this.maxPolarAngle) > Math.PI) this.maxPolarAngle = Math.PI;
+    }
+    /**
+     * this.minPolarAngle = this.prevPolarRestrictions.x;
+     * this.maxPolarAngle = this.prevPolarRestrictions.y;
+     */
+    resetPolarRestrictions() {
+        this.minPolarAngle = this.prevPolarRestrictions.x;
+        this.maxPolarAngle = this.prevPolarRestrictions.y;
+    }
+    /**
      * Set azimutal restrictions from current this.spherical.theta
      */
     setAzimutalRestrictionsFromCurrentTheta(pd, nd) {

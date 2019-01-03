@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import VLabScene from '../../../../vlab.fwk/core/vlab.scene';
 import * as VLabUTILS from '../../../../vlab.fwk/utils/vlab.utils';
 import * as TWEEN from '@tweenjs/tween.js';
+import VLabZoomHelper  from '../../../../vlab.fwk/aux/scene/vlab.zoom.helper';
 
 /**
  * VLab Items
@@ -119,9 +120,20 @@ class SphygmomanometerDemoScene extends VLabScene {
             }
         });
 
+        this.pneumaticSphygmomanometerAppliedZoomHelper = new VLabZoomHelper({
+            vLabScene: this,
+            position: new THREE.Vector3(0.0, 1.5, 0.0),
+            target: this.getObjectByName('pneumaticSphygmomanometerCuffPut').position,
+            // tooltip: 'Zoom to',
+            scaleFactor: 0.1,
+            visibility: false,
+            addToStack: false,
+            name: 'pneumaticSphygmomanometerAppliedZoomHelper'
+        });
+
     }
     actualizeAcusticStethoscope() {
-        this.vLab['AcusticStethoscope'].vLabItemModel.position.copy(new THREE.Vector3(0.380, 0.816, 0.193));
+        this.vLab['AcusticStethoscope'].vLabItemModel.position.copy(new THREE.Vector3(0.380, 0.816, -0.587));
     }
     onPneumaticSphygmomanometerCuffPreselection() {
         this.pneumaticSphygmomanometerCuffPutDummy.visible = true;
@@ -137,6 +149,14 @@ class SphygmomanometerDemoScene extends VLabScene {
         this.pneumaticSphygmomanometerCuffPutDummy.visible = false;
         this.pneumaticSphygmomanometerCuffPut.visible = true;
         this.pneumaticSphygmomanometerCuff.vLabSceneObject.visible = false;
+
+        this.vLab['PneumaticSphygmomanometer'].putInFontOfCamera();
+
+        this.pneumaticSphygmomanometerAppliedZoomHelper.activateWithSelfInitObj().then(() => {
+            this.vLab.SceneDispatcher.currentVLabScene.currentControls.setAzimutalRestrictionsFromCurrentTheta(0.2, -0.25);
+            this.vLab.SceneDispatcher.currentVLabScene.currentControls.setPolarRestrictionsFromCurrentPhi(0.2, -0.2);
+            this.vLab.SceneDispatcher.currentVLabScene.currentControls.rotateSpeed = 0.1;
+        });
     }
 }
 
