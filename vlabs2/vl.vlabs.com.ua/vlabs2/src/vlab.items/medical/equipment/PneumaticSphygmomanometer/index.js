@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import VLabItem from '../../../../vlab.fwk/core/vlab.item';
 import * as THREEUtils from '../../../../vlab.fwk/utils/three.utils';
+import * as VLabUtils from '../../../../vlab.fwk/utils/vlab.utils';
+import * as TWEEN from '@tweenjs/tween.js';
 
 /**
  * PneumaticSphygmomanometer VLabItem base class.
@@ -193,13 +195,6 @@ class PneumaticSphygmomanometer extends VLabItem {
         this.interactables[0].select({selectionAction: false}, true);
         this.interactables[0].showMenu();
     }
-    /**
-     * take
-     */
-    take(interactableFromAssembly) {
-        this.meterGaugeDePreselection();
-        console.log(interactableFromAssembly);
-    }
     putInFontOfCamera() {
         this.applied = true;
 
@@ -222,6 +217,22 @@ class PneumaticSphygmomanometer extends VLabItem {
         this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerTube').visible = false;
 
         this.repositionPutInFronOfCameraOnScreenWidth();
+    }
+
+    putBack() {
+        this.applied = false;
+
+        this.getInteractableByName('pneumaticSphygmomanometerMeterGlass').intersectable = true;
+
+        this.vLab.SceneDispatcher.currentVLabScene.currentCamera.remove(this.vLabItemModel);
+        this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
+
+        this.vLabItemModel.position.copy(this.vLabItemModel.userData['beforeTakenState'].position);
+        this.vLabItemModel.quaternion.copy(this.vLabItemModel.userData['beforeTakenState'].quaternion);
+
+        this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerTube').visible = true;
+
+        this.vLabItemModel.userData['beforeTakenState'] = null;
     }
 
     repositionPutInFronOfCameraOnScreenWidth() {
@@ -248,6 +259,64 @@ class PneumaticSphygmomanometer extends VLabItem {
         if (this.applied) {
             this.updateTube();
         }
+    }
+
+    /**
+     * this.nature.interactables ['baseFrame'] interaction action invert function
+     * this.nature.interactables ['bodyFrameAction'] interaction action invert function
+     */
+    commonInvAction() {
+        this.vLab.SceneDispatcher.currentVLabScene.currentControls.enable();
+    }
+
+    /**
+     * Pump
+     */
+    pump() {
+        if (this.pumpTWEEN == undefined) {
+            let pneumaticSphygmomanometerMeterrubberBulb = this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterrubberBulb');
+            let pneumaticSphygmomanometerMeterArrow = this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterArrow');
+
+            this.pumpTWEEN = new TWEEN.Tween(pneumaticSphygmomanometerMeterrubberBulb.scale)
+            .to({x: 0.7, z: 1.2}, 200)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .yoyo(true)
+            .repeat(1)
+            .onComplete(() => {
+                this.pumpTWEEN = undefined;
+            })
+            .start();
+
+            new TWEEN.Tween(pneumaticSphygmomanometerMeterArrow.rotation)
+            .to({y: pneumaticSphygmomanometerMeterArrow.rotation.y - 0.2}, 200)
+            .easing(TWEEN.Easing.Elastic.InOut)
+            .onComplete(() => {
+                new TWEEN.Tween(pneumaticSphygmomanometerMeterArrow.rotation)
+                .to({y: pneumaticSphygmomanometerMeterArrow.rotation.y + 0.05}, 500)
+                .easing(TWEEN.Easing.Elastic.InOut)
+                .start();
+            })
+            .start();
+        }
+    }
+    /**
+     * valveAction
+     */
+    valveAction(event) {
+        let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
+
+        if (this.prevActionInitialEventCoords !== undefined) {
+            this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
+            let direction = ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1);
+            let pneumaticSphygmomanometerMeterValve = this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterValve');
+            if ((direction == 1 && pneumaticSphygmomanometerMeterValve.rotation.x < 3.0)
+            || (direction == -1 && pneumaticSphygmomanometerMeterValve.rotation.x > 0.0)) {
+                this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterValve').rotateX(0.04 * direction);
+            }
+        }
+
+        this.prevActionInitialEventCoords = new THREE.Vector2();
+        this.prevActionInitialEventCoords.copy(currentActionInitialEventCoords);
     }
 }
 export default PneumaticSphygmomanometer;

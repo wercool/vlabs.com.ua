@@ -157,6 +157,27 @@ class SphygmomanometerDemoScene extends VLabScene {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.setPolarRestrictionsFromCurrentPhi(0.2, -0.2);
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.rotateSpeed = 0.1;
         });
+
+        let pneumaticSphygmomanometerMeterrubberBulb = this.vLab['PneumaticSphygmomanometer'].getInteractableByName('pneumaticSphygmomanometerMeterrubberBulb');
+        pneumaticSphygmomanometerMeterrubberBulb.actionFunction = this.vLab['PneumaticSphygmomanometer'].pump;
+        pneumaticSphygmomanometerMeterrubberBulb.actionFunctionContext = this.vLab['PneumaticSphygmomanometer'];
+        pneumaticSphygmomanometerMeterrubberBulb.actionFunctionActivated = true;
+
+        let pneumaticSphygmomanometerMeterValve = this.vLab['PneumaticSphygmomanometer'].getInteractableByName('pneumaticSphygmomanometerMeterValve');
+        pneumaticSphygmomanometerMeterValve.actionFunctionActivated = true;
+        pneumaticSphygmomanometerMeterValve.actionFunctionManipulatorActivated = true;
+    }
+    pneumaticSphygmomanometerCuffPut_TAKE(interactableFromAssembly) {
+        this.vLab['PneumaticSphygmomanometer'].meterGaugeDePreselection();
+        interactableFromAssembly.deSelect(true);
+
+        this.pneumaticSphygmomanometerCuffPutDummy.visible = true;
+        this.pneumaticSphygmomanometerCuffPut.visible = false;
+        this.pneumaticSphygmomanometerCuff.vLabSceneObject.visible = true;
+
+        this.vLab['PneumaticSphygmomanometer'].putBack();
+
+        this.pneumaticSphygmomanometerAppliedZoomHelper.deactivate();
     }
 }
 

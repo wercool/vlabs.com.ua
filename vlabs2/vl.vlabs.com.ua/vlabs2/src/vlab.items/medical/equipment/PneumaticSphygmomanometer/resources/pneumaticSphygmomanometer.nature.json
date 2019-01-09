@@ -8,7 +8,7 @@
             "name": "pneumaticSphygmomanometerMeterCasePlastic",
             "intersectable": true,
             "preselectable": true,
-            "selectable": true,
+            "selectable": false,
             "shallowForm": true,
             "tooltip": "Pneumatic Sphygmomanometer",
             "noPutBack": true,
@@ -21,16 +21,7 @@
             "inventory" :{
             },
             "takenState": {
-            },
-            "menu": [
-                {
-                    "label": "Take",
-                    "icon": "<i class=\"material-icons\">pan_tool</i>",
-                    "enabled": true,
-                    "action": "this.vLab['PneumaticSphygmomanometer'].take(this)",
-                    "args": null
-                }
-            ]
+            }
         },
         {
             "name": "pneumaticSphygmomanometerMeterGlass",
@@ -56,22 +47,13 @@
                 "pneumaticSphygmomanometerMeterCaseOutletMetal": {
                     "intersectable": false
                 }
-            },
-            "menu": [
-                {
-                    "label": "Take",
-                    "icon": "<i class=\"material-icons\">pan_tool</i>",
-                    "enabled": true,
-                    "action": "this.vLab['PneumaticSphygmomanometer'].take(this)",
-                    "args": null
-                }
-            ]
+            }
         },
         {
             "name": "pneumaticSphygmomanometerMeterrubberBulb",
             "intersectable": true,
             "preselectable": true,
-            "selectable": true,
+            "selectable": false,
             "shallowForm": false,
             "tooltip": "Rubber Bulb",
             "preselectionAction": {
@@ -84,9 +66,16 @@
             "name": "pneumaticSphygmomanometerMeterValve",
             "intersectable": true,
             "preselectable": true,
-            "selectable": true,
+            "selectable": false,
             "shallowForm": false,
-            "tooltip": "Sphygmomanometer Valve"
+            "tooltip": "Sphygmomanometer Valve",
+            "action": {
+                "function": "this.vLab['PneumaticSphygmomanometer'].valveAction",
+                "manipulator": true,
+                "context": "this.vLab['PneumaticSphygmomanometer']",
+                "activated": false,
+                "invfunction": "this.vLab['PneumaticSphygmomanometer'].commonInvAction"
+            }
         },
         {
             "name": "pneumaticSphygmomanometerCuff",
@@ -117,10 +106,10 @@
             "shallowForm": false,
             "menu": [
                 {
-                    "label": "Take",
-                    "icon": "<i class=\"material-icons\">pan_tool</i>",
+                    "label": "Take off",
+                    "icon": "<i class=\"material-icons\">forward</i>",
                     "enabled": true,
-                    "action": "this.vLab['PneumaticSphygmomanometer'].take(this)",
+                    "action": "this.vLab.SceneDispatcher.currentVLabScene.pneumaticSphygmomanometerCuffPut_TAKE(this)",
                     "args": null
                 }
             ]
