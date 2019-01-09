@@ -142,10 +142,14 @@ class SphygmomanometerDemoScene extends VLabScene {
     }
     onPneumaticSphygmomanometerCuffDePreselection() {
         this.pneumaticSphygmomanometerCuffPutDummy.visible = false;
-        this.pneumaticSphygmomanometerCuffPutDummyInteractable.dePreselect();
+        this.pneumaticSphygmomanometerCuffPutDummyInteractable.dePreselect(true);
         this.pneumaticSphygmomanometerCuffPutDummyInteractable.hideTooltip();
     }
+    /**
+     * PneumaticSphygmomanometer applied to the arm
+     */
     pneumaticSphygmomanometerCuff_ACTION_pneumaticSphygmomanometerCuffPutDummy() {
+        this.pneumaticSphygmomanometerCuffPutDummyInteractable.dePreselect(true);
         this.pneumaticSphygmomanometerCuffPutDummy.visible = false;
         this.pneumaticSphygmomanometerCuffPut.visible = true;
         this.pneumaticSphygmomanometerCuff.vLabSceneObject.visible = false;
@@ -171,13 +175,17 @@ class SphygmomanometerDemoScene extends VLabScene {
         this.vLab['PneumaticSphygmomanometer'].meterGaugeDePreselection();
         interactableFromAssembly.deSelect(true);
 
-        this.pneumaticSphygmomanometerCuffPutDummy.visible = true;
+        this.pneumaticSphygmomanometerCuffPutDummy.visible = false;
         this.pneumaticSphygmomanometerCuffPut.visible = false;
         this.pneumaticSphygmomanometerCuff.vLabSceneObject.visible = true;
 
         this.vLab['PneumaticSphygmomanometer'].putBack();
 
-        this.pneumaticSphygmomanometerAppliedZoomHelper.deactivate();
+        this.vLab.SceneDispatcher.currentVLabScene.currentControls.resetAzimutalRestrictions();
+        this.vLab.SceneDispatcher.currentVLabScene.currentControls.resetPolarRestrictions();
+        this.vLab.SceneDispatcher.currentVLabScene.currentControls.rotateSpeed = 0.5;
+
+        this.pneumaticSphygmomanometerAppliedZoomHelper.deactivate(false, true);
     }
 }
 

@@ -222,6 +222,8 @@ class PneumaticSphygmomanometer extends VLabItem {
     putBack() {
         this.applied = false;
 
+        this.tubeMesh.visible = false;
+
         this.getInteractableByName('pneumaticSphygmomanometerMeterGlass').intersectable = true;
 
         this.vLab.SceneDispatcher.currentVLabScene.currentCamera.remove(this.vLabItemModel);

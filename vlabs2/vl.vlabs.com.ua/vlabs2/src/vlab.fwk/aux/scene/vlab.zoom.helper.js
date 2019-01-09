@@ -295,13 +295,14 @@ class VLabZoomHelper extends VLabSceneInteractable {
     /**
      * Deactivates this zoomHelper
      * @param {boolean} withoutAnimation        - not transition animation on true
+     * @param {boolean} forced                  - deactivate despite delta
      */
-    deactivate(withoutAnimation) {
+    deactivate(withoutAnimation, forced) {
         /**
          * Press Event dumper
          */
         let delta = this.vLabScene.manager.clock.getDelta();
-        if (delta > 0.1) {
+        if (delta > 0.1 || forced == true) {
             let revertPosition = this.beforeZoomState.currentCamera.position;
             let revertControlsTarget = this.beforeZoomState.currentControls.target;
 

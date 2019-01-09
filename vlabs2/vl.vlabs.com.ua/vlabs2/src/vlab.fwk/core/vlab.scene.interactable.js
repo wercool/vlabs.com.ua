@@ -691,9 +691,9 @@ class VLabSceneInteractable {
      * Removes this instance from {@link VLabScene#preSelectedInteractables}
      * @abstract
      */
-    dePreselect() {
+    dePreselect(forced) {
         // console.log(this.vLabSceneObject.name + '.dePreselect()', '[', this.preselected, !this.keepPreselection, ']');
-        if (this.preselected && !this.keepPreselection) {
+        if ((this.preselected && !this.keepPreselection) || forced === true) {
             let indexOfThisPreselected = this.vLabScene.preSelectedInteractables.indexOf(this);
             this.vLabScene.preSelectedInteractables.splice(indexOfThisPreselected, 1);
             this.vLabScene.manager.processInteractablesSelections();
@@ -723,6 +723,9 @@ class VLabSceneInteractable {
                 } else {
                     this.dePreSelectionActionFunction.call(extendedActionFunctionArgs);
                 }
+            }
+            if (forced == true) {
+                this.keepPreselection = false;
             }
         }
     }
