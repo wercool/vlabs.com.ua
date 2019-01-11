@@ -134,6 +134,18 @@ class SphygmomanometerDemoScene extends VLabScene {
     }
     actualizeAcusticStethoscope() {
         this.vLab['AcusticStethoscope'].vLabItemModel.position.copy(new THREE.Vector3(0.380, 0.816, -0.587));
+        this.vLab['AcusticStethoscope'].interactables[0].initObj.interactable.noPutBack = false;
+
+        this.vLab['AcusticStethoscope'].interactables[0].addRespondent({
+            interactable: this.interactables['maleBody'],
+            callerInteractable: this.vLab['AcusticStethoscope'].interactables[0],
+            preselectionTooltip: 'Acustic Stethoscope could be applied',
+            action: {
+                function: this.AcusticStethoscope_ACTION_maleBody,
+                args: {},
+                context: this
+            }
+        });
     }
     onPneumaticSphygmomanometerCuffPreselection() {
         this.pneumaticSphygmomanometerCuffPutDummy.visible = true;
@@ -170,6 +182,8 @@ class SphygmomanometerDemoScene extends VLabScene {
         let pneumaticSphygmomanometerMeterValve = this.vLab['PneumaticSphygmomanometer'].getInteractableByName('pneumaticSphygmomanometerMeterValve');
         pneumaticSphygmomanometerMeterValve.actionFunctionActivated = true;
         pneumaticSphygmomanometerMeterValve.actionFunctionManipulatorActivated = true;
+
+        this.vLab['PneumaticSphygmomanometer'].getInteractableByName('pneumaticSphygmomanometerMeterCasePlastic').actionFunctionActivated = true;
     }
     pneumaticSphygmomanometerCuffPut_TAKE(interactableFromAssembly) {
         this.vLab['PneumaticSphygmomanometer'].meterGaugeDePreselection();
@@ -186,6 +200,11 @@ class SphygmomanometerDemoScene extends VLabScene {
         this.vLab.SceneDispatcher.currentVLabScene.currentControls.rotateSpeed = 0.5;
 
         this.pneumaticSphygmomanometerAppliedZoomHelper.deactivate(false, true);
+
+        this.vLab['PneumaticSphygmomanometer'].getInteractableByName('pneumaticSphygmomanometerMeterCasePlastic').actionFunctionActivated = false;
+    }
+    AcusticStethoscope_ACTION_maleBody() {
+        console.log('AcusticStethoscope_ACTION_maleBody');
     }
 }
 

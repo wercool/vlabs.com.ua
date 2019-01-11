@@ -18,6 +18,13 @@
                 "invfunction": "this.vLab['PneumaticSphygmomanometer'].meterGaugeDePreselection",
                 "args": {}
             },
+            "action": {
+                "context": "this.vLab['PneumaticSphygmomanometer']",
+                "function": "this.vLab['PneumaticSphygmomanometer'].move",
+                "manipulator": true,
+                "activated": false,
+                "invfunction": "this.vLab['PneumaticSphygmomanometer'].commonInvAction"
+            },
             "inventory" :{
             },
             "takenState": {

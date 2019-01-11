@@ -320,5 +320,21 @@ class PneumaticSphygmomanometer extends VLabItem {
         this.prevActionInitialEventCoords = new THREE.Vector2();
         this.prevActionInitialEventCoords.copy(currentActionInitialEventCoords);
     }
+    /**
+     * Move sphygmomanometer
+     */
+    move(event) {
+        let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
+        this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
+        let direction = ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? 1 : -1);
+        let pneumaticSphygmomanometerMeterCasePlastic = this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterCasePlastic');
+
+        pneumaticSphygmomanometerMeterCasePlastic.translateX(0.0005 * direction);
+
+        this.updateTube();
+
+        this.prevActionInitialEventCoords = new THREE.Vector2();
+        this.prevActionInitialEventCoords.copy(currentActionInitialEventCoords);
+    }
 }
 export default PneumaticSphygmomanometer;
