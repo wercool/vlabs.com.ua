@@ -180,23 +180,6 @@ class VLabScene extends THREE.Scene {
          * @type {Array}
          */
         this.selectedInteractables = [];
-
-        /*<dev>*/
-            var dummyObjectGeometry = new THREE.SphereBufferGeometry(0.005, 16, 16);
-            var dummyObjectMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-            this.dummyObject = new THREE.Mesh(dummyObjectGeometry, dummyObjectMaterial);
-            this.dummyObject.name = 'dummyObject';
-
-            this.add(this.dummyObject);
-
-            this.addInteractable({
-                name: 'dummyObject',
-                intersectable: true
-            }).then((dummyObjectInteractable) => {
-                this.dummyObjectInteractable = dummyObjectInteractable;
-                this.dummyObjectInteractable.vLabSceneObject.position.add(new THREE.Vector3(0.0, 1.5, 0.0));
-            });
-        /*</dev>*/
     }
     /**
      * VLab Scene activator.
@@ -219,6 +202,23 @@ class VLabScene extends THREE.Scene {
                          * For internal use in {@link VLabSceneDispatcher#activateScene}
                          */
                         this['justLoaded'] = true;
+
+                        /*<dev>*/
+                            var dummyObjectGeometry = new THREE.SphereBufferGeometry(0.005, 16, 16);
+                            var dummyObjectMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+                            this.dummyObject = new THREE.Mesh(dummyObjectGeometry, dummyObjectMaterial);
+                            this.dummyObject.name = 'dummyObject';
+
+                            this.add(this.dummyObject);
+
+                            this.addInteractable({
+                                name: 'dummyObject',
+                                intersectable: true
+                            }).then((dummyObjectInteractable) => {
+                                this.dummyObjectInteractable = dummyObjectInteractable;
+                                this.dummyObjectInteractable.vLabSceneObject.position.add(new THREE.Vector3(0.0, 1.5, 0.0));
+                            });
+                        /*</dev>*/
 
                         /*<dev>*/
                             var axesHelper = new THREE.AxesHelper(10);

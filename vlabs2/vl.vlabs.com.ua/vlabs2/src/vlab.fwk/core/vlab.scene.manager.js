@@ -407,6 +407,13 @@ class VLabSceneManager {
 
             vLabScene.add(glTFScene);
 
+
+
+
+
+//TODO: animations
+
+
 let animations = gltf.animations;
 if (animations.length > 0) {
     self.animationMixer = new THREE.AnimationMixer(glTFScene);
@@ -416,6 +423,9 @@ if (animations.length > 0) {
     self.defaultAction = self.animationMixer.clipAction(animations[0]);
     self.defaultAction.play();
 }
+
+
+
 
             gltf.scene.traverse((child) => {
                 switch (child.type) {

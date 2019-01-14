@@ -36,6 +36,9 @@ class SphygmomanometerDemoScene extends VLabScene {
         this.vLab.EventDispatcher.subscribe({
             subscriber: this,
             events: {
+                VLabScene: {
+                    interactableTaken:         this.onInteractableTaken,
+                },
                 VLabItem: {
                     interactablesInitialized:   this.onVLabItemInteractablesInitialized,
                 }
@@ -86,8 +89,8 @@ class SphygmomanometerDemoScene extends VLabScene {
     }
 
     actualizedPneumaticSphygmomanometer() {
-        this.vLab['PneumaticSphygmomanometer'].vLabItemModel.position.copy(new THREE.Vector3(0.379, 0.867, -0.251));
-        this.vLab['PneumaticSphygmomanometer'].vLabItemModel.quaternion.copy(new THREE.Quaternion(0.000, -0.987, 0.000, 0.162));
+        this.vLab['PneumaticSphygmomanometer'].vLabItemModel.position.copy(new THREE.Vector3(0.259, 0.867, -0.119));
+        this.vLab['PneumaticSphygmomanometer'].vLabItemModel.quaternion.copy(new THREE.Quaternion(0.000, -0.823, 0.000, 0.568));
         this.vLab['PneumaticSphygmomanometer'].setEnvMap(this.envSphereMapReflection);
 
         this.pneumaticSphygmomanometerCuffPut = this.vLab['PneumaticSphygmomanometer'].vLabItemModel.getObjectByName('pneumaticSphygmomanometerCuffPut');
@@ -132,20 +135,9 @@ class SphygmomanometerDemoScene extends VLabScene {
         });
 
     }
-    actualizeAcusticStethoscope() {
-        this.vLab['AcusticStethoscope'].vLabItemModel.position.copy(new THREE.Vector3(0.380, 0.816, -0.587));
-        this.vLab['AcusticStethoscope'].interactables[0].initObj.interactable.noPutBack = false;
-
-        this.vLab['AcusticStethoscope'].interactables[0].addRespondent({
-            interactable: this.interactables['maleBody'],
-            callerInteractable: this.vLab['AcusticStethoscope'].interactables[0],
-            preselectionTooltip: 'Acustic Stethoscope could be applied',
-            action: {
-                function: this.AcusticStethoscope_ACTION_maleBody,
-                args: {},
-                context: this
-            }
-        });
+    actualizeAcusticStethoscope(AcusticStethoscope) {
+        AcusticStethoscope.vLabItemModel.position.copy(new THREE.Vector3(0.380, 0.816, -0.587));
+        AcusticStethoscope.interactables[0].initObj.interactable.noPutBack = false;
     }
     onPneumaticSphygmomanometerCuffPreselection() {
         this.pneumaticSphygmomanometerCuffPutDummy.visible = true;
@@ -168,11 +160,14 @@ class SphygmomanometerDemoScene extends VLabScene {
 
         this.vLab['PneumaticSphygmomanometer'].putInFontOfCamera();
 
-        this.pneumaticSphygmomanometerAppliedZoomHelper.activateWithSelfInitObj().then(() => {
-            this.vLab.SceneDispatcher.currentVLabScene.currentControls.setAzimutalRestrictionsFromCurrentTheta(0.2, -0.25);
-            this.vLab.SceneDispatcher.currentVLabScene.currentControls.setPolarRestrictionsFromCurrentPhi(0.2, -0.2);
-            this.vLab.SceneDispatcher.currentVLabScene.currentControls.rotateSpeed = 0.1;
-        });
+        if (!this.pneumaticSphygmomanometerAppliedZoomHelper.activated) {
+            this.pneumaticSphygmomanometerAppliedZoomHelper.activateWithSelfInitObj().then(() => {
+                this.vLab.SceneDispatcher.currentVLabScene.currentControls.setAzimutalRestrictionsFromCurrentTheta(0.2, -0.25);
+                this.vLab.SceneDispatcher.currentVLabScene.currentControls.setPolarRestrictionsFromCurrentPhi(0.2, -0.2);
+                this.vLab.SceneDispatcher.currentVLabScene.currentControls.rotateSpeed = 0.1;
+                this.pneumaticSphygmomanometerAppliedZoomHelper.activated = true;
+            });
+        }
 
         let pneumaticSphygmomanometerMeterrubberBulb = this.vLab['PneumaticSphygmomanometer'].getInteractableByName('pneumaticSphygmomanometerMeterrubberBulb');
         pneumaticSphygmomanometerMeterrubberBulb.actionFunction = this.vLab['PneumaticSphygmomanometer'].pump;
@@ -200,11 +195,90 @@ class SphygmomanometerDemoScene extends VLabScene {
         this.vLab.SceneDispatcher.currentVLabScene.currentControls.rotateSpeed = 0.5;
 
         this.pneumaticSphygmomanometerAppliedZoomHelper.deactivate(false, true);
+        this.pneumaticSphygmomanometerAppliedZoomHelper.activated = false;
+
+        if (!this.vLab['AcusticStethoscope'].interactables[0].taken) {
+            this.vLab['AcusticStethoscope'].interactables[0].take();
+        }
 
         this.vLab['PneumaticSphygmomanometer'].getInteractableByName('pneumaticSphygmomanometerMeterCasePlastic').actionFunctionActivated = false;
     }
     AcusticStethoscope_ACTION_maleBody() {
-        console.log('AcusticStethoscope_ACTION_maleBody');
+        if (!this.vLab['AcusticStethoscope'].applied) {
+            if (!this.pneumaticSphygmomanometerAppliedZoomHelper.activated) {
+                this.pneumaticSphygmomanometerAppliedZoomHelper.activateWithSelfInitObj().then(() => {
+                    this.vLab.SceneDispatcher.currentVLabScene.currentControls.setAzimutalRestrictionsFromCurrentTheta(0.2, -0.25);
+                    this.vLab.SceneDispatcher.currentVLabScene.currentControls.setPolarRestrictionsFromCurrentPhi(0.2, -0.2);
+                    this.vLab.SceneDispatcher.currentVLabScene.currentControls.rotateSpeed = 0.1;
+                    this.pneumaticSphygmomanometerAppliedZoomHelper.activated = true;
+                });
+            }
+
+            this.vLab.SceneDispatcher.putTakenInteractable({
+                parent: this,
+                position: undefined,
+                quaternion: new THREE.Quaternion(),
+                scale: new THREE.Vector3(1.0, 1.0, 1.0),
+                materials: this.vLab['AcusticStethoscope'].vLabItemModel.userData['beforeTakenState'].materials
+            });
+
+            this.vLab['AcusticStethoscope'].interactables[0].vLabSceneObject.visible = false;
+
+            this.AcusticStethoscopeSensor = this.vLab['AcusticStethoscope'].interactables[1].vLabSceneObject;
+            this.vLab['AcusticStethoscope'].interactables[0].vLabSceneObject.remove(this.AcusticStethoscopeSensor);
+            this.vLab.SceneDispatcher.currentVLabScene.add(this.AcusticStethoscopeSensor);
+            this.AcusticStethoscopeSensor.visible = true;
+
+            this.vLab['AcusticStethoscope'].interactables[1].vLabSceneObject.position.copy(this.getObjectByName('maleBodyStethoscopeAppliedDummy').position);
+            this.vLab['AcusticStethoscope'].interactables[1].vLabSceneObject.rotation.y = 1.57
+
+            this.vLab['AcusticStethoscope'].onApplied();
+
+            this.vLab['AcusticStethoscope'].updateTube();
+
+            this.vLab['AcusticStethoscope'].applied = true;
+
+            this.vLab['PneumaticSphygmomanometer'].soundSupress = 0.1;
+            this.vLab['PneumaticSphygmomanometer'].auscultationSoundVolume = 1.0;
+        }
+    }
+    onInteractableTaken(event) {
+        if (event.interactable.vLabItem == this.vLab['AcusticStethoscope']) {
+            this.vLab['AcusticStethoscope'].onTakenOut();
+
+            this.vLab['AcusticStethoscope'].interactables[0].deSelect(true);
+
+            this.vLab['AcusticStethoscope'].interactables[0].initObj.interactable.noPutBack = true;
+
+            this.vLab['AcusticStethoscope'].interactables[0].addRespondent({
+                interactable: this.interactables['maleBodyStethoscopeAppliedDummy'],
+                callerInteractable: this.vLab['AcusticStethoscope'].interactables[0],
+                preselectionTooltip: 'Acustic Stethoscope could be applied',
+                action: {
+                    function: this.AcusticStethoscope_ACTION_maleBody,
+                    args: {},
+                    context: this
+                }
+            });
+
+            if (this.vLab['PneumaticSphygmomanometer'].applied != true) {
+                if (this.pneumaticSphygmomanometerAppliedZoomHelper.activated) {
+                    this.vLab.SceneDispatcher.currentVLabScene.currentControls.resetAzimutalRestrictions();
+                    this.vLab.SceneDispatcher.currentVLabScene.currentControls.resetPolarRestrictions();
+                    this.vLab.SceneDispatcher.currentVLabScene.currentControls.rotateSpeed = 0.5;
+
+                    this.pneumaticSphygmomanometerAppliedZoomHelper.deactivate(false, true);
+                    this.pneumaticSphygmomanometerAppliedZoomHelper.activated = false;
+
+                    this.vLab['AcusticStethoscope'].interactables[1].hideMenu(true);
+                }
+            }
+
+            this.vLab['AcusticStethoscope'].applied = false;
+
+            this.vLab['PneumaticSphygmomanometer'].soundSupress = 1.0;
+            this.vLab['PneumaticSphygmomanometer'].auscultationSoundVolume = 0.0;
+        }
     }
 }
 

@@ -58,9 +58,10 @@ class AcusticStethoscope extends VLabItem {
                 if (this.vLab.Inventory) {
                     if (this.nature.addToInvnentory == true) {
                         this.interactables[0].takeToInventory();
-                        this.interactables[0]['vLabItem'] = this;
                     }
                 }
+
+                this.interactables[0]['vLabItem'] = this;
 
                 this.sensor =  this.interactables[1].vLabSceneObject;
             });

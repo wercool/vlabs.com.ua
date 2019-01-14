@@ -41,6 +41,12 @@
             "name": "maleBody",
             "intersectable": true,
             "preselectable": false,
+            "selectable": false
+        },
+        {
+            "name": "maleBodyStethoscopeAppliedDummy",
+            "intersectable": true,
+            "preselectable": false,
             "selectable": false,
             "respondentExtras": {
                 "particularQualities": {

@@ -10,7 +10,7 @@
             "preselectable": true,
             "selectable": true,
             "shallowForm": true,
-            "tooltip": "Generic Acustic Stethoscope",
+            "tooltip": "Generic Acoustic Stethoscope",
             "menu": [
                 {
                     "label": "Take",
@@ -44,7 +44,7 @@
             "selectable": true,
             "visible": false,
             "showRespondents": false,
-            "tooltip": "Generic Acustic Stethoscope",
+            "tooltip": "Generic Acoustic Stethoscope",
             "menu": [
                 {
                     "label": "Take",

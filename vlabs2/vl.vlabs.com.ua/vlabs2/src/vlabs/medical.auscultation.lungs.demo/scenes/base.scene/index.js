@@ -30,7 +30,7 @@ class BasicsOfLungSoundsScene extends VLabScene {
         this.lungsSounds = [
             {
                 path: 'vesicular.mp3',
-                shortDesc: 'No, normal, vesicular breath.',
+                shortDesc: 'Normal, vesicular breath.',
                 desc: 'Vesicular breath sounds are soft and low pitched with a rustling quality during inspiration and are even softer during expiration. These are the most commonly auscultated breath sounds, normally heard over most of the lung surface.'
             },
             {
@@ -46,7 +46,7 @@ class BasicsOfLungSoundsScene extends VLabScene {
             {
                 path: 'wheeze.mp3',
                 shortDesc: 'Wheezes are adventitious lung sounds that are continuous with a musical quality. Wheezes can be high or low pitched.',
-                desc: 'expiratory wheezes are heard over most of the chest wall. This may indicate widespread airflow obstruction, for example in patients with asthma.'
+                desc: 'Expiratory wheezes are heard over most of the chest wall. This may indicate widespread airflow obstruction, for example in patients with asthma.'
             },
             {
                 path: 'rhonchi.mp3',
@@ -409,7 +409,7 @@ class BasicsOfLungSoundsScene extends VLabScene {
                 this.vLab['TLOneStethoscope'].interactables[0].put({
                     parent: this,
                     position: undefined,
-                    quaterninon: new THREE.Quaternion(),
+                    quaternion: new THREE.Quaternion(),
                     scale: new THREE.Vector3(1.0, 1.0, 1.0),
                     materials: this.vLab['TLOneStethoscope'].vLabItemModel.userData['beforeTakenState'].materials
                 });
@@ -516,7 +516,7 @@ class BasicsOfLungSoundsScene extends VLabScene {
                 this.vLab.SceneDispatcher.putTakenInteractable({
                     parent: this,
                     position: undefined,
-                    quaterninon: new THREE.Quaternion(),
+                    quaternion: new THREE.Quaternion(),
                     scale: new THREE.Vector3(1.0, 1.0, 1.0),
                     materials: this.vLab['AcusticStethoscope'].vLabItemModel.userData['beforeTakenState'].materials
                 });
@@ -552,6 +552,27 @@ class BasicsOfLungSoundsScene extends VLabScene {
         this.playSounds();
 
         this.vLab['TLOneStethoscope'].interactables[0].canBeTakenFromInventory = false;
+
+        if (this.AcusticStethoscopeSoundDescription == undefined) {
+            this.AcusticStethoscopeSoundDescription = document.createElement('div');
+            this.AcusticStethoscopeSoundDescription.style.border = 'solid 2px #dfff6c';
+            this.AcusticStethoscopeSoundDescription.style.borderRadius = '10px';
+            this.AcusticStethoscopeSoundDescription.style.backgroundColor = '#fdff84c7';
+            this.AcusticStethoscopeSoundDescription.style.width = '98%';
+            this.AcusticStethoscopeSoundDescription.style.height = '96%';
+            this.AcusticStethoscopeSoundDescription.style.margin = '1%';
+            this.AcusticStethoscopeSoundDescription.style.backgroundImage = 'url("./resources/lungs.png")';
+            this.AcusticStethoscopeSoundDescription.style.backgroundRepeat = 'no-repeat';
+            this.AcusticStethoscopeSoundDescription.style.color = '#202020';
+
+            this.AcusticStethoscopeSoundDescription.innerHTML = '<h4 style="padding-left: 58px;">' + this.lungsSounds[this.lungsSoundsID].shortDesc + '</h4>';
+            this.AcusticStethoscopeSoundDescription.innerHTML += '<div style="width: 90%; margin-left: 8%;">' + this.lungsSounds[this.lungsSoundsID].desc + '<div>';
+
+            this.vLab.DOMManager.vLabPanel.VLabPanelLeftContainer.appendChild(this.AcusticStethoscopeSoundDescription);
+            this.vLab.DOMManager.vLabPanel.VLabPanelContainer.style.zIndex = '10000';
+        } else {
+            this.AcusticStethoscopeSoundDescription.style.display = 'block';
+        }
     }
 
     onInteractableTaken(event) {
@@ -564,6 +585,9 @@ class BasicsOfLungSoundsScene extends VLabScene {
             this.muteSound();
             this.vLab['AcusticStethoscope'].onTakenOut();
             this.vLab['TLOneStethoscope'].interactables[0].canBeTakenFromInventory = true;
+            if (this.AcusticStethoscopeSoundDescription != undefined) {
+                this.AcusticStethoscopeSoundDescription.style.display = 'none';
+            }
         }
         if (event.interactable.vLabItem == this.vLab['MercuryThermometer']) {
             this.vLab['MercuryThermometer'].onTakenOut();
@@ -583,6 +607,9 @@ class BasicsOfLungSoundsScene extends VLabScene {
                 this.muteSound();
                 this.vLab['AcusticStethoscope'].onTakenOut();
                 this.vLab['TLOneStethoscope'].interactables[0].canBeTakenFromInventory = true;
+                if (this.AcusticStethoscopeSoundDescription != undefined) {
+                    this.AcusticStethoscopeSoundDescription.style.display = 'none';
+                }
             }
             if (event.interactable.vLabItem == this.vLab['MercuryThermometer']) {
                 this.vLab['MercuryThermometer'].onTakenOut();
@@ -666,7 +693,7 @@ class BasicsOfLungSoundsScene extends VLabScene {
                 this.vLab['MercuryThermometer'].interactables[0].put({
                     parent: this,
                     position: putPosition.clone(),
-                    quaterninon: new THREE.Quaternion(),
+                    quaternion: new THREE.Quaternion(),
                     scale: new THREE.Vector3(1.0, 1.0, 1.0),
                     materials: this.vLab['MercuryThermometer'].vLabItemModel.userData['beforeTakenState'].materials
                 });

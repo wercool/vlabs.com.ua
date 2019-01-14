@@ -220,10 +220,6 @@ class VLabSceneInteractable {
          */
         this.outlineHelperMesh = undefined;
         /**
-         * Simple outline TWEEN animation
-         */
-        this.outlineHelperMeshTWEEN = undefined;
-        /**
          * Selection bounds Sprite
          */
         this.boundsSprite = undefined;
@@ -1001,7 +997,7 @@ class VLabSceneInteractable {
      */
     clearOutline() {
         if (this.outlineHelperMesh) {
-            this.outlineHelperMesh.visible = false;
+            // this.outlineHelperMesh.visible = false;
             this.outlineHelperMesh.matrixAutoUpdate = false;
         }
 
@@ -1014,22 +1010,19 @@ class VLabSceneInteractable {
      * Adds simple outline based on this.vLabSceneObject.geometry as THREE.Mesh to this.vLabSceneObject
      */
     addOutlineHelperMesh() {
-        // if (this.vLab.nature.selections.outlineHelperMesh == true) {
+        if (this.vLab.nature.selections.outlineHelperMesh == true) {
             if (this.vLabSceneObject && this.outlineHelperMesh == undefined) {
                 this.outlineHelperMesh = new THREE.Mesh(this.vLabSceneObject.geometry, this.vLabScene.vLab.prefabs['VLabSceneInteractablePrefabs']['simpleOutlineMaterial']);
-                this.outlineHelperMesh.name = this.vLabSceneObject.name + '_OUTLINE';
                 this.outlineHelperMesh.scale.multiplyScalar(1.03);
-                this.outlineHelperMesh.visible = false;
-                this.outlineHelperMesh.matrixAutoUpdate = false;
-                this.vLabSceneObject.add(this.outlineHelperMesh);
-                // this.outlineHelperMeshTWEEN = new TWEEN.Tween(this.outlineHelperMesh.scale)
-                // .to({x: 1.01, y: 1.01, z: 1.01}, 850)
-                // .repeat(Infinity)
-                // .yoyo(true)
-                // .easing(TWEEN.Easing.Quadratic.InOut)
-                // .start();
             }
-        // }
+        } else {
+            let geometry = new THREE.PlaneBufferGeometry(0.01, 0.01);
+            this.outlineHelperMesh = new THREE.Mesh(geometry);
+        }
+        this.outlineHelperMesh.name = this.vLabSceneObject.name + '_OUTLINE';
+        this.outlineHelperMesh.visible = false;
+        this.outlineHelperMesh.matrixAutoUpdate = false;
+        this.vLabSceneObject.add(this.outlineHelperMesh);
     }
     /**
      * Adds pre-selection / selection bound Sprite
@@ -1125,13 +1118,13 @@ class VLabSceneInteractable {
     /**
      * Hide menu
      */
-    hideMenu() {
+    hideMenu(forced) {
         if (this.menuContainer) {
             /**
              * Press Event dumper
              */
             let delta = this.vLabScene.manager.clock.getDelta();
-            if (delta > 0.1) {
+            if (delta > 0.1 || forced == true) {
                 this.vLab.DOMManager.container.removeChild(this.menuContainer);
                 this.menuContainer = null;
             }

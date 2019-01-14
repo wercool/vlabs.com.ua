@@ -27,9 +27,34 @@ class PneumaticSphygmomanometer extends VLabItem {
 
         var textureLoader = new THREE.TextureLoader();
 
+        this.cuffPressure = 0;
+        this.cuffMaxPressure = 150;
+
+        this.systolicPressure = 120;
+        this.diastolicPressure = 70;
+
+        this.soundSupress = 1.0;
+
+        this.auscultationSoundVolume = 0.0;
+
+        this.airLeak = this.airLeak.bind(this);
+
+        this.clock = new THREE.Clock();
+
         Promise.all([
         ])
         .then((result) => {
+
+            this.pumpAudio = new Audio();
+            this.pumpAudio.src = '/vlab.items/medical/equipment/PneumaticSphygmomanometer/resources/sounds/pump.mp3';
+
+            this.airLeakAudio = new Audio();
+            this.airLeakAudio.loop = true;
+            this.airLeakAudio.src = '/vlab.items/medical/equipment/PneumaticSphygmomanometer/resources/sounds/air-leak.mp3';
+
+            this.systolicAudio = new Audio();
+            this.systolicAudio.src = '/vlab.items/medical/equipment/PneumaticSphygmomanometer/resources/sounds/systolic.mp3';
+            this.systolicAudio.volume = this.auscultationSoundVolume;
 
             this.tubeMaterial = new THREE.MeshPhongMaterial({
                 color: 0x050505,
@@ -235,6 +260,18 @@ class PneumaticSphygmomanometer extends VLabItem {
         this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerTube').visible = true;
 
         this.vLabItemModel.userData['beforeTakenState'] = null;
+
+        this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterArrow').rotation.y = 0.0;
+        this.cuffPressure = 0.0;
+
+        this.airLeakAudio.pause();
+        this.airLeakAudioPlaying = false;
+        this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterValve').rotation.x = 0.0;
+        this.pumpAudio.pause();
+
+        this.systolicAudioPlaying = false;
+        this.systolicAudio.pause();
+        this.systolicAudio.currentTime = 0;
     }
 
     repositionPutInFronOfCameraOnScreenWidth() {
@@ -279,26 +316,36 @@ class PneumaticSphygmomanometer extends VLabItem {
             let pneumaticSphygmomanometerMeterrubberBulb = this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterrubberBulb');
             let pneumaticSphygmomanometerMeterArrow = this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterArrow');
 
-            this.pumpTWEEN = new TWEEN.Tween(pneumaticSphygmomanometerMeterrubberBulb.scale)
-            .to({x: 0.7, z: 1.2}, 200)
-            .easing(TWEEN.Easing.Quadratic.InOut)
-            .yoyo(true)
-            .repeat(1)
-            .onComplete(() => {
-                this.pumpTWEEN = undefined;
-            })
-            .start();
-
-            new TWEEN.Tween(pneumaticSphygmomanometerMeterArrow.rotation)
-            .to({y: pneumaticSphygmomanometerMeterArrow.rotation.y - 0.2}, 200)
-            .easing(TWEEN.Easing.Elastic.InOut)
-            .onComplete(() => {
-                new TWEEN.Tween(pneumaticSphygmomanometerMeterArrow.rotation)
-                .to({y: pneumaticSphygmomanometerMeterArrow.rotation.y + 0.05}, 500)
-                .easing(TWEEN.Easing.Elastic.InOut)
+            if (this.cuffPressure < this.cuffMaxPressure) {
+                this.pumpTWEEN = new TWEEN.Tween(pneumaticSphygmomanometerMeterrubberBulb.scale)
+                .to({x: 0.7, z: 1.2}, 200)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .yoyo(true)
+                .repeat(1)
+                .onComplete(() => {
+                    this.pumpTWEEN = undefined;
+                })
                 .start();
-            })
-            .start();
+
+                this.pumpAudio.pause();
+                this.pumpAudio.currentTime = 0.0;
+                this.pumpAudio.play();
+                this.pumpAudio.volume = this.soundSupress;
+
+                new TWEEN.Tween(pneumaticSphygmomanometerMeterArrow.rotation)
+                .to({y: pneumaticSphygmomanometerMeterArrow.rotation.y - (0.2 + (this.cuffMaxPressure - this.cuffPressure) / 1000)}, 200)
+                .easing(TWEEN.Easing.Elastic.InOut)
+                .onComplete(() => {
+                    new TWEEN.Tween(pneumaticSphygmomanometerMeterArrow.rotation)
+                    .to({y: pneumaticSphygmomanometerMeterArrow.rotation.y + 0.05}, 500)
+                    .easing(TWEEN.Easing.Elastic.InOut)
+                    .onComplete(() => {
+                        this.cuffPressure = (pneumaticSphygmomanometerMeterArrow.rotation.y / -0.195555937) * 10;
+                    })
+                    .start();
+                })
+                .start();
+            }
         }
     }
     /**
@@ -306,19 +353,79 @@ class PneumaticSphygmomanometer extends VLabItem {
      */
     valveAction(event) {
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
+        let pneumaticSphygmomanometerMeterValve = this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterValve');
 
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
             let direction = ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1);
-            let pneumaticSphygmomanometerMeterValve = this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterValve');
-            if ((direction == 1 && pneumaticSphygmomanometerMeterValve.rotation.x < 3.0)
+            if ((direction == 1 && pneumaticSphygmomanometerMeterValve.rotation.x < 0.25)
             || (direction == -1 && pneumaticSphygmomanometerMeterValve.rotation.x > 0.0)) {
-                this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterValve').rotateX(0.04 * direction);
+                pneumaticSphygmomanometerMeterValve.rotateX((direction == 1) ? (0.01 * direction) : (0.02 * direction));
             }
         }
 
+        this.airLeak();
+
         this.prevActionInitialEventCoords = new THREE.Vector2();
         this.prevActionInitialEventCoords.copy(currentActionInitialEventCoords);
+    }
+    /**
+     * Air leak simulation
+     */
+    airLeak() {
+        let pneumaticSphygmomanometerMeterValve = this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterValve');
+        if (pneumaticSphygmomanometerMeterValve.rotation.x > 0) {
+            if (this.cuffPressure > 0.0) {
+                if (pneumaticSphygmomanometerMeterValve.rotation.x < 1.0) {
+                    this.airLeakAudio.volume = pneumaticSphygmomanometerMeterValve.rotation.x * this.soundSupress;
+                }
+                if (!this.airLeakAudioPlaying) {
+                    this.airLeakAudio.play();
+                    this.airLeakAudioPlaying = true;
+                }
+
+                let pneumaticSphygmomanometerMeterArrow = this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterArrow');
+                pneumaticSphygmomanometerMeterArrow.rotation.y += 0.00003;
+                this.cuffPressure = (pneumaticSphygmomanometerMeterArrow.rotation.y / -0.195555937) * 10;
+
+// console.log(this.cuffPressure);
+
+                if (this.cuffPressure <= this.systolicPressure && this.cuffPressure >= this.diastolicPressure) {
+                    this.systolicAudio.volume = this.auscultationSoundVolume;
+                    if (!this.systolicAudioPlaying) {
+                        this.systolicAudio.play();
+                        this.systolicAudioPlaying = true;
+                    }
+
+                    let systolicFlutter = true;
+                    if (this.systolicTemp !== undefined) {
+                        systolicFlutter = (this.clock.getElapsedTime() - this.systolicTemp > 0.85);
+                    }
+                    if (systolicFlutter == true || this.systolicTemp == undefined) {
+                        this.systolicTemp = this.clock.getElapsedTime();
+                        pneumaticSphygmomanometerMeterArrow.rotation.y -= 0.01;
+                        // new TWEEN.Tween(pneumaticSphygmomanometerMeterArrow.rotation)
+                        // .to({y: pneumaticSphygmomanometerMeterArrow.rotation.y - 0.01}, 50)
+                        // .easing(TWEEN.Easing.Elastic.InOut)
+                        // .start();
+                    } else {
+                        pneumaticSphygmomanometerMeterArrow.rotation.y += 0.00001;
+                    }
+                } else {
+                    this.systolicAudioPlaying = false;
+                    this.systolicAudio.currentTime = 0.0;
+                    this.systolicAudio.pause();
+                }
+
+                setTimeout(this.airLeak, 50);
+
+            } else {
+                if (this.airLeakAudioPlaying) {
+                    this.airLeakAudio.pause();
+                    this.airLeakAudioPlaying = false;
+                }
+            }
+        }
     }
     /**
      * Move sphygmomanometer
@@ -326,10 +433,16 @@ class PneumaticSphygmomanometer extends VLabItem {
     move(event) {
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
         this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
-        let direction = ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? 1 : -1);
+        let directionX = ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? 1 : -1);
+        let directionZ = ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1);
         let pneumaticSphygmomanometerMeterCasePlastic = this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterCasePlastic');
-
-        pneumaticSphygmomanometerMeterCasePlastic.translateX(0.0005 * direction);
+        if (event.event.touches !== undefined) {
+            pneumaticSphygmomanometerMeterCasePlastic.translateX(0.001 * directionX);
+            pneumaticSphygmomanometerMeterCasePlastic.translateZ(0.0005 * directionZ);
+        } else {
+            pneumaticSphygmomanometerMeterCasePlastic.translateX(0.004 * directionX);
+            pneumaticSphygmomanometerMeterCasePlastic.translateZ(0.001 * directionZ);
+        }
 
         this.updateTube();
 
