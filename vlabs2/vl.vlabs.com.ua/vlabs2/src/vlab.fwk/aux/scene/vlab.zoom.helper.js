@@ -146,6 +146,7 @@ class VLabZoomHelper extends VLabSceneInteractable {
     activate(initObj) {
         return new Promise((resolve) => {
             let self = this;
+
             /**
              * Get current VLab WebGLRenderer Frame Image
              * Save current this.vLabScene.currentCamera.position
@@ -155,7 +156,7 @@ class VLabZoomHelper extends VLabSceneInteractable {
             this.vLabSceneObject.visible = false;
 
             /**
-             * Do not add to stack if defined
+             * Do not (!!!!) add to stack if defined
              */
             if (this.selfInitObj.addToStack === false) {
                 this.beforeZoomState = {
@@ -178,6 +179,17 @@ class VLabZoomHelper extends VLabSceneInteractable {
                 })
                 .start();
                 this.vLabScene.currentControls.setTarget(initObj.target);
+
+                /**
+                 * Notify event subscribers
+                 */
+                this.vLab.EventDispatcher.notifySubscribers({
+                    target: 'VLabScene',
+                    type: 'zoomHelperActivated',
+                    args: {
+                        zoomHelper: this
+                    }
+                });
 
                 return;
             }
@@ -285,6 +297,18 @@ class VLabZoomHelper extends VLabSceneInteractable {
                     self.vLabScene.currentControls.update();
                     viewThumbnail.style.display = 'inline-block';
                     self.vLabScene.manager.zoomHelpersStack.push(self);
+
+                    /**
+                     * Notify event subscribers
+                     */
+                    self.vLab.EventDispatcher.notifySubscribers({
+                        target: 'VLabScene',
+                        type: 'zoomHelperActivated',
+                        args: {
+                            zoomHelper: self
+                        }
+                    });
+
                     resolve();
                 })
                 .start();
@@ -303,25 +327,39 @@ class VLabZoomHelper extends VLabSceneInteractable {
          */
         let delta = this.vLabScene.manager.clock.getDelta();
         if (delta > 0.1 || forced == true) {
-            let revertPosition = this.beforeZoomState.currentCamera.position;
-            let revertControlsTarget = this.beforeZoomState.currentControls.target;
+            if (this.beforeZoomState) {
+                let revertPosition = this.beforeZoomState.currentCamera.position;
+                let revertControlsTarget = this.beforeZoomState.currentControls.target;
 
-            if (withoutAnimation == true) {
-                this.vLabScene.currentCamera.position.copy(revertPosition);
-                this.vLabScene.currentControls.target.copy(revertControlsTarget);
-                this.vLabScene.currentControls.update();
-            } else {
-                new TWEEN.Tween(this.vLabScene.currentCamera.position)
-                .to({x: revertPosition.x, y: revertPosition.y, z: revertPosition.z}, 1000)
-                .easing(TWEEN.Easing.Quadratic.InOut)
-                .onUpdate(() => {
-                })
-                .onComplete(() => {
+                if (withoutAnimation == true) {
+                    this.vLabScene.currentCamera.position.copy(revertPosition);
+                    this.vLabScene.currentControls.target.copy(revertControlsTarget);
                     this.vLabScene.currentControls.update();
-                    this.clearStack(this.vLabScene.manager.zoomHelpersStack.indexOf(this));
-                })
-                .start();
-                this.vLabScene.currentControls.setTarget(revertControlsTarget);
+                } else {
+                    new TWEEN.Tween(this.vLabScene.currentCamera.position)
+                    .to({x: revertPosition.x, y: revertPosition.y, z: revertPosition.z}, 1000)
+                    .easing(TWEEN.Easing.Quadratic.InOut)
+                    .onUpdate(() => {
+                    })
+                    .onComplete(() => {
+                        this.vLabScene.currentControls.update();
+                        this.clearStack(this.vLabScene.manager.zoomHelpersStack.indexOf(this));
+
+                        /**
+                         * Notify event subscribers
+                         */
+                        this.vLab.EventDispatcher.notifySubscribers({
+                            target: 'VLabScene',
+                            type: 'zoomHelperDeActivated',
+                            args: {
+                                zoomHelper: this
+                            }
+                        });
+
+                    })
+                    .start();
+                    this.vLabScene.currentControls.setTarget(revertControlsTarget);
+                }
             }
         }
     }

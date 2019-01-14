@@ -241,6 +241,10 @@ class VLabSceneInteractable {
          */
         this.menu = [];
         /**
+         * Menu is active by default
+         */
+        this.menuIsActive = true;
+        /**
          * Menu DIV
          */
         this.menuContainer = undefined;
@@ -1055,7 +1059,7 @@ class VLabSceneInteractable {
      * Executes menu action
      */
     showMenu() {
-        if (this.menu.length > 0  && !this.menuContainer) {
+        if (this.menu.length > 0  && !this.menuContainer && this.menuIsActive) {
             /**
              * Depress current VLabControls
              */

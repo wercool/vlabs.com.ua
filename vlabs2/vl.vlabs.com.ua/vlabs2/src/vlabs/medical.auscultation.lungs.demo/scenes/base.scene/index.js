@@ -137,6 +137,8 @@ class BasicsOfLungSoundsScene extends VLabScene {
                 VLabScene: {
                     interactableTaken:         this.onInteractableTaken,
                     interactablePut:           this.onInteractablePut,
+                    zoomHelperActivated:       this.onZoomHelperActivated,
+                    zoomHelperDeActivated:     this.onZoomHelperDeActivated,
                 },
                 VLabItem: {
                     initialized:                this.onInitializedVLabItem,
@@ -463,7 +465,7 @@ class BasicsOfLungSoundsScene extends VLabScene {
 
     AcusticStethoscope_ACTION_maleBody(params) {
         if (this.interactables['maleBody'].lastTouchRaycasterIntersection == undefined
-        && (!this.vLab['AcusticStethoscope'].interactables[0].selected && !this.vLab['AcusticStethoscope'].interactables[1].selected)) {
+        && (this.vLab['AcusticStethoscope'].interactables[0].selected || this.vLab['AcusticStethoscope'].interactables[1].selected)) {
             return;
         }
 
@@ -569,7 +571,7 @@ class BasicsOfLungSoundsScene extends VLabScene {
             this.AcusticStethoscopeSoundDescription.innerHTML += '<div style="width: 90%; margin-left: 8%;">' + this.lungsSounds[this.lungsSoundsID].desc + '<div>';
 
             this.vLab.DOMManager.vLabPanel.VLabPanelLeftContainer.appendChild(this.AcusticStethoscopeSoundDescription);
-            this.vLab.DOMManager.vLabPanel.VLabPanelContainer.style.zIndex = '10000';
+            this.vLab.DOMManager.vLabPanel.VLabPanelContainer.style.zIndex = '50';
         } else {
             this.AcusticStethoscopeSoundDescription.style.display = 'block';
         }
@@ -591,8 +593,10 @@ class BasicsOfLungSoundsScene extends VLabScene {
         }
         if (event.interactable.vLabItem == this.vLab['MercuryThermometer']) {
             this.vLab['MercuryThermometer'].onTakenOut();
+            this.vLab['MercuryThermometer'].hideMenu();
             this.MercuryThermometerVLabZoomHelper.conditionalDeactivationVisibility = false;
             this.MercuryThermometerVLabZoomHelper.setVisibility(false);
+            this.MercuryThermometerVLabZoomHelper.deactivate(false, true);
         }
     }
 
@@ -613,8 +617,10 @@ class BasicsOfLungSoundsScene extends VLabScene {
             }
             if (event.interactable.vLabItem == this.vLab['MercuryThermometer']) {
                 this.vLab['MercuryThermometer'].onTakenOut();
+                this.vLab['MercuryThermometer'].hideMenu();
                 this.MercuryThermometerVLabZoomHelper.conditionalDeactivationVisibility = false;
                 this.MercuryThermometerVLabZoomHelper.setVisibility(false);
+                this.MercuryThermometerVLabZoomHelper.deactivate(false, true);
             }
         }
     }
@@ -713,6 +719,22 @@ class BasicsOfLungSoundsScene extends VLabScene {
                 this.MercuryThermometerVLabZoomHelper.conditionalDeactivationVisibility = true;
             }
         }
+    }
+    /**
+     * onZoomHelperActivated
+     */
+    onZoomHelperActivated(extParams) {
+        // if(this.MercuryThermometerVLabZoomHelper == extParams.args.zoomHelper) {
+        //     this.vLab['MercuryThermometer'].disableMenu();
+        // }
+    }
+    /**
+     * onZoomHelperDeActivated
+     */
+    onZoomHelperDeActivated(extParams) {
+        // if(this.MercuryThermometerVLabZoomHelper == extParams.args.zoomHelper) {
+        //     this.vLab['MercuryThermometer'].enableMenu();
+        // }
     }
 }
 

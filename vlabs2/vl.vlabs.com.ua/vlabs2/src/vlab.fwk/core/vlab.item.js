@@ -322,5 +322,29 @@ class VLabItem {
             }
         }
     }
+    /**
+     * Hide all sibling VLabSceneInteractables menus
+     */
+    hideMenu() {
+        this.interactables.forEach((interactable) => {
+            interactable.hideMenu(true);
+        });
+    }
+    /**
+     * Disable all sibling VLabSceneInteractables menus
+     */
+    disableMenu() {
+        this.interactables.forEach((interactable) => {
+            interactable.menuIsActive = false;
+        });
+    }
+    /**
+     * Enable all sibling VLabSceneInteractables menus
+     */
+    enableMenu() {
+        this.interactables.forEach((interactable) => {
+            interactable.menuIsActive = true;
+        });
+    }
 }
 export default VLabItem;

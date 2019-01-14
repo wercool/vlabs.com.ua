@@ -79,7 +79,21 @@ class VLabEventDispatcher {
                  *      type: 'currentControlsUpdated'
                  *  }
                  */
-                currentControlsUpdated:     {}
+                currentControlsUpdated:     {},
+                /**
+                 *  {
+                 *      target: 'VLabScene',
+                 *      type: 'zoomHelperActivated'
+                 *  }
+                 */
+                zoomHelperActivated:     {},
+                /**
+                 *  {
+                 *      target: 'VLabScene',
+                 *      type: 'zoomHelperDeActivated'
+                 *  }
+                 */
+                zoomHelperDeActivated:     {},
             },
             VLabInventory: {
                 ready:          {},

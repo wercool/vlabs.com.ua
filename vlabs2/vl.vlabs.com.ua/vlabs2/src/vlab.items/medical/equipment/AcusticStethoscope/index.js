@@ -136,8 +136,13 @@ class AcusticStethoscope extends VLabItem {
      */
     onTakenOut() {
         this.hideAcusticStethoscopeOverlay();
-        this.interactables[1].vLabSceneObject.visible = false;
+
         this.interactables[0].vLabSceneObject.visible = true;
+        this.interactables[1].vLabSceneObject.visible = false;
+
+        this.interactables[0].deSelect(true);
+        this.interactables[1].deSelect(true);        
+
         this.vLab.SceneDispatcher.currentVLabScene.currentControls.resetAzimutalRestrictions();
     }
     hideAcusticStethoscopeOverlay() {
