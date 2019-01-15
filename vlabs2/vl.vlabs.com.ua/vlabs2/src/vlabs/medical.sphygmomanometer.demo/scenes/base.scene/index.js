@@ -63,18 +63,18 @@ class SphygmomanometerDemoScene extends VLabScene {
             name: 'AcusticStethoscopeVLabItem'
         });
 
-        this.maleBodyArmature_Bone002 = this.getObjectByName('maleBodyArmature_Bone002');
-        new TWEEN.Tween(this.maleBodyArmature_Bone002.quaternion)
-        .to({z: 0.25}, 1000)
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .delay(2000)
-        .onComplete(() => {
-            new TWEEN.Tween(this.maleBodyArmature_Bone002.quaternion)
-            .to({z: 0.2413}, 2000)
-            .easing(TWEEN.Easing.Quadratic.InOut)
-            .start();
-        })
-        .start();
+        // this.maleBodyArmature_Bone002 = this.getObjectByName('maleBodyArmature_Bone002');
+        // new TWEEN.Tween(this.maleBodyArmature_Bone002.quaternion)
+        // .to({z: 0.25}, 1000)
+        // .easing(TWEEN.Easing.Quadratic.InOut)
+        // .delay(2000)
+        // .onComplete(() => {
+        //     new TWEEN.Tween(this.maleBodyArmature_Bone002.quaternion)
+        //     .to({z: 0.2413}, 2000)
+        //     .easing(TWEEN.Easing.Quadratic.InOut)
+        //     .start();
+        // })
+        // .start();
     }
 
     onVLabItemInteractablesInitialized(event) {
