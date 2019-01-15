@@ -136,6 +136,68 @@ gulp.task('build', gulp.series('sync-vlab-assets',
     });
 }));
 
+gulp.task('create', function (done) {
+    console.log(color('Creating new VLab project...', 'YELLOW'));
+    var vLabProject = {};
+    var errors = [];
+    if (process.argv.indexOf('--vlab-alias') == -1) {
+        errors.push(color('--vlab-alias argument is missing!', 'RED'));
+    } else {
+        vLabProject.alias = process.argv[process.argv.indexOf('--vlab-alias') + 1];
+        let specialCharactersInAlias = vLabProject.alias.match(/.*[,\/\s\^\!;&`'"%:?*()=\\~@\t].*/ig);
+        if (specialCharactersInAlias) {
+            errors.push(color('--vlab-alias contains special character(s).', 'RED'));
+        }
+
+        vLabProject.path = './src/vlabs/' + vLabProject.alias;
+        if (fs.existsSync(vLabProject.path)) {
+            errors.push(color('VLab project could not be created! Directory [' + vLabProject.path + '] already exists.', 'RED'));
+        }
+    }
+    if (process.argv.indexOf('--vlab-name') == -1) {
+        errors.push(color('--vlab-name argument is missing!', 'RED'));
+    } else {
+        vLabProject.name = process.argv[process.argv.indexOf('--vlab-name') + 1];
+    }
+    if (errors.length > 0) {
+        for (error of errors) {
+            console.log(error);
+        }
+        process.exit();
+    }
+    console.log(vLabProject);
+
+    fs.mkdirSync(vLabProject.path);
+    console.log(color('VLab poroject [' + vLabProject.name + '] directory has been created under the path [' + vLabProject.path + '].', 'GREEN'));
+
+    /**
+     * VLab Project core structure
+     */
+
+    /**
+     * VLab "resources" directory
+     */
+    fs.mkdirSync(vLabProject.path + '/resources');
+
+    /**
+     * VLab "scenes" directory
+     */
+    fs.mkdirSync(vLabProject.path + '/scenes');
+
+    /**
+     * index.html
+     */
+    let index_html = fs.readFileSync('./src/vlab.fwk/utils/vlab.project.structure/index.html', 'utf8');
+    fs.writeFileSync(vLabProject.path + '/index.html', index_html);
+
+    /**
+     * index.js
+     */
+
+
+    done();
+});
+
 gulp.task('main', function (done) {
     var errors = [];
     if (process.argv.indexOf('--vlab') > -1)
