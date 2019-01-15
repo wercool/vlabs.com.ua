@@ -409,7 +409,7 @@ class PneumaticSphygmomanometer extends VLabItem {
                         // .easing(TWEEN.Easing.Elastic.InOut)
                         // .start();
                     } else {
-                        pneumaticSphygmomanometerMeterArrow.rotation.y += 0.00001;
+                        pneumaticSphygmomanometerMeterArrow.rotation.y += 0.00002;
                     }
                 } else {
                     this.systolicAudioPlaying = false;
@@ -435,13 +435,17 @@ class PneumaticSphygmomanometer extends VLabItem {
         this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
         let directionX = ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? 1 : -1);
         let directionZ = ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1);
+
+        let deltaX = Math.min(5, Math.abs(this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x));
+        let deltaZ = Math.min(5, Math.abs(this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y));
+
         let pneumaticSphygmomanometerMeterCasePlastic = this.vLabItemModel.getObjectByName('pneumaticSphygmomanometerMeterCasePlastic');
         if (event.event.touches !== undefined) {
-            pneumaticSphygmomanometerMeterCasePlastic.translateX(0.001 * directionX);
-            pneumaticSphygmomanometerMeterCasePlastic.translateZ(0.0005 * directionZ);
+            pneumaticSphygmomanometerMeterCasePlastic.translateX(0.0002 * directionX * deltaX);
+            pneumaticSphygmomanometerMeterCasePlastic.translateZ(0.0002 * directionZ * deltaZ);
         } else {
-            pneumaticSphygmomanometerMeterCasePlastic.translateX(0.004 * directionX);
-            pneumaticSphygmomanometerMeterCasePlastic.translateZ(0.001 * directionZ);
+            pneumaticSphygmomanometerMeterCasePlastic.translateX(0.0005 * directionX * deltaX);
+            pneumaticSphygmomanometerMeterCasePlastic.translateZ(0.0005 * directionZ * deltaZ);
         }
 
         this.updateTube();
