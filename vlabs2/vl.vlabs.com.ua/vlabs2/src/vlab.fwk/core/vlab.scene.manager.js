@@ -299,6 +299,7 @@ class VLabSceneManager {
         return new Promise((resolve, reject) => {
             HTTPUtils.getJSONFromURL(vLabScene.initObj.natureURL, this.vLab.getNaturePassphrase())
             .then((nature) => {
+                console.log(this.vLabScene.name + ' nature JSON', nature);
                 /**
                  * 
                  * VLabScene nature assigned from loaded JSON file here
@@ -340,6 +341,11 @@ class VLabSceneManager {
                                 }
                             );
                         });
+                    } else {
+                        /**
+                         * No 3D content in this.nature defined
+                         */
+                        resolve(true);
                     }
                 });
             });

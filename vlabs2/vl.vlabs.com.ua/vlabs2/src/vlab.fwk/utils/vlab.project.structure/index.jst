@@ -1,0 +1,56 @@
+import VLab from '../../vlab.fwk/core/vlab';
+
+/* @@VLAB_NAME@@ Scenes */
+import BaseScene from './scenes/base.scene/index';
+
+/**
+ * group: @@VLAB_GROUP@@
+ * alias: @@VLAB_ALIAS@@
+ * designation: @@VLAB_DESIGNATION@@
+ * name: @@VLAB_NAME@@
+ * @class
+ * @extends VLab
+ */
+class @@THIS_VLAB_CLASS_NAME@@ extends VLab {
+    /**
+     * @@THIS_VLAB_CLASS_NAME@@ constructor
+     * @constructor
+     * @param {Object} initObj                      - Initialization Object
+     * @param {string} initObj.name                 - VLab name
+     * @param {string} initObj.natureURL            - VLab nature JSON file URL
+     */
+    constructor(initObj = {}) {
+        super(initObj);
+        super.initialize().then((iniObj) => { this.bootstrap(iniObj); }, (error) => { console.error(error); });
+    }
+    /**
+     * i) VLab bootstrap. Loads and initializes Vlab Scenes, VLab Items, other shared VLab elements.
+     * i.1) VLab Items, shared between scenes, have to be defined here
+     * @async
+     * @memberof @@THIS_VLAB_CLASS_NAME@@
+     */
+    bootstrap(iniObj) {
+
+        /**
+         * @info trace @@THIS_VLAB_CLASS_NAME@@ (this vLab) object
+         */
+        console.log(this);
+
+        /**
+         * Base Scene
+         */
+        this.SceneDispatcher.addScene({
+            class: BaseScene,
+            natureURL: './scenes/base.scene/resources/vlab.scene.nature.json',
+            /**
+             * Set active: true for default (base) VLabScene
+             */
+            active: true
+        });
+    }
+}
+
+new @@THIS_VLAB_CLASS_NAME@@({
+    name: '@@VLAB_NAME@@',
+    natureURL: './resources/vlab.nature.json'
+});

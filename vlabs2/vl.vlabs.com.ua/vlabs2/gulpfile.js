@@ -17,6 +17,8 @@ const buffer                = require('vinyl-buffer');
 const jsdoc                 = require('gulp-jsdoc3');
 const zip                   = require('gulp-zip');
 const del                   = require('del');
+const rimraf                = require("rimraf");
+const recursivecopy         = require('recursive-copy');
 
 var initObj = {};
 
@@ -140,6 +142,7 @@ gulp.task('create', function (done) {
     console.log(color('Creating new VLab project...', 'YELLOW'));
     var vLabProject = {};
     var errors = [];
+
     if (process.argv.indexOf('--vlab-alias') == -1) {
         errors.push(color('--vlab-alias argument is missing!', 'RED'));
     } else {
@@ -149,9 +152,25 @@ gulp.task('create', function (done) {
             errors.push(color('--vlab-alias contains special character(s).', 'RED'));
         }
 
+        let vLabGroupEndIndex = vLabProject.alias.indexOf('.');
+        vLabProject.group = vLabProject.alias.substring(0, vLabGroupEndIndex);
+        vLabProject.designation = vLabProject.alias.substring(vLabGroupEndIndex + 1);
+        
+        let designationParts = vLabProject.alias.split('.');
+        vLabProject.baseClass = '';
+        designationParts.forEach(designationPart => {
+            vLabProject.baseClass += designationPart.charAt(0).toLocaleUpperCase() + designationPart.slice(1);
+        });
+
         vLabProject.path = './src/vlabs/' + vLabProject.alias;
         if (fs.existsSync(vLabProject.path)) {
-            errors.push(color('VLab project could not be created! Directory [' + vLabProject.path + '] already exists.', 'RED'));
+            if (process.argv.indexOf('--rmdir') != -1) {
+                console.log(color('Directory [' + vLabProject.path + '] attempt to remove...', 'YELLOW'));
+                rimraf.sync(vLabProject.path);
+                console.log(color('Directory [' + vLabProject.path + '] removed', 'BLUE'));
+            } else {
+                errors.push(color('VLab project could not be created! Directory [' + vLabProject.path + '] already exists.', 'RED'));
+            }
         }
     }
     if (process.argv.indexOf('--vlab-name') == -1) {
@@ -159,19 +178,25 @@ gulp.task('create', function (done) {
     } else {
         vLabProject.name = process.argv[process.argv.indexOf('--vlab-name') + 1];
     }
+    /**
+     * 
+     * If any errors in arguments
+     * 
+     */
     if (errors.length > 0) {
         for (error of errors) {
             console.log(error);
         }
         process.exit();
     }
+
     console.log(vLabProject);
 
     fs.mkdirSync(vLabProject.path);
     console.log(color('VLab poroject [' + vLabProject.name + '] directory has been created under the path [' + vLabProject.path + '].', 'GREEN'));
 
     /**
-     * VLab Project core structure
+     * VLab Project basic structure
      */
 
     /**
@@ -179,21 +204,54 @@ gulp.task('create', function (done) {
      */
     fs.mkdirSync(vLabProject.path + '/resources');
 
+    fs.copyFileSync('./src/vlab.fwk/utils/vlab.project.structure/resources/icon.png', vLabProject.path + '/resources/icon.png');
+    fs.copyFileSync('./src/vlab.fwk/utils/vlab.project.structure/resources/thumbnail.jpg', vLabProject.path + '/resources/thumbnail.jpg');
+
+    /**
+     * resources/vlab.nature.json <- from ./src/vlab.fwk/utils/vlab.project.structure/resources/vlab.nature.jsont
+     */
+    let vlab_nature_json = fs.readFileSync('./src/vlab.fwk/utils/vlab.project.structure/resources/vlab.nature.jsont', 'utf8');
+    /**
+     * Susbsitutes in vlab.nature.jsont
+     */
+    vlab_nature_json = vlab_nature_json.replace(/@@VLAB_NAME@@/g, vLabProject.name);
+
+    fs.writeFileSync(vLabProject.path + '/resources/vlab.nature.json', vlab_nature_json);
+
     /**
      * VLab "scenes" directory
      */
     fs.mkdirSync(vLabProject.path + '/scenes');
+    recursivecopy('./src/vlab.fwk/utils/vlab.project.structure/scenes/base.scene', vLabProject.path + '/scenes/base.scene');
+
 
     /**
-     * index.html
+     * root directory
      */
-    let index_html = fs.readFileSync('./src/vlab.fwk/utils/vlab.project.structure/index.html', 'utf8');
-    fs.writeFileSync(vLabProject.path + '/index.html', index_html);
+    /**
+     * index.html <- from index.htmlt
+     */
+    let index_htmlt = fs.readFileSync('./src/vlab.fwk/utils/vlab.project.structure/index.htmlt', 'utf8');
+    fs.writeFileSync(vLabProject.path + '/index.html', index_htmlt);
 
     /**
-     * index.js
+     * index.js <- from ./src/vlab.fwk/utils/vlab.project.structure/index.jst
      */
+    let index_jst = fs.readFileSync('./src/vlab.fwk/utils/vlab.project.structure/index.jst', 'utf8');
+    /**
+     * Susbsitutes in index.jst
+     */
+    index_jst = index_jst.replace(/@@VLAB_GROUP@@/g, vLabProject.group);
+    index_jst = index_jst.replace(/@@VLAB_ALIAS@@/g, vLabProject.alias);
+    index_jst = index_jst.replace(/@@VLAB_DESIGNATION@@/g, vLabProject.designation);
+    index_jst = index_jst.replace(/@@VLAB_NAME@@/g, vLabProject.name);
+    index_jst = index_jst.replace(/@@THIS_VLAB_CLASS_NAME@@/g, vLabProject.baseClass);
 
+    fs.writeFileSync(vLabProject.path + '/index.js', index_jst);
+
+    console.log('\nLaunch command:\n');
+    console.log('gulp --vlab ' + vLabProject.alias + ' --mode dev --noauth');
+    console.log('\n');
 
     done();
 });

@@ -204,7 +204,7 @@ class VLabScene extends THREE.Scene {
                         this['justLoaded'] = true;
 
                         /*<dev>*/
-                            var dummyObjectGeometry = new THREE.SphereBufferGeometry(0.005, 16, 16);
+                            var dummyObjectGeometry = new THREE.SphereBufferGeometry(0.005, 10, 10);
                             var dummyObjectMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
                             this.dummyObject = new THREE.Mesh(dummyObjectGeometry, dummyObjectMaterial);
                             this.dummyObject.name = 'dummyObject';
@@ -216,7 +216,7 @@ class VLabScene extends THREE.Scene {
                                 intersectable: true
                             }).then((dummyObjectInteractable) => {
                                 this.dummyObjectInteractable = dummyObjectInteractable;
-                                this.dummyObjectInteractable.vLabSceneObject.position.add(new THREE.Vector3(0.0, 1.5, 0.0));
+                                this.dummyObjectInteractable.vLabSceneObject.position.add(new THREE.Vector3(0.0, 0.0, 0.0));
                             });
                         /*</dev>*/
 
