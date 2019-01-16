@@ -440,5 +440,17 @@ class VLabOrbitControls extends VLabControls {
             }
         }
     }
+    /**
+     * wheel event type handler, invoked from {@link VLabSceneManager#onDefaultEventListener}
+     * @memberof VLabOrbitControls
+     */
+    wheelHandler(event) {
+        if (event.deltaY < 0) {
+            this.dollyIn();
+        } else if (event.deltaY > 0) {
+            this.dollyOut();
+        }
+        this.update();
+    }
 }
 export default VLabOrbitControls;

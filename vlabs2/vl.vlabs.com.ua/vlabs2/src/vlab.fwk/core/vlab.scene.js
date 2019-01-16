@@ -49,7 +49,7 @@ class VLabScene extends THREE.Scene {
          * @property {Object} [nature.controls.default.target]          - Scene default controls target for [orbit {@link VLabOrbitControls}]
          * @property {string} [nature.controls.default.target.vector3]  - Scene default controls target position THREE.Vector3; evaluated
          * @property {string} [nature.controls.default.target.object]   - Scene default controls target position will be cloned from VLabScene.getObjectByName(object) position
-         * @property {Array}  [nature.interactables]                    - Scene Interactable
+         * @property {Array}  [nature.interactables]                    - Scene Interactable {@link VLabSceneInteractable}
          * 
          */
         this.nature = {};
@@ -101,6 +101,7 @@ class VLabScene extends THREE.Scene {
                     mouseup:        this.onDefaultEventHandler,
                     mousemove:      this.onDefaultEventHandler,
                     mouseout:       this.onMouseOutEventHandler,
+                    wheel:          this.onDefaultEventHandler,
                     touchstart:     this.onDefaultEventHandler,
                     touchend:       this.onDefaultEventHandler,
                     touchmove:      this.onDefaultEventHandler,
