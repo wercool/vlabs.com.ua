@@ -311,7 +311,7 @@ class VLabSceneManager {
                     this.vLab.DOMManager.showSceneLoader(vLabScene);
                     this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderHint.innerHTML = (!this.vLabScene.initObj.autoload) ? 'Loading geometries...' : 'Autoloading of ' + vLabScene.nature.title + ' initiated...';
                     /* Load (GL Transmission Format) from gltfURL */
-                    if (vLabScene.nature.gltfURL) {
+                    if (vLabScene.nature.gltfURL && vLabScene.nature.gltfURL.length > 0) {
                         this.loadZIP(vLabScene.nature.gltfURL).then((gltfFile) => {
                             let loader = new GLTFLoader(self.loadingManager);
                             loader.load(

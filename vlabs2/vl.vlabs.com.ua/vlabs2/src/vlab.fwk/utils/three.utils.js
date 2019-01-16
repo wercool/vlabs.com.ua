@@ -112,11 +112,16 @@ export function conformMaterial(material, vLabScene) {
             let typeChanged = !(material instanceof THREE.MeshBasicMaterial);
             let _MeshBasicMaterial = (!typeChanged) ? material : new THREE.MeshBasicMaterial();
             if (typeChanged) {
-                _MeshBasicMaterial = ObjectUtils.assign(_MeshBasicMaterial, material);
+                // _MeshBasicMaterial = ObjectUtils.assign(_MeshBasicMaterial, material);
+
+                _MeshBasicMaterial.map = material.map;
                 _MeshBasicMaterial.type = 'MeshBasicMaterial';
             }
             if (material.userData.MaterialSide) {
                 _MeshBasicMaterial.side = material.userData.MaterialSide;
+            }
+            if (material.userData.colorIntensity) {
+                _MeshBasicMaterial.color = new THREE.Color(material.userData.colorIntensity, material.userData.colorIntensity, material.userData.colorIntensity);
             }
             _MeshBasicMaterial.userData = {};
             return _MeshBasicMaterial;
@@ -158,8 +163,13 @@ export function conformMaterial(material, vLabScene) {
                 _MeshStandardMaterial.side = material.userData.MaterialSide;
             }
             if (material.userData.NomralMapToBumpMap) {
-                _MeshStandardMaterial.bumpMap = _MeshStandardMaterial.normalMap;
-                _MeshStandardMaterial.bumpScale = material.userData.bumpScale;
+                /**
+                 * Do not use bump mapping if strictly defined in vLabScene.vLab.nature.materialParameters.bumpMaps
+                 */
+                if(vLabScene.vLab.nature.materialParameters && vLabScene.vLab.nature.materialParameters.bumpMaps !== false) {
+                    _MeshStandardMaterial.bumpMap = _MeshStandardMaterial.normalMap;
+                    _MeshStandardMaterial.bumpScale = material.userData.bumpScale;
+                }
                 _MeshStandardMaterial.normalMap = null;
             }
             if (material.userData.metalness) {

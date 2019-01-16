@@ -22,6 +22,15 @@ class DEVVLabSceneInteractable {
                 }
             },
             {
+                label: 'Trace vLabSceneObject',
+                enabled: true,
+                selected: false,
+                icon: '<i class=\"material-icons\">description</i>',
+                action: () => {
+                    console.log(this.vLabSceneInteractable.vLabSceneObject);
+                }
+            },
+            {
                 label: 'Trace Position',
                 enabled: true,
                 selected: false,

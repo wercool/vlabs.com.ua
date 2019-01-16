@@ -1,6 +1,7 @@
 {
     "title": "Base Scene",
     "description": "Base scene description...",
+    "gltfURL": "",
     "WebGLRendererParameters": {
         "clearColor": "0x0f0f0f"
     },

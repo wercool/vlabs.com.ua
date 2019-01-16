@@ -16,6 +16,7 @@
     "browserify": "^16.2.3",
     "cors": "^2.8.4",
     "del": "^3.0.0",
+    "event-stream": "^4.0.1",
     "file-system": "^2.2.2",
     "gulp": "^4.0.0",
     "gulp-babel": "^8.0.0",
