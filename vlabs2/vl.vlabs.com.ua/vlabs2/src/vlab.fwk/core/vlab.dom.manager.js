@@ -344,6 +344,13 @@ class VLabDOMManager {
      * Request fullscreen
      */
     requestFullscreen(event) {
+        let nowTime = Date.now();
+        var deltaTime = nowTime - ((this.requestFullscreenLastTime !== undefined) ? this.requestFullscreenLastTime : 0);
+        this.requestFullscreenLastTime = nowTime;
+        if (deltaTime < 500) {
+            return;
+        }
+
         event.stopPropagation();
         let fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
         // in fullscreen mode fullscreenElement won't be null
