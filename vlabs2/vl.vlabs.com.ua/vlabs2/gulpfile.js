@@ -139,6 +139,17 @@ gulp.task('build', gulp.series('sync-vlab-assets',
 }));
 
 gulp.task('create', function (done) {
+    if (process.argv.indexOf('--usage') != -1) {
+        console.log('Usage:\n');
+        console.log('gulp create \n\
+        --vlab-alias {group.vlab.name} \n\
+        --vlab-name {\'human readable VLab name\'} \n\
+        [--rmdir (removes VLab directory if exists)] \n\
+        [--gitignore (adds VLab directory to ./src/.gitignore)]\n');
+        done();
+        process.exit();
+    }
+
     console.log(color('Creating new VLab project...', 'YELLOW'));
     var vLabProject = {};
     var errors = [];
@@ -248,6 +259,14 @@ gulp.task('create', function (done) {
     index_jst = index_jst.replace(/@@THIS_VLAB_CLASS_NAME@@/g, vLabProject.baseClass);
 
     fs.writeFileSync(vLabProject.path + '/index.js', index_jst);
+
+    if (process.argv.indexOf('--gitignore') != -1) {
+        let gitignore = fs.readFileSync('./src/vlabs/.gitignore', 'utf8');
+        if (gitignore.indexOf(vLabProject.alias) == -1) {
+            gitignore += '\n' + vLabProject.alias;
+            fs.writeFileSync('./src/vlabs/.gitignore', gitignore);
+        }
+    }
 
     console.log('\nLaunch command:\n');
     console.log('gulp --vlab ' + vLabProject.alias + ' --mode dev --noauth');
