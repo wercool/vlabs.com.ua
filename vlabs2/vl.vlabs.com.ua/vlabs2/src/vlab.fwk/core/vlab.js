@@ -389,10 +389,6 @@ password: '123'
     requestAnimationFrame(time) {
         if (!this.renderPaused) {
             if (this.nature.simpleStats) this.DOMManager.simpleStats.begin();
-            this.EventDispatcher.notifySubscribers({
-                type: 'framerequest',
-                target: this.WebGLRendererCanvas
-            });
             this.render(time);
             TWEEN.update(time);
             if (this.nature.simpleStats) this.DOMManager.simpleStats.end();
@@ -417,6 +413,13 @@ password: '123'
             this.WebGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
         }
         this.fps = 1 / delta;
+
+        this.EventDispatcher.notifySubscribers({
+            type: 'framerequest',
+            target: this.WebGLRendererCanvas,
+            dt: delta
+        });
+
         requestAnimationFrame(this.requestAnimationFrame);
     }
 }
