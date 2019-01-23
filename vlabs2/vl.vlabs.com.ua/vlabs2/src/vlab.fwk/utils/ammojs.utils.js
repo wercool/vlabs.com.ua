@@ -58,12 +58,12 @@ export class AmmoJSRaycastVehicle {
 				var chassisHeight = .6;
 				var chassisLength = 4;
 				var massVehicle = 800;
-				var wheelAxisPositionBack = -1;
+				var wheelAxisPositionBack = -1.5;
 				var wheelRadiusBack = .4;
 				var wheelWidthBack = .3;
 				var wheelHalfTrackBack = 1;
 				var wheelAxisHeightBack = .3;
-				var wheelAxisFrontPosition = 1.7;
+				var wheelAxisFrontPosition = 1.5;
 				var wheelHalfTrackFront = 1;
 				var wheelAxisHeightFront = .3;
 				var wheelRadiusFront = .35;
