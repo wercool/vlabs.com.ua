@@ -49,6 +49,18 @@ class BaseScene extends VLabScene {
          */
         this.onAmmoJSReady = this.onAmmoJSReady.bind(this);
         Ammo().then(this.onAmmoJSReady);
+        /**
+         * Subscribe on events
+         */
+        this.vLab.EventDispatcher.subscribe({
+            subscriber: this,
+            events: {
+                window: {
+                    keydown: this.onKeyDown,
+                    keyup: this.onKeyUp
+                }
+            }
+        });
     }
     /**
      * onAmmoJSReady
@@ -96,7 +108,7 @@ class BaseScene extends VLabScene {
 // ground
 let groundGeometry = new THREE.BoxGeometry(1, 0.001, 1);
 groundGeometry.computeBoundingBox();
-var groundMaterial = new THREE.MeshLambertMaterial({color: 0x454545});
+var groundMaterial = new THREE.MeshLambertMaterial({color: 0x021010});
 let groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
 groundMesh.position.copy(new THREE.Vector3(0.0, -0.0005, 0.0));
 groundMesh.quaternion.copy(new THREE.Quaternion(0.0, 0.0, 0.0, 1.0));
@@ -126,18 +138,36 @@ this.ammoBodies.push(ammoBody);
 
         this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.sync();
 
-        this.ammoBodies.forEach(ammoBody => {
-            if (ammoBody.mass > 0.0) {
-                let ms = ammoBody.body.getMotionState();
-                ms.getWorldTransform(this.PhysicsConfiguration.AMMO_TRANSFORM_AUX);
-                var p = this.PhysicsConfiguration.AMMO_TRANSFORM_AUX.getOrigin();
-                var q = this.PhysicsConfiguration.AMMO_TRANSFORM_AUX.getRotation();
-                ammoBody.mesh.position.set(p.x(), p.y(), p.z());
-                ammoBody.mesh.quaternion.set(q.x(), q.y(), q.z(), q.w());
-            }
-        });
+        // this.ammoBodies.forEach(ammoBody => {
+        //     if (ammoBody.mass > 0.0) {
+        //         let ms = ammoBody.body.getMotionState();
+        //         ms.getWorldTransform(this.PhysicsConfiguration.AMMO_TRANSFORM_AUX);
+        //         var p = this.PhysicsConfiguration.AMMO_TRANSFORM_AUX.getOrigin();
+        //         var q = this.PhysicsConfiguration.AMMO_TRANSFORM_AUX.getRotation();
+        //         ammoBody.mesh.position.set(p.x(), p.y(), p.z());
+        //         ammoBody.mesh.quaternion.set(q.x(), q.y(), q.z(), q.w());
+        //     }
+        // });
 
         this.PhysicsConfiguration.physicsWorld.stepSimulation(params.dt, 10);
+    }
+    onKeyDown(event) {
+        switch (event.key) {
+            case 'ArrowUp':
+                this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.engineForce += 0.005;
+            break;
+            case 'ArrowDown':
+                this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.engineForce -= 0.0025;
+                this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.breakingForce += 0.01;
+            break;
+        }
+    }
+    onKeyUp(event) {
+        switch (event.key) {
+            case 'ArrowUp':
+                
+            break;
+        }
     }
 }
 

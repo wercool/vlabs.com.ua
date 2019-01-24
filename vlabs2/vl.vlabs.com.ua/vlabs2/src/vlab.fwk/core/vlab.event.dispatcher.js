@@ -24,6 +24,7 @@ class VLabEventDispatcher {
             window: {
                 resize:     {},
                 keydown:    {},
+                keyup:      {},
                 message:    {}
             },
             document: {
@@ -120,6 +121,7 @@ class VLabEventDispatcher {
 
         window.addEventListener('resize',   this.onWindowResize.bind(this),     false);
         window.addEventListener('keydown',  this.onWindowKeyDown.bind(this),    false);
+        window.addEventListener('keyup',    this.onWindowKeyUp.bind(this),    false);
         window.addEventListener('message',  this.onWindowMessage.bind(this),    false);
 
         /**
@@ -182,6 +184,7 @@ class VLabEventDispatcher {
     notifySubscribers(event) {
         switch (event.target) {
             case window:
+            case window.document.body: 
                 for (let eventSubscriberName in this.eventSubscribers['window'][event.type]) {
                     this.eventSubscribers['window'][event.type][eventSubscriberName].callback.call(this.eventSubscribers['window'][event.type][eventSubscriberName].subscriber, event);
                 }
@@ -246,6 +249,9 @@ class VLabEventDispatcher {
         this.notifySubscribers(event);
     }
     onWindowKeyDown(event) {
+        this.notifySubscribers(event);
+    }
+    onWindowKeyUp(event) {
         this.notifySubscribers(event);
     }
     onWindowMessage(event) {

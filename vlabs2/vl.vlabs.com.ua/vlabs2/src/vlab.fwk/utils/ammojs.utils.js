@@ -77,6 +77,9 @@ export class AmmoJSRaycastVehicle {
         this.addWheel(true, 1);
         this.addWheel(true, 2);
         this.addWheel(true, 3);
+
+        this.engineForce = 0.0;
+        this.breakingForce = 0.0;
     }
 
     addWheel(isFront, index) {
@@ -111,16 +114,16 @@ export class AmmoJSRaycastVehicle {
         this.initObj.vLabScene.add(wheelMesh);
     }
     sync() {
-        let engineForce = 0;
         let vehicleSteering = 0;
-        let breakingForce = 0;
 
-        this.vehicle.applyEngineForce(engineForce, 2);
-        this.vehicle.applyEngineForce(engineForce, 3);
-        this.vehicle.setBrake(breakingForce / 2, 0);
-        this.vehicle.setBrake(breakingForce / 2, 1);
-        this.vehicle.setBrake(breakingForce, 2);
-        this.vehicle.setBrake(breakingForce, 3);
+        this.vehicle.applyEngineForce(this.engineForce, 0);
+        this.vehicle.applyEngineForce(this.engineForce, 1);
+
+        this.vehicle.setBrake(this.breakingForce / 2, 0);
+        this.vehicle.setBrake(this.breakingForce / 2, 1);
+        this.vehicle.setBrake(this.breakingForce, 2);
+        this.vehicle.setBrake(this.breakingForce, 3);
+
         this.vehicle.setSteeringValue(vehicleSteering, 0);
         this.vehicle.setSteeringValue(vehicleSteering, 1);
 
