@@ -10,14 +10,9 @@
             "type": "PerspectiveCamera",
             "name": "Camera",
             "position": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-            },
-            "_position": {
-                "x": 10.0,
-                "y": 10.0,
-                "z": 10.0
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
             },
             "target": {
                 "x": 0.0,

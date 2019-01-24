@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-export function ammoBoxShapeBody(params) {
+export function ammoJSBoxShapeBody(params) {
     params.mesh.geometry.computeBoundingBox();
     let meshBoundingBoxGeometry = new THREE.BoxGeometry(
         params.mesh.geometry.boundingBox.max.x - params.mesh.geometry.boundingBox.min.x, 
@@ -49,139 +49,97 @@ export function ammoBoxShapeBody(params) {
 export class AmmoJSRaycastVehicle {
     constructor(initObj) {
         this.initObj = initObj;
-        console.log(this.initObj);
 
-                var materialInteractive = new THREE.MeshPhongMaterial( { color:0x990000 } );
+        // Chassis
+        this.chassis = ammoJSBoxShapeBody({
+            mesh: this.initObj.vehicleMeshes.chassis,
+            mass: 0.2,
+            friction: 0.1,
+            deactivation: this.initObj.physicsConfiguration.AMMO_DISABLE_DEACTIVATION
+        });
+        this.initObj.physicsConfiguration.physicsWorld.addRigidBody(this.chassis.body);
 
-				// Vehicle contants
-				var chassisWidth = 1.8;
-				var chassisHeight = .6;
-				var chassisLength = 4;
-				var massVehicle = 800;
-				var wheelAxisPositionBack = -1.5;
-				var wheelRadiusBack = .4;
-				var wheelWidthBack = .3;
-				var wheelHalfTrackBack = 1;
-				var wheelAxisHeightBack = .3;
-				var wheelAxisFrontPosition = 1.5;
-				var wheelHalfTrackFront = 1;
-				var wheelAxisHeightFront = .3;
-				var wheelRadiusFront = .35;
-				var wheelWidthFront = .2;
-				var friction = 1000;
-				var suspensionStiffness = 20.0;
-				var suspensionDamping = 2.3;
-				var suspensionCompression = 4.4;
-				var suspensionRestLength = 0.6;
-				var rollInfluence = 0.2;
-				var steeringIncrement = .04;
-				var steeringClamp = .5;
-				var maxEngineForce = 2000;
-				var maxBreakingForce = 100;
+        // Raycast Vehicle
+        this.tuning = new Ammo.btVehicleTuning();
+        this.rayCaster = new Ammo.btDefaultVehicleRaycaster(this.initObj.physicsConfiguration.physicsWorld);
+        this.vehicle = new Ammo.btRaycastVehicle(this.tuning, this.chassis.body, this.rayCaster);
+        this.vehicle.setCoordinateSystem(0, 1, 2);
+        this.initObj.physicsConfiguration.physicsWorld.addAction(this.vehicle);
 
-                function createChassisMesh(w, l, h) {
-                    var shape = new THREE.BoxGeometry(w, l, h, 1, 1, 1);
-                    var mesh = new THREE.Mesh(shape, materialInteractive);
-                    initObj.vLabScene.add(mesh);
-                    return mesh;
-                }
-
-				// Chassis
-				var geometry = new Ammo.btBoxShape(new Ammo.btVector3(chassisWidth * .5, chassisHeight * .5, chassisLength * .5));
-				var transform = new Ammo.btTransform();
-				transform.setIdentity();
-				transform.setOrigin(new Ammo.btVector3(this.initObj.vehiclePos.x, this.initObj.vehiclePos.y, this.initObj.vehiclePos.z));
-				transform.setRotation(new Ammo.btQuaternion(this.initObj.vehicleQuat.x, this.initObj.vehicleQuat.y, this.initObj.vehicleQuat.z, this.initObj.vehicleQuat.w));
-				var motionState = new Ammo.btDefaultMotionState(transform);
-				var localInertia = new Ammo.btVector3(0, 0, 0);
-				geometry.calculateLocalInertia(massVehicle, localInertia);
-				var body = new Ammo.btRigidBody(new Ammo.btRigidBodyConstructionInfo(massVehicle, motionState, geometry, localInertia));
-				body.setActivationState(4);
-				this.initObj.physicsConfiguration.physicsWorld.addRigidBody(body);
-				var chassisMesh = createChassisMesh(chassisWidth, chassisHeight, chassisLength);
-
-				// Raycast Vehicle
-				var engineForce = 0;
-				var vehicleSteering = 0;
-				var breakingForce = 0;
-				var tuning = new Ammo.btVehicleTuning();
-				var rayCaster = new Ammo.btDefaultVehicleRaycaster(this.initObj.physicsConfiguration.physicsWorld);
-				var vehicle = new Ammo.btRaycastVehicle(tuning, body, rayCaster);
-				vehicle.setCoordinateSystem(0, 1, 2);
-				this.initObj.physicsConfiguration.physicsWorld.addAction(vehicle);
-
-				// Wheels
-				var wheelMeshes = [];
-				var FRONT_LEFT = 0;
-				var FRONT_RIGHT = 1;
-				var BACK_LEFT = 2;
-				var BACK_RIGHT = 3;
-				var wheelMeshes = [];
-				var wheelDirectionCS0 = new Ammo.btVector3(0, -1, 0);
-				var wheelAxleCS = new Ammo.btVector3(-1, 0, 0);
-
-                function createWheelMesh(radius, width) {
-                    var t = new THREE.CylinderGeometry(radius, radius, width, 24, 1);
-                    t.rotateZ(Math.PI / 2);
-                    var mesh = new THREE.Mesh(t, materialInteractive);
-                    mesh.add(new THREE.Mesh(new THREE.BoxGeometry(width * 1.5, radius * 1.75, radius*.25, 1, 1, 1), materialInteractive));
-                    initObj.vLabScene.add(mesh);
-                    return mesh;
-                }
-
-				function addWheel(isFront, pos, radius, width, index) {
-					var wheelInfo = vehicle.addWheel(
-							pos,
-							wheelDirectionCS0,
-							wheelAxleCS,
-							suspensionRestLength,
-							radius,
-							tuning,
-							isFront);
-					wheelInfo.set_m_suspensionStiffness(suspensionStiffness);
-					wheelInfo.set_m_wheelsDampingRelaxation(suspensionDamping);
-					wheelInfo.set_m_wheelsDampingCompression(suspensionCompression);
-					wheelInfo.set_m_frictionSlip(friction);
-					wheelInfo.set_m_rollInfluence(rollInfluence);
-					wheelMeshes[index] = createWheelMesh(radius, width);
-				}
-
-				addWheel(true, new Ammo.btVector3(wheelHalfTrackFront, wheelAxisHeightFront, wheelAxisFrontPosition), wheelRadiusFront, wheelWidthFront, FRONT_LEFT);
-				addWheel(true, new Ammo.btVector3(-wheelHalfTrackFront, wheelAxisHeightFront, wheelAxisFrontPosition), wheelRadiusFront, wheelWidthFront, FRONT_RIGHT);
-				addWheel(false, new Ammo.btVector3(-wheelHalfTrackBack, wheelAxisHeightBack, wheelAxisPositionBack), wheelRadiusBack, wheelWidthBack, BACK_LEFT);
-				addWheel(false, new Ammo.btVector3(wheelHalfTrackBack, wheelAxisHeightBack, wheelAxisPositionBack), wheelRadiusBack, wheelWidthBack, BACK_RIGHT);
-
-                this.sync = function() {
-
-					breakingForce = 0;
-					engineForce = 0;
-
-					vehicle.applyEngineForce(engineForce, BACK_LEFT);
-					vehicle.applyEngineForce(engineForce, BACK_RIGHT);
-					vehicle.setBrake(breakingForce / 2, FRONT_LEFT);
-					vehicle.setBrake(breakingForce / 2, FRONT_RIGHT);
-					vehicle.setBrake(breakingForce, BACK_LEFT);
-					vehicle.setBrake(breakingForce, BACK_RIGHT);
-					vehicle.setSteeringValue(vehicleSteering, FRONT_LEFT);
-					vehicle.setSteeringValue(vehicleSteering, FRONT_RIGHT);
-
-					var tm, p, q, i;
-					var n = vehicle.getNumWheels();
-					for (i = 0; i < n; i++) {
-						vehicle.updateWheelTransform(i, true);
-						tm = vehicle.getWheelTransformWS(i);
-						p = tm.getOrigin();
-						q = tm.getRotation();
-						wheelMeshes[i].position.set(p.x(), p.y(), p.z());
-						wheelMeshes[i].quaternion.set(q.x(), q.y(), q.z(), q.w());
-					}
-
-
-					tm = vehicle.getChassisWorldTransform();
-					p = tm.getOrigin();
-					q = tm.getRotation();
-					chassisMesh.position.set(p.x(), p.y(), p.z());
-					chassisMesh.quaternion.set(q.x(), q.y(), q.z(), q.w());
-                }
+        // Wheels
+        this.wheelMeshes = [
+            this.initObj.vehicleMeshes.wheelFL,
+            this.initObj.vehicleMeshes.wheelFR,
+            this.initObj.vehicleMeshes.wheelRL,
+            this.initObj.vehicleMeshes.wheelRR,
+        ];
+        this.addWheel(true, 0);
+        this.addWheel(true, 1);
+        this.addWheel(true, 2);
+        this.addWheel(true, 3);
     }
+
+    addWheel(isFront, index) {
+        let wheelMesh = this.wheelMeshes[index];
+        wheelMesh.geometry.computeBoundingBox();
+
+        let radius = (wheelMesh.geometry.boundingBox.max.y - wheelMesh.geometry.boundingBox.min.y) * 0.5;
+        let wheelDirectionCS0 = new Ammo.btVector3(0, -1, 0);
+        let wheelAxleCS = new Ammo.btVector3(-1, 0, 0);
+        let suspensionRestLength = 0.005;
+        let suspensionStiffness = 20.0;
+        let suspensionDamping = 2.3;
+        let suspensionCompression = 4.4;
+        let friction = 1000;
+        let rollInfluence = 0.2;
+
+        let wheelInfo = this.vehicle.addWheel(
+                        new Ammo.btVector3(wheelMesh.position.x, wheelMesh.position.y, wheelMesh.position.z),
+                        wheelDirectionCS0,
+                        wheelAxleCS,
+                        suspensionRestLength,
+                        radius,
+                        this.tuning,
+                        isFront);
+        wheelInfo.set_m_suspensionStiffness(suspensionStiffness);
+        wheelInfo.set_m_wheelsDampingRelaxation(suspensionDamping);
+        wheelInfo.set_m_wheelsDampingCompression(suspensionCompression);
+        wheelInfo.set_m_frictionSlip(friction);
+        wheelInfo.set_m_rollInfluence(rollInfluence);
+        
+        this.chassis.mesh.remove(wheelMesh);
+        this.initObj.vLabScene.add(wheelMesh);
+    }
+    sync() {
+        let engineForce = 0;
+        let vehicleSteering = 0;
+        let breakingForce = 0;
+
+        this.vehicle.applyEngineForce(engineForce, 2);
+        this.vehicle.applyEngineForce(engineForce, 3);
+        this.vehicle.setBrake(breakingForce / 2, 0);
+        this.vehicle.setBrake(breakingForce / 2, 1);
+        this.vehicle.setBrake(breakingForce, 2);
+        this.vehicle.setBrake(breakingForce, 3);
+        this.vehicle.setSteeringValue(vehicleSteering, 0);
+        this.vehicle.setSteeringValue(vehicleSteering, 1);
+
+        let tm, p, q, i;
+        let n = this.vehicle.getNumWheels();
+        for (i = 0; i < n; i++) {
+            this.vehicle.updateWheelTransform(i, true);
+            tm = this.vehicle.getWheelTransformWS(i);
+            p = tm.getOrigin();
+            q = tm.getRotation();
+            this.wheelMeshes[i].position.set(p.x(), p.y(), p.z());
+            this.wheelMeshes[i].quaternion.set(q.x(), q.y(), q.z(), q.w());
+        }
+
+        tm = this.vehicle.getChassisWorldTransform();
+        p = tm.getOrigin();
+        q = tm.getRotation();
+        this.chassis.mesh.position.set(p.x(), p.y(), p.z());
+        this.chassis.mesh.quaternion.set(q.x(), q.y(), q.z(), q.w());
+    }
+
 }
