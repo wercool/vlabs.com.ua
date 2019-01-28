@@ -59,6 +59,11 @@ export class AmmoJSRaycastVehicle {
         });
         this.initObj.physicsConfiguration.physicsWorld.addRigidBody(this.chassis.body);
 
+        // Set pointer back to the three object only in the debris objects
+        let btVecUserData = new Ammo.btVector3(0, 0, 0);
+        btVecUserData.threeObject = this.chassis.mesh;
+        this.chassis.body.setUserPointer(btVecUserData);
+
         // Raycast Vehicle
         this.tuning = new Ammo.btVehicleTuning();
         this.rayCaster = new Ammo.btDefaultVehicleRaycaster(this.initObj.physicsConfiguration.physicsWorld);

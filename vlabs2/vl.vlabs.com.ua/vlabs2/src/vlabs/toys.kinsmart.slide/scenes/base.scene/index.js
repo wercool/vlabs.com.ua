@@ -21,7 +21,6 @@ class BaseScene extends VLabScene {
          * dummyObject
          */
         this.dummyObject.position.copy(new THREE.Vector3(0.1, 0.1, 0.1));
-        console.log(this.dummyObject);
         /*</dev>*/
 
         this.vLab.WebGLRenderer.gammaFactor = 1.5;
@@ -86,6 +85,7 @@ class BaseScene extends VLabScene {
      * onAmmoJSReady
      */
     onAmmoJSReady(Ammo) {
+        this.Ammo = Ammo;
         /**
          * Physics configuration
          */
@@ -170,6 +170,19 @@ this.ammoBodies.push(ammoBody);
         this.ammoSyncs.forEach(ammoSync => {
             ammoSync.sync();
         });
+
+        for (let i = 0, il = this.PhysicsConfiguration.dispatcher.getNumManifolds(); i < il; i ++) {
+            let contactManifold = this.PhysicsConfiguration.dispatcher.getManifoldByIndexInternal(i);
+            let rb0 = contactManifold.getBody0();
+            let rb1 = contactManifold.getBody1();
+
+            let threeObject0 = this.Ammo.castObject(rb0.getUserPointer(), this.Ammo.btVector3).threeObject;
+            let threeObject1 = this.Ammo.castObject(rb1.getUserPointer(), this.Ammo.btVector3).threeObject;
+
+            if (threeObject1) {
+                // console.log(threeObject1);
+            }
+        }
 
         // this.ammoBodies.forEach(ammoBody => {
         //     if (ammoBody.mass > 0.0) {
