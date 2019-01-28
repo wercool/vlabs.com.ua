@@ -273,6 +273,10 @@ password: '123'
             if (this.nature.WebGLRendererParameters) {
                 if (this.nature.WebGLRendererParameters.clearColor)
                     this.WebGLRenderer.setClearColor(parseInt(this.nature.WebGLRendererParameters.clearColor));
+                if (this.nature.WebGLRendererParameters.shadowMap == true) {
+                    this.WebGLRenderer.shadowMap.enabled = true;
+                    this.WebGLRenderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+                }
             }
             /** Configures THREE.WebGLRenderer according to this.SceneDispatcher.currentVLabScene.nature.WebGLRendererParameters
              *  if this.SceneDispatcher.currentVLabScene.nature is defined

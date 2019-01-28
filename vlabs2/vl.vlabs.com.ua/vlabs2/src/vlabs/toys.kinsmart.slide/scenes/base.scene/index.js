@@ -21,15 +21,23 @@ class BaseScene extends VLabScene {
          * dummyObject
          */
         this.dummyObject.position.copy(new THREE.Vector3(0.1, 0.1, 0.1));
+        console.log(this.dummyObject);
         /*</dev>*/
 
         this.vLab.WebGLRenderer.gammaFactor = 1.5;
 
-        this.ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+        this.ambientLight = new THREE.AmbientLight(0x404040, 0.75);
         this.add(this.ambientLight);
 
-        this.pointLight = new THREE.PointLight(0xffffff, 5.0);
+        this.pointLight = new THREE.PointLight(0xffffff, 2.0);
         this.pointLight.position.copy(new THREE.Vector3(0.0, 2.0, 0.0));
+        this.pointLight.castShadow = true;
+        this.pointLight.shadow.camera.near = 0.1;
+        this.pointLight.shadow.camera.far = 3.0;
+        this.pointLight.shadow.bias = - 0.005; // reduces self-shadowing on double-sided objects
+        this.pointLight.shadow.mapSize.width = 1204;  // default 512
+        this.pointLight.shadow.mapSize.height = 1024; // default 512
+
         this.add(this.pointLight);
 
         /**
@@ -43,6 +51,7 @@ class BaseScene extends VLabScene {
             wheelRR: this.getObjectByName('LamborghiniMiura1971P400SV').getObjectByName('LamborghiniMiura1971P400SV_wheelRR')
         };
         this.LamborghiniMiura1971P400SV.chassis.position.add(new THREE.Vector3(0.0, 0.05, 0.0));
+        this.LamborghiniMiura1971P400SV.chassis.castShadow = true;
 
         this.Volkswagen1963BusDoublePickup = {
             chassis: this.getObjectByName('Volkswagen1963BusDoublePickup'),
@@ -51,7 +60,8 @@ class BaseScene extends VLabScene {
             wheelRL: this.getObjectByName('Volkswagen1963BusDoublePickup').getObjectByName('Volkswagen1963BusDoublePickup_wheelRL'),
             wheelRR: this.getObjectByName('Volkswagen1963BusDoublePickup').getObjectByName('Volkswagen1963BusDoublePickup_wheelRR')
         };
-        this.Volkswagen1963BusDoublePickup.chassis.position.add(new THREE.Vector3(0.0, 0.05, 0.0));
+        this.Volkswagen1963BusDoublePickup.chassis.position.add(new THREE.Vector3(0.25, 0.05, 0.3));
+        this.Volkswagen1963BusDoublePickup.chassis.quaternion.copy(new THREE.Quaternion(0.0, THREE.Math.degToRad(-45.0), 0.0, 1.0));
 
         /**
          * Initialize AmmoJS
@@ -127,12 +137,13 @@ class BaseScene extends VLabScene {
         this.ammoSyncs.push(this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle);
 
 // ground
-let groundGeometry = new THREE.BoxGeometry(1, 0.001, 1);
+let groundGeometry = new THREE.BoxGeometry(2.0, 0.001, 2.0);
 groundGeometry.computeBoundingBox();
 var groundMaterial = new THREE.MeshLambertMaterial({color: 0x021010});
 let groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
 groundMesh.position.copy(new THREE.Vector3(0.0, -0.0005, 0.0));
 groundMesh.quaternion.copy(new THREE.Quaternion(0.0, 0.0, 0.0, 1.0));
+groundMesh.receiveShadow = true;
 this.add(groundMesh);
 ammoBody = AmmoJSUTILS.ammoJSBoxShapeBody({
     mesh: groundMesh,
@@ -179,16 +190,15 @@ this.ammoBodies.push(ammoBody);
     onKeyDown(event) {
         switch (event.key) {
             case 'ArrowUp':
-                this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.engineForce += 0.005;
-
-                this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle.engineForce += 0.005;
+                this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.engineForce     += 0.0025;
+                this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle.engineForce  += 0.0025;
             break;
             case 'ArrowDown':
-                this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.engineForce -= 0.0025;
-                this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.breakingForce += 0.01;
+                this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.engineForce     -= 0.0025;
+                this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle.engineForce  -= 0.0025;
 
-                this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle.engineForce -= 0.0025;
-                this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle.breakingForce += 0.01;
+                this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.breakingForce       += 0.01;
+                this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle.breakingForce    += 0.01;
             break;
         }
     }
@@ -198,7 +208,12 @@ this.ammoBodies.push(ammoBody);
     onKeyUp(event) {
         switch (event.key) {
             case 'ArrowUp':
-                
+            case 'ArrowDown':
+                this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.breakingForce       = 0.00025;
+                this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle.breakingForce    = 0.00025;
+
+                this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.engineForce     = 0.0;
+                this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle.engineForce  = 0.0;
             break;
         }
     }
