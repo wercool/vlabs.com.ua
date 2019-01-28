@@ -37,18 +37,28 @@ class BaseScene extends VLabScene {
          */
         this.LamborghiniMiura1971P400SV = {
             chassis: this.getObjectByName('LamborghiniMiura1971P400SV'),
-            wheelFL: this.getObjectByName('LamborghiniMiura1971P400SV').getObjectByName('wheelFL'),
-            wheelFR: this.getObjectByName('LamborghiniMiura1971P400SV').getObjectByName('wheelFR'),
-            wheelRL: this.getObjectByName('LamborghiniMiura1971P400SV').getObjectByName('wheelRL'),
-            wheelRR: this.getObjectByName('LamborghiniMiura1971P400SV').getObjectByName('wheelRR')
+            wheelFL: this.getObjectByName('LamborghiniMiura1971P400SV').getObjectByName('LamborghiniMiura1971P400SV_wheelFL'),
+            wheelFR: this.getObjectByName('LamborghiniMiura1971P400SV').getObjectByName('LamborghiniMiura1971P400SV_wheelFR'),
+            wheelRL: this.getObjectByName('LamborghiniMiura1971P400SV').getObjectByName('LamborghiniMiura1971P400SV_wheelRL'),
+            wheelRR: this.getObjectByName('LamborghiniMiura1971P400SV').getObjectByName('LamborghiniMiura1971P400SV_wheelRR')
         };
         this.LamborghiniMiura1971P400SV.chassis.position.add(new THREE.Vector3(0.0, 0.05, 0.0));
+
+        this.Volkswagen1963BusDoublePickup = {
+            chassis: this.getObjectByName('Volkswagen1963BusDoublePickup'),
+            wheelFL: this.getObjectByName('Volkswagen1963BusDoublePickup').getObjectByName('Volkswagen1963BusDoublePickup_wheelFL'),
+            wheelFR: this.getObjectByName('Volkswagen1963BusDoublePickup').getObjectByName('Volkswagen1963BusDoublePickup_wheelFR'),
+            wheelRL: this.getObjectByName('Volkswagen1963BusDoublePickup').getObjectByName('Volkswagen1963BusDoublePickup_wheelRL'),
+            wheelRR: this.getObjectByName('Volkswagen1963BusDoublePickup').getObjectByName('Volkswagen1963BusDoublePickup_wheelRR')
+        };
+        this.Volkswagen1963BusDoublePickup.chassis.position.add(new THREE.Vector3(0.0, 0.05, 0.0));
 
         /**
          * Initialize AmmoJS
          */
         this.onAmmoJSReady = this.onAmmoJSReady.bind(this);
         Ammo().then(this.onAmmoJSReady);
+
         /**
          * Subscribe on events
          */
@@ -96,14 +106,25 @@ class BaseScene extends VLabScene {
     prepareAmmoJSBodies() {
         this.ammoBodies = [];
         let ammoBody;
+        this.ammoSyncs = [];
 
         this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle = new AmmoJSUTILS.AmmoJSRaycastVehicle({
             vLabScene: this,
             vehicleMeshes: this.LamborghiniMiura1971P400SV,
-            vehiclePos: new THREE.Vector3(0.0, 2.0, 0.0),
+            vehiclePos: new THREE.Vector3(0.0, 0.0, 0.0),
             vehicleQuat: new THREE.Quaternion(0.0, 0.0, 0.0, 1.0),
             physicsConfiguration: this.PhysicsConfiguration
         });
+        this.ammoSyncs.push(this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle);
+
+        this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle = new AmmoJSUTILS.AmmoJSRaycastVehicle({
+            vLabScene: this,
+            vehicleMeshes: this.Volkswagen1963BusDoublePickup,
+            vehiclePos: new THREE.Vector3(0.0, 0.0, 0.0),
+            vehicleQuat: new THREE.Quaternion(0.0, 0.0, 0.0, 1.0),
+            physicsConfiguration: this.PhysicsConfiguration
+        });
+        this.ammoSyncs.push(this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle);
 
 // ground
 let groundGeometry = new THREE.BoxGeometry(1, 0.001, 1);
@@ -135,8 +156,9 @@ this.ammoBodies.push(ammoBody);
      * onFramerequest
      */
     onFramerequest(params) {
-
-        this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.sync();
+        this.ammoSyncs.forEach(ammoSync => {
+            ammoSync.sync();
+        });
 
         // this.ammoBodies.forEach(ammoBody => {
         //     if (ammoBody.mass > 0.0) {
@@ -151,17 +173,28 @@ this.ammoBodies.push(ammoBody);
 
         this.PhysicsConfiguration.physicsWorld.stepSimulation(params.dt, 10);
     }
+    /**
+     * onKeyDown subscribtion
+     */
     onKeyDown(event) {
         switch (event.key) {
             case 'ArrowUp':
                 this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.engineForce += 0.005;
+
+                this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle.engineForce += 0.005;
             break;
             case 'ArrowDown':
                 this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.engineForce -= 0.0025;
                 this.LamborghiniMiura1971P400SVAmmoJSRaycastVehicle.breakingForce += 0.01;
+
+                this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle.engineForce -= 0.0025;
+                this.Volkswagen1963BusDoublePickupAmmoJSRaycastVehicle.breakingForce += 0.01;
             break;
         }
     }
+    /**
+     * onKeyUp subscribtion
+     */
     onKeyUp(event) {
         switch (event.key) {
             case 'ArrowUp':

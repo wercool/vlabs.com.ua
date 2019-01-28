@@ -1,19 +1,19 @@
 import VLab from '../../vlab.fwk/core/vlab';
 
-/* Kinsmart Lamborghini Miura 1971 P400 SV Scenes */
+/* Kinsmart on a slide Scenes */
 import BaseScene from './scenes/base.scene/index';
 
 /**
  * group: toys
- * alias: toys.kinsmart.lamborghiniMiura1971P400SV
- * designation: kinsmart.lamborghiniMiura1971P400SV
- * name: Kinsmart Lamborghini Miura 1971 P400 SV
+ * alias: toys.kinsmart.slide
+ * designation: kinsmart.slide
+ * name: Kinsmart on a slide
  * @class
  * @extends VLab
  */
-class ToysKinsmartLamborghiniMiura1971P400SV extends VLab {
+class ToysKinsmartSlide extends VLab {
     /**
-     * ToysKinsmartLamborghiniMiura1971P400SV constructor
+     * ToysKinsmartSlide constructor
      * @constructor
      * @param {Object} initObj                      - Initialization Object
      * @param {string} initObj.name                 - VLab name
@@ -27,12 +27,12 @@ class ToysKinsmartLamborghiniMiura1971P400SV extends VLab {
      * i) VLab bootstrap. Loads and initializes Vlab Scenes, VLab Items, other shared VLab elements.
      * i.1) VLab Items, shared between scenes, have to be defined here
      * @async
-     * @memberof ToysKinsmartLamborghiniMiura1971P400SV
+     * @memberof ToysKinsmartSlide
      */
     bootstrap(iniObj) {
 
         /**
-         * @info trace ToysKinsmartLamborghiniMiura1971P400SV (this vLab) object
+         * @info trace ToysKinsmartSlide (this vLab) object
          */
         console.log(this);
 
@@ -50,7 +50,7 @@ class ToysKinsmartLamborghiniMiura1971P400SV extends VLab {
     }
 }
 
-new ToysKinsmartLamborghiniMiura1971P400SV({
-    name: 'Kinsmart Lamborghini Miura 1971 P400 SV',
+new ToysKinsmartSlide({
+    name: 'Kinsmart on a slide',
     natureURL: './resources/vlab.nature.json'
 });
