@@ -123,6 +123,9 @@ class BasicsOfLungSounds extends VLab {
             );
 
             this.vLabQuiz.startTimedOut();
+
+            this.vLabQuiz.overlayButton.style.left = '2px';
+            this.vLabQuiz.overlayButton.style.top = '50px';
         });
 
         this.EventDispatcher.subscribe({

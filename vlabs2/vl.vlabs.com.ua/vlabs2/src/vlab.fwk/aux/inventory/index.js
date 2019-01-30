@@ -636,7 +636,7 @@ class VLabInventory extends VLabScene {
         let delta = this.manager.clock.getDelta();
 
         if (delta > 0.25) {
-            let beforeSwapSelectedItem = this.selectedItem;
+            var beforeSwapSelectedItem = this.selectedItem;
             /**
              * Swap if this.vLab.SceneDispatcher.takenInteractable
              */
@@ -664,12 +664,13 @@ class VLabInventory extends VLabScene {
             this.updateTakeButtonState();
         }
 
-        setTimeout(() => {
-            for (let itemName in self.items) {
-                self.setSelectedItemByName(itemName);
-                break;
-            }
-        }, 200);
+        console.log(this.selectedItem);
+        // setTimeout(() => {
+        //     for (let itemName in self.items) {
+        //         self.setSelectedItemByName(itemName);
+        //         break;
+        //     }
+        // }, 200);
 
         this.manager.clock.getDelta();
     }

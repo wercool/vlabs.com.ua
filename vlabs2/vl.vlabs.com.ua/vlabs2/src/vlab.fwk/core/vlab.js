@@ -397,7 +397,7 @@ password: '123'
             TWEEN.update(time);
             if (this.nature.simpleStats) this.DOMManager.simpleStats.end();
             /*<dev>*/
-                this.DOMManager.rendererStats.update(this.WebGLRenderer);
+                if (this.DOMManager.rendererStats) this.DOMManager.rendererStats.update(this.WebGLRenderer);
             /*</dev>*/
         } else {
             setTimeout(this.requestAnimationFrame, 250);

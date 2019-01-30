@@ -154,13 +154,15 @@ class VLabDOMManager {
                      * Setup WebGLRenderer statistics
                      */
                     /*<dev>*/
-                        this.rendererStats = new RendererStats();
-                        this.rendererStats.domElement.style.position = 'absolute';
-                        this.rendererStats.domElement.style.top = '0px';
-                        this.rendererStats.domElement.style.right = '0px';
-                        this.rendererStats.domElement.style.zIndex = 3;
-                        this.rendererStats.domElement.classList.add('nonSelectable');
-                        this.container.appendChild(this.rendererStats.domElement);
+                        if (this.vLab.nature.rendererStats !== false) {
+                            this.rendererStats = new RendererStats();
+                            this.rendererStats.domElement.style.position = 'absolute';
+                            this.rendererStats.domElement.style.top = '0px';
+                            this.rendererStats.domElement.style.right = '0px';
+                            this.rendererStats.domElement.style.zIndex = 3;
+                            this.rendererStats.domElement.classList.add('nonSelectable');
+                            this.container.appendChild(this.rendererStats.domElement);
+                        }
                     /*</dev>*/
 
                     /**

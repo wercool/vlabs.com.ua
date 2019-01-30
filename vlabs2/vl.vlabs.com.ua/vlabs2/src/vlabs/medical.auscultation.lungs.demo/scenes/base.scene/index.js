@@ -1,7 +1,11 @@
 import * as THREE from 'three';
 import VLabScene from '../../../../vlab.fwk/core/vlab.scene';
 import * as VLabUTILS from '../../../../vlab.fwk/utils/vlab.utils';
+/**
+ * This VLab Auxilaries
+ */
 import VLabZoomHelper  from '../../../../vlab.fwk/aux/scene/vlab.zoom.helper';
+import VLabButtonsSelector from '../../../../vlab.fwk/aux/buttons.selector/index';
 /**
  * VLab Items
  */
@@ -51,7 +55,7 @@ class BasicsOfLungSoundsScene extends VLabScene {
             {
                 path: 'rhonchi.mp3',
                 shortDesc: 'Rhonchi occur in the bronchi.',
-                desc: 'Low pitched wheezes (rhonchi) are continuous, both inspiratory and expiratory, low pitched adventitious lung sounds that are similar to wheezes. They often have a snoring, gurgling or rattle-like quality. '
+                desc: 'Low pitched wheezes (rhonchi) are continuous, both inspiratory and expiratory, low pitched adventitious lung sounds that are similar to wheezes. They often have a snoring, gurgling or rattle-like quality.'
             },
             {
                 path: 'bronchial.mp3',
@@ -93,26 +97,72 @@ class BasicsOfLungSoundsScene extends VLabScene {
             lungs: {
                 audio: new Audio(),
                 volume: 0.0,
-                normal: './resources/auscultationSounds/lungs/' + this.lungsSounds[this.lungsSoundsID]['path'],
+                sndURL: './resources/auscultationSounds/lungs/' + this.lungsSounds[this.lungsSoundsID]['path'],
             },
             heart: {
                 audio: new Audio(),
                 volume: 0.0,
-                normal: './resources/auscultationSounds/heart/' + this.heartSounds[this.heartSoundsID]['path'],
+                sndURL: './resources/auscultationSounds/heart/' + this.heartSounds[this.heartSoundsID]['path'],
             },
             stomach: {
                 audio: new Audio(),
                 volume: 0.0,
-                normal: './resources/auscultationSounds/stomach/' + this.stomachSounds[this.stomachSoundsID]['path'],
+                sndURL: './resources/auscultationSounds/stomach/' + this.stomachSounds[this.stomachSoundsID]['path'],
             }
         };
 
-        this.auscultationSounds.lungs.audio.src = this.auscultationSounds.lungs.normal;
+        this.auscultationSounds.lungs.audio.src = this.auscultationSounds.lungs.sndURL;
         this.auscultationSounds.lungs.audio.loop = true;
-        this.auscultationSounds.heart.audio.src = this.auscultationSounds.heart.normal;
+        this.auscultationSounds.heart.audio.src = this.auscultationSounds.heart.sndURL;
         this.auscultationSounds.heart.audio.loop = true;
-        this.auscultationSounds.stomach.audio.src = this.auscultationSounds.stomach.normal;
+        this.auscultationSounds.stomach.audio.src = this.auscultationSounds.stomach.sndURL;
         this.auscultationSounds.stomach.audio.loop = true;
+
+        this.vLabButtonsSelector = new VLabButtonsSelector({
+            vLab: this.vLab,
+            buttons: [
+                {
+                    label: 'Vesicular',
+                    desc: 'Normal breath',
+                    onclick: this.vLabButtonsSelectorOnClick.bind(this)
+                },
+                {
+                    label: 'Crackles fine',
+                    desc: 'Chronic bronchitis',
+                    onclick: this.vLabButtonsSelectorOnClick.bind(this)
+                },
+                {
+                    label: 'Crackles coarse',
+                    desc: 'Pneumonia, CHF, atelectasis',
+                    onclick: this.vLabButtonsSelectorOnClick.bind(this)
+                },
+                {
+                    label: 'Wheezes',
+                    desc: 'Asthma',
+                    onclick: this.vLabButtonsSelectorOnClick.bind(this)
+                },
+                {
+                    label: 'Rhonchi',
+                    desc: 'Continuous low pitched wheezes, both inspiratory and expiratory',
+                    onclick: this.vLabButtonsSelectorOnClick.bind(this)
+                },
+                {
+                    label: 'Bronchial',
+                    desc: 'Pneumonia, atelectasis, pleural effusions',
+                    onclick: this.vLabButtonsSelectorOnClick.bind(this)
+                },
+                {
+                    label: 'Pleural rubs',
+                    desc: 'Pleurisy',
+                    onclick: this.vLabButtonsSelectorOnClick.bind(this)
+                },
+                {
+                    label: 'Bronchovesicular',
+                    desc: 'Early infiltrate, partial atelectasis',
+                    onclick: this.vLabButtonsSelectorOnClick.bind(this)
+                }
+            ]
+        });
     }
     /**
      * Called once scene is loaded
@@ -226,6 +276,14 @@ class BasicsOfLungSoundsScene extends VLabScene {
          * Add Quiz
          */
         this.vLab.addQuiz(this);
+
+        /**
+         * VLab buttons selector
+         */
+        this.vLabButtonsSelector.initialize().then(() => {
+            this.vLabButtonsSelector.panel.style.display = 'block';
+            this.vLabButtonsSelector.setSelected({ buttonInnerText: this.vLabButtonsSelector.buttons[this.lungsSoundsID].innerText });
+        });
     }
 
     onInitializedVLabItem(event) {
@@ -510,9 +568,13 @@ class BasicsOfLungSoundsScene extends VLabScene {
             };
             this.auscultationSounds.stomach.volume = (stomachSoundVolumeMapPixel.r + stomachSoundVolumeMapPixel.g + stomachSoundVolumeMapPixel.b) / (3 * 255);
 
-            this.auscultationSounds.lungs.audio.volume = this.auscultationSounds.lungs.volume * 0.2;
-            this.auscultationSounds.heart.audio.volume = this.auscultationSounds.heart.volume * 0.2;
-            this.auscultationSounds.stomach.audio.volume = this.auscultationSounds.stomach.volume * 0.2;
+            this.auscultationSounds.lungs.volume *= 0.2;
+            this.auscultationSounds.heart.volume *= 0.2;
+            this.auscultationSounds.stomach.volume *= 0.2;
+
+            this.auscultationSounds.lungs.audio.volume = this.auscultationSounds.lungs.volume;
+            this.auscultationSounds.heart.audio.volume = this.auscultationSounds.heart.volume;
+            this.auscultationSounds.stomach.audio.volume = this.auscultationSounds.stomach.volume;
 
             if (!this.vLab['AcusticStethoscope'].applied) {
                 this.vLab.SceneDispatcher.putTakenInteractable({
@@ -735,6 +797,33 @@ class BasicsOfLungSoundsScene extends VLabScene {
         // if(this.MercuryThermometerVLabZoomHelper == extParams.args.zoomHelper) {
         //     this.vLab['MercuryThermometer'].enableMenu();
         // }
+    }
+    /**
+     * vLabButtonsSelectorOnClick
+     */
+    vLabButtonsSelectorOnClick(event) {
+        let clickedSelectorButton = event.srcElement;
+        this.vLabButtonsSelector.setSelected({ button: clickedSelectorButton});
+        this.lungsSoundsID = parseInt(clickedSelectorButton.getAttribute('selectorID'));
+
+        this.vLab.vLabQuiz.quizData.questions[0].correct = this.lungsSoundsID;
+
+        this.auscultationSounds.lungs.sndURL = './resources/auscultationSounds/lungs/' + this.lungsSounds[this.lungsSoundsID]['path'];
+
+        let wasPlaying = this.auscultationSounds.lungs.audio.currentTime !== 0;
+
+        this.auscultationSounds.lungs.audio.pause();
+        this.auscultationSounds.lungs.audio.currentTime = 0;
+
+        this.auscultationSounds.lungs.audio = new Audio();
+        this.auscultationSounds.lungs.audio.loop = true;
+        this.auscultationSounds.lungs.audio.src = this.auscultationSounds.lungs.sndURL;
+        this.auscultationSounds.lungs.audio.volume = this.auscultationSounds.lungs.volume;
+
+        if (wasPlaying) {
+            this.auscultationSounds.lungs['audioPlayPromise'] = this.auscultationSounds.lungs.audio.play();
+            this.auscultationSounds.lungs['audioPlayPromise'].catch(error => {});
+        }
     }
 }
 
