@@ -24,11 +24,49 @@ class BaseScene extends VLabScene {
         var height = 1.0;
         var geometry = new THREE.ConeGeometry(0.1, height, 16);
         geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, height / 2, 0));
-        var material = new THREE.MeshLambertMaterial({color: 0x0000ff});
+        var material = new THREE.MeshNormalMaterial();
         this.cone = new THREE.Mesh(geometry, material);
+
+        var geometry = new THREE.BoxGeometry(0.01, 0.01, 0.1);
+        var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+        var cube = new THREE.Mesh(geometry, material);
+        cube.position.copy(new THREE.Vector3(0.0, 1.0, 0.05));
+        this.cone.add(cube);
+
         this.add(this.cone);
 
-        this.cone.quaternion.copy(this.cone.quaternion.clone().setFromAxisAngle(new THREE.Vector3(1.0, 1.0, 1.0).normalize(), THREE.Math.degToRad(-90.0)));
+        this.axis = new THREE.Vector3(0.0, 1.0, 0.0);
+        this.angle = 0.0;
+
+        this.arrowHelper = new THREE.ArrowHelper(this.axis.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), this.axis.clone().length(), 0xffff00, 0.1, 0.025);
+        this.add(this.arrowHelper);
+
+        this.cone.position.copy(new THREE.Vector3(1.0, 0.0, 0.0));
+
+        /**
+         * Subscribe on events
+         */
+        this.vLab.EventDispatcher.subscribe({
+            subscriber: this,
+            events: {
+                WebGLRendererCanvas: {
+                    framerequest: this.onFramerequest
+                }
+            }
+        });
+    }
+    /**
+     * onFramerequest
+     */
+    onFramerequest(params) {
+        let rotateQuaternion = new THREE.Quaternion().setFromAxisAngle(this.axis.clone().normalize(), this.angle).normalize();
+        // let rotateQuaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0.0, 1.0, 0.0).normalize(), this.angle).normalize();
+        let positionQuaternion = new THREE.Quaternion().setFromAxisAngle(this.axis.clone().normalize(), 0.01).normalize();
+
+        this.cone.quaternion.copy(rotateQuaternion);
+        this.cone.position.applyQuaternion(positionQuaternion);
+
+        this.angle += 0.05;
     }
 }
 
