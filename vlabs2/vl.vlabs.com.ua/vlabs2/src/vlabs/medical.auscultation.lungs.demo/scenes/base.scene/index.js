@@ -272,10 +272,10 @@ class BasicsOfLungSoundsScene extends VLabScene {
             name: 'MercuryThermometerVLabItem'
         });
 
-        /**
-         * Add Quiz
-         */
-        this.vLab.addQuiz(this);
+        // /**
+        //  * Add Quiz
+        //  */
+        // this.vLab.addQuiz(this);
 
         /**
          * VLab buttons selector
@@ -625,18 +625,18 @@ class BasicsOfLungSoundsScene extends VLabScene {
             this.AcusticStethoscopeSoundDescription.style.width = '98%';
             this.AcusticStethoscopeSoundDescription.style.height = '96%';
             this.AcusticStethoscopeSoundDescription.style.margin = '1%';
+            this.AcusticStethoscopeSoundDescription.style.maxWidth = '800px';
             this.AcusticStethoscopeSoundDescription.style.backgroundImage = 'url("./resources/lungs.png")';
             this.AcusticStethoscopeSoundDescription.style.backgroundRepeat = 'no-repeat';
             this.AcusticStethoscopeSoundDescription.style.color = '#202020';
-
-            this.AcusticStethoscopeSoundDescription.innerHTML = '<h4 style="padding-left: 58px;">' + this.lungsSounds[this.lungsSoundsID].shortDesc + '</h4>';
-            this.AcusticStethoscopeSoundDescription.innerHTML += '<div style="width: 90%; margin-left: 8%;">' + this.lungsSounds[this.lungsSoundsID].desc + '<div>';
 
             this.vLab.DOMManager.vLabPanel.VLabPanelLeftContainer.appendChild(this.AcusticStethoscopeSoundDescription);
             this.vLab.DOMManager.vLabPanel.VLabPanelContainer.style.zIndex = '50';
         } else {
             this.AcusticStethoscopeSoundDescription.style.display = 'block';
         }
+        this.AcusticStethoscopeSoundDescription.innerHTML = '<div style="width: 90%; padding-left: 58px; padding-top: 10px; font-size: 22px; font-weight: bold;">' + this.lungsSounds[this.lungsSoundsID].shortDesc + '</div>';
+        this.AcusticStethoscopeSoundDescription.innerHTML += '<div style="width: 90%; padding-top: 10px; margin-left: 8%; font-size: 18px;">' + this.lungsSounds[this.lungsSoundsID].desc + '<div>';
     }
 
     onInteractableTaken(event) {
@@ -806,7 +806,7 @@ class BasicsOfLungSoundsScene extends VLabScene {
         this.vLabButtonsSelector.setSelected({ button: clickedSelectorButton});
         this.lungsSoundsID = parseInt(clickedSelectorButton.getAttribute('selectorID'));
 
-        this.vLab.vLabQuiz.quizData.questions[0].correct = this.lungsSoundsID;
+        // this.vLab.vLabQuiz.quizData.questions[0].correct = this.lungsSoundsID;
 
         this.auscultationSounds.lungs.sndURL = './resources/auscultationSounds/lungs/' + this.lungsSounds[this.lungsSoundsID]['path'];
 
@@ -823,6 +823,11 @@ class BasicsOfLungSoundsScene extends VLabScene {
         if (wasPlaying) {
             this.auscultationSounds.lungs['audioPlayPromise'] = this.auscultationSounds.lungs.audio.play();
             this.auscultationSounds.lungs['audioPlayPromise'].catch(error => {});
+        }
+
+        if (this.AcusticStethoscopeSoundDescription) {
+            this.AcusticStethoscopeSoundDescription.innerHTML = '<div style="width: 90%; padding-left: 58px; padding-top: 10px; font-size: 22px; font-weight: bold;">' + this.lungsSounds[this.lungsSoundsID].shortDesc + '</div>';
+            this.AcusticStethoscopeSoundDescription.innerHTML += '<div style="width: 90%; padding-top: 10px; margin-left: 8%; font-size: 18px;">' + this.lungsSounds[this.lungsSoundsID].desc + '<div>';
         }
     }
 }
