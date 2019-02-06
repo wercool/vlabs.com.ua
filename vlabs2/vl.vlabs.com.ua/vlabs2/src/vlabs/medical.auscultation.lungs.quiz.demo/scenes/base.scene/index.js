@@ -617,26 +617,26 @@ class BasicsOfLungSoundsScene extends VLabScene {
 
         this.vLab['TLOneStethoscope'].interactables[0].canBeTakenFromInventory = false;
 
-        if (this.AcusticStethoscopeSoundDescription == undefined) {
-            this.AcusticStethoscopeSoundDescription = document.createElement('div');
-            this.AcusticStethoscopeSoundDescription.style.border = 'solid 2px #dfff6c';
-            this.AcusticStethoscopeSoundDescription.style.borderRadius = '10px';
-            this.AcusticStethoscopeSoundDescription.style.backgroundColor = '#fdff84c7';
-            this.AcusticStethoscopeSoundDescription.style.width = '98%';
-            this.AcusticStethoscopeSoundDescription.style.height = '96%';
-            this.AcusticStethoscopeSoundDescription.style.margin = '1%';
-            this.AcusticStethoscopeSoundDescription.style.maxWidth = '800px';
-            this.AcusticStethoscopeSoundDescription.style.backgroundImage = 'url("./resources/lungs.png")';
-            this.AcusticStethoscopeSoundDescription.style.backgroundRepeat = 'no-repeat';
-            this.AcusticStethoscopeSoundDescription.style.color = '#202020';
+        // if (this.AcusticStethoscopeSoundDescription == undefined) {
+        //     this.AcusticStethoscopeSoundDescription = document.createElement('div');
+        //     this.AcusticStethoscopeSoundDescription.style.border = 'solid 2px #dfff6c';
+        //     this.AcusticStethoscopeSoundDescription.style.borderRadius = '10px';
+        //     this.AcusticStethoscopeSoundDescription.style.backgroundColor = '#fdff84c7';
+        //     this.AcusticStethoscopeSoundDescription.style.width = '98%';
+        //     this.AcusticStethoscopeSoundDescription.style.height = '96%';
+        //     this.AcusticStethoscopeSoundDescription.style.margin = '1%';
+        //     this.AcusticStethoscopeSoundDescription.style.maxWidth = '800px';
+        //     this.AcusticStethoscopeSoundDescription.style.backgroundImage = 'url("./resources/lungs.png")';
+        //     this.AcusticStethoscopeSoundDescription.style.backgroundRepeat = 'no-repeat';
+        //     this.AcusticStethoscopeSoundDescription.style.color = '#202020';
 
-            this.vLab.DOMManager.vLabPanel.VLabPanelLeftContainer.appendChild(this.AcusticStethoscopeSoundDescription);
-            this.vLab.DOMManager.vLabPanel.VLabPanelContainer.style.zIndex = '50';
-        } else {
-            this.AcusticStethoscopeSoundDescription.style.display = 'block';
-        }
-        this.AcusticStethoscopeSoundDescription.innerHTML = '<div style="width: 90%; padding-left: 58px; padding-top: 10px; font-size: 22px; font-weight: bold;">' + this.lungsSounds[this.lungsSoundsID].shortDesc + '</div>';
-        this.AcusticStethoscopeSoundDescription.innerHTML += '<div style="width: 90%; padding-top: 10px; margin-left: 8%; font-size: 18px;">' + this.lungsSounds[this.lungsSoundsID].desc + '<div>';
+        //     this.vLab.DOMManager.vLabPanel.VLabPanelLeftContainer.appendChild(this.AcusticStethoscopeSoundDescription);
+        //     this.vLab.DOMManager.vLabPanel.VLabPanelContainer.style.zIndex = '50';
+        // } else {
+        //     this.AcusticStethoscopeSoundDescription.style.display = 'block';
+        // }
+        // this.AcusticStethoscopeSoundDescription.innerHTML = '<div style="width: 90%; padding-left: 58px; padding-top: 10px; font-size: 22px; font-weight: bold;">' + this.lungsSounds[this.lungsSoundsID].shortDesc + '</div>';
+        // this.AcusticStethoscopeSoundDescription.innerHTML += '<div style="width: 90%; padding-top: 10px; margin-left: 8%; font-size: 18px;">' + this.lungsSounds[this.lungsSoundsID].desc + '<div>';
     }
 
     onInteractableTaken(event) {
@@ -649,9 +649,9 @@ class BasicsOfLungSoundsScene extends VLabScene {
             this.muteSound();
             this.vLab['AcusticStethoscope'].onTakenOut();
             this.vLab['TLOneStethoscope'].interactables[0].canBeTakenFromInventory = true;
-            if (this.AcusticStethoscopeSoundDescription != undefined) {
-                this.AcusticStethoscopeSoundDescription.style.display = 'none';
-            }
+            // if (this.AcusticStethoscopeSoundDescription != undefined) {
+            //     this.AcusticStethoscopeSoundDescription.style.display = 'none';
+            // }
         }
         if (event.interactable.vLabItem == this.vLab['MercuryThermometer']) {
             this.vLab['MercuryThermometer'].onTakenOut();
@@ -673,9 +673,9 @@ class BasicsOfLungSoundsScene extends VLabScene {
                 this.muteSound();
                 this.vLab['AcusticStethoscope'].onTakenOut();
                 this.vLab['TLOneStethoscope'].interactables[0].canBeTakenFromInventory = true;
-                if (this.AcusticStethoscopeSoundDescription != undefined) {
-                    this.AcusticStethoscopeSoundDescription.style.display = 'none';
-                }
+                // if (this.AcusticStethoscopeSoundDescription != undefined) {
+                //     this.AcusticStethoscopeSoundDescription.style.display = 'none';
+                // }
             }
             if (event.interactable.vLabItem == this.vLab['MercuryThermometer']) {
                 this.vLab['MercuryThermometer'].onTakenOut();
