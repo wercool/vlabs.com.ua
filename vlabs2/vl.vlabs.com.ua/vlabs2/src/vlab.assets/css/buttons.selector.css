@@ -11,6 +11,7 @@
     min-width: 200px;
     max-width: 20%;
     display: none;
+    overflow-y: hidden;
 }
 .buttonsSelectorPanelButton {
     background-color: #fcd787e3;
@@ -23,6 +24,26 @@
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
+    border-radius: 4px;
+    width: 100%;
+    cursor: pointer;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */
+    outline: none;
+}
+.buttonsSelectorExpandPanelButton {
+    background-color: #4d4d4dc7;
+    border: none;
+    color: rgb(255, 255, 255);
+    padding: 5px 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: left;
+    text-decoration: none;
+    display: block;
+    font-size: 18px;
     border-radius: 4px;
     width: 100%;
     cursor: pointer;

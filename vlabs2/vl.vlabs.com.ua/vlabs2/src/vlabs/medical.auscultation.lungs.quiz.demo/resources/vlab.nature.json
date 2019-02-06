@@ -1,0 +1,19 @@
+{
+    "name": "Basics of Lung Sounds (Quiz)",
+    "styles": {
+    },
+    "WebGLRendererParameters": {
+        "resolutionFactor": 1.0,
+        "clearColor": "0x0f0f0f",
+        "effectComposer": true
+    },
+    "materialParameters": {
+        "bumpMaps": false
+    },
+    "selections": {
+        "outlineHelperMesh": false,
+        "boundsSprite": true
+    },
+    "simpleStats": true,
+    "rendererStats": false
+}
