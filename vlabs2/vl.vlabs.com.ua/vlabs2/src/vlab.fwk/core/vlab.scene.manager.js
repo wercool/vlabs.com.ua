@@ -406,6 +406,7 @@ class VLabSceneManager {
      * @todo manage scene cameras
      */
     processGLTF(gltf) {
+        console.log(gltf);
         let self = this;
         let vLabScene = this.vLabScene;
         return new Promise(function(resolve, reject) {
