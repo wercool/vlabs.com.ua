@@ -145,7 +145,8 @@ gulp.task('create', function (done) {
         --vlab-alias {group.vlab.name} \n\
         --vlab-name {\'human readable VLab name\'} \n\
         [--rmdir (removes VLab directory if exists)] \n\
-        [--gitignore (adds VLab directory to ./src/.gitignore)]\n');
+        [--gitignore (adds VLab directory to ./src/.gitignore)]\n\
+        ');
         done();
         process.exit();
     }
