@@ -3,8 +3,15 @@ import VLab from './vlab';
 import VLabScene from './vlab.scene';
 import * as HTTPUtils from '../utils/http.utils';
 import * as THREEUtils from '../utils/three.utils';
+/* @if LOADER3D == 'GLTFLoader' */
 import GLTFLoader from 'three-gltf-loader';
-//import FBXLoader from 'three-fbx-loader';
+/* @endif */
+/* @if LOADER3D == 'FBXLoader' */
+import FBXLoader from 'three-fbx-loader';
+/* @endif */
+/* @if LOADER3D == 'OBJLoader' */
+import {MTLLoader, OBJLoader} from 'three-obj-mtl-loader';
+/* @endif */
 import { ZipLoader } from '../utils/zip.loader';
 import VLabSceneInteractable from './vlab.scene.interactable';
 
@@ -313,6 +320,7 @@ class VLabSceneManager {
                     this.vLab.DOMManager.VLabSceneSharedAssets.sceneLoaderHint.innerHTML = (!this.vLabScene.initObj.autoload) ? 'Loading geometries...' : 'Autoloading of ' + vLabScene.nature.title + ' initiated...';
                     /* Load (GL Transmission Format) from gltfURL */
                     if (vLabScene.nature.gltfURL && vLabScene.nature.gltfURL.length > 0) {
+                        /* @if LOADER3D == 'GLTFLoader' */
                         this.loadZIP(vLabScene.nature.gltfURL).then((gltfFile) => {
                             let loader = new GLTFLoader(self.loadingManager);
                             loader.load(
@@ -342,10 +350,11 @@ class VLabSceneManager {
                                 }
                             );
                         });
+                        /* @endif */
                     } 
                     /* Load FBX from fbxURL */
                     else if (vLabScene.nature.fbxURL && vLabScene.nature.fbxURL.length > 0) {
-                        /*
+                        /* @if LOADER3D == 'FBXLoader' */
                         this.loadZIP(vLabScene.nature.fbxURL).then((fbxFile) => {
                             let loader = new FBXLoader(self.loadingManager);
                             loader.load(
@@ -353,18 +362,15 @@ class VLabSceneManager {
                                 function onLoad(fbx) {
                                     vLabScene.loading = false;
                                     vLabScene.loaded = true;
-                                    console.log(fbx);
-                                    // self.processGLTF(gltf).then(() => {
-                                    //     gltf = null;
+                                    self.processFBX(fbx).then(() => {
+                                        self.vLab.EventDispatcher.notifySubscribers({
+                                            target: 'VLabScene',
+                                            type: 'loaded',
+                                            vLabScene: vLabScene
+                                        });
 
-                                    //     self.vLab.EventDispatcher.notifySubscribers({
-                                    //         target: 'VLabScene',
-                                    //         type: 'loaded',
-                                    //         vLabScene: vLabScene
-                                    //     });
-
-                                    //     resolve(true);
-                                    // });
+                                        resolve(true);
+                                    });
                                 },
                                 function onProgress(xhr) {
                                     let progress = parseInt(xhr.loaded / xhr.total * 100);
@@ -376,7 +382,52 @@ class VLabSceneManager {
                                 }
                             );
                         });
-                        */
+                        /* @endif */
+                    } else if (vLabScene.nature.objURL && vLabScene.nature.objURL.length > 0) {
+                        /* @if LOADER3D == 'OBJLoader' */
+                            let mtlLoader = new MTLLoader(self.loadingManager);
+                            mtlLoader.setTexturePath(vLabScene.nature.objTexturePath);
+                            let objLoader = new OBJLoader(self.loadingManager);
+
+                            mtlLoader.load(
+                                vLabScene.nature.objURL + '.mtl', 
+                                function onLoad(materials) {
+                                    materials.preload();
+                                    objLoader.setMaterials(materials)
+                                    objLoader.load(
+                                        vLabScene.nature.objURL + '.obj', 
+                                        function onLoad(obj) {
+                                            vLabScene.loading = false;
+                                            vLabScene.loaded = true;
+                                            self.processOBJ(obj).then(() => {
+                                                self.vLab.EventDispatcher.notifySubscribers({
+                                                    target: 'VLabScene',
+                                                    type: 'loaded',
+                                                    vLabScene: vLabScene
+                                                });
+                                                resolve(true);
+                                            });
+                                        },
+                                        function onProgress(xhr) {
+                                            let progress = parseInt(xhr.loaded / xhr.total * 100);
+                                            console.log(progress + '% meshes loaded of ' + vLabScene.name);
+                                            self.vLab.DOMManager.refreshSceneLoaderIndicator(vLabScene, progress);
+                                        },
+                                        function onError(error) {
+                                            console.error('An error happened while loading VLabScene FBX assets:', error);
+                                        }
+                                    );
+                                },
+                                function onProgress(xhr) {
+                                    let progress = parseInt(xhr.loaded / xhr.total * 100);
+                                    console.log(progress + '% materials loaded of ' + vLabScene.name);
+                                    self.vLab.DOMManager.refreshSceneLoaderIndicator(vLabScene, progress);
+                                },
+                                function onError(error) {
+                                    console.error('An error happened while loading VLabScene FBX assets:', error);
+                                }
+                            );
+                        /* @endif */
                     } else {
                         /**
                          * No 3D content in this.nature defined
@@ -433,6 +484,7 @@ class VLabSceneManager {
             }
         });
     }
+    /* @if LOADER3D == 'GLTFLoader' */
     /**
      * Processes GLTF loaded object.
      * 
@@ -446,7 +498,7 @@ class VLabSceneManager {
         let self = this;
         let vLabScene = this.vLabScene;
         return new Promise(function(resolve, reject) {
-            let glTFScene = gltf.scene
+            let glTFScene = gltf.scene;
 
             vLabScene.add(glTFScene);
 
@@ -473,7 +525,7 @@ if (animations.length > 0) {
             gltf.scene.traverse((child) => {
                 switch (child.type) {
                     case 'Object3D':
-                        self.conformObject3D(child);
+                        self.conformGLTFObject3D(child);
                     break;
                 }
             });
@@ -493,8 +545,72 @@ if (animations.length > 0) {
             resolve();
         });
     }
+    /* @endif */
+
+    /* @if LOADER3D == 'FBXLoader' */
     /**
-     * Conforms THREE.Object3D with VLab, based on object3d.userData
+     * Processes FBX loaded object.
+     * 
+     * @async
+     * @memberof VLabSceneManager
+     * @return { Promise }
+     * @todo manage scene cameras
+     */
+    processFBX(fbx) {
+        let self = this;
+        let vLabScene = this.vLabScene;
+        return new Promise(function(resolve, reject) {
+            vLabScene.add(fbx);
+
+
+// //TODO: animations
+
+
+// let animations = gltf.animations;
+// if (animations.length > 0) {
+//     self.animationMixer = new THREE.AnimationMixer(glTFScene);
+//     setInterval(() => {
+//         self.animationMixer.update(self.clock.getDelta());
+//     }, 20);
+//     self.defaultAction = self.animationMixer.clipAction(animations[0]);
+//     self.defaultAction.play();
+// }
+
+            resolve();
+        });
+    }
+    /* @endif */
+
+
+    /* @if LOADER3D == 'OBJLoader' */
+    processOBJ(obj) {
+        let self = this;
+        let vLabScene = this.vLabScene;
+        return new Promise(function(resolve, reject) {
+            vLabScene.add(obj);
+
+
+// //TODO: animations
+
+
+// let animations = gltf.animations;
+// if (animations.length > 0) {
+//     self.animationMixer = new THREE.AnimationMixer(glTFScene);
+//     setInterval(() => {
+//         self.animationMixer.update(self.clock.getDelta());
+//     }, 20);
+//     self.defaultAction = self.animationMixer.clipAction(animations[0]);
+//     self.defaultAction.play();
+// }
+
+            resolve();
+        });
+    }
+    /* @endif */
+
+    /* @if LOADER3D == 'GLTFLoader' */
+    /**
+     * Conforms THREE.Object3D (exported from Blender GLTF) with VLab, based on object3d.userData
      * 
      * @memberof VLabSceneManager
      * @argument {THREE.Object3D} object3d
@@ -509,7 +625,7 @@ if (animations.length > 0) {
      * @argument {number} [object3d.userData.PerspectiveCamera]                     - PerspectiveCamera
      * @argument {number} [object3d.userData.default]                               - default PerspectiveCamera, this.currentCamera.position will be copied from this object3d position
      */
-    conformObject3D(object3d) {
+    conformGLTFObject3D(object3d) {
         if (Object.keys(object3d.userData).length > 0) {
             /* Lights */
             if (object3d.userData.PointLight) {
@@ -532,6 +648,8 @@ if (animations.length > 0) {
             }
         }
     }
+    /* @endif */
+
     /**
      * Setup VLab Scene HTML CSS styles accordingly to VLabScene nature.
      * 

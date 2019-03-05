@@ -19,6 +19,7 @@ const zip                   = require('gulp-zip');
 const del                   = require('del');
 const rimraf                = require("rimraf");
 const recursivecopy         = require('recursive-copy');
+const preprocessify         = require('preprocessify');
 
 var initObj = {};
 
@@ -108,6 +109,10 @@ gulp.task('build', gulp.series('sync-vlab-assets',
     }
 
     return browserify('./src/vlabs/' + initObj.vLabName + '/index.js')
+    .transform(preprocessify, {
+        includeExtensions: ['.js'],
+        context: { LOADER3D : initObj.loader3D }
+    })
     .transform('babelify', { presets: ['@babel/preset-env'] })
     .ignore(devIgnore)
     .bundle()
@@ -301,6 +306,11 @@ gulp.task('main', function (done) {
     } else {
         initObj.naturePlain = false;
     }
+    initObj.loader3D = 'GLTFLoader';
+    if (process.argv.indexOf('--loader3D') > -1) {
+        initObj.loader3D =  process.argv[process.argv.indexOf('--loader3D') + 1];
+    }
+    console.log(color('Using ' + initObj.loader3D, 'YELLOW'));
     if (process.argv.indexOf('--zip-gltf') > -1) {
         initObj.zipGLTF = true;
     } else {

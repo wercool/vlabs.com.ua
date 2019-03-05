@@ -33,6 +33,7 @@
     "gulp-replace": "^1.0.0",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-zip": "^4.2.0",
+    "preprocessify": "^1.0.1",
     "recursive-copy": "^2.0.9",
     "rimraf": "^2.6.3",
     "vinyl-buffer": "^1.0.1",
@@ -48,6 +49,7 @@
     "three": "^0.98.0",
     "three-fbx-loader": "^1.0.3",
     "three-gltf-loader": "^1.96.0",
+    "three-obj-mtl-loader": "^1.0.3",
     "three-transformcontrols": "^0.78.1",
     "three-webgl-stats": "^1.0.5",
     "three-ziploader": "0.0.1"
