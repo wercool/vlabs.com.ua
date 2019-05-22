@@ -73,23 +73,25 @@ class VLab {
          * Override Pass.prototype.setFullscreenMaterial to support PlaneBufferGeometry dispose
          * 
          * 
-         */
-        Pass.prototype.setFullscreenMaterial = function(material) {
-            var quad = this.quad;
+         * 
+            Pass.prototype.setFullscreenMaterial = function(material) {
+                var quad = this.quad;
 
-            if (quad !== null) {
-                quad.material = material;
-            } else {
-                this.quadGeometry = new THREE.PlaneBufferGeometry(2, 2);
-                quad = new THREE.Mesh(this.quadGeometry, material);
-                quad.frustumCulled = false;
+                if (quad !== null) {
+                    quad.material = material;
+                } else {
+                    this.quadGeometry = new THREE.PlaneBufferGeometry(2, 2);
+                    quad = new THREE.Mesh(this.quadGeometry, material);
+                    quad.frustumCulled = false;
 
-                if (this.scene !== null) {
-                    this.scene.add(quad);
-                    this.quad = quad;
+                    if (this.scene !== null) {
+                        this.scene.add(quad);
+                        this.quad = quad;
+                    }
                 }
-            }
-        };
+            };
+         * 
+         */
     }
     /**
      * VLab initializer.
