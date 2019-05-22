@@ -178,6 +178,10 @@ export function conformMaterial(material, vLabScene) {
             if (material.userData.roughness) {
                 _MeshStandardMaterial.roughness = material.userData.roughness;
             }
+            if (material.userData.transparent) {
+                _MeshStandardMaterial.transparent = true;
+                _MeshStandardMaterial.opacity = parseFloat(material.userData.transparent);
+            }
             _MeshStandardMaterial.userData = {};
             return _MeshStandardMaterial;
         }

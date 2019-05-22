@@ -89,6 +89,15 @@ class Valter extends VLabItem {
 
     /**
      * 
+     * Valter move and rotate
+     * 
+     */
+    rotateBaseFrame(angle) {
+        this.vLabItemModel.getObjectByName('baseFrame').rotateY(angle);
+    }
+
+    /**
+     * 
      * Valter links manipulation
      * 
      */
