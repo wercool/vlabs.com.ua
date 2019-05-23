@@ -95,6 +95,9 @@ class Valter extends VLabItem {
     rotateBaseFrame(angle) {
         this.vLabItemModel.getObjectByName('baseFrame').rotateY(angle);
     }
+    translateBaseFrame(axis, distance) {
+        this.vLabItemModel.getObjectByName('baseFrame').translateOnAxis(axis, distance);
+    }
 
     /**
      * 

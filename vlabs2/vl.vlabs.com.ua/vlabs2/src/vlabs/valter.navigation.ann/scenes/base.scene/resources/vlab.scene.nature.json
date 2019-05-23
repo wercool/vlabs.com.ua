@@ -1,7 +1,7 @@
 {
     "title": "Base Scene",
     "description": "Base scene description...",
-    "gltfURL": "",
+    "gltfURL": "./scenes/base.scene/resources/3d/apartment.glb",
     "WebGLRendererParameters": {
         "clearColor": "0x0f0f0f"
     },
@@ -10,15 +10,20 @@
             "type": "PerspectiveCamera",
             "name": "Camera",
             "position": {
-                "x": 2.0,
-                "y": 2.0,
-                "z": 2.0
+                "x": 0.5,
+                "y": 1.5,
+                "z": -2.5
             },
             "target": {
                 "x": 0.0,
-                "y": 0.0,
+                "y": 1.0,
                 "z": 0.0
             }
+        }
+    },
+    "controls": {
+        "default": {
+            "rotateSpeed": 1.0
         }
     }
 }

@@ -20,8 +20,18 @@ class BaseScene extends VLabScene {
          */
         console.log(this);
 
-        var ambientLight = new THREE.AmbientLight(0x404040, 1.25); // soft white light
+        var ambientLight = new THREE.AmbientLight(0x404040, 0.2); // soft white light
         this.add(ambientLight);
+
+        // this.pointLight = new THREE.PointLight(0xffffff, 2.0);
+        // this.pointLight.position.copy(new THREE.Vector3(0.0, 2.0, 0.0));
+        // this.pointLight.castShadow = false;
+        // this.pointLight.shadow.camera.near = 0.1;
+        // this.pointLight.shadow.camera.far = 3.0;
+        // this.pointLight.shadow.bias = - 0.005; // reduces self-shadowing on double-sided objects
+        // this.pointLight.shadow.mapSize.width = 1204;  // default 512
+        // this.pointLight.shadow.mapSize.height = 1024; // default 512
+        // this.add(this.pointLight);
 
         /**
          * Valter VLabItem
@@ -43,7 +53,8 @@ class BaseScene extends VLabScene {
 
     onVLabItemInitialized(event) {
         if (event.vLabItem == this.vLab['Valter']) {
-            this.vLab['Valter'].rotateBaseFrame(THREE.Math.degToRad(-180.0));
+            //this.vLab['Valter'].rotateBaseFrame(THREE.Math.degToRad(-180.0));
+            this.vLab['Valter'].translateBaseFrame(new THREE.Vector3(0.0, 0.0, -0.5), 1.5);
         }
     }
 }

@@ -159,6 +159,9 @@ class VLabSceneManager {
                             }
                         break;
                     }
+                    if (this.vLabScene.nature.controls.default.rotateSpeed !== undefined) {
+                        this.vLabScene.currentControls.rotateSpeed = this.vLabScene.nature.controls.default.rotateSpeed;
+                    }
                     if (this.vLabScene.nature.controls.default.enablePan !== undefined) {
                         this.vLabScene.currentControls.enablePan = this.vLabScene.nature.controls.default.enablePan;
                     }

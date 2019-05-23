@@ -382,7 +382,9 @@ password: '123'
         }
 
         if (this.effectComposer != undefined) {
-            this.effectComposer.setSize(this.WebGLRenderer.getSize());
+            let size = new THREE.Vector2();
+            this.WebGLRenderer.getSize(size)
+            this.effectComposer.setSize(size);
         }
     }
     /**
