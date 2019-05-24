@@ -39,6 +39,18 @@ class Valter extends VLabItem {
      * VLabItem onInitialized abstract function implementation; called from super.initialize()
      */
     onInitialized() {
+        /**
+         * Drag helper plane
+         */
+        this.helperDragRaycaster = new THREE.Raycaster();
+        let planeGeometry = new THREE.PlaneBufferGeometry(100, 100, 2, 2);
+        let planeMaterial = new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide });
+        this.helperDragXZPlane = new THREE.Mesh(planeGeometry, planeMaterial);
+        this.helperDragXZPlane.rotation.set(- Math.PI / 2, 0, 0);
+        this.vLabItemModel.add(this.helperDragXZPlane);
+
+        this.baseFrameActionActivated = false;
+
         this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
         this.setupInteractables();
         this.setupFramesAndLinks();
@@ -97,6 +109,9 @@ class Valter extends VLabItem {
     }
     translateBaseFrame(axis, distance) {
         this.vLabItemModel.getObjectByName('baseFrame').translateOnAxis(axis, distance);
+    }
+    setBaseFramePosition(position) {
+        this.vLabItemModel.getObjectByName('baseFrame').position.copy(position);
     }
 
     /**
@@ -293,10 +308,35 @@ class Valter extends VLabItem {
     baseFrameAction(event) {
         // this.vLab.SceneDispatcher.currentVLabScene.interactables['baseFrame'].actionFunctionActivated = false;
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
-
         if (this.prevActionInitialEventCoords !== undefined) {
+            this.baseFrameActionActivated = true;
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
-            this.vLabItemModel.getObjectByName('baseFrame').rotateY(0.02 * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
+            if (event.event.ctrlKey == true) {
+                let shift = 0.02 * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1);
+                this.rotateBaseFrame(shift);
+            } else {
+                this.vLab.WebGLRendererCanvas.style.cursor = 'move';
+                let rect = this.vLab.WebGLRendererCanvas.getBoundingClientRect();
+                let x = (currentActionInitialEventCoords.x - rect.left) / rect.width;
+                let y = (currentActionInitialEventCoords.y - rect.top) / rect.height;
+                var pointerVector = new THREE.Vector2();
+                pointerVector.set((x * 2) - 1, -(y * 2) + 1);
+                this.helperDragRaycaster.setFromCamera(pointerVector, this.vLab.SceneDispatcher.currentVLabScene.currentCamera);
+                let intersections = this.helperDragRaycaster.intersectObjects([this.helperDragXZPlane], true);
+                if (intersections[0]) {
+                    let intersectionPoint = intersections[0].point.clone();
+                    if (this.prevBaseFramePosition == undefined) {
+                        this.prevBaseFramePosition = new THREE.Vector3().copy(this.vLabItemModel.getObjectByName('baseFrame').position.clone());
+                        this.prevBaseFrameOffest = new THREE.Vector3().copy(intersectionPoint);
+                    } else {
+                        intersectionPoint.sub(this.prevBaseFrameOffest);
+                        let dragPosition = this.prevBaseFramePosition.clone();
+                        dragPosition.add(intersectionPoint);
+                        dragPosition.multiply(new THREE.Vector3(1.0, 0.0, 1.0));
+                        this.setBaseFramePosition(dragPosition);
+                    }
+                }
+            }
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -306,6 +346,8 @@ class Valter extends VLabItem {
      * this.nature.interactables ['bodyFrame'] interaction action function
      */
     bodyFrameAction(event) {
+        if (this.baseFrameActionActivated) return;
+
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
 
         if (this.prevActionInitialEventCoords !== undefined) {
@@ -321,6 +363,8 @@ class Valter extends VLabItem {
      * this.nature.interactables ['torsoFrame'] interaction action function
      */
     torsoFrameAction(event) {
+        if (this.baseFrameActionActivated) return;
+
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
 
         if (this.prevActionInitialEventCoords !== undefined) {
@@ -337,6 +381,8 @@ class Valter extends VLabItem {
      * this.nature.interactables ['headTiltLink'] interaction action function reaction on Y changes
      */
     headFrameAction(event) {
+        if (this.baseFrameActionActivated) return;
+
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
 
         if (this.prevActionInitialEventCoords !== undefined) {
@@ -362,6 +408,8 @@ class Valter extends VLabItem {
      * this.nature.interactables ['shoulderFrameR'] interaction action function
      */
     shoulderFrameRAction(event) {
+        if (this.baseFrameActionActivated) return;
+
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
 
         if (this.prevActionInitialEventCoords !== undefined) {
@@ -376,6 +424,8 @@ class Valter extends VLabItem {
      * this.nature.interactables ['limbLinkR'] interaction action function
      */
     limbLinkRAction(event) {
+        if (this.baseFrameActionActivated) return;
+
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
 
         if (this.prevActionInitialEventCoords !== undefined) {
@@ -390,6 +440,8 @@ class Valter extends VLabItem {
      * this.nature.interactables ['armR'] interaction action function
      */
     armRAction(event) {
+        if (this.baseFrameActionActivated) return;
+
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
 
         if (this.prevActionInitialEventCoords !== undefined) {
@@ -412,6 +464,8 @@ class Valter extends VLabItem {
      * this.nature.interactables ['forearmFrameR'] interaction action function
      */
     forearmFrameRAction(event) {
+        if (this.baseFrameActionActivated) return;
+
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
 
         if (this.prevActionInitialEventCoords !== undefined) {
@@ -427,6 +481,8 @@ class Valter extends VLabItem {
      * this.nature.interactables ['forearmFrameL'] interaction action function
      */
     forearmFrameLAction(event) {
+        if (this.baseFrameActionActivated) return;
+
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
 
         if (this.prevActionInitialEventCoords !== undefined) {
@@ -446,6 +502,8 @@ class Valter extends VLabItem {
      * this.nature.interactables ['shoulderFrameL'] interaction action function
      */
     shoulderFrameLAction(event) {
+        if (this.baseFrameActionActivated) return;
+
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
 
         if (this.prevActionInitialEventCoords !== undefined) {
@@ -460,6 +518,8 @@ class Valter extends VLabItem {
      * this.nature.interactables ['limbLinkL'] interaction action function
      */
     limbLinkLAction(event) {
+        if (this.baseFrameActionActivated) return;
+
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
 
         if (this.prevActionInitialEventCoords !== undefined) {
@@ -474,6 +534,8 @@ class Valter extends VLabItem {
      * this.nature.interactables ['armL'] interaction action function
      */
     armLAction(event) {
+        if (this.baseFrameActionActivated) return;
+
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
 
         if (this.prevActionInitialEventCoords !== undefined) {
@@ -498,6 +560,9 @@ class Valter extends VLabItem {
      * this.nature.interactables ['bodyFrameAction'] interaction action invert function
      */
     commonInvAction() {
+        this.prevBaseFramePosition = undefined;
+        this.vLab.WebGLRendererCanvas.style.cursor = 'default';
+        this.baseFrameActionActivated = false;
         this.vLab.SceneDispatcher.currentVLabScene.currentControls.enable();
     }
 
