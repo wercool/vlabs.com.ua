@@ -137,7 +137,7 @@ class VLabOrbitControls extends VLabControls {
          * Update dumper (do not update if this.clock.getDelta() is too small, touch interface glitch)
          */
         let delta = this.clock.getDelta();
-        if (delta < 0.01) return;
+        if (delta < 0.001) return;
 
         this.active = true;
 
