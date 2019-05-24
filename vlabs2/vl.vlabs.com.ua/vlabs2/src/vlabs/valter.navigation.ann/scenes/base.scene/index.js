@@ -54,7 +54,7 @@ class BaseScene extends VLabScene {
     onVLabItemInitialized(event) {
         if (event.vLabItem == this.vLab['Valter']) {
             //this.vLab['Valter'].rotateBaseFrame(THREE.Math.degToRad(-180.0));
-            this.vLab['Valter'].translateBaseFrame(new THREE.Vector3(0.0, 0.0, -0.5), 1.5);
+            this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, -0.75));
         }
     }
 }

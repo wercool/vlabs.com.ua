@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import * as TWEEN from '@tweenjs/tween.js';
 import * as VLabUtils from '../../vlab.fwk/utils/vlab.utils';
 import * as THREEUtils from '../../vlab.fwk/utils/three.utils';
 import VLabItem from '../../vlab.fwk/core/vlab.item';
@@ -51,6 +52,9 @@ class Valter extends VLabItem {
 
         this.baseFrameActionActivated = false;
 
+        this.clock = new THREE.Clock();
+        this.baseFrameDoubleClickTime = 0.0;
+
         this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
         this.setupInteractables();
         this.setupFramesAndLinks();
@@ -67,6 +71,10 @@ class Valter extends VLabItem {
 
         this.headTiltLink   = this.vLabItemModel.getObjectByName('headTiltLink');
         this.headYawLink    = this.vLabItemModel.getObjectByName('headYawLink');
+
+        this.shoulderRightLink    = this.vLabItemModel.getObjectByName('shoulderFrameR');
+        this.limbRightLink    = this.vLabItemModel.getObjectByName('limbLinkR');
+        this.armRightLink    = this.vLabItemModel.getObjectByName('armR');
 
         this.vLabItemModel.updateMatrixWorld();
 
@@ -94,6 +102,27 @@ class Valter extends VLabItem {
                 min: -1.35,
                 max: 1.35,
                 step: 0.02
+            },
+            /**
+             * Right side
+             */
+            shoulderRightLink: {
+                value: this.shoulderRightLink.rotation.y,
+                min: 0.0,
+                max: 1.05,
+                step: 0.02
+            },
+            limbRightLink: {
+                value: this.limbRightLink.rotation.x,
+                min: -1.045,
+                max: 1.48,
+                step: 0.04
+            },
+            armRightLink: {
+                value: this.armRightLink.rotation.z,
+                min: 0.0,
+                max: 1.57,
+                step: 0.02
             }
         };
         this.initializeCableSleeves();
@@ -105,13 +134,13 @@ class Valter extends VLabItem {
      * 
      */
     rotateBaseFrame(angle) {
-        this.vLabItemModel.getObjectByName('baseFrame').rotateY(angle);
+        this.baseFrame.rotateY(angle);
     }
     translateBaseFrame(axis, distance) {
-        this.vLabItemModel.getObjectByName('baseFrame').translateOnAxis(axis, distance);
+        this.baseFrame.translateOnAxis(axis, distance);
     }
     setBaseFramePosition(position) {
-        this.vLabItemModel.getObjectByName('baseFrame').position.copy(position);
+        this.baseFrame.position.copy(position);
     }
 
     /**
@@ -147,6 +176,27 @@ class Valter extends VLabItem {
             this.ValterLinks.headYawLink.value = value;
             this.headYawLink.rotation.y = this.ValterLinks.headYawLink.value;
             this.torsoFrameToHeadFrameCableGeometry.copy(new THREE.TubeBufferGeometry(this.getTorsoFrameToHeadFrameCableCurve(), this.torsoFrameToHeadFrameSleeveSegments, 0.01, 5));
+        }
+    }
+    /**
+     * Right side
+     */
+    setShoulderRightLink(value) {
+        if (value >= this.ValterLinks.shoulderRightLink.min && value <= this.ValterLinks.shoulderRightLink.max) {
+            this.ValterLinks.shoulderRightLink.value = value;
+            this.shoulderRightLink.rotation.y = this.ValterLinks.shoulderRightLink.value;
+        }
+    }
+    setLimbRightLink(value) {
+        if (value >= this.ValterLinks.limbRightLink.min && value <= this.ValterLinks.limbRightLink.max) {
+            this.ValterLinks.limbRightLink.value = value;
+            this.limbRightLink.rotation.x = this.ValterLinks.limbRightLink.value;
+        }
+    }
+    setArmRightLink(value) {
+        if (value >= this.ValterLinks.armRightLink.min && value <= this.ValterLinks.armRightLink.max) {
+            this.ValterLinks.armRightLink.value = value;
+            this.armRightLink.rotation.y = this.ValterLinks.armRightLink.value;
         }
     }
 
@@ -311,6 +361,7 @@ class Valter extends VLabItem {
         if (this.prevActionInitialEventCoords !== undefined) {
             this.baseFrameActionActivated = true;
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
+
             if (event.event.ctrlKey == true) {
                 let shift = 0.02 * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1);
                 this.rotateBaseFrame(shift);
@@ -326,8 +377,19 @@ class Valter extends VLabItem {
                 if (intersections[0]) {
                     let intersectionPoint = intersections[0].point.clone();
                     if (this.prevBaseFramePosition == undefined) {
-                        this.prevBaseFramePosition = new THREE.Vector3().copy(this.vLabItemModel.getObjectByName('baseFrame').position.clone());
+                        this.prevBaseFramePosition = new THREE.Vector3().copy(this.baseFrame.position.clone());
                         this.prevBaseFrameOffest = new THREE.Vector3().copy(intersectionPoint);
+
+                        /**
+                         * Zoom to Valter on double click on baseFrame
+                         */
+                        if (this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x == 0) {
+                            if (this.clock.getElapsedTime() - this.baseFrameDoubleClickTime < 0.2) {
+                                this.zoomToValter();
+                            }
+                        }
+                        this.baseFrameDoubleClickTime = this.clock.getElapsedTime();
+
                     } else {
                         intersectionPoint.sub(this.prevBaseFrameOffest);
                         let dragPosition = this.prevBaseFramePosition.clone();
@@ -352,7 +414,7 @@ class Valter extends VLabItem {
 
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
-            // this.vLabItemModel.getObjectByName('bodyFrame').rotateY(0.01 * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
+            // this.bodyFrame.rotateY(0.01 * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
             this.setBodyFrameYaw(this.ValterLinks.bodyFrameYaw.value + this.ValterLinks.bodyFrameYaw.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
         }
 
@@ -369,7 +431,7 @@ class Valter extends VLabItem {
 
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
-            // this.vLabItemModel.getObjectByName('torsoFrame').rotateX(0.01 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
+            // this.torsoFrame.rotateX(0.01 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
             this.setTorsoFrameTilt(this.ValterLinks.torsoFrameTilt.value + this.ValterLinks.torsoFrameTilt.step * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
         }
 
@@ -414,7 +476,8 @@ class Valter extends VLabItem {
 
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
-            this.vLabItemModel.getObjectByName('shoulderFrameR').rotateY(0.01 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? -1 : 1));
+            //this.vLabItemModel.getObjectByName('shoulderFrameR').rotateY(0.01 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? -1 : 1));
+            this.setShoulderRightLink(this.ValterLinks.shoulderRightLink.value + this.ValterLinks.shoulderRightLink.step * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? -1 : 1));
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -430,7 +493,8 @@ class Valter extends VLabItem {
 
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
-            this.vLabItemModel.getObjectByName('limbLinkR').rotateY(0.04 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
+            //this.vLabItemModel.getObjectByName('limbLinkR').rotateY(0.04 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
+            this.setLimbRightLink(this.ValterLinks.limbRightLink.value + this.ValterLinks.limbRightLink.step * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -451,9 +515,10 @@ class Valter extends VLabItem {
             let deltaY = Math.abs(this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y);
 
             if (deltaX > deltaY) {
-                this.vLabItemModel.getObjectByName('armR').rotateX(0.01 * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
+                //this.vLabItemModel.getObjectByName('armR').rotateX(0.01 * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
+                this.setArmRightLink(this.ValterLinks.armRightLink.value + this.ValterLinks.armRightLink.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
             } else {
-                this.vLabItemModel.getObjectByName('forearmRollLinkR').rotateX(0.01 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
+                //this.vLabItemModel.getObjectByName('forearmRollLinkR').rotateX(0.01 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
             }
         }
 
@@ -725,6 +790,21 @@ class Valter extends VLabItem {
             siblingInteractable.keepPreselection = false;
             siblingInteractable.dePreselect();
         });
+    }
+
+    /**
+     * Move current camera to Valter
+     */
+    zoomToValter() {
+        new TWEEN.Tween(this.vLab.SceneDispatcher.currentVLabScene.currentCamera.position)
+        .to({x: this.baseFrame.position.x + 1.5, y: 1.0, z: this.baseFrame.position.z - 1.5}, 1000)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onComplete(() => {
+            this.vLab.SceneDispatcher.currentVLabScene.currentControls.update();
+        })
+        .start();
+        let target = this.baseFrame.position.clone().setY(1.0);
+        this.vLab.SceneDispatcher.currentVLabScene.currentControls.setTarget(target);
     }
 }
 export default Valter;

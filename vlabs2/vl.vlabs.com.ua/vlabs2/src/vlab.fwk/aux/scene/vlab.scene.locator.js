@@ -64,7 +64,7 @@ class VLabSceneLocator extends VLabSceneInteractable {
 
         let vLabSceneLocatorInteractableObjectSprite = new THREE.Sprite(this.vLab.prefabs['VLabSceneLocatorPrefabs']['VLabSceneLocatorSpriteMaterial']);
         vLabSceneLocatorInteractableObjectSprite.scale.set(0.3, 0.3, 0.3);
-        let vLabSceneLocatorInteractableObject = new THREE.Mesh(this.vLab.prefabs['VLabSceneTransitorPrefabs']['VLabSceneTransitorInteractableObjectGeometry'], this.vLab.prefabs['Generic']['TransparentMeshBasicMaterial']);
+        let vLabSceneLocatorInteractableObject = new THREE.Mesh(this.vLab.prefabs['VLabSceneLocatorPrefabs']['VLabSceneTransitorInteractableObjectGeometry'], this.vLab.prefabs['Generic']['TransparentMeshBasicMaterial']);
         vLabSceneLocatorInteractableObject.add(vLabSceneLocatorInteractableObjectSprite);
         vLabSceneLocatorInteractableObject.position.copy(this.selfInitObj.position);
         vLabSceneLocatorInteractableObject.scale.multiplyScalar(this.selfInitObj.scaleFactor);
@@ -97,6 +97,7 @@ class VLabSceneLocator extends VLabSceneInteractable {
      * Moves this.vLabScene to this.selfInitObj.position
      */
     move(initObj) {
+        if (initObj.target == undefined) return;
         /**
          * Reset this.zoomHelperStack
          */
