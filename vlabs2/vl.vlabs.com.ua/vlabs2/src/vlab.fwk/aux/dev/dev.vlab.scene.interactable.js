@@ -41,6 +41,16 @@ class DEVVLabSceneInteractable {
                 }
             },
             {
+                label: 'Trace Rotation',
+                enabled: true,
+                selected: false,
+                icon: '<i class=\"material-icons\">description</i>',
+                action: () => {
+                    console.log(this.vLabSceneInteractable.vLabSceneObject.rotation);
+                    console.log('new THREE.Vector3(' + this.vLabSceneInteractable.vLabSceneObject.rotation.x.toFixed(3) + ', ' + this.vLabSceneInteractable.vLabSceneObject.rotation.y.toFixed(3) + ', ' + this.vLabSceneInteractable.vLabSceneObject.rotation.z.toFixed(3) + ')');
+                }
+            },
+            {
                 label: 'Trace Quaternion',
                 enabled: true,
                 selected: false,

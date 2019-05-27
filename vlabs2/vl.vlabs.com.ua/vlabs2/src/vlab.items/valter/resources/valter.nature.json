@@ -149,7 +149,14 @@
             "name": "forearmRollLinkR",
             "intersectable": true,
             "preselectable": true,
-            "selectable": false
+            "selectable": false,
+            "action": {
+                "context": "this.vLab['Valter']",
+                "function": "this.vLab['Valter'].forearmRollLinkRAction",
+                "activated": true,
+                "invfunction": "this.vLab['Valter'].commonInvAction",
+                "args": {}
+            }
         },
         {
             "name": "forearmFrameR",
@@ -338,7 +345,14 @@
             "name": "forearmRollLinkL",
             "intersectable": true,
             "preselectable": true,
-            "selectable": false
+            "selectable": false,
+            "action": {
+                "context": "this.vLab['Valter']",
+                "function": "this.vLab['Valter'].forearmRollLinkLAction",
+                "activated": true,
+                "invfunction": "this.vLab['Valter'].commonInvAction",
+                "args": {}
+            }
         },
         {
             "name": "forearmFrameL",
