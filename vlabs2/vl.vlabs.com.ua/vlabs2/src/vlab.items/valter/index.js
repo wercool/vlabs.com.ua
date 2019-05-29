@@ -100,14 +100,14 @@ class Valter extends VLabItem {
             },
             torsoFrameTilt: {
                 value: this.torsoFrame.rotation.x,
-                min: -0.85,
-                max: 0.0,
+                min: 0.0,
+                max: 0.85,
                 step: 0.01
             },
             headTiltLink: {
                 value: this.headTiltLink.rotation.x,
-                min: 0.0,
-                max: 1.0,
+                min: -1.0,
+                max: 0.0,
                 step: 0.01
             },
             headYawLink: {
@@ -127,20 +127,20 @@ class Valter extends VLabItem {
             },
             limbRightLink: {
                 value: this.limbRightLink.rotation.x,
-                min: -1.045,
-                max: 1.48,
+                min: -1.48,
+                max: 1.045,
                 step: 0.04
             },
             armRightLink: {
                 value: this.armRightLink.rotation.z,
-                min: 0.0,
-                max: 1.38,
+                min: -1.38,
+                max: 0.0,
                 step: 0.02
             },
             forearmRollRightLink: {
                 value: this.forearmRollRightLink.rotation.x,
-                min: -1.2,
-                max: 0.65,
+                min: -0.65,
+                max: 1.2,
                 step: 0.02
             },
             forearmRightFrame: {
@@ -160,20 +160,20 @@ class Valter extends VLabItem {
             },
             limbLeftLink: {
                 value: this.limbLeftLink.rotation.x,
-                min: -1.045,
-                max: 1.48,
+                min: -1.48,
+                max: 1.045,
                 step: 0.04
             },
             armLeftLink: {
                 value: this.armLeftLink.rotation.z,
-                min: -1.38,
-                max: 0.0,
+                min: 0.0,
+                max: 1.38,
                 step: 0.02
             },
             forearmRollLeftLink: {
                 value: this.forearmRollLeftLink.rotation.x,
-                min: -1.2,
-                max: 0.65,
+                min: -0.65,
+                max: 1.2,
                 step: 0.02
             },
             forearmLeftFrame: {
@@ -309,11 +309,11 @@ class Valter extends VLabItem {
      */
     initializeCableSleeves() {
         this.torsoFrameCableOutput = new THREE.Object3D();
-        this.torsoFrameCableOutput.position.set(0.0, 0.386, 0.102);
+        this.torsoFrameCableOutput.position.set(0.0, 0.386, -0.102);
         this.torsoFrame.add(this.torsoFrameCableOutput);
 
         this.headFrameCableInput = new THREE.Object3D();
-        this.headFrameCableInput.position.set(0.0, 0.058, 0.095);
+        this.headFrameCableInput.position.set(0.0, 0.058, -0.095);
         this.headFrame.add(this.headFrameCableInput);
 
         this.torsoFrameToHeadFrameSleeveSegments = 10;
@@ -325,19 +325,19 @@ class Valter extends VLabItem {
 
 
         this.torsoFrameCableInputL = new THREE.Object3D();
-        this.torsoFrameCableInputL.position.set(-0.04, 0.139, 0.128);
+        this.torsoFrameCableInputL.position.set(0.04, 0.139, -0.128);
         this.torsoFrame.add(this.torsoFrameCableInputL);
 
         this.torsoFrameCableInputR = new THREE.Object3D();
-        this.torsoFrameCableInputR.position.set(0.04, 0.139, 0.128);
+        this.torsoFrameCableInputR.position.set(-0.04, 0.139, -0.128);
         this.torsoFrame.add(this.torsoFrameCableInputR);
 
         this.bodyFrameCableOutputL = new THREE.Object3D();
-        this.bodyFrameCableOutputL.position.set(-0.083, 0.277, 0.119);
+        this.bodyFrameCableOutputL.position.set(0.083, 0.277, -0.119);
         this.bodyFrame.add(this.bodyFrameCableOutputL);
 
         this.bodyFrameCableOutputR = new THREE.Object3D();
-        this.bodyFrameCableOutputR.position.set(0.083, 0.277, 0.119);
+        this.bodyFrameCableOutputR.position.set(-0.083, 0.277, -0.119);
         this.bodyFrame.add(this.bodyFrameCableOutputR);
 
         this.bodyFrameToTorsoFrameSleeveSegments = 10;
@@ -361,11 +361,11 @@ class Valter extends VLabItem {
         this.baseFrame.add(this.baseFrameCableOutputR);
 
         this.bodyFrameCableInputL = new THREE.Object3D();
-        this.bodyFrameCableInputL.position.set(-0.037, 0.373, 0.175);
+        this.bodyFrameCableInputL.position.set(0.037, 0.373, -0.175);
         this.bodyFrame.add(this.bodyFrameCableInputL);
 
         this.bodyFrameCableInputR = new THREE.Object3D();
-        this.bodyFrameCableInputR.position.set(0.037, 0.373, 0.175);
+        this.bodyFrameCableInputR.position.set(-0.037, 0.373, -0.175);
         this.bodyFrame.add(this.bodyFrameCableInputR);
 
         this.baseFrameToBodyFrameSleeveSegments = 16;
@@ -383,12 +383,12 @@ class Valter extends VLabItem {
      */
     getTorsoFrameToHeadFrameCableCurve() {
         let xShift = 1 - ((this.ValterLinks.headYawLink.max - this.ValterLinks.headYawLink.value) / this.ValterLinks.headYawLink.max);
-        let zShift = (this.ValterLinks.headTiltLink.max - this.ValterLinks.headTiltLink.value) / this.ValterLinks.headTiltLink.max;
+        let zShift = (this.ValterLinks.headTiltLink.min - this.ValterLinks.headTiltLink.value) / this.ValterLinks.headTiltLink.min;
         return new THREE.CatmullRomCurve3([
             this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableOutput)).add(new THREE.Vector3(0.0, 0.0, 0.0)),
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableOutput)).add(new THREE.Vector3(0.0, 0.02, 0.02)),
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableOutput)).add(new THREE.Vector3((0.1 * xShift), 0.15, (0.08 * zShift))),
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.headFrameCableInput)).add(new THREE.Vector3((0.02 * xShift), (0.015 - 0.015 * zShift), 0.02)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableOutput)).add(new THREE.Vector3(0.0, 0.02, -0.02)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableOutput)).add(new THREE.Vector3(-(0.1 * xShift), 0.15, -(0.08 * zShift))),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.headFrameCableInput)).add(new THREE.Vector3(-(0.02 * xShift), (0.015 - 0.015 * zShift), -0.02)),
             this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.headFrameCableInput)).add(new THREE.Vector3(0.0, 0.0, 0.0)),
         ]);
     }
@@ -396,28 +396,28 @@ class Valter extends VLabItem {
      * Dynamic bodyFrame to torsoFrame cable sleeve curve (left)
      */
     getBodyFrameToTorsoFrameCableLCurve() {
-        let shift = 1 - (this.ValterLinks.torsoFrameTilt.min - this.ValterLinks.torsoFrameTilt.value) / this.ValterLinks.torsoFrameTilt.min;
+        let shift = 1 - (this.ValterLinks.torsoFrameTilt.max - this.ValterLinks.torsoFrameTilt.value) / this.ValterLinks.torsoFrameTilt.max;
         return new THREE.CatmullRomCurve3([
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputL)).add(new THREE.Vector3(0.0, 0.004, -0.01)),
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputL)).add(new THREE.Vector3(0.0, -0.01, 0.03)),
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputL)).add(new THREE.Vector3(-0.02 + 0.02 * shift, -0.1 - 0.02 * shift, 0.06 - 0.02 * shift)),
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableOutputL)).add(new THREE.Vector3(0.0 + 0.02 * shift, 0.1 + 0.04 * shift, 0.05 + 0.1 * shift)),
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableOutputL)).add(new THREE.Vector3(0.0, 0.02, 0.0 + 0.02 * shift)),
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableOutputL)).add(new THREE.Vector3(0.0, -0.01, 0.0 - 0.02 * shift)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputL)).add(new THREE.Vector3(0.0, 0.004, 0.01)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputL)).add(new THREE.Vector3(0.0, -0.01, -0.03)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputL)).add(new THREE.Vector3(0.02 - 0.015 * shift, -0.1 - 0.02 * shift, -(0.06 - 0.02 * shift))),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableOutputL)).add(new THREE.Vector3(0.0 - 0.015 * shift, 0.1 + 0.04 * shift, -(0.05 + 0.1 * shift))),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableOutputL)).add(new THREE.Vector3(0.0, 0.02, 0.0 - 0.02 * shift)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableOutputL)).add(new THREE.Vector3(0.0, -0.01, 0.0 + 0.02 * shift)),
         ]);
     }
     /**
      * Dynamic bodyFrame to torsoFrame cable sleeve curve (right)
      */
     getBodyFrameToTorsoFrameCableRCurve() {
-        let shift = 1 - (this.ValterLinks.torsoFrameTilt.min - this.ValterLinks.torsoFrameTilt.value) / this.ValterLinks.torsoFrameTilt.min;
+        let shift = 1 - (this.ValterLinks.torsoFrameTilt.max - this.ValterLinks.torsoFrameTilt.value) / this.ValterLinks.torsoFrameTilt.max;
         return new THREE.CatmullRomCurve3([
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputR)).add(new THREE.Vector3(0.0, 0.004, -0.01)),
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputR)).add(new THREE.Vector3(0.0, -0.01, 0.03)),
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputR)).add(new THREE.Vector3(0.02 - 0.02 * shift, -0.1 - 0.02 * shift, 0.06 - 0.02 * shift)),
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableOutputR)).add(new THREE.Vector3(0.0 - 0.02 * shift, 0.1 + 0.04 * shift, 0.05 + 0.1 * shift)),
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableOutputR)).add(new THREE.Vector3(0.0, 0.02, 0.0 + 0.02 * shift)),
-            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableOutputR)).add(new THREE.Vector3(0.0, -0.01, 0.0 - 0.02 * shift)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputR)).add(new THREE.Vector3(0.0, 0.004, 0.01)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputR)).add(new THREE.Vector3(0.0, -0.01, -0.03)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.torsoFrameCableInputR)).add(new THREE.Vector3(-0.02 + 0.015 * shift, -0.1 - 0.02 * shift, -(0.06 - 0.02 * shift))),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableOutputR)).add(new THREE.Vector3(0.0 + 0.015 * shift, 0.1 + 0.04 * shift, -(0.05 + 0.1 * shift))),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableOutputR)).add(new THREE.Vector3(0.0, 0.02, 0.0 - 0.02 * shift)),
+            this.torsoFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableOutputR)).add(new THREE.Vector3(0.0, -0.01, 0.0 + 0.02 * shift)),
         ]);
     }
     /**
@@ -428,9 +428,9 @@ class Valter extends VLabItem {
         return new THREE.CatmullRomCurve3([
             this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputL)).add(new THREE.Vector3(0.0, -0.01, 0.0)),
             this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputL)).add(new THREE.Vector3(0.0, 0.04, 0.0)),
-            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputL)).add(new THREE.Vector3(-0.1 * shift, 0.2, -0.075 + 0.085 * Math.abs(shift))),
-            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputL)).add(new THREE.Vector3(-0.05 * shift, -0.05, -0.075)),
-            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputL)).add(new THREE.Vector3(-0.05 * shift, 0.0, -0.02)),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputL)).add(new THREE.Vector3(0.1 * shift, 0.2, -0.075 + 0.085 * Math.abs(shift))),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputL)).add(new THREE.Vector3(0.05 * shift, -0.05, -0.075)),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputL)).add(new THREE.Vector3(0.05 * shift, 0.0, -0.02)),
             this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputL)).add(new THREE.Vector3(0.0, 0.0, 0.0)),
         ]);
     }
@@ -442,9 +442,9 @@ class Valter extends VLabItem {
         return new THREE.CatmullRomCurve3([
             this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputR)).add(new THREE.Vector3(0.0, -0.01, 0.0)),
             this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputR)).add(new THREE.Vector3(0.0, 0.04, 0.0)),
-            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputR)).add(new THREE.Vector3(-0.1 * shift, 0.2, -0.075 + 0.085 * Math.abs(shift))),
-            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputR)).add(new THREE.Vector3(-0.05 * shift, -0.05, -0.075)),
-            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputR)).add(new THREE.Vector3(-0.05 * shift, 0.0, -0.02)),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.baseFrameCableOutputR)).add(new THREE.Vector3(0.1 * shift, 0.2, -0.075 + 0.085 * Math.abs(shift))),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputR)).add(new THREE.Vector3(0.05 * shift, -0.05, -0.075)),
+            this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputR)).add(new THREE.Vector3(0.05 * shift, 0.0, -0.02)),
             this.baseFrame.worldToLocal(THREEUtils.getObjectWorldPosition(this.bodyFrameCableInputR)).add(new THREE.Vector3(0.0, 0.0, 0.0)),
         ]);
     }
@@ -517,7 +517,7 @@ class Valter extends VLabItem {
 
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
-            this.setBodyFrameYaw(this.ValterLinks.bodyFrameYaw.value + this.ValterLinks.bodyFrameYaw.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? 1 : -1));
+            this.setBodyFrameYaw(this.ValterLinks.bodyFrameYaw.value + this.ValterLinks.bodyFrameYaw.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -533,8 +533,7 @@ class Valter extends VLabItem {
 
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
-            // this.torsoFrame.rotateX(0.01 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
-            this.setTorsoFrameTilt(this.ValterLinks.torsoFrameTilt.value + this.ValterLinks.torsoFrameTilt.step * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
+            this.setTorsoFrameTilt(this.ValterLinks.torsoFrameTilt.value + this.ValterLinks.torsoFrameTilt.step * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? -1 : 1));
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -558,11 +557,12 @@ class Valter extends VLabItem {
             if (deltaX > deltaY) {
                 this.setHeadYawLink(this.ValterLinks.headYawLink.value + this.ValterLinks.headYawLink.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
             } else {
-                this.setHeadTiltLink(this.ValterLinks.headTiltLink.value + this.ValterLinks.headTiltLink.step * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? -1 : 1));
+                this.setHeadTiltLink(this.ValterLinks.headTiltLink.value + this.ValterLinks.headTiltLink.step * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
             }
-            if (this.headDirectionArrowHelper) {
-                console.log(this.headDirectionArrowHelper);
-            }
+
+            // if (this.nature.devHelpers.showKinectHeadDirection == true) {
+            //     console.log(this.headDirectionTarget.position);
+            // }
         }
         this.prevActionInitialEventCoords = new THREE.Vector2();
         this.prevActionInitialEventCoords.copy(currentActionInitialEventCoords);
@@ -618,7 +618,7 @@ class Valter extends VLabItem {
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
 
-            this.setArmRightLink(this.ValterLinks.armRightLink.value + this.ValterLinks.armRightLink.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? 1 : -1));
+            this.setArmRightLink(this.ValterLinks.armRightLink.value + this.ValterLinks.armRightLink.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -635,7 +635,7 @@ class Valter extends VLabItem {
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
 
-            this.setForearmRollRightLink(this.ValterLinks.forearmRollRightLink.value + this.ValterLinks.forearmRollRightLink.step *  ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
+            this.setForearmRollRightLink(this.ValterLinks.forearmRollRightLink.value + this.ValterLinks.forearmRollRightLink.step *  ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? -1 : 1));
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -652,7 +652,7 @@ class Valter extends VLabItem {
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
 
-            this.setForearmRightFrame(this.ValterLinks.forearmRightFrame.value + this.ValterLinks.forearmRightFrame.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
+            this.setForearmRightFrame(this.ValterLinks.forearmRightFrame.value + this.ValterLinks.forearmRightFrame.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? 1 : -1));
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -694,7 +694,7 @@ class Valter extends VLabItem {
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
 
-            this.setLimbLeftLink(this.ValterLinks.limbLeftLink.value + this.ValterLinks.limbLeftLink.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? 1 : -1));
+            this.setLimbLeftLink(this.ValterLinks.limbLeftLink.value + this.ValterLinks.limbLeftLink.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -711,7 +711,7 @@ class Valter extends VLabItem {
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
 
-            this.setArmLeftLink(this.ValterLinks.armLeftLink.value + this.ValterLinks.armLeftLink.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? 1 : -1));
+            this.setArmLeftLink(this.ValterLinks.armLeftLink.value + this.ValterLinks.armLeftLink.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -728,7 +728,7 @@ class Valter extends VLabItem {
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
 
-            this.setForearmRollLeftLink(this.ValterLinks.forearmRollLeftLink.value + this.ValterLinks.forearmRollLeftLink.step *  ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
+            this.setForearmRollLeftLink(this.ValterLinks.forearmRollLeftLink.value + this.ValterLinks.forearmRollLeftLink.step *  ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? -1 : 1));
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -745,7 +745,7 @@ class Valter extends VLabItem {
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
 
-            this.setForearmLeftFrame(this.ValterLinks.forearmLeftFrame.value + this.ValterLinks.forearmLeftFrame.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
+            this.setForearmLeftFrame(this.ValterLinks.forearmLeftFrame.value + this.ValterLinks.forearmLeftFrame.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? 1 : -1));
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -950,12 +950,19 @@ class Valter extends VLabItem {
                 this.baseFrame.add(this.baseDirectionArrowHelper);
             }
             if (this.nature.devHelpers.showHeadDirection == true) {
-                this.headDirectionArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0.0, 0.0, -1.0).normalize(), new THREE.Vector3(0.0, 0.0, 0.0), 1.0, 0x0000ff, 0.05, 0.025);
+                this.headDirectionArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0.0, 0.0, 1.0).normalize(), new THREE.Vector3(0.0, 0.0, 0.0), 1.0, 0x0000ff, 0.05, 0.025);
                 this.headGlass.add(this.headDirectionArrowHelper);
             }
             if (this.nature.devHelpers.showKinectHeadDirection == true) {
-                this.kinectHeadDirectionArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0.0, 0.0, -1.0).normalize(), new THREE.Vector3(0.0, 0.0, 0.0), 1.0, 0xff00ff, 0.05, 0.025);
+                this.kinectHeadDirectionArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0.0, 0.0, 1.0).normalize(), new THREE.Vector3(0.0, 0.0, 0.0), 1.0, 0xff00ff, 0.05, 0.025);
                 this.kinectHead.add(this.kinectHeadDirectionArrowHelper);
+
+                let geometry = new THREE.SphereBufferGeometry(0.015, 8, 8);
+                let material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+                this.headDirectionTarget = new THREE.Mesh(geometry, material);
+
+                this.kinectHead.add(this.headDirectionTarget);
+                this.headDirectionTarget.position.add(new THREE.Vector3(0.0, 0.0, 1.0));
             }
         }
     }
