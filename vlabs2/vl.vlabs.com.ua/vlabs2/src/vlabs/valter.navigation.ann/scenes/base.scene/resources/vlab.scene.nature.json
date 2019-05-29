@@ -1,7 +1,7 @@
 {
     "title": "Base Scene",
     "description": "Base scene description...",
-    "gltfURL": "./scenes/base.scene/resources/3d/apartment.glb",
+    "__gltfURL": "./scenes/base.scene/resources/3d/apartment.glb",
     "WebGLRendererParameters": {
         "clearColor": "0x0f0f0f"
     },

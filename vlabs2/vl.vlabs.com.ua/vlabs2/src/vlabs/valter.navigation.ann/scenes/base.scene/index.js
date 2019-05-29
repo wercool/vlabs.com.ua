@@ -53,7 +53,7 @@ class BaseScene extends VLabScene {
 
     onVLabItemInitialized(event) {
         if (event.vLabItem == this.vLab['Valter']) {
-            this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 0.75));
+            this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 0.0));
         }
     }
 }

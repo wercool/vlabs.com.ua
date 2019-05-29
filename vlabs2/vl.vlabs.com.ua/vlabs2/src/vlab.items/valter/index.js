@@ -560,9 +560,13 @@ class Valter extends VLabItem {
                 this.setHeadTiltLink(this.ValterLinks.headTiltLink.value + this.ValterLinks.headTiltLink.step * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
             }
 
-            // if (this.nature.devHelpers.showKinectHeadDirection == true) {
-            //     console.log(this.headDirectionTarget.position);
-            // }
+            if (this.nature.devHelpers.showKinectHeadDirection == true) {
+                this.baseFrame.updateMatrixWorld();
+                this.headDirectionTargetGlobalPosition = this.kinectHead.localToWorld(this.headDirectionTargetObject3D.position.clone());
+                this.headDirectionTarget.position.copy(this.headDirectionTargetGlobalPosition);
+
+                console.log(this.baseFrame.worldToLocal(this.headDirectionTargetGlobalPosition.clone()));
+            }
         }
         this.prevActionInitialEventCoords = new THREE.Vector2();
         this.prevActionInitialEventCoords.copy(currentActionInitialEventCoords);
@@ -946,7 +950,7 @@ class Valter extends VLabItem {
     setupDevHelpers() {
         if (this.nature.devHelpers.devMode == true) {
             if (this.nature.devHelpers.showBaseDirection == true) {
-                this.baseDirectionArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0.0, 0.0, 1.0).normalize(), new THREE.Vector3(0.0, 0.1, 0.0), 1.0, 0xff0000, 0.05, 0.025);
+                this.baseDirectionArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0.0, 0.0, 1.0).normalize(), new THREE.Vector3(0.0, 0.1, 0.0), 1.0, 0x0000ff, 0.05, 0.025);
                 this.baseFrame.add(this.baseDirectionArrowHelper);
             }
             if (this.nature.devHelpers.showHeadDirection == true) {
@@ -954,15 +958,20 @@ class Valter extends VLabItem {
                 this.headGlass.add(this.headDirectionArrowHelper);
             }
             if (this.nature.devHelpers.showKinectHeadDirection == true) {
-                this.kinectHeadDirectionArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0.0, 0.0, 1.0).normalize(), new THREE.Vector3(0.0, 0.0, 0.0), 1.0, 0xff00ff, 0.05, 0.025);
+                this.kinectHeadDirectionArrowHelperDirection = new THREE.Vector3(0.0, 0.0, 1.0);
+                this.kinectHeadDirectionArrowHelper = new THREE.ArrowHelper(this.kinectHeadDirectionArrowHelperDirection.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), 1.0, 0xff00ff, 0.05, 0.025);
                 this.kinectHead.add(this.kinectHeadDirectionArrowHelper);
 
                 let geometry = new THREE.SphereBufferGeometry(0.015, 8, 8);
                 let material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-                this.headDirectionTarget = new THREE.Mesh(geometry, material);
+                this.headDirectionTargetObject3D = new THREE.Object3D();
+                this.headDirectionTargetObject3D.position.copy(this.kinectHeadDirectionArrowHelperDirection);
+                this.kinectHead.add(this.headDirectionTargetObject3D);
 
-                this.kinectHead.add(this.headDirectionTarget);
-                this.headDirectionTarget.position.add(new THREE.Vector3(0.0, 0.0, 1.0));
+                this.headDirectionTarget = new THREE.Mesh(geometry, material);
+                this.vLab.SceneDispatcher.currentVLabScene.add(this.headDirectionTarget);
+                this.headDirectionTargetGlobalPosition = this.kinectHead.localToWorld(this.headDirectionTargetObject3D.position.clone());
+                this.headDirectionTarget.position.copy(this.headDirectionTargetGlobalPosition);
             }
         }
     }
