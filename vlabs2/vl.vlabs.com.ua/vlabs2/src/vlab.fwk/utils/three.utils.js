@@ -11,6 +11,11 @@ export function getObjectWorldPosition(obj) {
     return worldPosition;
 }
 
+export function stringifyVector3(vector, digits = 3) {
+    let stringifiedVec = vector.x.toFixed(digits) + ', ' + vector.y.toFixed(digits) + ', ' + vector.z.toFixed(digits);
+    return stringifiedVec;
+}
+
 export function screenProjected2DCoordsOfObject(vLab, object3D) {
     let vector = new THREE.Vector3();
 

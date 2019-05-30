@@ -611,7 +611,7 @@ class Valter extends VLabItem {
 
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
-            this.setLimbRightLink(this.ValterLinks.limbRightLink.value + this.ValterLinks.limbRightLink.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? 1 : -1));
+            this.setLimbRightLink(this.ValterLinks.limbRightLink.value + this.ValterLinks.limbRightLink.step * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? -1 : 1));
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -704,7 +704,7 @@ class Valter extends VLabItem {
         if (this.prevActionInitialEventCoords !== undefined) {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
 
-            this.setLimbLeftLink(this.ValterLinks.limbLeftLink.value + this.ValterLinks.limbLeftLink.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
+            this.setLimbLeftLink(this.ValterLinks.limbLeftLink.value + this.ValterLinks.limbLeftLink.step * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? -1 : 1));
         }
 
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -940,7 +940,7 @@ class Valter extends VLabItem {
      */
     zoomToValter() {
         new TWEEN.Tween(this.vLab.SceneDispatcher.currentVLabScene.currentCamera.position)
-        .to({x: this.baseFrame.position.x + 1.5, y: 1.0, z: this.baseFrame.position.z - 1.5}, 1000)
+        .to({x: this.baseFrame.position.x - 1.5, y: 1.5, z: this.baseFrame.position.z + 1.5}, 1000)
         .easing(TWEEN.Easing.Quadratic.InOut)
         .onComplete(() => {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.update();

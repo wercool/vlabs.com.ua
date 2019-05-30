@@ -43,7 +43,8 @@ class VLabsRESTClientManager {
              */
             valter: {
                 base: '/valter',
-                saveHeadFKTuple: '/head/ik/save_head_fk_tuple'
+                saveHeadFKTuple: '/head/ik/save_head_fk_tuple',
+                getHeadIKTuple: '/head/ik/get_head_ik_tuple',
             },
             getFullyQualifiedURL: function (endpointGroup, endpointPoint) {
                 return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint];

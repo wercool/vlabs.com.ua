@@ -28,5 +28,18 @@ class VLabsRESTValterHeadIKService {
             });
         });
      }
+     getHeadIKTuple(headTargetObjectDir) {
+        return new Promise((resolve, reject) => {
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getHeadIKTuple');
+            this.manager.post(apiEndPoint, headTargetObjectDir)
+            .then((result) => {
+                resolve(result);
+            })
+            .catch((error) => {
+                console.error(error.status);
+                reject(error);
+            });
+        });
+     }
  }
  export default VLabsRESTValterHeadIKService;
