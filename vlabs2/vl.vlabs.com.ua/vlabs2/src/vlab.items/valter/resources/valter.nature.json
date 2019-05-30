@@ -6,7 +6,8 @@
         "devMode": true,
         "showBaseDirection": true,
         "showHeadDirection": false,
-        "showKinectHeadDirection": true
+        "showKinectHeadDirection": false,
+        "showHeadTargetDirectionFromYawLinkOrigin": true
     },
     "interactables": [
         {

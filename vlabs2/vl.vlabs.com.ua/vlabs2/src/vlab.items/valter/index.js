@@ -3,6 +3,7 @@ import * as TWEEN from '@tweenjs/tween.js';
 import * as VLabUtils from '../../vlab.fwk/utils/vlab.utils';
 import * as THREEUtils from '../../vlab.fwk/utils/three.utils';
 import VLabItem from '../../vlab.fwk/core/vlab.item';
+import ValterIK from './ik/valter-ik';
 /**
  * Valter VLabItem base class.
  * @class
@@ -59,6 +60,17 @@ class Valter extends VLabItem {
         this.setupInteractables();
         this.setupFramesAndLinks();
 
+        /**
+         * 
+         * 
+         * Valter IK
+         * @note setupFramesAndLinks() should be called to initialize links
+         * 
+         */
+        this.ValterIK = new ValterIK({
+            Valter: this
+        });
+
         this.setupDevHelpers();
     }
 
@@ -104,17 +116,17 @@ class Valter extends VLabItem {
                 max: 0.85,
                 step: 0.01
             },
-            headTiltLink: {
-                value: this.headTiltLink.rotation.x,
-                min: -1.0,
-                max: 0.0,
-                step: 0.01
-            },
             headYawLink: {
                 value: this.headYawLink.rotation.y,
                 min: -1.35,
                 max: 1.35,
                 step: 0.02
+            },
+            headTiltLink: {
+                value: this.headTiltLink.rotation.x,
+                min: -1.0,
+                max: 0.0,
+                step: 0.01
             },
             /**
              * Right side
@@ -222,19 +234,21 @@ class Valter extends VLabItem {
             this.bodyFrameToTorsoFrameCableRGeometry.copy(new THREE.TubeBufferGeometry(this.getBodyFrameToTorsoFrameCableRCurve(), this.bodyFrameToTorsoFrameSleeveSegments, 0.01, 5));
         }
     }
-    setHeadTiltLink(value) {
-        if (value >= this.ValterLinks.headTiltLink.min && value <= this.ValterLinks.headTiltLink.max) {
-            this.ValterLinks.headTiltLink.value = value;
-            this.headTiltLink.rotation.x = this.ValterLinks.headTiltLink.value * -1;
-            this.torsoFrameToHeadFrameCableGeometry.copy(new THREE.TubeBufferGeometry(this.getTorsoFrameToHeadFrameCableCurve(), this.torsoFrameToHeadFrameSleeveSegments, 0.01, 5));
-        }
-    }
     setHeadYawLink(value) {
         if (value >= this.ValterLinks.headYawLink.min && value <= this.ValterLinks.headYawLink.max) {
             this.ValterLinks.headYawLink.value = value;
             this.headYawLink.rotation.y = this.ValterLinks.headYawLink.value;
             this.torsoFrameToHeadFrameCableGeometry.copy(new THREE.TubeBufferGeometry(this.getTorsoFrameToHeadFrameCableCurve(), this.torsoFrameToHeadFrameSleeveSegments, 0.01, 5));
         }
+        this.ValterIK.updateHeadTargetDirectionFromHeadYawLinkOrigin();
+    }
+    setHeadTiltLink(value) {
+        if (value >= this.ValterLinks.headTiltLink.min && value <= this.ValterLinks.headTiltLink.max) {
+            this.ValterLinks.headTiltLink.value = value;
+            this.headTiltLink.rotation.x = this.ValterLinks.headTiltLink.value * -1;
+            this.torsoFrameToHeadFrameCableGeometry.copy(new THREE.TubeBufferGeometry(this.getTorsoFrameToHeadFrameCableCurve(), this.torsoFrameToHeadFrameSleeveSegments, 0.01, 5));
+        }
+        this.ValterIK.updateHeadTargetDirectionFromHeadYawLinkOrigin();
     }
     /**
      * Right side
@@ -558,14 +572,6 @@ class Valter extends VLabItem {
                 this.setHeadYawLink(this.ValterLinks.headYawLink.value + this.ValterLinks.headYawLink.step * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1));
             } else {
                 this.setHeadTiltLink(this.ValterLinks.headTiltLink.value + this.ValterLinks.headTiltLink.step * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1));
-            }
-
-            if (this.nature.devHelpers.showKinectHeadDirection == true) {
-                this.baseFrame.updateMatrixWorld();
-                this.headDirectionTargetGlobalPosition = this.kinectHead.localToWorld(this.headDirectionTargetObject3D.position.clone());
-                this.headDirectionTarget.position.copy(this.headDirectionTargetGlobalPosition);
-
-                console.log(this.baseFrame.worldToLocal(this.headDirectionTargetGlobalPosition.clone()));
             }
         }
         this.prevActionInitialEventCoords = new THREE.Vector2();
@@ -948,6 +954,7 @@ class Valter extends VLabItem {
      * Development helpers
      */
     setupDevHelpers() {
+        /*<dev>*/
         if (this.nature.devHelpers.devMode == true) {
             if (this.nature.devHelpers.showBaseDirection == true) {
                 this.baseDirectionArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0.0, 0.0, 1.0).normalize(), new THREE.Vector3(0.0, 0.1, 0.0), 1.0, 0x0000ff, 0.05, 0.025);
@@ -959,21 +966,13 @@ class Valter extends VLabItem {
             }
             if (this.nature.devHelpers.showKinectHeadDirection == true) {
                 this.kinectHeadDirectionArrowHelperDirection = new THREE.Vector3(0.0, 0.0, 1.0);
-                this.kinectHeadDirectionArrowHelper = new THREE.ArrowHelper(this.kinectHeadDirectionArrowHelperDirection.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), 1.0, 0xff00ff, 0.05, 0.025);
+                this.kinectHeadDirectionArrowHelper = new THREE.ArrowHelper(this.kinectHeadDirectionArrowHelperDirection.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), 1.0, 0xff00ff, 0.02, 0.01);
                 this.kinectHead.add(this.kinectHeadDirectionArrowHelper);
 
-                let geometry = new THREE.SphereBufferGeometry(0.015, 8, 8);
-                let material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-                this.headDirectionTargetObject3D = new THREE.Object3D();
-                this.headDirectionTargetObject3D.position.copy(this.kinectHeadDirectionArrowHelperDirection);
-                this.kinectHead.add(this.headDirectionTargetObject3D);
-
-                this.headDirectionTarget = new THREE.Mesh(geometry, material);
-                this.vLab.SceneDispatcher.currentVLabScene.add(this.headDirectionTarget);
-                this.headDirectionTargetGlobalPosition = this.kinectHead.localToWorld(this.headDirectionTargetObject3D.position.clone());
-                this.headDirectionTarget.position.copy(this.headDirectionTargetGlobalPosition);
+                this.ValterIK.setupHeadTargetDirectionFromHeadYawLinkOrigin();
             }
         }
+        /*</dev>*/
     }
 }
 export default Valter;

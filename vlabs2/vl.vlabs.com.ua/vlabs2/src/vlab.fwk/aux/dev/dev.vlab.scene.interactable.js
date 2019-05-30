@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as THREEUtils from '../../utils/three.utils';
-var TransformControls = require('three-transformcontrols');
+var TransformControls = require('three-transform-ctrls');
 /**
  * DEVVLabSceneInteractable dev class.
  * @class
@@ -68,6 +68,46 @@ class DEVVLabSceneInteractable {
                 action: () => {
                     console.log(this.vLabSceneInteractable.vLabSceneObject.material);
                 }
+            },
+            {
+                label: 'Use World Space',
+                enabled: true,
+                selected: false,
+                icon: '<img src="/vlab.assets/img/dev/vlab.scene.interactable.dev/global.png" height="32px"/>',
+                action: (menuItem) => {
+                    if (this.manipulationControl !== undefined && this.manipulationControl !== null) {
+                        this.manipulationControl.setSpace('world');
+                        menuItem.selected = true;
+                        this.setSelected('Use Local Space', false);
+                    }
+                },
+                context: this
+            },
+            {
+                label: 'Use Local Space',
+                enabled: true,
+                selected: false,
+                icon: '<img src="/vlab.assets/img/dev/vlab.scene.interactable.dev/local.png" height="32px"/>',
+                action: (menuItem) => {
+                    if (this.manipulationControl !== undefined && this.manipulationControl !== null) {
+                        this.manipulationControl.setSpace('local');
+                        menuItem.selected = true;
+                        this.setSelected('Use World Space', false);
+                    }
+                },
+                context: this
+            },
+            {
+                label: 'Toggle Transform Controls',
+                enabled: true,
+                selected: false,
+                icon: '<img src="/vlab.assets/img/dev/vlab.scene.interactable.dev/axis-toggle.png" height="32px"/>',
+                action: (menuItem) => {
+                    if (this.manipulationControl !== undefined && this.manipulationControl !== null) {
+                        this.manipulationControl.enabled = !this.manipulationControl.enabled;
+                    }
+                },
+                context: this
             },
             {
                 label: 'Move',
@@ -170,6 +210,14 @@ class DEVVLabSceneInteractable {
             menuItem.action.call(menuItem.context, menuItem);
         }
         this.hideMenu();
+    }
+    setSelected(menuItemLabel, selected = false) {
+        this.menu.forEach((menuItem) => {
+            if (menuItem.label == menuItemLabel) {
+                menuItem.selected = selected;
+            }
+        });
+        this.showMenu();
     }
 }
 export default DEVVLabSceneInteractable;

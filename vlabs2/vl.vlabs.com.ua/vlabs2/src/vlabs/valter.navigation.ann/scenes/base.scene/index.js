@@ -6,6 +6,11 @@ import VLabScene from '../../../../vlab.fwk/core/vlab.scene';
  */
 import Valter from '../../../../vlab.items/valter/index';
 
+/**
+ * Valter models
+ */
+import ValterHeadFKTuple from '../../../../vlab.items/valter/ik/model/valter-head-fk-tuple';
+
 class BaseScene extends VLabScene {
     constructor(iniObj) {
         super(iniObj);
@@ -54,8 +59,52 @@ class BaseScene extends VLabScene {
     onVLabItemInitialized(event) {
         if (event.vLabItem == this.vLab['Valter']) {
             this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 0.0));
+
+            /**
+             * Head FK tuples
+             */
+            // this.headFKTupleConsoleLogCnt = 0;
+            // this.vLab['Valter'].setHeadYawLink(this.vLab['Valter'].ValterLinks.headYawLink.min);
+            // this.vLab['Valter'].setHeadTiltLink(this.vLab['Valter'].ValterLinks.headTiltLink.min);
+            // this.setValterHeadYaw = this.setValterHeadYaw.bind(this);
+            // this.setValterHeadTilt = this.setValterHeadTilt.bind(this);
+            // this.setValterHeadYaw();
         }
     }
+
+    // setValterHeadYaw() {
+    //     if (this.vLab['Valter'].ValterLinks.headTiltLink.value + this.vLab['Valter'].ValterLinks.headTiltLink.step < this.vLab['Valter'].ValterLinks.headTiltLink.max) {
+    //         this.setValterHeadTilt();
+    //     } else {
+    //         this.vLab['Valter'].setHeadTiltLink(this.vLab['Valter'].ValterLinks.headTiltLink.min);
+    //         if (this.vLab['Valter'].ValterLinks.headYawLink.value + this.vLab['Valter'].ValterLinks.headYawLink.step < this.vLab['Valter'].ValterLinks.headYawLink.max) {
+    //             this.vLab['Valter'].setHeadYawLink(this.vLab['Valter'].ValterLinks.headYawLink.value + this.vLab['Valter'].ValterLinks.headYawLink.step);
+    //             this.setValterHeadTilt();
+    //         }
+    //     }
+    // }
+    // setValterHeadTilt() {
+    //     this.vLab['Valter'].setHeadTiltLink(this.vLab['Valter'].ValterLinks.headTiltLink.value + this.vLab['Valter'].ValterLinks.headTiltLink.step);
+
+    //     this.headFKTupleConsoleLogCnt++;
+    //     console.log('headYaw = ' + this.vLab['Valter'].ValterLinks.headYawLink.value.toFixed(3), 'headTilt = ' + this.vLab['Valter'].ValterLinks.headTiltLink.value.toFixed(3), this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection);
+    //     if (this.headFKTupleConsoleLogCnt > 10) {
+    //         this.headFKTupleConsoleLogCnt = 0;
+    //         console.clear();
+    //     }
+
+    //     let headFKTuple = new ValterHeadFKTuple();
+    //     headFKTuple.targetDirectionFromHeadYawLinkOrigin.x = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.x;
+    //     headFKTuple.targetDirectionFromHeadYawLinkOrigin.y = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.y;
+    //     headFKTuple.targetDirectionFromHeadYawLinkOrigin.z = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.z;
+    //     headFKTuple.headYawLinkValue = parseFloat(this.vLab['Valter'].ValterLinks.headYawLink.value.toFixed(3));
+    //     headFKTuple.headTiltLinkValue = parseFloat(this.vLab['Valter'].ValterLinks.headTiltLink.value.toFixed(3));
+
+    //     this.vLab.VLabsRESTClientManager.ValterHeadIKService.saveHeadFKTuple(headFKTuple)
+    //     .then(result => {
+    //         this.setValterHeadYaw();
+    //     });
+    // }
 }
 
 export default BaseScene;

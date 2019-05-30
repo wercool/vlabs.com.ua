@@ -52,7 +52,7 @@
     "three-fbx-loader": "^1.0.3",
     "three-gltf-loader": "^1.96.0",
     "three-obj-mtl-loader": "^1.0.3",
-    "three-transformcontrols": "^0.78.1",
+    "three-transform-ctrls": "^1.0.1",
     "three-webgl-stats": "^1.0.5",
     "three-ziploader": "0.0.1"
   }

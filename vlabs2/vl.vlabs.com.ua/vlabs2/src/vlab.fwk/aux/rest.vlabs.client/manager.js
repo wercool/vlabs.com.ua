@@ -1,5 +1,6 @@
 import VLabsRESTAuthService from './service/auth.service';
 import VLabsRESTUserService from './service/user.service';
+import VLabsRESTValterHeadIKService from './service/valter/valter.head.ik.service';
 import VLabsRESTWSBasicService from './service/ws.basic.service';
 
 /**
@@ -37,6 +38,13 @@ class VLabsRESTClientManager {
             user: {
                 base: '/user',
             },
+            /**
+             * Valter
+             */
+            valter: {
+                base: '/valter',
+                saveHeadFKTuple: '/head/ik/save_head_fk_tuple'
+            },
             getFullyQualifiedURL: function (endpointGroup, endpointPoint) {
                 return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint];
             }
@@ -47,9 +55,13 @@ class VLabsRESTClientManager {
          * Services
          * 
          */
-        this.AuthService        = new VLabsRESTAuthService(this);
-        this.UserService        = new VLabsRESTUserService(this);
-        this.WSBasicService     = new VLabsRESTWSBasicService(this);
+        this.AuthService                = new VLabsRESTAuthService(this);
+        this.UserService                = new VLabsRESTUserService(this);
+        this.WSBasicService             = new VLabsRESTWSBasicService(this);
+        /**
+         * Valter
+         */
+        this.ValterHeadIKService        = new VLabsRESTValterHeadIKService(this);
     }
     handleError(error) {
         switch (error.type) {
