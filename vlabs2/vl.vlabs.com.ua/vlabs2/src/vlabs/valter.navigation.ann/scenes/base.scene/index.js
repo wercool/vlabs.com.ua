@@ -58,17 +58,21 @@ class BaseScene extends VLabScene {
 
     onVLabItemInitialized(event) {
         if (event.vLabItem == this.vLab['Valter']) {
-            this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 0.0));
+            this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 1.0));
 
-            /**
-             * Head FK tuples
-             */
-            // this.headFKTupleConsoleLogCnt = 0;
-            // this.vLab['Valter'].setHeadYawLink(this.vLab['Valter'].ValterLinks.headYawLink.min);
-            // this.vLab['Valter'].setHeadTiltLink(this.vLab['Valter'].ValterLinks.headTiltLink.min);
-            // this.setValterHeadYaw = this.setValterHeadYaw.bind(this);
-            // this.setValterHeadTilt = this.setValterHeadTilt.bind(this);
-            // this.setValterHeadYaw();
+            // /**
+            //  * Head FK tuples
+            //  */
+            // if (this.vLab['Valter'].nature.devHelpers.showKinectHeadDirection == true) {
+            //     this.headFKTupleConsoleLogCnt = 0;
+            //     this.vLab['Valter'].setHeadYawLink(this.vLab['Valter'].ValterLinks.headYawLink.min);
+            //     this.vLab['Valter'].setHeadTiltLink(this.vLab['Valter'].ValterLinks.headTiltLink.min);
+            //     this.setValterHeadYaw = this.setValterHeadYaw.bind(this);
+            //     this.setValterHeadTilt = this.setValterHeadTilt.bind(this);
+            //     this.setValterHeadYaw();
+            // } else {
+            //     console.error('To get Valter Head FK tuples set Valter.nature.devHelpers.showKinectHeadDirection = true');
+            // }
         }
     }
     /**

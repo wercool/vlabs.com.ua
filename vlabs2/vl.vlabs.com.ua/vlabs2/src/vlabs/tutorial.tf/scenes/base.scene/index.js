@@ -30,29 +30,38 @@ class BaseScene extends VLabScene {
     onActivated() {
         console.log(this.vLab.nature.name);
         console.log('https://www.tensorflow.org/js/guide/');
+        console.log('https://github.com/tensorflow/tfjs-examples');
+        tf.setBackend('webgl');
+        console.log('TF Backend:', tf.getBackend());
         this.prepareValterHeadFKtoIKSolving().then((valterHeadFKtoIKSolver) => {
             this.valterHeadFKtoIKSolver = valterHeadFKtoIKSolver;
 
             // Train the model.
+            this.vLab.renderPaused = true;
+            console.log(this.valterHeadFKtoIKSolver);
             console.log('Training ValterHeadFKtoIKSolver Model ...');
             // We'll keep a buffer of loss and accuracy values over time.
             let trainBatchCount = 0;
             this.valterHeadFKtoIKSolver.model.fit(
                 this.valterHeadFKtoIKSolver.inputTensor, 
-                this.valterHeadFKtoIKSolver.outpuTensor,  
+                this.valterHeadFKtoIKSolver.outpuTensor, 
                 {
-                    epochs: 10,
+                    epochs: 1000,
                     callbacks: {
-                        onBatchEnd: (batch, logs) => {
-                            trainBatchCount++;
-                            console.log(trainBatchCount, logs.loss);
+                        // onBatchEnd: (batch, logs) => {
+                        //     trainBatchCount++;
+                        //     console.log(trainBatchCount, logs.loss);
+                        // },
+                        onEpochEnd: (epoch, logs) => {
+                            console.log(logs);
                         }
                     }
                 }
             ).then((result) => {
                 console.log(result);
-                const output = this.valterHeadFKtoIKSolver.model.predict(tf.tensor([0.262, 0.001, 0.965], [1, 3]));
+                const output = this.valterHeadFKtoIKSolver.model.predict(tf.tensor([-0.003, 0.007, 1.0], [1, 3]));
                 output.print();
+                this.vLab.renderPaused = false;
             });
         });
     }
@@ -66,7 +75,9 @@ class BaseScene extends VLabScene {
 
                     // A sequential model is a container which you can add layers to.
                     const model = tf.sequential();
-                    model.add(tf.layers.dense({inputShape: [valterHeadIKTrainingData.inputTensorShape[1]], units: 2, activation: 'relu'}));
+                    model.add(tf.layers.dense({inputShape: [valterHeadIKTrainingData.inputTensorShape[1]], units: 24, activation: 'sigmoid'}));
+                    model.add(tf.layers.dense({units: 8, activation: 'sigmoid'}));
+                    model.add(tf.layers.dense({units: 2, activation: 'sigmoid'}));
                     // Specify the loss type and optimizer for training.
                     model.compile({loss: 'meanSquaredError', optimizer: 'SGD'});
 

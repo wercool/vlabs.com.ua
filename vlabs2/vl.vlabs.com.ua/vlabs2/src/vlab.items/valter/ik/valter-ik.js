@@ -147,6 +147,9 @@ class ValterIK {
                                     }
                                 });
 
+                                console.log('getHeadFKTuple SELECTED:');
+                                console.log(minDistanceTuple);
+
                                 this.Valter.setHeadYawLink(minDistanceTuple.headYawLinkValue);
                                 this.Valter.setHeadTiltLink(minDistanceTuple.headTiltLinkValue);
                             }
