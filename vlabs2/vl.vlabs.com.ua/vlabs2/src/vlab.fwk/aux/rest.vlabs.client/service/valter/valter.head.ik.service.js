@@ -28,10 +28,23 @@ class VLabsRESTValterHeadIKService {
             });
         });
      }
-     getHeadIKTuple(headTargetObjectDir) {
+     getHeadFKTuple(headTargetObjectDir) {
         return new Promise((resolve, reject) => {
-            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getHeadIKTuple');
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getHeadFKTuple');
             this.manager.post(apiEndPoint, headTargetObjectDir)
+            .then((result) => {
+                resolve(result);
+            })
+            .catch((error) => {
+                console.error(error.status);
+                reject(error);
+            });
+        });
+     }
+     getAllHeadFKTuples() {
+        return new Promise((resolve, reject) => {
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getAllHeadFKTuples');
+            this.manager.get(apiEndPoint)
             .then((result) => {
                 resolve(result);
             })

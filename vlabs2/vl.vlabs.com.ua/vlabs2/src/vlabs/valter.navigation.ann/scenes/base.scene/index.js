@@ -71,7 +71,9 @@ class BaseScene extends VLabScene {
             // this.setValterHeadYaw();
         }
     }
-
+    /**
+     * Head FK tuples
+     */
     // setValterHeadYaw() {
     //     if (this.vLab['Valter'].ValterLinks.headTiltLink.value + this.vLab['Valter'].ValterLinks.headTiltLink.step < this.vLab['Valter'].ValterLinks.headTiltLink.max) {
     //         this.setValterHeadTilt();
@@ -94,9 +96,9 @@ class BaseScene extends VLabScene {
     //     }
 
     //     let headFKTuple = new ValterHeadFKTuple();
-    //     headFKTuple.targetDirectionFromHeadYawLinkOrigin.x = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.x;
-    //     headFKTuple.targetDirectionFromHeadYawLinkOrigin.y = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.y;
-    //     headFKTuple.targetDirectionFromHeadYawLinkOrigin.z = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.z;
+    //     headFKTuple.headTargetDirection.x = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.x;
+    //     headFKTuple.headTargetDirection.y = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.y;
+    //     headFKTuple.headTargetDirection.z = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.z;
     //     headFKTuple.headYawLinkValue = parseFloat(this.vLab['Valter'].ValterLinks.headYawLink.value.toFixed(3));
     //     headFKTuple.headTiltLinkValue = parseFloat(this.vLab['Valter'].ValterLinks.headTiltLink.value.toFixed(3));
 

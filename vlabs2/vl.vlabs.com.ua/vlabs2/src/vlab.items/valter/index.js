@@ -965,8 +965,8 @@ class Valter extends VLabItem {
                 this.headGlass.add(this.headDirectionArrowHelper);
             }
             if (this.nature.devHelpers.showKinectHeadDirection == true) {
-                this.kinectHeadDirectionArrowHelperDirection = new THREE.Vector3(0.0, 0.0, 1.0);
-                this.kinectHeadDirectionArrowHelper = new THREE.ArrowHelper(this.kinectHeadDirectionArrowHelperDirection.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), 1.0, 0xff00ff, 0.02, 0.01);
+                this.kinectHeadDirectionArrowHelperDirection = new THREE.Vector3(0.0, -0.117, 0.500);
+                this.kinectHeadDirectionArrowHelper = new THREE.ArrowHelper(this.kinectHeadDirectionArrowHelperDirection.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(this.kinectHeadDirectionArrowHelperDirection), 0xff00ff, 0.02, 0.01);
                 this.kinectHead.add(this.kinectHeadDirectionArrowHelper);
 
                 this.ValterIK.setupHeadTargetDirectionFromHeadYawLinkOrigin();

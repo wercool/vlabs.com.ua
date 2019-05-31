@@ -11,7 +11,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import vlabs.rest.model.three.Vector3;
 import vlabs.rest.model.valter.ik.head.ValterHeadFKTuple;
-import vlabs.rest.model.valter.ik.head.ValterHeadIKTuple;
 import vlabs.rest.service.valter.ik.head.ValterHeadIKService;
 
 @RestController
@@ -27,9 +26,14 @@ public class ValterHeadIKController {
             return ResponseEntity.ok(savedValterHeadFKTuple);
         });
     }
-    @RequestMapping(value = "/get_head_ik_tuple", method = RequestMethod.POST)
-    public Flux<ValterHeadIKTuple> saveHeadFKTuple(@RequestBody Vector3 headTargetDirection) {
-        return valterHeadIKService.getValterHeadIKTuple(headTargetDirection);
+
+    @RequestMapping(value = "/get_head_fk_tuple", method = RequestMethod.POST)
+    public Flux<ValterHeadFKTuple> getHeadFKTuple(@RequestBody Vector3 headTargetDirection) {
+        return valterHeadIKService.getValterHeadFKTuple(headTargetDirection);
     }
 
+    @RequestMapping(value = "/get_all_head_fk_tuples", method = RequestMethod.GET)
+    public Flux<ValterHeadFKTuple> getAllHeadFKTuples() {
+        return valterHeadIKService.getAllValterHeadFKTuples();
+    }
 }

@@ -143,7 +143,7 @@ password: '123'
                     .then((result) => {
                         console.log(result);
                         /**
-                         * Reterieve UserDetails
+                         * Retrieve UserDetails
                          */
                         this.VLabsRESTClientManager
                         .AuthService

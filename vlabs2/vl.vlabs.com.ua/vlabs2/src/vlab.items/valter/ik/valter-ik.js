@@ -112,14 +112,44 @@ class ValterIK {
                     icon: '<i class=\"material-icons\">share</i>',
                     action: () => {
                         let headTargetObject = this.headTargetObject.position.clone().normalize();
-                        let targetDirectionFromHeadYawLinkOrigin = {
+                        let headTargetDirection = {
                             x: parseFloat(headTargetObject.x.toFixed(3)),
                             y: parseFloat(headTargetObject.y.toFixed(3)),
                             z: parseFloat(headTargetObject.z.toFixed(3))
                         };
-                        this.vLab.VLabsRESTClientManager.ValterHeadIKService.getHeadIKTuple(targetDirectionFromHeadYawLinkOrigin)
-                        .then(result => {
-                            console.log(result);
+                        console.log('getHeadFKTuple REQUEST:');
+                        console.log(headTargetDirection);
+                        this.vLab.VLabsRESTClientManager.ValterHeadIKService.getHeadFKTuple(headTargetDirection)
+                        .then(valterHeadFKTuples => {
+                            console.log('getHeadFKTuple RESULT:');
+                            console.log(valterHeadFKTuples);
+                            if (valterHeadFKTuples.length > 0) {
+                                let minDistanceTuple = valterHeadFKTuples[0];
+                                let minDistanceTupleTargetPos = new THREE.Vector3().set(
+                                    minDistanceTuple.headTargetDirection.x,
+                                    minDistanceTuple.headTargetDirection.y,
+                                    minDistanceTuple.headTargetDirection.z
+                                );
+                                let minDistance = minDistanceTupleTargetPos.distanceTo(headTargetDirection);
+                                valterHeadFKTuples.forEach((valterHeadFKTuple) => {
+                                    let minDistanceTupleTargetPos = new THREE.Vector3().set(
+                                        valterHeadFKTuple.headTargetDirection.x,
+                                        valterHeadFKTuple.headTargetDirection.y,
+                                        valterHeadFKTuple.headTargetDirection.z
+                                    );
+                                    if (minDistanceTupleTargetPos.distanceTo(headTargetDirection) < minDistance) {
+                                        minDistanceTuple = valterHeadFKTuple;
+                                        minDistanceTupleTargetPos = new THREE.Vector3().set(
+                                            minDistanceTuple.headTargetDirection.x,
+                                            minDistanceTuple.headTargetDirection.y,
+                                            minDistanceTuple.headTargetDirection.z
+                                        );
+                                    }
+                                });
+
+                                this.Valter.setHeadYawLink(minDistanceTuple.headYawLinkValue);
+                                this.Valter.setHeadTiltLink(minDistanceTuple.headTiltLinkValue);
+                            }
                         });
                     }
                 }
