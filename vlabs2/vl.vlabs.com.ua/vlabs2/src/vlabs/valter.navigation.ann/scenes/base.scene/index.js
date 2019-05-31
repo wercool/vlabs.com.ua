@@ -58,13 +58,18 @@ class BaseScene extends VLabScene {
 
     onVLabItemInitialized(event) {
         if (event.vLabItem == this.vLab['Valter']) {
-            this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 1.0));
+            // this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 1.0));
+            this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 0.0));
 
-            // /**
-            //  * Head FK tuples
-            //  */
+            /**
+             * Head FK tuples
+             */
             // if (this.vLab['Valter'].nature.devHelpers.showKinectHeadDirection == true) {
             //     this.headFKTupleConsoleLogCnt = 0;
+
+            //     this.vLab['Valter'].ValterLinks.headYawLink.step = 0.05;
+            //     this.vLab['Valter'].ValterLinks.headTiltLink.step = 0.05;
+
             //     this.vLab['Valter'].setHeadYawLink(this.vLab['Valter'].ValterLinks.headYawLink.min);
             //     this.vLab['Valter'].setHeadTiltLink(this.vLab['Valter'].ValterLinks.headTiltLink.min);
             //     this.setValterHeadYaw = this.setValterHeadYaw.bind(this);
@@ -78,39 +83,39 @@ class BaseScene extends VLabScene {
     /**
      * Head FK tuples
      */
-    // setValterHeadYaw() {
-    //     if (this.vLab['Valter'].ValterLinks.headTiltLink.value + this.vLab['Valter'].ValterLinks.headTiltLink.step < this.vLab['Valter'].ValterLinks.headTiltLink.max) {
-    //         this.setValterHeadTilt();
-    //     } else {
-    //         this.vLab['Valter'].setHeadTiltLink(this.vLab['Valter'].ValterLinks.headTiltLink.min);
-    //         if (this.vLab['Valter'].ValterLinks.headYawLink.value + this.vLab['Valter'].ValterLinks.headYawLink.step < this.vLab['Valter'].ValterLinks.headYawLink.max) {
-    //             this.vLab['Valter'].setHeadYawLink(this.vLab['Valter'].ValterLinks.headYawLink.value + this.vLab['Valter'].ValterLinks.headYawLink.step);
-    //             this.setValterHeadTilt();
-    //         }
-    //     }
-    // }
-    // setValterHeadTilt() {
-    //     this.vLab['Valter'].setHeadTiltLink(this.vLab['Valter'].ValterLinks.headTiltLink.value + this.vLab['Valter'].ValterLinks.headTiltLink.step);
+    setValterHeadYaw() {
+        if (this.vLab['Valter'].ValterLinks.headTiltLink.value + this.vLab['Valter'].ValterLinks.headTiltLink.step < this.vLab['Valter'].ValterLinks.headTiltLink.max) {
+            this.setValterHeadTilt();
+        } else {
+            this.vLab['Valter'].setHeadTiltLink(this.vLab['Valter'].ValterLinks.headTiltLink.min);
+            if (this.vLab['Valter'].ValterLinks.headYawLink.value + this.vLab['Valter'].ValterLinks.headYawLink.step < this.vLab['Valter'].ValterLinks.headYawLink.max) {
+                this.vLab['Valter'].setHeadYawLink(this.vLab['Valter'].ValterLinks.headYawLink.value + this.vLab['Valter'].ValterLinks.headYawLink.step);
+                this.setValterHeadTilt();
+            }
+        }
+    }
+    setValterHeadTilt() {
+        this.vLab['Valter'].setHeadTiltLink(this.vLab['Valter'].ValterLinks.headTiltLink.value + this.vLab['Valter'].ValterLinks.headTiltLink.step);
 
-    //     this.headFKTupleConsoleLogCnt++;
-    //     console.log('headYaw = ' + this.vLab['Valter'].ValterLinks.headYawLink.value.toFixed(3), 'headTilt = ' + this.vLab['Valter'].ValterLinks.headTiltLink.value.toFixed(3), this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection);
-    //     if (this.headFKTupleConsoleLogCnt > 10) {
-    //         this.headFKTupleConsoleLogCnt = 0;
-    //         console.clear();
-    //     }
+        this.headFKTupleConsoleLogCnt++;
+        console.log('headYaw = ' + this.vLab['Valter'].ValterLinks.headYawLink.value.toFixed(3), 'headTilt = ' + this.vLab['Valter'].ValterLinks.headTiltLink.value.toFixed(3), this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection);
+        if (this.headFKTupleConsoleLogCnt > 10) {
+            this.headFKTupleConsoleLogCnt = 0;
+            console.clear();
+        }
 
-    //     let headFKTuple = new ValterHeadFKTuple();
-    //     headFKTuple.headTargetDirection.x = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.x;
-    //     headFKTuple.headTargetDirection.y = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.y;
-    //     headFKTuple.headTargetDirection.z = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.z;
-    //     headFKTuple.headYawLinkValue = parseFloat(this.vLab['Valter'].ValterLinks.headYawLink.value.toFixed(3));
-    //     headFKTuple.headTiltLinkValue = parseFloat(this.vLab['Valter'].ValterLinks.headTiltLink.value.toFixed(3));
+        let headFKTuple = new ValterHeadFKTuple();
+        headFKTuple.headTargetDirection.x = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.x;
+        headFKTuple.headTargetDirection.y = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.y;
+        headFKTuple.headTargetDirection.z = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.z;
+        headFKTuple.headYawLinkValue = parseFloat(this.vLab['Valter'].ValterLinks.headYawLink.value.toFixed(3));
+        headFKTuple.headTiltLinkValue = parseFloat(this.vLab['Valter'].ValterLinks.headTiltLink.value.toFixed(3));
 
-    //     this.vLab.VLabsRESTClientManager.ValterHeadIKService.saveHeadFKTuple(headFKTuple)
-    //     .then(result => {
-    //         this.setValterHeadYaw();
-    //     });
-    // }
+        this.vLab.VLabsRESTClientManager.ValterHeadIKService.saveHeadFKTuple(headFKTuple)
+        .then(result => {
+            this.setValterHeadYaw();
+        });
+    }
 }
 
 export default BaseScene;

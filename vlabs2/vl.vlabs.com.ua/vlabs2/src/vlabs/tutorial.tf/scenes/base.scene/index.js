@@ -31,6 +31,7 @@ class BaseScene extends VLabScene {
         console.log(this.vLab.nature.name);
         console.log('https://www.tensorflow.org/js/guide/');
         console.log('https://github.com/tensorflow/tfjs-examples');
+        console.log('https://www.youtube.com/watch?v=XdErOpUzupY');
         tf.setBackend('webgl');
         console.log('TF Backend:', tf.getBackend());
         this.prepareValterHeadFKtoIKSolving().then((valterHeadFKtoIKSolver) => {
@@ -75,9 +76,9 @@ class BaseScene extends VLabScene {
 
                     // A sequential model is a container which you can add layers to.
                     const model = tf.sequential();
-                    model.add(tf.layers.dense({inputShape: [valterHeadIKTrainingData.inputTensorShape[1]], units: 24, activation: 'sigmoid'}));
-                    model.add(tf.layers.dense({units: 8, activation: 'sigmoid'}));
-                    model.add(tf.layers.dense({units: 2, activation: 'sigmoid'}));
+                    model.add(tf.layers.dense({inputShape: [valterHeadIKTrainingData.inputTensorShape[1]], units: 9, activation: 'relu'}));
+                    model.add(tf.layers.dense({inputShape: [9], units: 2, activation: 'relu'}));
+                    model.add(tf.layers.dense({units: 2, activation: 'relu'}));
                     // Specify the loss type and optimizer for training.
                     model.compile({loss: 'meanSquaredError', optimizer: 'SGD'});
 
