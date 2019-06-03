@@ -1,7 +1,11 @@
 import * as THREE from 'three';
 import * as VLabUtils from '../../../vlab.fwk/utils/vlab.utils';
-import * as THREEUtils from '../../../vlab.fwk/utils/three.utils';
 import * as tf from '@tensorflow/tfjs';
+/**
+ * Valter models
+ */
+import ValterHeadFKTuple from './model/valter-head-fk-tuple';
+
 /*<dev>*/
 var TransformControls = require('three-transform-ctrls');
 /*</dev>*/
@@ -29,8 +33,12 @@ class ValterIK {
         this.valterHeadIKTFModel = undefined;
 
         if (this.Valter.nature.ANNIK.headANNIK) {
-            tf.loadLayersModel('localstorage://valter-head-ik-model').then((model) => {
+            tf.loadLayersModel('localstorage://valter-head-ik-model')
+            .then((model) => {
                 this.valterHeadIKTFModel = model;
+            })
+            .catch(error => {
+                console.error(error.message);
             });
         }
 
@@ -94,6 +102,74 @@ class ValterIK {
         }
         /*</dev>*/
     }
+
+    /**
+     * Head FK tuples
+     */
+    getValterHeadFKTuples() {
+        /*<dev>*/
+        if (this.Valter.nature.devHelpers.showKinectHeadDirection == true) {
+
+            this.Valter.ValterLinks.headYawLink.step = 0.05;
+            this.Valter.ValterLinks.headTiltLink.step = 0.05;
+
+            this.Valter.setHeadYawLink(this.Valter.ValterLinks.headYawLink.min);
+            this.Valter.setHeadTiltLink(this.Valter.ValterLinks.headTiltLink.min);
+            this.setValterHeadYaw = this.setValterHeadYaw.bind(this);
+            this.setValterHeadTilt = this.setValterHeadTilt.bind(this);
+            this.setHeadTargetDirectionDistance = this.setHeadTargetDirectionDistance.bind(this);
+            this.setValterHeadYaw();
+        } else {
+            console.error('To get Valter Head FK tuples set Valter.nature.devHelpers.showKinectHeadDirection = true');
+        }
+        /*</dev>*/
+    }
+    setValterHeadYaw() {
+        /*<dev>*/
+        if (this.Valter.ValterLinks.headTiltLink.value + this.Valter.ValterLinks.headTiltLink.step < this.Valter.ValterLinks.headTiltLink.max) {
+            this.setValterHeadTilt();
+        } else {
+            this.Valter.setHeadTiltLink(this.Valter.ValterLinks.headTiltLink.min);
+            if (this.Valter.ValterLinks.headYawLink.value + this.Valter.ValterLinks.headYawLink.step < this.Valter.ValterLinks.headYawLink.max) {
+                this.Valter.setHeadYawLink(this.Valter.ValterLinks.headYawLink.value + this.Valter.ValterLinks.headYawLink.step);
+                this.setValterHeadTilt();
+            }
+        }
+        /*</dev>*/
+    }
+    setValterHeadTilt() {
+        /*<dev>*/
+        this.Valter.setHeadTiltLink(this.Valter.ValterLinks.headTiltLink.value + this.Valter.ValterLinks.headTiltLink.step);
+        this.setHeadTargetDirectionDistance();
+        /*</dev>*/
+    }
+    setHeadTargetDirectionDistance() {
+        /*<dev>*/
+        if (this.Valter.ValterIK.headDirectionTargetDistance < 3.0) {
+            this.Valter.ValterIK.updateHeadTargetDirectionFromHeadYawLinkOrigin();
+            console.log('headYaw = ' + this.Valter.ValterLinks.headYawLink.value.toFixed(3), 'headTilt = ' + this.Valter.ValterLinks.headTiltLink.value.toFixed(3), this.Valter.ValterIK.headYawLinkHeadTargetLocalPos, this.Valter.ValterIK.headDirectionTargetDistance.toFixed(3));
+
+
+            let headFKTuple = new ValterHeadFKTuple();
+            headFKTuple.headTargetPosition.x = this.Valter.ValterIK.headYawLinkHeadTargetLocalPos.x;
+            headFKTuple.headTargetPosition.y = this.Valter.ValterIK.headYawLinkHeadTargetLocalPos.y;
+            headFKTuple.headTargetPosition.z = this.Valter.ValterIK.headYawLinkHeadTargetLocalPos.z;
+            headFKTuple.headYawLinkValue = parseFloat(this.Valter.ValterLinks.headYawLink.value.toFixed(3));
+            headFKTuple.headTiltLinkValue = parseFloat(this.Valter.ValterLinks.headTiltLink.value.toFixed(3));
+
+            this.vLab.VLabsRESTClientManager.ValterHeadIKService.saveHeadFKTuple(headFKTuple)
+            .then(result => {
+                this.Valter.ValterIK.headDirectionTargetDistance += 0.25;
+                this.setHeadTargetDirectionDistance();
+            });
+        } else {
+            this.Valter.ValterIK.headDirectionTargetDistance = 0.4;
+            this.setValterHeadYaw();
+        }
+        /*</dev>*/
+    }
+
+
     setupHeadTarget() {
         /**
          * Head target

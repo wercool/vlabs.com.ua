@@ -5,9 +5,9 @@
     "devHelpers": {
         "devMode": true,
         "showBaseDirection": true,
-        "showHeadDirection": false,
+        "showHeadDirection": true,
         "showKinectHeadDirection": false,
-        "showHeadTargetDirectionFromHeadYawLinkOrigin": false
+        "showHeadTargetDirectionFromHeadYawLinkOrigin": true
     },
     "ANNIK": {
         "headANNIK": true
