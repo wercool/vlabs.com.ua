@@ -19,15 +19,15 @@ public class ValterHeadIKService {
         return valterHeadFKTupleRepository.save(valterHeadFKTuple);
     }
 
-    public Flux<ValterHeadFKTuple> getValterHeadFKTuple(Vector3 headTargetDirection) {
-        double sigma = 0.02;
-        return (Flux<ValterHeadFKTuple>) valterHeadFKTupleRepository.findByHeadDirectionXYZMinMax(
-                headTargetDirection.getX() - sigma,
-                headTargetDirection.getX() + sigma,
-                headTargetDirection.getY() - sigma,
-                headTargetDirection.getY() + sigma,
-                headTargetDirection.getZ() - sigma,
-                headTargetDirection.getZ() + sigma);
+    public Flux<ValterHeadFKTuple> getValterHeadFKTuple(Vector3 headTargetPosition) {
+        double sigma = 0.2;
+        return (Flux<ValterHeadFKTuple>) valterHeadFKTupleRepository.findByHeadTargetXYZMinMax(
+                headTargetPosition.getX() - sigma,
+                headTargetPosition.getX() + sigma,
+                headTargetPosition.getY() - sigma,
+                headTargetPosition.getY() + sigma,
+                headTargetPosition.getZ() - sigma,
+                headTargetPosition.getZ() + sigma);
     }
 
     public Flux<ValterHeadFKTuple> getAllValterHeadFKTuples() {

@@ -965,11 +965,16 @@ class Valter extends VLabItem {
                 this.headGlass.add(this.headDirectionArrowHelper);
             }
             if (this.nature.devHelpers.showKinectHeadDirection == true) {
-                this.kinectHeadDirectionArrowHelperDirection = new THREE.Vector3(0.0, -0.117, 0.500);
-                this.kinectHeadDirectionArrowHelper = new THREE.ArrowHelper(this.kinectHeadDirectionArrowHelperDirection.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(this.kinectHeadDirectionArrowHelperDirection), 0xff00ff, 0.02, 0.01);
+                /**
+                 * THREE.Vector3(0.0, -0.117, 0.500) is from blender Head Kinect frontal panel normal direction
+                 * minimal distance 0.4m
+                 */
+                let distance = 0.4;
+                this.kinectHeadDirectionArrowHelperDirection = new THREE.Vector3(0.0, -0.117, 0.500).normalize();
+                this.kinectHeadDirectionArrowHelper = new THREE.ArrowHelper(this.kinectHeadDirectionArrowHelperDirection, new THREE.Vector3(0.0, 0.0, 0.0), distance, 0xff00ff, 0.02, 0.01);
                 this.kinectHead.add(this.kinectHeadDirectionArrowHelper);
 
-                this.ValterIK.setupHeadTargetDirectionFromHeadYawLinkOrigin();
+                this.ValterIK.setupHeadTargetDirectionFromHeadYawLinkOrigin(distance);
             }
         }
         /*</dev>*/

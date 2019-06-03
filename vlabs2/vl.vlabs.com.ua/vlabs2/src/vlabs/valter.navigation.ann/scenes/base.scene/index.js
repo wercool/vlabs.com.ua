@@ -65,7 +65,6 @@ class BaseScene extends VLabScene {
              * Head FK tuples
              */
             // if (this.vLab['Valter'].nature.devHelpers.showKinectHeadDirection == true) {
-            //     this.headFKTupleConsoleLogCnt = 0;
 
             //     this.vLab['Valter'].ValterLinks.headYawLink.step = 0.05;
             //     this.vLab['Valter'].ValterLinks.headTiltLink.step = 0.05;
@@ -74,6 +73,7 @@ class BaseScene extends VLabScene {
             //     this.vLab['Valter'].setHeadTiltLink(this.vLab['Valter'].ValterLinks.headTiltLink.min);
             //     this.setValterHeadYaw = this.setValterHeadYaw.bind(this);
             //     this.setValterHeadTilt = this.setValterHeadTilt.bind(this);
+            //     this.setHeadTargetDirectionDistance = this.setHeadTargetDirectionDistance.bind(this);
             //     this.setValterHeadYaw();
             // } else {
             //     console.error('To get Valter Head FK tuples set Valter.nature.devHelpers.showKinectHeadDirection = true');
@@ -96,25 +96,30 @@ class BaseScene extends VLabScene {
     }
     setValterHeadTilt() {
         this.vLab['Valter'].setHeadTiltLink(this.vLab['Valter'].ValterLinks.headTiltLink.value + this.vLab['Valter'].ValterLinks.headTiltLink.step);
+        this.setHeadTargetDirectionDistance();
+    }
+    setHeadTargetDirectionDistance() {
+        if (this.vLab['Valter'].ValterIK.headDirectionTargetDistance < 3.0) {
+            this.vLab['Valter'].ValterIK.updateHeadTargetDirectionFromHeadYawLinkOrigin();
+            console.log('headYaw = ' + this.vLab['Valter'].ValterLinks.headYawLink.value.toFixed(3), 'headTilt = ' + this.vLab['Valter'].ValterLinks.headTiltLink.value.toFixed(3), this.vLab['Valter'].ValterIK.headYawLinkHeadTargetLocalPos, this.vLab['Valter'].ValterIK.headDirectionTargetDistance.toFixed(3));
 
-        this.headFKTupleConsoleLogCnt++;
-        console.log('headYaw = ' + this.vLab['Valter'].ValterLinks.headYawLink.value.toFixed(3), 'headTilt = ' + this.vLab['Valter'].ValterLinks.headTiltLink.value.toFixed(3), this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection);
-        if (this.headFKTupleConsoleLogCnt > 10) {
-            this.headFKTupleConsoleLogCnt = 0;
-            console.clear();
+
+            let headFKTuple = new ValterHeadFKTuple();
+            headFKTuple.headTargetPosition.x = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetLocalPos.x;
+            headFKTuple.headTargetPosition.y = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetLocalPos.y;
+            headFKTuple.headTargetPosition.z = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetLocalPos.z;
+            headFKTuple.headYawLinkValue = parseFloat(this.vLab['Valter'].ValterLinks.headYawLink.value.toFixed(3));
+            headFKTuple.headTiltLinkValue = parseFloat(this.vLab['Valter'].ValterLinks.headTiltLink.value.toFixed(3));
+
+            this.vLab.VLabsRESTClientManager.ValterHeadIKService.saveHeadFKTuple(headFKTuple)
+            .then(result => {
+                this.vLab['Valter'].ValterIK.headDirectionTargetDistance += 0.25;
+                this.setHeadTargetDirectionDistance();
+            });
+        } else {
+            this.vLab['Valter'].ValterIK.headDirectionTargetDistance = 0.4;
+            setTimeout(this.setValterHeadYaw());
         }
-
-        let headFKTuple = new ValterHeadFKTuple();
-        headFKTuple.headTargetDirection.x = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.x;
-        headFKTuple.headTargetDirection.y = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.y;
-        headFKTuple.headTargetDirection.z = this.vLab['Valter'].ValterIK.headYawLinkHeadTargetDirection.z;
-        headFKTuple.headYawLinkValue = parseFloat(this.vLab['Valter'].ValterLinks.headYawLink.value.toFixed(3));
-        headFKTuple.headTiltLinkValue = parseFloat(this.vLab['Valter'].ValterLinks.headTiltLink.value.toFixed(3));
-
-        this.vLab.VLabsRESTClientManager.ValterHeadIKService.saveHeadFKTuple(headFKTuple)
-        .then(result => {
-            this.setValterHeadYaw();
-        });
     }
 }
 

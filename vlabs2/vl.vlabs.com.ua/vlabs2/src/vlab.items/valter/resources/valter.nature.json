@@ -6,8 +6,11 @@
         "devMode": true,
         "showBaseDirection": true,
         "showHeadDirection": false,
-        "showKinectHeadDirection": true,
-        "showHeadTargetDirectionFromHeadYawLinkOrigin": true
+        "showKinectHeadDirection": false,
+        "showHeadTargetDirectionFromHeadYawLinkOrigin": false
+    },
+    "ANNIK": {
+        "headANNIK": true
     },
     "interactables": [
         {

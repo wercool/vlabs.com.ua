@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import * as VLabUtils from '../../../vlab.fwk/utils/vlab.utils';
 import * as THREEUtils from '../../../vlab.fwk/utils/three.utils';
+import * as tf from '@tensorflow/tfjs';
 /*<dev>*/
 var TransformControls = require('three-transform-ctrls');
 /*</dev>*/
@@ -25,30 +26,39 @@ class ValterIK {
         this.headYawLinkOriginObject3D.position.copy(this.Valter.headYawLink.position.clone());
         this.Valter.torsoFrame.add(this.headYawLinkOriginObject3D);
 
+        this.valterHeadIKTFModel = undefined;
+
+        if (this.Valter.nature.ANNIK.headANNIK) {
+            tf.loadLayersModel('localstorage://valter-head-ik-model').then((model) => {
+                this.valterHeadIKTFModel = model;
+            });
+        }
+
         /**
          * Head target
          */
         this.setupHeadTarget();
     }
 
-    setupHeadTargetDirectionFromHeadYawLinkOrigin() {
+    setupHeadTargetDirectionFromHeadYawLinkOrigin(distance = 0.5) {
         /*<dev>*/
         if (this.Valter.kinectHeadDirectionArrowHelperDirection !== undefined) {
-            let geometry = new THREE.SphereBufferGeometry(0.015, 8, 8);
-            let material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+            this.headDirectionTargetDistance = distance;
             this.headDirectionTargetObject3D = new THREE.Object3D();
-            this.headDirectionTargetObject3D.position.copy(this.Valter.kinectHeadDirectionArrowHelperDirection);
+            this.headDirectionTargetObject3D.position.copy(this.Valter.kinectHeadDirectionArrowHelperDirection.clone().multiplyScalar(this.headDirectionTargetDistance));
             this.Valter.kinectHead.add(this.headDirectionTargetObject3D);
 
+            let geometry = new THREE.SphereBufferGeometry(0.015, 8, 8);
+            let material = new THREE.MeshBasicMaterial({color: 0x00ff00});
             this.headDirectionTarget = new THREE.Mesh(geometry, material);
             this.headDirectionTarget.position.copy(this.headDirectionTargetObject3D.position.clone());
             this.Valter.kinectHead.add(this.headDirectionTarget);
 
             this.Valter.baseFrame.updateMatrixWorld();
             this.headDirectionTargetGlobalPosition = this.Valter.kinectHead.localToWorld(this.headDirectionTargetObject3D.position.clone());
-            let headYawLinkHeadTargetLocalPos = this.headYawLinkOriginObject3D.worldToLocal(this.headDirectionTargetGlobalPosition.clone());
-            let headYawLinkHeadTargetDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(headYawLinkHeadTargetLocalPos);
-            this.headDirectionTargetFromHeadYawLinkArrowHelper = new THREE.ArrowHelper(headYawLinkHeadTargetLocalPos.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), headYawLinkHeadTargetDistance, 0xff00ff, 0.02, 0.01);
+            this.headYawLinkHeadTargetLocalPos = this.headYawLinkOriginObject3D.worldToLocal(this.headDirectionTargetGlobalPosition.clone());
+            let headYawLinkHeadTargetDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(this.headYawLinkHeadTargetLocalPos);
+            this.headDirectionTargetFromHeadYawLinkArrowHelper = new THREE.ArrowHelper(this.headYawLinkHeadTargetLocalPos.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), headYawLinkHeadTargetDistance, 0xff00ff, 0.02, 0.01);
             this.headYawLinkOriginObject3D.add(this.headDirectionTargetFromHeadYawLinkArrowHelper);
 
             let headYawLinkOriginObject3DAxis = new TransformControls(this.vLab.SceneDispatcher.currentVLabScene.currentCamera, this.vLab.WebGLRendererCanvas);
@@ -64,12 +74,18 @@ class ValterIK {
     updateHeadTargetDirectionFromHeadYawLinkOrigin() {
         /*<dev>*/
         if (this.Valter.nature.devHelpers.showKinectHeadDirection == true) {
+            this.headDirectionTargetObject3D.position.copy(this.Valter.kinectHeadDirectionArrowHelperDirection.clone().multiplyScalar(this.headDirectionTargetDistance));
+            this.headDirectionTarget.position.copy(this.headDirectionTargetObject3D.position.clone());
+
+            this.Valter.kinectHeadDirectionArrowHelper.setLength(this.headDirectionTargetDistance, 0.02, 0.01);
+
             this.Valter.baseFrame.updateMatrixWorld();
             this.headDirectionTargetGlobalPosition = this.Valter.kinectHead.localToWorld(this.headDirectionTargetObject3D.position.clone());
 
-            let headYawLinkHeadTargetLocalPos = this.headYawLinkOriginObject3D.worldToLocal(this.headDirectionTargetGlobalPosition.clone());
-            let headYawLinkHeadTargetDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(headYawLinkHeadTargetLocalPos);
-            this.headYawLinkHeadTargetDirection = headYawLinkHeadTargetLocalPos.clone().normalize();
+            this.headYawLinkHeadTargetLocalPos = this.headYawLinkOriginObject3D.worldToLocal(this.headDirectionTargetGlobalPosition.clone());
+            this.headYawLinkHeadTargetLocalPos = new THREE.Vector3(parseFloat(this.headYawLinkHeadTargetLocalPos.x.toFixed(3)), parseFloat(this.headYawLinkHeadTargetLocalPos.y.toFixed(3)), parseFloat(this.headYawLinkHeadTargetLocalPos.z.toFixed(3)));
+            let headYawLinkHeadTargetDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(this.headYawLinkHeadTargetLocalPos);
+            this.headYawLinkHeadTargetDirection = this.headYawLinkHeadTargetLocalPos.clone().normalize();
             this.headYawLinkHeadTargetDirection = new THREE.Vector3(parseFloat(this.headYawLinkHeadTargetDirection.x.toFixed(3)), parseFloat(this.headYawLinkHeadTargetDirection.y.toFixed(3)), parseFloat(this.headYawLinkHeadTargetDirection.z.toFixed(3)));
             this.headDirectionTargetFromHeadYawLinkArrowHelper.setDirection(this.headYawLinkHeadTargetDirection);
             this.headDirectionTargetFromHeadYawLinkArrowHelper.setLength(headYawLinkHeadTargetDistance, 0.02, 0.01);
@@ -111,38 +127,39 @@ class ValterIK {
                     selected: false,
                     icon: '<i class=\"material-icons\">share</i>',
                     action: () => {
-                        let headTargetObject = this.headTargetObject.position.clone().normalize();
-                        let headTargetDirection = {
+                        let headTargetObject = this.headTargetObject.position.clone();
+                        console.log(headTargetObject);
+                        let headTargetPosition = {
                             x: parseFloat(headTargetObject.x.toFixed(3)),
                             y: parseFloat(headTargetObject.y.toFixed(3)),
                             z: parseFloat(headTargetObject.z.toFixed(3))
                         };
                         console.log('getHeadFKTuple REQUEST:');
-                        console.log(headTargetDirection);
-                        this.vLab.VLabsRESTClientManager.ValterHeadIKService.getHeadFKTuple(headTargetDirection)
+                        console.log(headTargetPosition);
+                        this.vLab.VLabsRESTClientManager.ValterHeadIKService.getHeadFKTuple(headTargetPosition)
                         .then(valterHeadFKTuples => {
                             console.log('getHeadFKTuple RESULT:');
                             console.log(valterHeadFKTuples);
                             if (valterHeadFKTuples.length > 0) {
                                 let minDistanceTuple = valterHeadFKTuples[0];
                                 let minDistanceTupleTargetPos = new THREE.Vector3().set(
-                                    minDistanceTuple.headTargetDirection.x,
-                                    minDistanceTuple.headTargetDirection.y,
-                                    minDistanceTuple.headTargetDirection.z
+                                    minDistanceTuple.headTargetPosition.x,
+                                    minDistanceTuple.headTargetPosition.y,
+                                    minDistanceTuple.headTargetPosition.z
                                 );
-                                let minDistance = minDistanceTupleTargetPos.distanceTo(headTargetDirection);
+                                let minDistance = minDistanceTupleTargetPos.distanceTo(headTargetPosition);
                                 valterHeadFKTuples.forEach((valterHeadFKTuple) => {
                                     let minDistanceTupleTargetPos = new THREE.Vector3().set(
-                                        valterHeadFKTuple.headTargetDirection.x,
-                                        valterHeadFKTuple.headTargetDirection.y,
-                                        valterHeadFKTuple.headTargetDirection.z
+                                        valterHeadFKTuple.headTargetPosition.x,
+                                        valterHeadFKTuple.headTargetPosition.y,
+                                        valterHeadFKTuple.headTargetPosition.z
                                     );
-                                    if (minDistanceTupleTargetPos.distanceTo(headTargetDirection) < minDistance) {
+                                    if (minDistanceTupleTargetPos.distanceTo(headTargetPosition) < minDistance) {
                                         minDistanceTuple = valterHeadFKTuple;
                                         minDistanceTupleTargetPos = new THREE.Vector3().set(
-                                            minDistanceTuple.headTargetDirection.x,
-                                            minDistanceTuple.headTargetDirection.y,
-                                            minDistanceTuple.headTargetDirection.z
+                                            minDistanceTuple.headTargetPosition.x,
+                                            minDistanceTuple.headTargetPosition.y,
+                                            minDistanceTuple.headTargetPosition.z
                                         );
                                     }
                                 });
@@ -228,6 +245,16 @@ class ValterIK {
                     let headYawLinkHeadTargetDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(newHeadTargetObjectPos);
                     this.headTargetDirectionFromYawLinkOriginArrowHelper.setDirection(headYawLinkHeadTargetDir);
                     this.headTargetDirectionFromYawLinkOriginArrowHelper.setLength(headYawLinkHeadTargetDistance, 0.02, 0.01);
+                }
+
+                if (this.Valter.nature.ANNIK.headANNIK && this.valterHeadIKTFModel !== undefined) {
+                    const valterHeadYawTiltPreditction = this.valterHeadIKTFModel.predict(tf.tensor([this.headTargetObject.position.x, this.headTargetObject.position.y, this.headTargetObject.position.z], [1, 3]));
+                    const valterHeadYawTiltPreditctionData = valterHeadYawTiltPreditction.dataSync();
+                    const valterHeadYawPreditctionValue = valterHeadYawTiltPreditctionData[0];
+                    const valterHeadTiltPreditctionValue = valterHeadYawTiltPreditctionData[1];
+
+                    this.Valter.setHeadYawLink(valterHeadYawPreditctionValue);
+                    this.Valter.setHeadTiltLink(valterHeadTiltPreditctionValue);
                 }
             }
         }

@@ -25,6 +25,8 @@ class BaseScene extends VLabScene {
         /*</dev>*/
 
         console.clear();
+
+        this.vLab.renderPaused = true;
     }
 
     onActivated() {
@@ -38,7 +40,6 @@ class BaseScene extends VLabScene {
             this.valterHeadFKtoIKSolver = valterHeadFKtoIKSolver;
 
             // Train the model.
-            this.vLab.renderPaused = true;
             console.log(this.valterHeadFKtoIKSolver);
             console.log('Training ValterHeadFKtoIKSolver Model ...');
             // We'll keep a buffer of loss and accuracy values over time.
@@ -47,7 +48,9 @@ class BaseScene extends VLabScene {
                 this.valterHeadFKtoIKSolver.inputTensor, 
                 this.valterHeadFKtoIKSolver.outpuTensor, 
                 {
-                    epochs: 1000,
+                    epochs: 10000,
+                    batchSize: 1000,
+                    shuffle: true,
                     callbacks: {
                         // onBatchEnd: (batch, logs) => {
                         //     trainBatchCount++;
@@ -60,9 +63,24 @@ class BaseScene extends VLabScene {
                 }
             ).then((result) => {
                 console.log(result);
-                const output = this.valterHeadFKtoIKSolver.model.predict(tf.tensor([-0.003, 0.007, 1.0], [1, 3]));
-                output.print();
-                this.vLab.renderPaused = false;
+
+                this.valterHeadFKtoIKSolver.model.save('localstorage://valter-head-ik-model').then(() => {
+
+                    tf.loadLayersModel('localstorage://valter-head-ik-model').then((model) => {
+                        this.valterHeadFKtoIKSolver.model = model;
+
+                        /**
+                         * db.valter_head_fk_tuples.find().sort({ $natural: -1 }).limit(1).pretty()
+                         */
+                        const output1 = this.valterHeadFKtoIKSolver.model.predict(tf.tensor([2.772, -0.538, 0.753], [1, 3]));
+                        output1.print();
+                        /**
+                         * db.valter_head_fk_tuples.find().sort({ $natural: 1 }).limit(1).pretty()
+                         */
+                        const output2 = this.valterHeadFKtoIKSolver.model.predict(tf.tensor([-0.381, -0.265, 0.102], [1, 3]));
+                        output2.print();
+                    });
+                });
             });
         });
     }
@@ -76,11 +94,12 @@ class BaseScene extends VLabScene {
 
                     // A sequential model is a container which you can add layers to.
                     const model = tf.sequential();
-                    model.add(tf.layers.dense({inputShape: [valterHeadIKTrainingData.inputTensorShape[1]], units: 9, activation: 'relu'}));
-                    model.add(tf.layers.dense({inputShape: [9], units: 2, activation: 'relu'}));
-                    model.add(tf.layers.dense({units: 2, activation: 'relu'}));
+                    model.add(tf.layers.dense({inputShape: [valterHeadIKTrainingData.inputTensorShape[1]], units: 12, activation: 'elu'}));
+                    model.add(tf.layers.dense({inputShape: [12], units: 3, activation: 'elu'}));
+                    model.add(tf.layers.dense({units: 2, activation: 'elu'}));
+
                     // Specify the loss type and optimizer for training.
-                    model.compile({loss: 'meanSquaredError', optimizer: 'SGD'});
+                    model.compile({loss: 'meanSquaredError', optimizer: 'sgd'});
 
                     const valterHeadFKtoIKSolver = {
                         model: model,
@@ -106,9 +125,9 @@ class BaseScene extends VLabScene {
         let valterHeadIKTrainingData = {};
         return new Promise((resolve, reject) => {
             /**
-             * Input tensor built from ValterHeadFKTuple.headTargetDirection records
+             * Input tensor built from ValterHeadFKTuple.headTargetPosition records
              * 
-             * inputTensorValues: [ValterHeadFKTuple.headTargetDirection.x, ValterHeadFKTuple.headTargetDirection.y, ValterHeadFKTuple.headTargetDirection.z, ...]
+             * inputTensorValues: [ValterHeadFKTuple.headTargetPosition.x, ValterHeadFKTuple.headTargetPosition.y, ValterHeadFKTuple.headTargetPosition.z, ...]
              * inputTensorShape: [headFKTuples.length, 3]
              */
             let inputTensorValues = [];
@@ -124,7 +143,7 @@ class BaseScene extends VLabScene {
              * Pushing values to inputTensorValues and outputTensorValues
              */
             headFKTuples.forEach(headFKTuple => {
-                inputTensorValues.push(headFKTuple.headTargetDirection.x, headFKTuple.headTargetDirection.y, headFKTuple.headTargetDirection.z);
+                inputTensorValues.push(headFKTuple.headTargetPosition.x, headFKTuple.headTargetPosition.y, headFKTuple.headTargetPosition.z);
                 outputTensorValues.push(headFKTuple.headYawLinkValue, headFKTuple.headTiltLinkValue);
             });
 

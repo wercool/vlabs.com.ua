@@ -28,8 +28,8 @@ public class ValterHeadIKController {
     }
 
     @RequestMapping(value = "/get_head_fk_tuple", method = RequestMethod.POST)
-    public Flux<ValterHeadFKTuple> getHeadFKTuple(@RequestBody Vector3 headTargetDirection) {
-        return valterHeadIKService.getValterHeadFKTuple(headTargetDirection);
+    public Flux<ValterHeadFKTuple> getHeadFKTuple(@RequestBody Vector3 headTargetPosition) {
+        return valterHeadIKService.getValterHeadFKTuple(headTargetPosition);
     }
 
     @RequestMapping(value = "/get_all_head_fk_tuples", method = RequestMethod.GET)

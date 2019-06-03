@@ -13,11 +13,11 @@ public interface ValterHeadFKTupleRepository extends ReactiveMongoRepository<Val
     Flux<ValterHeadFKTuple> findAll();
 
     @Query("{ "
-            + "'headTargetDirection.x' : { '$gt' : ?0, '$lt' : ?1 }, "
-            + "'headTargetDirection.y' : { '$gt' : ?2, '$lt' : ?3 }, "
-            + "'headTargetDirection.z' : { '$gt' : ?4, '$lt' : ?5 }  "
+            + "'headTargetPosition.x' : { '$gt' : ?0, '$lt' : ?1 }, "
+            + "'headTargetPosition.y' : { '$gt' : ?2, '$lt' : ?3 }, "
+            + "'headTargetPosition.z' : { '$gt' : ?4, '$lt' : ?5 }  "
             + " }")
-    Flux<ValterHeadFKTuple> findByHeadDirectionXYZMinMax(
+    Flux<ValterHeadFKTuple> findByHeadTargetXYZMinMax(
             double minX,
             double maxX,
             double minY,

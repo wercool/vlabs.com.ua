@@ -12,15 +12,15 @@ public class ValterHeadFKTuple {
     @Id
     private String id;
 
-    Vector3 headTargetDirection;
+    Vector3 headTargetPosition;
     double headYawLinkValue;
     double headTiltLinkValue;
 
-    public Vector3 getHeadTargetDirection() {
-        return headTargetDirection;
+    public Vector3 getHeadTargetPosition() {
+        return headTargetPosition;
     }
-    public void setHeadTargetDirection(Vector3 headTargetDirection) {
-        this.headTargetDirection = headTargetDirection;
+    public void setHeadTargetPosition(Vector3 headTargetPosition) {
+        this.headTargetPosition = headTargetPosition;
     }
     public double getHeadYawLinkValue() {
         return headYawLinkValue;
