@@ -20,7 +20,7 @@ public class ValterHeadIKService {
     }
 
     public Flux<ValterHeadFKTuple> getValterHeadFKTuple(Vector3 headTargetPosition) {
-        double sigma = 0.2;
+        double sigma = 0.15;
         return (Flux<ValterHeadFKTuple>) valterHeadFKTupleRepository.findByHeadTargetXYZMinMax(
                 headTargetPosition.getX() - sigma,
                 headTargetPosition.getX() + sigma,

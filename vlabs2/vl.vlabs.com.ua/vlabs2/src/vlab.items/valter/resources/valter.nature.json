@@ -7,7 +7,9 @@
         "showBaseDirection": true,
         "showHeadDirection": true,
         "showKinectHeadDirection": false,
-        "showHeadTargetDirectionFromHeadYawLinkOrigin": true
+        "showHeadTargetDirectionFromHeadYawLinkOrigin": true,
+        "showRightPalmTargetDirectionFromHeadYawLinkOrigin": true,
+        "showLeftPalmTargetDirectionFromHeadYawLinkOrigin": true
     },
     "ANNIK": {
         "headANNIK": true

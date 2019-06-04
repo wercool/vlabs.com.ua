@@ -43,17 +43,26 @@ class ValterIK {
         }
 
         /**
-         * Head target
+         * Head target setup
          */
         this.setupHeadTarget();
+
+        /**
+         * Right palm setup
+         */
+        this.setupRightPalmTarget();
+        /**
+         * Left palm setup
+         */
+        this.setupLeftPalmTarget();
     }
 
-    setupHeadTargetDirectionFromHeadYawLinkOrigin(distance = 0.5) {
+    setupHeadTargetDirectionFromHeadYawLinkOrigin(distance = 0.4) {
         /*<dev>*/
-        if (this.Valter.kinectHeadDirectionArrowHelperDirection !== undefined) {
+        if (this.Valter.kinectHeadDirection !== undefined) {
             this.headDirectionTargetDistance = distance;
             this.headDirectionTargetObject3D = new THREE.Object3D();
-            this.headDirectionTargetObject3D.position.copy(this.Valter.kinectHeadDirectionArrowHelperDirection.clone().multiplyScalar(this.headDirectionTargetDistance));
+            this.headDirectionTargetObject3D.position.copy(this.Valter.kinectHeadDirection.clone().multiplyScalar(this.headDirectionTargetDistance));
             this.Valter.kinectHead.add(this.headDirectionTargetObject3D);
 
             let geometry = new THREE.SphereBufferGeometry(0.015, 8, 8);
@@ -82,7 +91,7 @@ class ValterIK {
     updateHeadTargetDirectionFromHeadYawLinkOrigin() {
         /*<dev>*/
         if (this.Valter.nature.devHelpers.showKinectHeadDirection == true) {
-            this.headDirectionTargetObject3D.position.copy(this.Valter.kinectHeadDirectionArrowHelperDirection.clone().multiplyScalar(this.headDirectionTargetDistance));
+            this.headDirectionTargetObject3D.position.copy(this.Valter.kinectHeadDirection.clone().multiplyScalar(this.headDirectionTargetDistance));
             this.headDirectionTarget.position.copy(this.headDirectionTargetObject3D.position.clone());
 
             this.Valter.kinectHeadDirectionArrowHelper.setLength(this.headDirectionTargetDistance, 0.02, 0.01);
@@ -97,27 +106,33 @@ class ValterIK {
             this.headYawLinkHeadTargetDirection = new THREE.Vector3(parseFloat(this.headYawLinkHeadTargetDirection.x.toFixed(3)), parseFloat(this.headYawLinkHeadTargetDirection.y.toFixed(3)), parseFloat(this.headYawLinkHeadTargetDirection.z.toFixed(3)));
             this.headDirectionTargetFromHeadYawLinkArrowHelper.setDirection(this.headYawLinkHeadTargetDirection);
             this.headDirectionTargetFromHeadYawLinkArrowHelper.setLength(headYawLinkHeadTargetDistance, 0.02, 0.01);
-
-            //console.log('headYaw = ' + this.Valter.ValterLinks.headYawLink.value.toFixed(3), 'headTilt = ' + this.Valter.ValterLinks.headTiltLink.value.toFixed(3), this.headYawLinkHeadTargetDirection);
         }
         /*</dev>*/
     }
 
     /**
+     * 
+     * 
      * Head FK tuples
+     * 
+     * 
      */
     getValterHeadFKTuples() {
         /*<dev>*/
         if (this.Valter.nature.devHelpers.showKinectHeadDirection == true) {
 
+            this.setValterHeadYaw = this.setValterHeadYaw.bind(this);
+            this.setValterHeadTilt = this.setValterHeadTilt.bind(this);
+            this.setValterHeadDistance = this.setValterHeadDistance.bind(this);
+            this.persistHeadTargetPosition = this.persistHeadTargetPosition.bind(this);
+
             this.Valter.ValterLinks.headYawLink.step = 0.05;
             this.Valter.ValterLinks.headTiltLink.step = 0.05;
+            this.headDirectionTargetDistance_step = 0.25;
 
             this.Valter.setHeadYawLink(this.Valter.ValterLinks.headYawLink.min);
             this.Valter.setHeadTiltLink(this.Valter.ValterLinks.headTiltLink.min);
-            this.setValterHeadYaw = this.setValterHeadYaw.bind(this);
-            this.setValterHeadTilt = this.setValterHeadTilt.bind(this);
-            this.setHeadTargetDirectionDistance = this.setHeadTargetDirectionDistance.bind(this);
+
             this.setValterHeadYaw();
         } else {
             console.error('To get Valter Head FK tuples set Valter.nature.devHelpers.showKinectHeadDirection = true');
@@ -126,54 +141,67 @@ class ValterIK {
     }
     setValterHeadYaw() {
         /*<dev>*/
-        if (this.Valter.ValterLinks.headTiltLink.value + this.Valter.ValterLinks.headTiltLink.step < this.Valter.ValterLinks.headTiltLink.max) {
+        if (this.Valter.ValterLinks.headYawLink.value < this.Valter.ValterLinks.headYawLink.max + this.Valter.ValterLinks.headYawLink.step) {
             this.setValterHeadTilt();
-        } else {
-            this.Valter.setHeadTiltLink(this.Valter.ValterLinks.headTiltLink.min);
-            if (this.Valter.ValterLinks.headYawLink.value + this.Valter.ValterLinks.headYawLink.step < this.Valter.ValterLinks.headYawLink.max) {
-                this.Valter.setHeadYawLink(this.Valter.ValterLinks.headYawLink.value + this.Valter.ValterLinks.headYawLink.step);
-                this.setValterHeadTilt();
-            }
         }
         /*</dev>*/
     }
     setValterHeadTilt() {
         /*<dev>*/
-        this.Valter.setHeadTiltLink(this.Valter.ValterLinks.headTiltLink.value + this.Valter.ValterLinks.headTiltLink.step);
-        this.setHeadTargetDirectionDistance();
-        /*</dev>*/
-    }
-    setHeadTargetDirectionDistance() {
-        /*<dev>*/
-        if (this.Valter.ValterIK.headDirectionTargetDistance < 3.0) {
-            this.Valter.ValterIK.updateHeadTargetDirectionFromHeadYawLinkOrigin();
-            console.log('headYaw = ' + this.Valter.ValterLinks.headYawLink.value.toFixed(3), 'headTilt = ' + this.Valter.ValterLinks.headTiltLink.value.toFixed(3), this.Valter.ValterIK.headYawLinkHeadTargetLocalPos, this.Valter.ValterIK.headDirectionTargetDistance.toFixed(3));
-
-
-            let headFKTuple = new ValterHeadFKTuple();
-            headFKTuple.headTargetPosition.x = this.Valter.ValterIK.headYawLinkHeadTargetLocalPos.x;
-            headFKTuple.headTargetPosition.y = this.Valter.ValterIK.headYawLinkHeadTargetLocalPos.y;
-            headFKTuple.headTargetPosition.z = this.Valter.ValterIK.headYawLinkHeadTargetLocalPos.z;
-            headFKTuple.headYawLinkValue = parseFloat(this.Valter.ValterLinks.headYawLink.value.toFixed(3));
-            headFKTuple.headTiltLinkValue = parseFloat(this.Valter.ValterLinks.headTiltLink.value.toFixed(3));
-
-            this.vLab.VLabsRESTClientManager.ValterHeadIKService.saveHeadFKTuple(headFKTuple)
-            .then(result => {
-                this.Valter.ValterIK.headDirectionTargetDistance += 0.25;
-                this.setHeadTargetDirectionDistance();
-            });
+        if (this.Valter.ValterLinks.headTiltLink.value < this.Valter.ValterLinks.headTiltLink.max + this.Valter.ValterLinks.headTiltLink.step) {
+            this.setValterHeadDistance();
         } else {
-            this.Valter.ValterIK.headDirectionTargetDistance = 0.4;
+            this.Valter.ValterLinks.headTiltLink.value = this.Valter.ValterLinks.headTiltLink.min;
+
+            this.Valter.ValterLinks.headYawLink.value += this.Valter.ValterLinks.headYawLink.step;
             this.setValterHeadYaw();
+            this.Valter.setHeadYawLink(this.Valter.ValterLinks.headYawLink.value);
+            this.updateHeadTargetDirectionFromHeadYawLinkOrigin();
         }
         /*</dev>*/
     }
+    setValterHeadDistance() {
+        /*<dev>*/
+        if (this.headDirectionTargetDistance < 3.0) {
+            this.persistHeadTargetPosition();
+        } else {
+            this.headDirectionTargetDistance = 0.4;
+            this.Valter.ValterLinks.headTiltLink.value += this.Valter.ValterLinks.headTiltLink.step;
+            this.setValterHeadTilt();
+            this.Valter.setHeadTiltLink(this.Valter.ValterLinks.headTiltLink.value);
+            this.updateHeadTargetDirectionFromHeadYawLinkOrigin();
+        }
+        /*</dev>*/
+    }
+    persistHeadTargetPosition() {
+        /*<dev>*/
+        this.updateHeadTargetDirectionFromHeadYawLinkOrigin();
 
+        let headFKTuple = new ValterHeadFKTuple();
+        headFKTuple.headTargetPosition.x = this.headYawLinkHeadTargetLocalPos.x;
+        headFKTuple.headTargetPosition.y = this.headYawLinkHeadTargetLocalPos.y;
+        headFKTuple.headTargetPosition.z = this.headYawLinkHeadTargetLocalPos.z;
+        headFKTuple.headYawLinkValue = parseFloat(this.Valter.ValterLinks.headYawLink.value.toFixed(3));
+        headFKTuple.headTiltLinkValue = parseFloat(this.Valter.ValterLinks.headTiltLink.value.toFixed(3));
 
+        this.vLab.VLabsRESTClientManager.ValterHeadIKService.saveHeadFKTuple(headFKTuple)
+        .then(result => {
+            console.log('headYaw = ' + this.Valter.ValterLinks.headYawLink.value.toFixed(3), 'headTilt = ' + this.Valter.ValterLinks.headTiltLink.value.toFixed(3), this.headYawLinkHeadTargetLocalPos, this.headDirectionTargetDistance.toFixed(3));
+
+            this.headDirectionTargetDistance += this.headDirectionTargetDistance_step;
+            this.setValterHeadDistance();
+        });
+        /*</dev>*/
+    }
+
+    /**
+     * 
+     * 
+     * Head target
+     * 
+     * 
+     */
     setupHeadTarget() {
-        /**
-         * Head target
-         */
         this.Valter.baseFrame.updateMatrixWorld();
         var headTargetObjectGeometry = new THREE.SphereBufferGeometry(0.025, 16, 16);
         var headTargetObjectMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: true, wireframeLinewidth: 0.0001, transparent: true, opacity: 0.5 });
@@ -196,6 +224,7 @@ class ValterIK {
             this.headTargetObjectInteractable = headTargetObjectInteractable;
             this.headTargetObjectInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, 0.0, 1.0));
 
+            /*<dev>*/
             this.headTargetObjectInteractable.DEV.menu.push(
                 {
                     label: 'Get Head Yaw & Tilt IK from VLabsRESTValterHeadIKService',
@@ -217,26 +246,24 @@ class ValterIK {
                             console.log('getHeadFKTuple RESULT:');
                             console.log(valterHeadFKTuples);
                             if (valterHeadFKTuples.length > 0) {
+
                                 let minDistanceTuple = valterHeadFKTuples[0];
-                                let minDistanceTupleTargetPos = new THREE.Vector3().set(
+                                let curTupleTargetPos = new THREE.Vector3().set(
                                     minDistanceTuple.headTargetPosition.x,
                                     minDistanceTuple.headTargetPosition.y,
                                     minDistanceTuple.headTargetPosition.z
                                 );
-                                let minDistance = minDistanceTupleTargetPos.distanceTo(headTargetPosition);
+                                let minDistance = curTupleTargetPos.distanceToSquared(headTargetPosition);
                                 valterHeadFKTuples.forEach((valterHeadFKTuple) => {
-                                    let minDistanceTupleTargetPos = new THREE.Vector3().set(
+                                    curTupleTargetPos =  new THREE.Vector3().set(
                                         valterHeadFKTuple.headTargetPosition.x,
                                         valterHeadFKTuple.headTargetPosition.y,
                                         valterHeadFKTuple.headTargetPosition.z
                                     );
-                                    if (minDistanceTupleTargetPos.distanceTo(headTargetPosition) < minDistance) {
+                                    let distance = curTupleTargetPos.distanceToSquared(headTargetPosition);
+                                    if (distance < minDistance) {
+                                        minDistance = distance;
                                         minDistanceTuple = valterHeadFKTuple;
-                                        minDistanceTupleTargetPos = new THREE.Vector3().set(
-                                            minDistanceTuple.headTargetPosition.x,
-                                            minDistanceTuple.headTargetPosition.y,
-                                            minDistanceTuple.headTargetPosition.z
-                                        );
                                     }
                                 });
 
@@ -250,6 +277,29 @@ class ValterIK {
                     }
                 }
             );
+
+            this.headTargetObjectInteractable.DEV.menu.push(
+                {
+                    label: 'Get ALL Head Yaw & Tilt FK points from VLabsRESTValterHeadIKService',
+                    enabled: true,
+                    selected: false,
+                    icon: '<i class=\"material-icons\">grain</i>',
+                    action: () => {
+                        let headFKPointsMaterial = new THREE.PointsMaterial({ size: 0.01, color: 0xff00ff });
+                        let headFKPointsGeometry = new THREE.Geometry();
+                        this.vLab.VLabsRESTClientManager.ValterHeadIKService.getAllHeadFKTuples()
+                        .then(valterHeadFKTuples => {
+                            valterHeadFKTuples.forEach(valterHeadFKTuple => {
+                                let point = new THREE.Vector3().set(valterHeadFKTuple.headTargetPosition.x, valterHeadFKTuple.headTargetPosition.y, valterHeadFKTuple.headTargetPosition.z);
+                                headFKPointsGeometry.vertices.push(point);
+                            });
+                            this.headFKPoints = new THREE.Points(headFKPointsGeometry, headFKPointsMaterial);
+                            this.headYawLinkOriginObject3D.add(this.headFKPoints);
+                        });
+                    }
+                }
+            );
+            /*</dev>*/
 
             if (this.Valter.nature.devHelpers.showHeadTargetDirectionFromHeadYawLinkOrigin) {
                 let headYawLinkHeadTargetLocalPos = this.headTargetObject.position.clone();
@@ -306,7 +356,7 @@ class ValterIK {
                 let headYawLinkHeadTargetLocalPos = newHeadTargetObjectPos.clone();
                 let headYawLinkHeadTargetDir = headYawLinkHeadTargetLocalPos.clone().normalize();
     
-                if (headYawLinkHeadTargetDir.clone().dot(new THREE.Vector3(0.0, 0.0, 1.0)) < 0.1) {
+                if (headYawLinkHeadTargetDir.clone().dot(new THREE.Vector3(0.0, 0.0, 1.0)) < 0.225) {
                     newHeadTargetObjectPos = this.headYawLinkOriginObject3D.worldToLocal(this.headTargetObjectPrevGlobalPosition.clone());
                     this.headTargetObjectPrevGlobalPosition = undefined;
                     this.vLab.WebGLRendererCanvas.style.cursor = 'default';
@@ -338,6 +388,66 @@ class ValterIK {
         this.prevActionInitialEventCoords = new THREE.Vector2();
         this.prevActionInitialEventCoords.copy(currentActionInitialEventCoords);
     }
+
+    /**
+     * 
+     * 
+     * Right palm target
+     * 
+     * 
+     */
+    setupRightPalmTarget() {
+        this.Valter.baseFrame.updateMatrixWorld();
+        var rightPalmTargetObjectGeometry = new THREE.SphereBufferGeometry(0.025, 16, 16);
+        var rightPalmTargetObjectMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true, wireframeLinewidth: 0.0001, transparent: true, opacity: 0.5 });
+        this.rightPalmTargetObject = new THREE.Mesh(rightPalmTargetObjectGeometry, rightPalmTargetObjectMaterial);
+        this.rightPalmTargetObject.name = 'rightPalmTargetObject';
+        this.headYawLinkOriginObject3D.add(this.rightPalmTargetObject);
+
+        this.rightPalmTargetGlobalPosition = this.Valter.rightPalm.localToWorld(new THREE.Vector3());
+        this.headYawLinkRightPalmTargetLocalPos = this.headYawLinkOriginObject3D.worldToLocal(this.rightPalmTargetGlobalPosition.clone());
+        this.rightPalmTargetObject.position.copy(this.headYawLinkRightPalmTargetLocalPos);
+    }
+
+    setupRightPalmTargetDirectionFromHeadYawLinkOrigin() {
+        /*<dev>*/
+        this.Valter.baseFrame.updateMatrixWorld();
+        let headYawLinkRightPalmDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(this.headYawLinkRightPalmTargetLocalPos);
+        this.rightPalmFromHeadYawLinkArrowHelper = new THREE.ArrowHelper(this.headYawLinkRightPalmTargetLocalPos.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), headYawLinkRightPalmDistance, 0x00ff00, 0.02, 0.01);
+        this.headYawLinkOriginObject3D.add(this.rightPalmFromHeadYawLinkArrowHelper);
+        /*</dev>*/
+    }
+
+
+    /**
+     * 
+     * 
+     * Left palm target
+     * 
+     * 
+     */
+    setupLeftPalmTarget() {
+        this.Valter.baseFrame.updateMatrixWorld();
+        var leftPalmTargetObjectGeometry = new THREE.SphereBufferGeometry(0.025, 16, 16);
+        var leftPalmTargetObjectMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true, wireframeLinewidth: 0.0001, transparent: true, opacity: 0.5 });
+        this.leftPalmTargetObject = new THREE.Mesh(leftPalmTargetObjectGeometry, leftPalmTargetObjectMaterial);
+        this.leftPalmTargetObject.name = 'leftPalmTargetObject';
+        this.headYawLinkOriginObject3D.add(this.leftPalmTargetObject);
+
+        this.leftPalmTargetGlobalPosition = this.Valter.leftPalm.localToWorld(new THREE.Vector3());
+        this.headYawLinkLeftPalmTargetLocalPos = this.headYawLinkOriginObject3D.worldToLocal(this.leftPalmTargetGlobalPosition.clone());
+        this.leftPalmTargetObject.position.copy(this.headYawLinkLeftPalmTargetLocalPos);
+    }
+
+    setupLeftPalmTargetDirectionFromHeadYawLinkOrigin() {
+        /*<dev>*/
+        this.Valter.baseFrame.updateMatrixWorld();
+        let headYawLinkLeftPalmDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(this.headYawLinkLeftPalmTargetLocalPos);
+        this.leftPalmFromHeadYawLinkArrowHelper = new THREE.ArrowHelper(this.headYawLinkLeftPalmTargetLocalPos.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), headYawLinkLeftPalmDistance, 0xffff00, 0.02, 0.01);
+        this.headYawLinkOriginObject3D.add(this.leftPalmFromHeadYawLinkArrowHelper);
+        /*</dev>*/
+    }
+
 
     commonInvAction() {
         this.headTargetObjectPrevGlobalPosition = undefined;
