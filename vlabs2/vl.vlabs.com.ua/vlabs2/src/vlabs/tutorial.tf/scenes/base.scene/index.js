@@ -45,14 +45,15 @@ class BaseScene extends VLabScene {
             // We'll keep a buffer of loss and accuracy values over time.
             let trainBatchCount = 0;
             let trainEpochCount = 0;
-            let trainEpochs = 100;
+            let trainEpochs = 50;
             this.valterHeadFKtoIKSolver.model.fit(
                 this.valterHeadFKtoIKSolver.inputTensor, 
                 this.valterHeadFKtoIKSolver.outpuTensor, 
                 {
                     epochs: trainEpochs,
-                    // batchSize: 500,
+                    // batchSize: 100,
                     shuffle: true,
+                    //validationData: [this.valterHeadFKtoIKSolver.inputTensor, this.valterHeadFKtoIKSolver.outpuTensor],
                     callbacks: {
                         // onBatchEnd: (batch, logs) => {
                         //     trainBatchCount++;
@@ -77,11 +78,13 @@ class BaseScene extends VLabScene {
                          */
                         const output1 = this.valterHeadFKtoIKSolver.model.predict(tf.tensor([-0.366, -0.284, 0.099], [1, 3]));
                         output1.print();
+                        console.log('[-0.366, -0.284, 0.099] -> [-1.350, -1.000]');
                         /**
                          * db.valter_head_fk_tuples.find().sort({ $natural: -1 }).limit(1).pretty()
                          */
-                        const output2 = this.valterHeadFKtoIKSolver.model.predict(tf.tensor([2.772, -0.538, 0.753], [1, 3]));
+                        const output2 = this.valterHeadFKtoIKSolver.model.predict(tf.tensor([2.754, -0.394, 0.898], [1, 3]));
                         output2.print();
+                        console.log('[2.754, -0.394, 0.898] -> [1.350, 0.1]');
                     });
                 });
             });
@@ -95,12 +98,15 @@ class BaseScene extends VLabScene {
                     const inputTensor = tf.tensor(valterHeadIKTrainingData.inputTensorValues, valterHeadIKTrainingData.inputTensorShape);
                     const outpuTensor = tf.tensor(valterHeadIKTrainingData.outputTensorValues, valterHeadIKTrainingData.outputTensorShape);
 
+                    const optimizer = tf.train.sgd(0.2);
+                    const loss = 'meanSquaredError';
+
                     tf.loadLayersModel('localstorage://valter-head-ik-model')
                     .then((savedModel) => {
                         const model = savedModel;
 
                         // Specify the loss type and optimizer for training.
-                        model.compile({loss: 'meanSquaredError', optimizer: 'sgd'});
+                        model.compile({loss: loss, optimizer: optimizer, metrics: ['accuracy']});
 
                         const valterHeadFKtoIKSolver = {
                             model: model,
@@ -112,13 +118,12 @@ class BaseScene extends VLabScene {
                     .catch(error => {
                         // A sequential model is a container which you can add layers to.
                         const model = tf.sequential();
-                        model.add(tf.layers.dense({inputShape: [valterHeadIKTrainingData.inputTensorShape[1]], units: 12, activation: 'elu'}));
+                        model.add(tf.layers.dense({inputShape: [valterHeadIKTrainingData.inputTensorShape[1]], units: 12, activation: 'relu'}));
                         model.add(tf.layers.dense({units: 6, activation: 'elu'}));
                         model.add(tf.layers.dense({units: 2, activation: 'elu'}));
 
                         // Specify the loss type and optimizer for training.
-                        const optimizer = tf.train.sgd(0.2);
-                        model.compile({loss: 'meanSquaredError', optimizer: optimizer});
+                        model.compile({loss: loss, optimizer: optimizer, metrics: ['accuracy']});
 
                         const valterHeadFKtoIKSolver = {
                             model: model,

@@ -942,7 +942,7 @@ class Valter extends VLabItem {
      */
     zoomToValter() {
         new TWEEN.Tween(this.vLab.SceneDispatcher.currentVLabScene.currentCamera.position)
-        .to({x: this.baseFrame.position.x - 1.5, y: 1.5, z: this.baseFrame.position.z + 1.5}, 1000)
+        .to({x: this.baseFrame.position.x - 1.5, y: 3.0, z: this.baseFrame.position.z + 1.5}, 1000)
         .easing(TWEEN.Easing.Quadratic.InOut)
         .onComplete(() => {
             this.vLab.SceneDispatcher.currentVLabScene.currentControls.update();

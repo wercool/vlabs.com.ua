@@ -126,8 +126,8 @@ class ValterIK {
             this.setValterHeadDistance = this.setValterHeadDistance.bind(this);
             this.persistHeadTargetPosition = this.persistHeadTargetPosition.bind(this);
 
-            this.Valter.ValterLinks.headYawLink.step = 0.05;
-            this.Valter.ValterLinks.headTiltLink.step = 0.05;
+            this.Valter.ValterLinks.headYawLink.step = 0.1;
+            this.Valter.ValterLinks.headTiltLink.step = 0.1;
             this.headDirectionTargetDistance_step = 0.25;
 
             this.Valter.setHeadYawLink(this.Valter.ValterLinks.headYawLink.min);
@@ -378,6 +378,8 @@ class ValterIK {
                     const valterHeadYawTiltPreditctionData = valterHeadYawTiltPreditction.dataSync();
                     const valterHeadYawPreditctionValue = valterHeadYawTiltPreditctionData[0];
                     const valterHeadTiltPreditctionValue = valterHeadYawTiltPreditctionData[1];
+
+                    console.log('[' + this.headTargetObject.position.x.toFixed(3) + ', ' + this.headTargetObject.position.y.toFixed(3) + ', ' + this.headTargetObject.position.z.toFixed(3) + '] -> [' + valterHeadYawPreditctionValue.toFixed(3) +', ' + valterHeadTiltPreditctionValue.toFixed(3) + ']');
 
                     this.Valter.setHeadYawLink(valterHeadYawPreditctionValue);
                     this.Valter.setHeadTiltLink(valterHeadTiltPreditctionValue);
