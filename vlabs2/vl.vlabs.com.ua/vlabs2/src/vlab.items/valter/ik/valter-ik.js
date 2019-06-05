@@ -374,7 +374,20 @@ class ValterIK {
                 }
 
                 if (this.Valter.nature.ANNIK.headANNIK && this.valterHeadIKTFModel !== undefined) {
-                    const valterHeadYawTiltPreditction = this.valterHeadIKTFModel.predict(tf.tensor([this.headTargetObject.position.x, this.headTargetObject.position.y, this.headTargetObject.position.z], [1, 3]));
+
+                    // Normalize = ($inputvalue – $min) / ($max – $min)
+                    // 0.111 = (2-1)/(10-1)
+
+                    // Denormalized = ($normalizedValue * ($max-$min) + $min)
+                    // 3 = (0.22222 * (10-1) + 1)
+
+                    let headNormalizationBounds = this.Valter.nature.ANNIK.headFKTuplesNormalizationBounds;
+
+                    let nHeadTargetX = 2 * ((this.headTargetObject.position.x - headNormalizationBounds.headTargetPositionXMin) / (headNormalizationBounds.headTargetPositionXMax - headNormalizationBounds.headTargetPositionXMin)) - 1;
+                    let nHeadTargetY = 2 * ((this.headTargetObject.position.y - headNormalizationBounds.headTargetPositionYMin) / (headNormalizationBounds.headTargetPositionYMax - headNormalizationBounds.headTargetPositionYMin)) - 1;
+                    let nHeadTargetZ = 2 * ((this.headTargetObject.position.z - headNormalizationBounds.headTargetPositionZMin) / (headNormalizationBounds.headTargetPositionZMax - headNormalizationBounds.headTargetPositionZMin)) - 1;
+
+                    const valterHeadYawTiltPreditction = this.valterHeadIKTFModel.predict(tf.tensor([nHeadTargetX, nHeadTargetY, nHeadTargetZ], [1, 3]));
                     const valterHeadYawTiltPreditctionData = valterHeadYawTiltPreditction.dataSync();
                     const valterHeadYawPreditctionValue = valterHeadYawTiltPreditctionData[0];
                     const valterHeadTiltPreditctionValue = valterHeadYawTiltPreditctionData[1];

@@ -61,6 +61,16 @@ class BaseScene extends VLabScene {
              * get Valter head FK tuples
              */
             // this.vLab['Valter'].ValterIK.getValterHeadFKTuples();
+
+            // this.vLab.VLabsRESTClientManager.ValterHeadIKService.getHeadFKTuplesNormalizationBounds()
+            // .then(normalizationBounds => {
+            //     console.log(normalizationBounds);
+            // });
+
+            // this.vLab.VLabsRESTClientManager.ValterHeadIKService.getAllHeadFKTuplesNormalized()
+            // .then(headFKTuplesNormalized => {
+            //     console.log(headFKTuplesNormalized);
+            // });
         }
     }
 

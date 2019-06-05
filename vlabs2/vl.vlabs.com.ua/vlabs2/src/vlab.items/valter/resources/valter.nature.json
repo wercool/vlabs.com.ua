@@ -12,7 +12,19 @@
         "showLeftPalmTargetDirectionFromHeadYawLinkOrigin": true
     },
     "ANNIK": {
-        "headANNIK": true
+        "headANNIK": true,
+        "headFKTuplesNormalizationBounds": {
+            "headTargetPositionXMax": 2.754,
+            "headTargetPositionXMin": -2.823,
+            "headTargetPositionYMax": 0.176,
+            "headTargetPositionYMin": -2.64,
+            "headTargetPositionZMax": 2.894,
+            "headTargetPositionZMin": 0.099,
+            "headYawLinkValueMax": 1.35,
+            "headYawLinkValueMin": -1.35,
+            "headTiltLinkValueMax": 0.1,
+            "headTiltLinkValueMin": -1
+        }
     },
     "interactables": [
         {

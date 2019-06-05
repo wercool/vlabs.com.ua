@@ -54,5 +54,31 @@ class VLabsRESTValterHeadIKService {
             });
         });
      }
+     getHeadFKTuplesNormalizationBounds() {
+        return new Promise((resolve, reject) => {
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getHeadFKTuplesNormalizationBounds');
+            this.manager.get(apiEndPoint)
+            .then((result) => {
+                resolve(result);
+            })
+            .catch((error) => {
+                console.error(error.status);
+                reject(error);
+            });
+        });
+     }
+     getAllHeadFKTuplesNormalized() {
+        return new Promise((resolve, reject) => {
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getAllHeadFKTuplesNormalized');
+            this.manager.get(apiEndPoint)
+            .then((result) => {
+                resolve(result);
+            })
+            .catch((error) => {
+                console.error(error.status);
+                reject(error);
+            });
+        });
+     }
  }
  export default VLabsRESTValterHeadIKService;

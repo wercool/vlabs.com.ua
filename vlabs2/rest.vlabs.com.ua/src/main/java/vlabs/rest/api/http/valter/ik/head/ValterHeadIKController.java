@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import vlabs.rest.model.three.Vector3;
 import vlabs.rest.model.valter.ik.head.ValterHeadFKTuple;
+import vlabs.rest.model.valter.ik.head.ValterHeadFKTuplesNormalizationBounds;
 import vlabs.rest.service.valter.ik.head.ValterHeadIKService;
 
 @RestController
@@ -35,5 +36,17 @@ public class ValterHeadIKController {
     @RequestMapping(value = "/get_all_head_fk_tuples", method = RequestMethod.GET)
     public Flux<ValterHeadFKTuple> getAllHeadFKTuples() {
         return valterHeadIKService.getAllValterHeadFKTuples();
+    }
+
+    @RequestMapping(value = "/get_head_fk_normalization_bounds", method = RequestMethod.GET)
+    public Mono<ResponseEntity<ValterHeadFKTuplesNormalizationBounds>> getHeadFKTuplesNormalizationBounds() {
+        return valterHeadIKService.getValterHeadFKTuplesNormalizationBounds().map(valterHeadFKTuplesNormalizationBounds -> {
+            return ResponseEntity.ok(valterHeadFKTuplesNormalizationBounds);
+        });
+    }
+
+    @RequestMapping(value = "/get_all_head_fk_tuples_normalized", method = RequestMethod.GET)
+    public Flux<ValterHeadFKTuple> getAllHeadFKTuplesNormalized() {
+        return valterHeadIKService.getAllValterHeadFKTuplesNormalized();
     }
 }

@@ -45,7 +45,9 @@ class VLabsRESTClientManager {
                 base: '/valter',
                 saveHeadFKTuple: '/head/ik/save_head_fk_tuple',
                 getHeadFKTuple: '/head/ik/get_head_fk_tuple',
-                getAllHeadFKTuples: '/head/ik/get_all_head_fk_tuples'
+                getAllHeadFKTuples: '/head/ik/get_all_head_fk_tuples',
+                getHeadFKTuplesNormalizationBounds: '/head/ik/get_head_fk_normalization_bounds',
+                getAllHeadFKTuplesNormalized: '/head/ik/get_all_head_fk_tuples_normalized'
             },
             getFullyQualifiedURL: function (endpointGroup, endpointPoint) {
                 return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint];

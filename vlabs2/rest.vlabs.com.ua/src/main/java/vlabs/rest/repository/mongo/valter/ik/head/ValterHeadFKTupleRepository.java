@@ -3,8 +3,11 @@ package vlabs.rest.repository.mongo.valter.ik.head;
 import org.springframework.stereotype.Repository;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import vlabs.rest.model.valter.ik.head.ValterHeadFKTuple;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
@@ -24,4 +27,7 @@ public interface ValterHeadFKTupleRepository extends ReactiveMongoRepository<Val
             double maxY,
             double minZ,
             double maxZ);
+
+    @Query("{}")
+    Mono<ValterHeadFKTuple> findOne(Sort sort);
 }

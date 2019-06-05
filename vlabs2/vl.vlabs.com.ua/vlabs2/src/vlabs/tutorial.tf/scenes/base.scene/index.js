@@ -118,7 +118,7 @@ class BaseScene extends VLabScene {
                     .catch(error => {
                         // A sequential model is a container which you can add layers to.
                         const model = tf.sequential();
-                        model.add(tf.layers.dense({inputShape: [valterHeadIKTrainingData.inputTensorShape[1]], units: 12, activation: 'relu'}));
+                        model.add(tf.layers.dense({inputShape: [valterHeadIKTrainingData.inputTensorShape[1]], units: 12, activation: 'elu'}));
                         model.add(tf.layers.dense({units: 6, activation: 'elu'}));
                         model.add(tf.layers.dense({units: 2, activation: 'elu'}));
 
@@ -139,7 +139,7 @@ class BaseScene extends VLabScene {
 
     prepareValterHeadFKTuples() {
         return new Promise((resolve, reject) => {
-            this.vLab.VLabsRESTClientManager.ValterHeadIKService.getAllHeadFKTuples()
+            this.vLab.VLabsRESTClientManager.ValterHeadIKService.getAllHeadFKTuplesNormalized()
             .then(headFKTuples => {
                 resolve(headFKTuples);
             });
