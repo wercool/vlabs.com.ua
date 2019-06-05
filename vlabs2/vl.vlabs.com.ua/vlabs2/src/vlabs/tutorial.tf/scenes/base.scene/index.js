@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import VLabScene from '../../../../vlab.fwk/core/vlab.scene';
 
+import Valter from '../../../../vlab.items/valter/index';
+import ValterHeadIKDev from '../../../../vlab.items/valter/ik/valter-head-ik-dev';
+
 import * as tf from '@tensorflow/tfjs';
 
 class BaseScene extends VLabScene {
@@ -26,70 +29,93 @@ class BaseScene extends VLabScene {
 
         console.clear();
 
-        this.vLab.renderPaused = true;
+        // this.vLab.renderPaused = true;
     }
 
     onActivated() {
-        console.log(this.vLab.nature.name);
-        console.log('https://www.tensorflow.org/js/guide/');
-        console.log('https://github.com/tensorflow/tfjs-examples');
-        console.log('https://www.youtube.com/watch?v=XdErOpUzupY');
-        tf.setBackend('webgl');
-        console.log('TF Backend:', tf.getBackend());
-        this.prepareValterHeadFKtoIKSolving().then((valterHeadFKtoIKSolver) => {
-            this.valterHeadFKtoIKSolver = valterHeadFKtoIKSolver;
-
-            // Train the model.
-            console.log(this.valterHeadFKtoIKSolver);
-            console.log('Training ValterHeadFKtoIKSolver Model ...');
-            // We'll keep a buffer of loss and accuracy values over time.
-            let trainBatchCount = 0;
-            let trainEpochCount = 0;
-            let trainEpochs = 50;
-            this.valterHeadFKtoIKSolver.model.fit(
-                this.valterHeadFKtoIKSolver.inputTensor, 
-                this.valterHeadFKtoIKSolver.outpuTensor, 
-                {
-                    epochs: trainEpochs,
-                    // batchSize: 100,
-                    shuffle: true,
-                    //validationData: [this.valterHeadFKtoIKSolver.inputTensor, this.valterHeadFKtoIKSolver.outpuTensor],
-                    callbacks: {
-                        // onBatchEnd: (batch, logs) => {
-                        //     trainBatchCount++;
-                        //     console.log(trainBatchCount, logs.loss);
-                        // },
-                        onEpochEnd: (epoch, logs) => {
-                            trainEpochCount++;
-                            console.log(trainEpochCount + ' / ' + trainEpochs, logs);
-                        }
-                    }
+        this.Valter = new Valter({
+            vLab: this.vLab,
+            natureURL: '/vlab.items/valter/resources/valter.nature.json',
+            name: 'ValterVLabItem'
+        });
+        this.vLab.EventDispatcher.subscribe({
+            subscriber: this,
+            events: {
+                VLabItem: {
+                    initialized: this.onVLabItemInitialized
                 }
-            ).then((result) => {
-                console.log(result);
-
-                this.valterHeadFKtoIKSolver.model.save('localstorage://valter-head-ik-model').then(() => {
-
-                    tf.loadLayersModel('localstorage://valter-head-ik-model').then((model) => {
-                        this.valterHeadFKtoIKSolver.model = model;
-
-                        /**
-                         * db.valter_head_fk_tuples.find().sort({ $natural: 1 }).limit(1).pretty()
-                         */
-                        const output1 = this.valterHeadFKtoIKSolver.model.predict(tf.tensor([-0.366, -0.284, 0.099], [1, 3]));
-                        output1.print();
-                        console.log('[-0.366, -0.284, 0.099] -> [-1.350, -1.000]');
-                        /**
-                         * db.valter_head_fk_tuples.find().sort({ $natural: -1 }).limit(1).pretty()
-                         */
-                        const output2 = this.valterHeadFKtoIKSolver.model.predict(tf.tensor([2.754, -0.394, 0.898], [1, 3]));
-                        output2.print();
-                        console.log('[2.754, -0.394, 0.898] -> [1.350, 0.1]');
-                    });
-                });
-            });
+            }
         });
     }
+
+    onVLabItemInitialized(event) {
+        if (event.vLabItem == this.Valter) {
+            this.ValterHeadIKDev = new ValterHeadIKDev(this.Valter);
+            console.log(this.ValterHeadIKDev);
+        }
+    }
+
+    // onActivated() {
+    //     console.log(this.vLab.nature.name);
+    //     console.log('https://www.tensorflow.org/js/guide/');
+    //     console.log('https://github.com/tensorflow/tfjs-examples');
+    //     console.log('https://www.youtube.com/watch?v=XdErOpUzupY');
+    //     tf.setBackend('webgl');
+    //     console.log('TF Backend:', tf.getBackend());
+    //     this.prepareValterHeadFKtoIKSolving().then((valterHeadFKtoIKSolver) => {
+    //         this.valterHeadFKtoIKSolver = valterHeadFKtoIKSolver;
+
+    //         // Train the model.
+    //         console.log(this.valterHeadFKtoIKSolver);
+    //         console.log('Training ValterHeadFKtoIKSolver Model ...');
+    //         // We'll keep a buffer of loss and accuracy values over time.
+    //         let trainBatchCount = 0;
+    //         let trainEpochCount = 0;
+    //         let trainEpochs = 1000;
+    //         this.valterHeadFKtoIKSolver.model.fit(
+    //             this.valterHeadFKtoIKSolver.inputTensor, 
+    //             this.valterHeadFKtoIKSolver.outpuTensor, 
+    //             {
+    //                 epochs: trainEpochs,
+    //                 // batchSize: 100,
+    //                 shuffle: true,
+    //                 //validationData: [this.valterHeadFKtoIKSolver.inputTensor, this.valterHeadFKtoIKSolver.outpuTensor],
+    //                 callbacks: {
+    //                     // onBatchEnd: (batch, logs) => {
+    //                     //     trainBatchCount++;
+    //                     //     console.log(trainBatchCount, logs.loss);
+    //                     // },
+    //                     onEpochEnd: (epoch, logs) => {
+    //                         trainEpochCount++;
+    //                         console.log(trainEpochCount + ' / ' + trainEpochs, logs);
+    //                     }
+    //                 }
+    //             }
+    //         ).then((result) => {
+    //             console.log(result);
+
+    //             this.valterHeadFKtoIKSolver.model.save('localstorage://valter-head-ik-model').then(() => {
+
+    //                 tf.loadLayersModel('localstorage://valter-head-ik-model').then((model) => {
+    //                     this.valterHeadFKtoIKSolver.model = model;
+
+    //                     /**
+    //                      * db.valter_head_fk_tuples.find().sort({ $natural: 1 }).limit(1).pretty()
+    //                      */
+    //                     const output1 = this.valterHeadFKtoIKSolver.model.predict(tf.tensor([-0.366, -0.284, 0.099], [1, 3]));
+    //                     output1.print();
+    //                     console.log('[-0.366, -0.284, 0.099] -> [-1.350, -1.000]');
+    //                     /**
+    //                      * db.valter_head_fk_tuples.find().sort({ $natural: -1 }).limit(1).pretty()
+    //                      */
+    //                     const output2 = this.valterHeadFKtoIKSolver.model.predict(tf.tensor([2.754, -0.394, 0.898], [1, 3]));
+    //                     output2.print();
+    //                     console.log('[2.754, -0.394, 0.898] -> [1.350, 0.1]');
+    //                 });
+    //             });
+    //         });
+    //     });
+    // }
 
     prepareValterHeadFKtoIKSolving() {
         return new Promise((resolve, reject) => {
@@ -98,7 +124,7 @@ class BaseScene extends VLabScene {
                     const inputTensor = tf.tensor(valterHeadIKTrainingData.inputTensorValues, valterHeadIKTrainingData.inputTensorShape);
                     const outpuTensor = tf.tensor(valterHeadIKTrainingData.outputTensorValues, valterHeadIKTrainingData.outputTensorShape);
 
-                    const optimizer = tf.train.sgd(0.2);
+                    const optimizer = tf.train.sgd(0.1);
                     const loss = 'meanSquaredError';
 
                     tf.loadLayersModel('localstorage://valter-head-ik-model')
@@ -119,7 +145,6 @@ class BaseScene extends VLabScene {
                         // A sequential model is a container which you can add layers to.
                         const model = tf.sequential();
                         model.add(tf.layers.dense({inputShape: [valterHeadIKTrainingData.inputTensorShape[1]], units: 12, activation: 'elu'}));
-                        model.add(tf.layers.dense({units: 6, activation: 'elu'}));
                         model.add(tf.layers.dense({units: 2, activation: 'elu'}));
 
                         // Specify the loss type and optimizer for training.

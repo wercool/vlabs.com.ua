@@ -12,6 +12,7 @@ import vlabs.rest.model.three.Vector3;
 import vlabs.rest.model.valter.ik.head.ValterHeadFKTuple;
 import vlabs.rest.model.valter.ik.head.ValterHeadFKTuplesNormalizationBounds;
 import vlabs.rest.repository.mongo.valter.ik.head.ValterHeadFKTupleRepository;
+import vlabs.rest.utils.ann.ANNUtils;
 
 @Service
 public class ValterHeadIKService {
@@ -58,11 +59,11 @@ public class ValterHeadIKService {
                     valterHeadFKTuplesNormalizationBounds.setHeadTiltLinkValueMax(headFKTuplesNormalizationBounds.getHeadTiltLinkValueMax());
                 })
                 .thenMany(getAllValterHeadFKTuples().map(valterHeadFKTuple -> {
-                    double nX = 2 * ((valterHeadFKTuple.getHeadTargetPosition().getX() - valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionXMin()) / (valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionXMax() - valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionXMin())) - 1;
-                    double nY = 2 * ((valterHeadFKTuple.getHeadTargetPosition().getY() - valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionYMin()) / (valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionYMax() - valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionYMin())) - 1;
-                    double nZ = 2 * ((valterHeadFKTuple.getHeadTargetPosition().getZ() - valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionZMin()) / (valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionZMax() - valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionZMin())) - 1;
-                    double nYawValue = 2 * ((valterHeadFKTuple.getHeadYawLinkValue() - valterHeadFKTuplesNormalizationBounds.getHeadYawLinkValueMin()) / (valterHeadFKTuplesNormalizationBounds.getHeadYawLinkValueMax() - valterHeadFKTuplesNormalizationBounds.getHeadYawLinkValueMin())) - 1;
-                    double nTiltValue = 2 * ((valterHeadFKTuple.getHeadTiltLinkValue() - valterHeadFKTuplesNormalizationBounds.getHeadTiltLinkValueMin()) / (valterHeadFKTuplesNormalizationBounds.getHeadTiltLinkValueMax() - valterHeadFKTuplesNormalizationBounds.getHeadTiltLinkValueMin())) - 1;
+                    double nX = ANNUtils.normalizeNegPos(valterHeadFKTuple.getHeadTargetPosition().getX(), valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionXMin(), valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionXMax());
+                    double nY = ANNUtils.normalizeNegPos(valterHeadFKTuple.getHeadTargetPosition().getY(), valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionYMin(), valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionYMax());
+                    double nZ = ANNUtils.normalizeNegPos(valterHeadFKTuple.getHeadTargetPosition().getZ(), valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionZMin(), valterHeadFKTuplesNormalizationBounds.getHeadTargetPositionZMax());
+                    double nYawValue = ANNUtils.normalizeNegPos(valterHeadFKTuple.getHeadYawLinkValue(), valterHeadFKTuplesNormalizationBounds.getHeadYawLinkValueMin(), valterHeadFKTuplesNormalizationBounds.getHeadYawLinkValueMax());
+                    double nTiltValue = ANNUtils.normalizeNegPos(valterHeadFKTuple.getHeadTiltLinkValue(), valterHeadFKTuplesNormalizationBounds.getHeadTiltLinkValueMin(), valterHeadFKTuplesNormalizationBounds.getHeadTiltLinkValueMax());
 
                     valterHeadFKTuple.setHeadTargetPosition(new Vector3(nX, nY, nZ));
                     valterHeadFKTuple.setHeadYawLinkValue(nYawValue);

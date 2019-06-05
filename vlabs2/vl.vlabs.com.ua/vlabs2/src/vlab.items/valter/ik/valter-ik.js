@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import * as VLabUtils from '../../../vlab.fwk/utils/vlab.utils';
+import * as ANNUtils from '../../../vlab.fwk/utils/ann.utils';
 import * as tf from '@tensorflow/tfjs';
 /**
  * Valter models
@@ -375,24 +376,18 @@ class ValterIK {
 
                 if (this.Valter.nature.ANNIK.headANNIK && this.valterHeadIKTFModel !== undefined) {
 
-                    // Normalize = ($inputvalue – $min) / ($max – $min)
-                    // 0.111 = (2-1)/(10-1)
-
-                    // Denormalized = ($normalizedValue * ($max-$min) + $min)
-                    // 3 = (0.22222 * (10-1) + 1)
-
                     let headNormalizationBounds = this.Valter.nature.ANNIK.headFKTuplesNormalizationBounds;
 
-                    let nHeadTargetX = 2 * ((this.headTargetObject.position.x - headNormalizationBounds.headTargetPositionXMin) / (headNormalizationBounds.headTargetPositionXMax - headNormalizationBounds.headTargetPositionXMin)) - 1;
-                    let nHeadTargetY = 2 * ((this.headTargetObject.position.y - headNormalizationBounds.headTargetPositionYMin) / (headNormalizationBounds.headTargetPositionYMax - headNormalizationBounds.headTargetPositionYMin)) - 1;
-                    let nHeadTargetZ = 2 * ((this.headTargetObject.position.z - headNormalizationBounds.headTargetPositionZMin) / (headNormalizationBounds.headTargetPositionZMax - headNormalizationBounds.headTargetPositionZMin)) - 1;
+                    let nHeadTargetX = ANNUtils.normalizeNegPos(this.headTargetObject.position.x, headNormalizationBounds.headTargetPositionXMin, headNormalizationBounds.headTargetPositionXMax);
+                    let nHeadTargetY = ANNUtils.normalizeNegPos(this.headTargetObject.position.y, headNormalizationBounds.headTargetPositionYMin, headNormalizationBounds.headTargetPositionYMax);
+                    let nHeadTargetZ = ANNUtils.normalizeNegPos(this.headTargetObject.position.z, headNormalizationBounds.headTargetPositionZMin, headNormalizationBounds.headTargetPositionZMax);
 
                     const valterHeadYawTiltPreditction = this.valterHeadIKTFModel.predict(tf.tensor([nHeadTargetX, nHeadTargetY, nHeadTargetZ], [1, 3]));
                     const valterHeadYawTiltPreditctionData = valterHeadYawTiltPreditction.dataSync();
-                    const valterHeadYawPreditctionValue = valterHeadYawTiltPreditctionData[0];
-                    const valterHeadTiltPreditctionValue = valterHeadYawTiltPreditctionData[1];
+                    const valterHeadYawPreditctionValue = ANNUtils.deNormalizeNegPos(valterHeadYawTiltPreditctionData[0], headNormalizationBounds.headYawLinkValueMin, headNormalizationBounds.headYawLinkValueMax);
+                    const valterHeadTiltPreditctionValue = ANNUtils.deNormalizeNegPos(valterHeadYawTiltPreditctionData[1], headNormalizationBounds.headTiltLinkValueMin, headNormalizationBounds.headTiltLinkValueMax);
 
-                    console.log('[' + this.headTargetObject.position.x.toFixed(3) + ', ' + this.headTargetObject.position.y.toFixed(3) + ', ' + this.headTargetObject.position.z.toFixed(3) + '] -> [' + valterHeadYawPreditctionValue.toFixed(3) +', ' + valterHeadTiltPreditctionValue.toFixed(3) + ']');
+                    // console.log('[' + this.headTargetObject.position.x.toFixed(3) + ', ' + this.headTargetObject.position.y.toFixed(3) + ', ' + this.headTargetObject.position.z.toFixed(3) + '] -> [' + valterHeadYawPreditctionValue.toFixed(3) +', ' + valterHeadTiltPreditctionValue.toFixed(3) + ']');
 
                     this.Valter.setHeadYawLink(valterHeadYawPreditctionValue);
                     this.Valter.setHeadTiltLink(valterHeadTiltPreditctionValue);
