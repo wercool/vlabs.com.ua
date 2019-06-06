@@ -258,7 +258,9 @@ class ValterIK {
             }
 
             if (event.event.ctrlKey == true) {
-                let shiftY = 0.005 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1);
+                let headTargetObjectGlobalPosition = this.headYawLinkOriginObject3D.localToWorld(this.headTargetObject.position.clone());
+                let distanceToCurrentCamera = headTargetObjectGlobalPosition.distanceTo(this.vLab.SceneDispatcher.currentVLabScene.currentCamera.position);
+                let shiftY = distanceToCurrentCamera * 0.005 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1);
                 var newHeadTargetObjectPos = this.headTargetObject.position.clone();
                 newHeadTargetObjectPos.y += shiftY;
             } else {
