@@ -66,6 +66,16 @@ class VLab {
          * @param {MeshBasicMaterial} respondentIntersectionPointMaterial
          */
         this.prefabs = {};
+
+
+        /**
+         * 
+         * Fix incorrect window.fetch binding
+         * 
+         */
+        window.fetch = fetch.bind(window);
+
+
         /**
          * 
          * 

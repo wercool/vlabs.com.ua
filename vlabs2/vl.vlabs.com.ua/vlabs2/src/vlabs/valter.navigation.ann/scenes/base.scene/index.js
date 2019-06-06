@@ -2,9 +2,11 @@ import * as THREE from 'three';
 import VLabScene from '../../../../vlab.fwk/core/vlab.scene';
 
 /**
- * VLab Items
+ * VLab Items, VLabItems classes
  */
 import Valter from '../../../../vlab.items/valter/index';
+import ValterHeadIKDev from '../../../../vlab.items/valter/ik/valter-head-ik-dev';
+
 
 
 class BaseScene extends VLabScene {
@@ -52,25 +54,22 @@ class BaseScene extends VLabScene {
         });
     }
 
+    onActivated() {
+        
+    }
+
     onVLabItemInitialized(event) {
         if (event.vLabItem == this.vLab['Valter']) {
             // this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 1.0));
             this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 0.0));
 
             /**
-             * get Valter head FK tuples
+             * Head IK calculation
              */
-            // this.vLab['Valter'].ValterIK.getValterHeadFKTuples();
-
-            // this.vLab.VLabsRESTClientManager.ValterHeadIKService.getHeadFKTuplesNormalizationBounds()
-            // .then(normalizationBounds => {
-            //     console.log(normalizationBounds);
-            // });
-
-            // this.vLab.VLabsRESTClientManager.ValterHeadIKService.getAllHeadFKTuplesNormalized()
-            // .then(headFKTuplesNormalized => {
-            //     console.log(headFKTuplesNormalized);
-            // });
+            this.ValterHeadIKDev = new ValterHeadIKDev(this.vLab['Valter']);
+            // this.ValterHeadIKDev.getValterHeadFKTuples();
+            // this.ValterHeadIKDev.fitAndSaveHeadTargetIKModel();
+            // this.ValterHeadIKDev.saveValterHeadIKModelToLocalFile();
         }
     }
 

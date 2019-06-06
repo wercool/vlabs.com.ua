@@ -7,6 +7,7 @@
         "showBaseDirection": true,
         "showHeadDirection": true,
         "showKinectHeadDirection": false,
+        "showKinectHeadToHeadTargetArrowHelper": true,
         "showHeadTargetDirectionFromHeadYawLinkOrigin": true,
         "showRightPalmTargetDirectionFromHeadYawLinkOrigin": true,
         "showLeftPalmTargetDirectionFromHeadYawLinkOrigin": true
@@ -24,7 +25,8 @@
             "headYawLinkValueMin": -1.35,
             "headTiltLinkValueMax": 0.1,
             "headTiltLinkValueMin": -1
-        }
+        },
+        "headIKTFModelURL": "/vlab.items/valter/resources/tf/valter-head-ik-model.json"
     },
     "interactables": [
         {

@@ -2,14 +2,9 @@ import * as THREE from 'three';
 import * as VLabUtils from '../../../vlab.fwk/utils/vlab.utils';
 import * as ANNUtils from '../../../vlab.fwk/utils/ann.utils';
 import * as tf from '@tensorflow/tfjs';
-/**
- * Valter models
- */
-import ValterHeadFKTuple from './model/valter-head-fk-tuple';
 
-/*<dev>*/
 var TransformControls = require('three-transform-ctrls');
-/*</dev>*/
+
 /**
  * Valter IK class.
  * @class
@@ -27,14 +22,20 @@ class ValterIK {
 
         this.helperDragRaycaster = new THREE.Raycaster();
 
+        /**
+         * Head Yaw Link origin used because it is the base for head kinect measurements
+         */
         this.headYawLinkOriginObject3D = new THREE.Object3D();
         this.headYawLinkOriginObject3D.position.copy(this.Valter.headYawLink.position.clone());
         this.Valter.torsoFrame.add(this.headYawLinkOriginObject3D);
 
         this.valterHeadIKTFModel = undefined;
 
+        tf.setBackend('webgl');
+        console.log('ValterIK -> TF Backend ->', tf.getBackend());
+
         if (this.Valter.nature.ANNIK.headANNIK) {
-            tf.loadLayersModel('localstorage://valter-head-ik-model')
+            tf.loadLayersModel(this.Valter.nature.ANNIK.headIKTFModelURL ? this.Valter.nature.ANNIK.headIKTFModelURL : 'localstorage://valter-head-ik-model')
             .then((model) => {
                 this.valterHeadIKTFModel = model;
             })
@@ -58,8 +59,30 @@ class ValterIK {
         this.setupLeftPalmTarget();
     }
 
+    setupKinectHeadToHeadTargetArrowHelper() {
+        if (this.Valter.nature.devHelpers.showKinectHeadToHeadTargetArrowHelper == true) {
+            this.Valter.baseFrame.updateMatrixWorld();
+            let headTargetObjectGlobalPosition = this.headYawLinkOriginObject3D.localToWorld(this.headTargetObject.position.clone());
+            let kinectHeadToHeadTargetLocalPos = this.Valter.kinectHead.worldToLocal(headTargetObjectGlobalPosition);
+            let kinectHeadToHeadTargetDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(kinectHeadToHeadTargetLocalPos);
+
+            this.kinectHeadToHeadTargetArrowHelper = new THREE.ArrowHelper(kinectHeadToHeadTargetLocalPos.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), kinectHeadToHeadTargetDistance, 0xff00ff, 0.02, 0.01);
+            this.Valter.kinectHead.add(this.kinectHeadToHeadTargetArrowHelper);
+        }
+    }
+
+    updateKinectHeadToHeadTargetArrowHelper() {
+        if (this.Valter.nature.devHelpers.showKinectHeadToHeadTargetArrowHelper == true) {
+            this.Valter.baseFrame.updateMatrixWorld();
+            let headTargetObjectGlobalPosition = this.headYawLinkOriginObject3D.localToWorld(this.headTargetObject.position.clone());
+            let kinectHeadToHeadTargetLocalPos = this.Valter.kinectHead.worldToLocal(headTargetObjectGlobalPosition);
+            let kinectHeadToHeadTargetDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(kinectHeadToHeadTargetLocalPos);
+            this.kinectHeadToHeadTargetArrowHelper.setDirection(kinectHeadToHeadTargetLocalPos.clone().normalize());
+            this.kinectHeadToHeadTargetArrowHelper.setLength(kinectHeadToHeadTargetDistance, 0.02, 0.01);
+        }
+    }
+
     setupHeadTargetDirectionFromHeadYawLinkOrigin(distance = 0.4) {
-        /*<dev>*/
         if (this.Valter.kinectHeadDirection !== undefined) {
             this.headDirectionTargetDistance = distance;
             this.headDirectionTargetObject3D = new THREE.Object3D();
@@ -86,11 +109,9 @@ class ValterIK {
             this.vLab.SceneDispatcher.currentVLabScene.add(headYawLinkOriginObject3DAxis);
             headYawLinkOriginObject3DAxis.attach(this.headYawLinkOriginObject3D);
         }
-        /*</dev>*/
     }
 
     updateHeadTargetDirectionFromHeadYawLinkOrigin() {
-        /*<dev>*/
         if (this.Valter.nature.devHelpers.showKinectHeadDirection == true) {
             this.headDirectionTargetObject3D.position.copy(this.Valter.kinectHeadDirection.clone().multiplyScalar(this.headDirectionTargetDistance));
             this.headDirectionTarget.position.copy(this.headDirectionTargetObject3D.position.clone());
@@ -108,91 +129,6 @@ class ValterIK {
             this.headDirectionTargetFromHeadYawLinkArrowHelper.setDirection(this.headYawLinkHeadTargetDirection);
             this.headDirectionTargetFromHeadYawLinkArrowHelper.setLength(headYawLinkHeadTargetDistance, 0.02, 0.01);
         }
-        /*</dev>*/
-    }
-
-    /**
-     * 
-     * 
-     * Head FK tuples
-     * 
-     * 
-     */
-    getValterHeadFKTuples() {
-        /*<dev>*/
-        if (this.Valter.nature.devHelpers.showKinectHeadDirection == true) {
-
-            this.setValterHeadYaw = this.setValterHeadYaw.bind(this);
-            this.setValterHeadTilt = this.setValterHeadTilt.bind(this);
-            this.setValterHeadDistance = this.setValterHeadDistance.bind(this);
-            this.persistHeadTargetPosition = this.persistHeadTargetPosition.bind(this);
-
-            this.Valter.ValterLinks.headYawLink.step = 0.1;
-            this.Valter.ValterLinks.headTiltLink.step = 0.1;
-            this.headDirectionTargetDistance_step = 0.25;
-
-            this.Valter.setHeadYawLink(this.Valter.ValterLinks.headYawLink.min);
-            this.Valter.setHeadTiltLink(this.Valter.ValterLinks.headTiltLink.min);
-
-            this.setValterHeadYaw();
-        } else {
-            console.error('To get Valter Head FK tuples set Valter.nature.devHelpers.showKinectHeadDirection = true');
-        }
-        /*</dev>*/
-    }
-    setValterHeadYaw() {
-        /*<dev>*/
-        if (this.Valter.ValterLinks.headYawLink.value < this.Valter.ValterLinks.headYawLink.max + this.Valter.ValterLinks.headYawLink.step) {
-            this.setValterHeadTilt();
-        }
-        /*</dev>*/
-    }
-    setValterHeadTilt() {
-        /*<dev>*/
-        if (this.Valter.ValterLinks.headTiltLink.value < this.Valter.ValterLinks.headTiltLink.max + this.Valter.ValterLinks.headTiltLink.step) {
-            this.setValterHeadDistance();
-        } else {
-            this.Valter.ValterLinks.headTiltLink.value = this.Valter.ValterLinks.headTiltLink.min;
-
-            this.Valter.ValterLinks.headYawLink.value += this.Valter.ValterLinks.headYawLink.step;
-            this.setValterHeadYaw();
-            this.Valter.setHeadYawLink(this.Valter.ValterLinks.headYawLink.value);
-            this.updateHeadTargetDirectionFromHeadYawLinkOrigin();
-        }
-        /*</dev>*/
-    }
-    setValterHeadDistance() {
-        /*<dev>*/
-        if (this.headDirectionTargetDistance < 3.0) {
-            this.persistHeadTargetPosition();
-        } else {
-            this.headDirectionTargetDistance = 0.4;
-            this.Valter.ValterLinks.headTiltLink.value += this.Valter.ValterLinks.headTiltLink.step;
-            this.setValterHeadTilt();
-            this.Valter.setHeadTiltLink(this.Valter.ValterLinks.headTiltLink.value);
-            this.updateHeadTargetDirectionFromHeadYawLinkOrigin();
-        }
-        /*</dev>*/
-    }
-    persistHeadTargetPosition() {
-        /*<dev>*/
-        this.updateHeadTargetDirectionFromHeadYawLinkOrigin();
-
-        let headFKTuple = new ValterHeadFKTuple();
-        headFKTuple.headTargetPosition.x = this.headYawLinkHeadTargetLocalPos.x;
-        headFKTuple.headTargetPosition.y = this.headYawLinkHeadTargetLocalPos.y;
-        headFKTuple.headTargetPosition.z = this.headYawLinkHeadTargetLocalPos.z;
-        headFKTuple.headYawLinkValue = parseFloat(this.Valter.ValterLinks.headYawLink.value.toFixed(3));
-        headFKTuple.headTiltLinkValue = parseFloat(this.Valter.ValterLinks.headTiltLink.value.toFixed(3));
-
-        this.vLab.VLabsRESTClientManager.ValterHeadIKService.saveHeadFKTuple(headFKTuple)
-        .then(result => {
-            console.log('headYaw = ' + this.Valter.ValterLinks.headYawLink.value.toFixed(3), 'headTilt = ' + this.Valter.ValterLinks.headTiltLink.value.toFixed(3), this.headYawLinkHeadTargetLocalPos, this.headDirectionTargetDistance.toFixed(3));
-
-            this.headDirectionTargetDistance += this.headDirectionTargetDistance_step;
-            this.setValterHeadDistance();
-        });
-        /*</dev>*/
     }
 
     /**
@@ -225,7 +161,8 @@ class ValterIK {
             this.headTargetObjectInteractable = headTargetObjectInteractable;
             this.headTargetObjectInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, 0.0, 1.0));
 
-            /*<dev>*/
+            this.setupKinectHeadToHeadTargetArrowHelper();
+
             this.headTargetObjectInteractable.DEV.menu.push(
                 {
                     label: 'Get Head Yaw & Tilt IK from VLabsRESTValterHeadIKService',
@@ -300,7 +237,6 @@ class ValterIK {
                     }
                 }
             );
-            /*</dev>*/
 
             if (this.Valter.nature.devHelpers.showHeadTargetDirectionFromHeadYawLinkOrigin) {
                 let headYawLinkHeadTargetLocalPos = this.headTargetObject.position.clone();
@@ -310,6 +246,7 @@ class ValterIK {
             }
         });
     }
+
     headTargetAction(event) {
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
         if (this.prevActionInitialEventCoords !== undefined) {
@@ -374,8 +311,27 @@ class ValterIK {
                     this.headTargetDirectionFromYawLinkOriginArrowHelper.setLength(headYawLinkHeadTargetDistance, 0.02, 0.01);
                 }
 
-                if (this.Valter.nature.ANNIK.headANNIK && this.valterHeadIKTFModel !== undefined) {
+                this.updateKinectHeadToHeadTargetArrowHelper();
 
+                if (this.Valter.nature.ANNIK.headANNIK && this.valterHeadIKTFModel !== undefined) {
+                    /**
+                     *
+                     *
+                     _    _                _   _____ _  __ 
+                    | |  | |              | | |_   _| |/ /
+                    | |__| | ___  __ _  __| |   | | | ' /
+                    |  __  |/ _ \/ _` |/ _` |   | | |  <
+                    | |  | |  __/ (_| | (_| |  _| |_| . \
+                    |_|  |_|\___|\__,_|\__,_| |_____|_|\_\
+                    _____              _ _      _   _ 
+                    |  __ \            | (_)    | | (_)
+                    | |__) | __ ___  __| |_  ___| |_ _  ___  _ __  
+                    |  ___/ '__/ _ \/ _` | |/ __| __| |/ _ \| '_ \ 
+                    | |   | | |  __/ (_| | | (__| |_| | (_) | | | |
+                    |_|   |_|  \___|\__,_|_|\___|\__|_|\___/|_| |_|
+                    *
+                    *
+                    */
                     let headNormalizationBounds = this.Valter.nature.ANNIK.headFKTuplesNormalizationBounds;
 
                     let nHeadTargetX = ANNUtils.normalizeNegPos(this.headTargetObject.position.x, headNormalizationBounds.headTargetPositionXMin, headNormalizationBounds.headTargetPositionXMax);
