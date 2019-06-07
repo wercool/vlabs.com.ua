@@ -6,6 +6,7 @@ import VLabScene from '../../../../vlab.fwk/core/vlab.scene';
  */
 import Valter from '../../../../vlab.items/valter/index';
 import ValterHeadIKDev from '../../../../vlab.items/valter/ik/valter-head-ik-dev';
+import ValterRightPalmIKDev from '../../../../vlab.items/valter/ik/valter-right-palm-ik-dev';
 
 
 
@@ -64,12 +65,18 @@ class BaseScene extends VLabScene {
             this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 0.0));
 
             /**
-             * Head IK calculation
+             * Head IK fit from FK tuples
              */
             this.ValterHeadIKDev = new ValterHeadIKDev(this.vLab['Valter']);
             // this.ValterHeadIKDev.getValterHeadFKTuples();
             // this.ValterHeadIKDev.fitAndSaveHeadTargetIKModel();
             // this.ValterHeadIKDev.saveValterHeadIKModelToLocalFile();
+
+            /**
+             * Right Palm IK fit from FK tuples
+             */
+            this.ValterRightPalmIKDev = new ValterRightPalmIKDev(this.vLab['Valter']);
+            this.ValterRightPalmIKDev.getValterRightPalmFKTuples();
         }
     }
 

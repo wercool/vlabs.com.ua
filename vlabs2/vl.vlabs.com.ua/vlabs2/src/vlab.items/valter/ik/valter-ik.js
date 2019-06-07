@@ -77,7 +77,7 @@ class ValterIK {
             let headTargetObjectGlobalPosition = this.headYawLinkOriginObject3D.localToWorld(this.headTargetObject.position.clone());
             let kinectHeadToHeadTargetLocalPos = this.Valter.kinectHead.worldToLocal(headTargetObjectGlobalPosition);
             let kinectHeadToHeadTargetDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(kinectHeadToHeadTargetLocalPos);
-            this.kinectHeadToHeadTargetArrowHelper.setDirection(kinectHeadToHeadTargetLocalPos.clone().normalize());
+            // this.kinectHeadToHeadTargetArrowHelper.setDirection(kinectHeadToHeadTargetLocalPos.clone().normalize());
             this.kinectHeadToHeadTargetArrowHelper.setLength(kinectHeadToHeadTargetDistance, 0.02, 0.01);
         }
     }
@@ -145,6 +145,7 @@ class ValterIK {
         this.headTargetObject = new THREE.Mesh(headTargetObjectGeometry, headTargetObjectMaterial);
         this.headTargetObject.name = 'headTargetObject';
         this.headYawLinkOriginObject3D.add(this.headTargetObject);
+
         this.vLab.SceneDispatcher.currentVLabScene.addInteractable({
             name: 'headTargetObject',
             intersectable: true,
@@ -161,6 +162,8 @@ class ValterIK {
             this.headTargetObjectInteractable = headTargetObjectInteractable;
             this.headTargetObjectInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, 0.0, 1.0));
 
+            this.headTargetObjectLastSetPosition = new THREE.Vector3().copy(this.headTargetObjectInteractable.vLabSceneObject.position.clone());
+
             this.setupKinectHeadToHeadTargetArrowHelper();
 
             this.headTargetObjectInteractable.DEV.menu.push(
@@ -170,12 +173,12 @@ class ValterIK {
                     selected: false,
                     icon: '<i class=\"material-icons\">share</i>',
                     action: () => {
-                        let headTargetObject = this.headTargetObject.position.clone();
-                        console.log(headTargetObject);
+                        let headTargetObjectPos = this.headTargetObject.position.clone();
+                        console.log(headTargetObjectPos);
                         let headTargetPosition = {
-                            x: parseFloat(headTargetObject.x.toFixed(3)),
-                            y: parseFloat(headTargetObject.y.toFixed(3)),
-                            z: parseFloat(headTargetObject.z.toFixed(3))
+                            x: parseFloat(headTargetObjectPos.x.toFixed(3)),
+                            y: parseFloat(headTargetObjectPos.y.toFixed(3)),
+                            z: parseFloat(headTargetObjectPos.z.toFixed(3))
                         };
                         console.log('getHeadFKTuple REQUEST:');
                         console.log(headTargetPosition);
@@ -260,7 +263,7 @@ class ValterIK {
             if (event.event.ctrlKey == true) {
                 let headTargetObjectGlobalPosition = this.headYawLinkOriginObject3D.localToWorld(this.headTargetObject.position.clone());
                 let distanceToCurrentCamera = headTargetObjectGlobalPosition.distanceTo(this.vLab.SceneDispatcher.currentVLabScene.currentCamera.position);
-                let shiftY = distanceToCurrentCamera * 0.005 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1);
+                let shiftY = distanceToCurrentCamera * 0.002 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1);
                 var newHeadTargetObjectPos = this.headTargetObject.position.clone();
                 newHeadTargetObjectPos.y += shiftY;
             } else {
@@ -283,72 +286,77 @@ class ValterIK {
                             intersectionPoint.multiplyScalar(0.5);
                             dragPosition.add(intersectionPoint);
 
-                            if (dragPosition.distanceTo(this.Valter.baseFrame.position) < 3.0) {
-                                let localDragPos = this.headYawLinkOriginObject3D.worldToLocal(dragPosition.clone());
-                                newHeadTargetObjectPos.x = localDragPos.x;
-                                newHeadTargetObjectPos.z = localDragPos.z;
-                            }
+
+
+                            let localDragPos = this.headYawLinkOriginObject3D.worldToLocal(dragPosition.clone());
+                            newHeadTargetObjectPos.x = localDragPos.x;
+                            newHeadTargetObjectPos.z = localDragPos.z;
                     }
                 }
             }
 
             if (newHeadTargetObjectPos != undefined) {
+
+                let headNormalizationBounds = this.Valter.nature.ANNIK.headFKTuplesNormalizationBounds;
+
                 let headYawLinkHeadTargetLocalPos = newHeadTargetObjectPos.clone();
-                let headYawLinkHeadTargetDir = headYawLinkHeadTargetLocalPos.clone().normalize();
-    
-                if (headYawLinkHeadTargetDir.clone().dot(new THREE.Vector3(0.0, 0.0, 1.0)) < 0.225) {
-                    newHeadTargetObjectPos = this.headYawLinkOriginObject3D.worldToLocal(this.headTargetObjectPrevGlobalPosition.clone());
+
+                if (headYawLinkHeadTargetLocalPos.y > 0.0 
+                 || headYawLinkHeadTargetLocalPos.y < headNormalizationBounds.headTargetPositionYMin * 0.95 
+                 || headYawLinkHeadTargetLocalPos.z > headNormalizationBounds.headTargetPositionZMax * 0.95 
+                 || headYawLinkHeadTargetLocalPos.z < headNormalizationBounds.headTargetPositionZMin * 0.95 
+                ) {
+                    newHeadTargetObjectPos = this.headYawLinkOriginObject3D.worldToLocal(this.headTargetObjectLastSetPosition.clone());
                     this.headTargetObjectPrevGlobalPosition = undefined;
                     this.vLab.WebGLRendererCanvas.style.cursor = 'default';
                     newHeadTargetObjectPos.copy(this.headTargetObjectLastSetPosition);
                 } else {
                     this.headTargetObjectLastSetPosition = new THREE.Vector3().copy(newHeadTargetObjectPos.clone());
-                }
+
+                    this.headTargetObject.position.copy(newHeadTargetObjectPos);
+        
+                    if (this.Valter.nature.devHelpers.showHeadTargetDirectionFromHeadYawLinkOrigin) {
+                        let headYawLinkHeadTargetDir = headYawLinkHeadTargetLocalPos.clone().normalize();
+                        let headYawLinkHeadTargetDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(newHeadTargetObjectPos);
+                        this.headTargetDirectionFromYawLinkOriginArrowHelper.setDirection(headYawLinkHeadTargetDir);
+                        this.headTargetDirectionFromYawLinkOriginArrowHelper.setLength(headYawLinkHeadTargetDistance, 0.02, 0.01);
+                    }
     
-                this.headTargetObject.position.copy(newHeadTargetObjectPos);
+                    if (this.Valter.nature.ANNIK.headANNIK && this.valterHeadIKTFModel !== undefined) {
+                        /**
+                         *
+                         *
+                         _    _                _   _____ _  __ 
+                        | |  | |              | | |_   _| |/ /
+                        | |__| | ___  __ _  __| |   | | | ' /
+                        |  __  |/ _ \/ _` |/ _` |   | | |  <
+                        | |  | |  __/ (_| | (_| |  _| |_| . \
+                        |_|  |_|\___|\__,_|\__,_| |_____|_|\_\
+                        _____              _ _      _   _ 
+                        |  __ \            | (_)    | | (_)
+                        | |__) | __ ___  __| |_  ___| |_ _  ___  _ __  
+                        |  ___/ '__/ _ \/ _` | |/ __| __| |/ _ \| '_ \ 
+                        | |   | | |  __/ (_| | | (__| |_| | (_) | | | |
+                        |_|   |_|  \___|\__,_|_|\___|\__|_|\___/|_| |_|
+                        *
+                        *
+                        */
+                        let nHeadTargetX = ANNUtils.normalizeNegPos(this.headTargetObject.position.x, headNormalizationBounds.headTargetPositionXMin, headNormalizationBounds.headTargetPositionXMax);
+                        let nHeadTargetY = ANNUtils.normalizeNegPos(this.headTargetObject.position.y, headNormalizationBounds.headTargetPositionYMin, headNormalizationBounds.headTargetPositionYMax);
+                        let nHeadTargetZ = ANNUtils.normalizeNegPos(this.headTargetObject.position.z, headNormalizationBounds.headTargetPositionZMin, headNormalizationBounds.headTargetPositionZMax);
     
-                if (this.Valter.nature.devHelpers.showHeadTargetDirectionFromHeadYawLinkOrigin) {
-                    let headYawLinkHeadTargetDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(newHeadTargetObjectPos);
-                    this.headTargetDirectionFromYawLinkOriginArrowHelper.setDirection(headYawLinkHeadTargetDir);
-                    this.headTargetDirectionFromYawLinkOriginArrowHelper.setLength(headYawLinkHeadTargetDistance, 0.02, 0.01);
-                }
+                        const valterHeadYawTiltPreditction = this.valterHeadIKTFModel.predict(tf.tensor([nHeadTargetX, nHeadTargetY, nHeadTargetZ], [1, 3]));
+                        const valterHeadYawTiltPreditctionData = valterHeadYawTiltPreditction.dataSync();
+                        const valterHeadYawPreditctionValue = ANNUtils.deNormalizeNegPos(valterHeadYawTiltPreditctionData[0], headNormalizationBounds.headYawLinkValueMin, headNormalizationBounds.headYawLinkValueMax);
+                        const valterHeadTiltPreditctionValue = ANNUtils.deNormalizeNegPos(valterHeadYawTiltPreditctionData[1], headNormalizationBounds.headTiltLinkValueMin, headNormalizationBounds.headTiltLinkValueMax);
+    
+                        // console.log('[' + this.headTargetObject.position.x.toFixed(3) + ', ' + this.headTargetObject.position.y.toFixed(3) + ', ' + this.headTargetObject.position.z.toFixed(3) + '] -> [' + valterHeadYawPreditctionValue.toFixed(3) +', ' + valterHeadTiltPreditctionValue.toFixed(3) + ']');
+    
+                        this.Valter.setHeadYawLink(valterHeadYawPreditctionValue);
+                        this.Valter.setHeadTiltLink(valterHeadTiltPreditctionValue);
+                    }
 
-                this.updateKinectHeadToHeadTargetArrowHelper();
-
-                if (this.Valter.nature.ANNIK.headANNIK && this.valterHeadIKTFModel !== undefined) {
-                    /**
-                     *
-                     *
-                     _    _                _   _____ _  __ 
-                    | |  | |              | | |_   _| |/ /
-                    | |__| | ___  __ _  __| |   | | | ' /
-                    |  __  |/ _ \/ _` |/ _` |   | | |  <
-                    | |  | |  __/ (_| | (_| |  _| |_| . \
-                    |_|  |_|\___|\__,_|\__,_| |_____|_|\_\
-                    _____              _ _      _   _ 
-                    |  __ \            | (_)    | | (_)
-                    | |__) | __ ___  __| |_  ___| |_ _  ___  _ __  
-                    |  ___/ '__/ _ \/ _` | |/ __| __| |/ _ \| '_ \ 
-                    | |   | | |  __/ (_| | | (__| |_| | (_) | | | |
-                    |_|   |_|  \___|\__,_|_|\___|\__|_|\___/|_| |_|
-                    *
-                    *
-                    */
-                    let headNormalizationBounds = this.Valter.nature.ANNIK.headFKTuplesNormalizationBounds;
-
-                    let nHeadTargetX = ANNUtils.normalizeNegPos(this.headTargetObject.position.x, headNormalizationBounds.headTargetPositionXMin, headNormalizationBounds.headTargetPositionXMax);
-                    let nHeadTargetY = ANNUtils.normalizeNegPos(this.headTargetObject.position.y, headNormalizationBounds.headTargetPositionYMin, headNormalizationBounds.headTargetPositionYMax);
-                    let nHeadTargetZ = ANNUtils.normalizeNegPos(this.headTargetObject.position.z, headNormalizationBounds.headTargetPositionZMin, headNormalizationBounds.headTargetPositionZMax);
-
-                    const valterHeadYawTiltPreditction = this.valterHeadIKTFModel.predict(tf.tensor([nHeadTargetX, nHeadTargetY, nHeadTargetZ], [1, 3]));
-                    const valterHeadYawTiltPreditctionData = valterHeadYawTiltPreditction.dataSync();
-                    const valterHeadYawPreditctionValue = ANNUtils.deNormalizeNegPos(valterHeadYawTiltPreditctionData[0], headNormalizationBounds.headYawLinkValueMin, headNormalizationBounds.headYawLinkValueMax);
-                    const valterHeadTiltPreditctionValue = ANNUtils.deNormalizeNegPos(valterHeadYawTiltPreditctionData[1], headNormalizationBounds.headTiltLinkValueMin, headNormalizationBounds.headTiltLinkValueMax);
-
-                    // console.log('[' + this.headTargetObject.position.x.toFixed(3) + ', ' + this.headTargetObject.position.y.toFixed(3) + ', ' + this.headTargetObject.position.z.toFixed(3) + '] -> [' + valterHeadYawPreditctionValue.toFixed(3) +', ' + valterHeadTiltPreditctionValue.toFixed(3) + ']');
-
-                    this.Valter.setHeadYawLink(valterHeadYawPreditctionValue);
-                    this.Valter.setHeadTiltLink(valterHeadTiltPreditctionValue);
+                    this.updateKinectHeadToHeadTargetArrowHelper();
                 }
             }
         }
@@ -372,18 +380,221 @@ class ValterIK {
         this.rightPalmTargetObject.name = 'rightPalmTargetObject';
         this.headYawLinkOriginObject3D.add(this.rightPalmTargetObject);
 
-        this.rightPalmTargetGlobalPosition = this.Valter.rightPalm.localToWorld(new THREE.Vector3());
-        this.headYawLinkRightPalmTargetLocalPos = this.headYawLinkOriginObject3D.worldToLocal(this.rightPalmTargetGlobalPosition.clone());
-        this.rightPalmTargetObject.position.copy(this.headYawLinkRightPalmTargetLocalPos);
+        this.vLab.SceneDispatcher.currentVLabScene.addInteractable({
+            name: 'rightPalmTargetObject',
+            intersectable: true,
+            preselectable: true,
+            action: {
+                context: this,
+                function: this.rightPalmTargetAction,
+                manipulator: true,
+                activated: true,
+                invfunction: this.commonInvAction,
+                args: {}
+            },
+        }).then((rightPalmTargetObjectInteractable) => {
+            this.rightPalmTargetObjectInteractable = rightPalmTargetObjectInteractable;
+
+            this.rightPalmTargetGlobalPosition = this.Valter.rightPalm.localToWorld(new THREE.Vector3());
+            this.headYawLinkRightPalmTargetLocalPos = this.headYawLinkOriginObject3D.worldToLocal(this.rightPalmTargetGlobalPosition.clone());
+
+            this.rightPalmTargetObjectInteractable.vLabSceneObject.position.copy(this.headYawLinkRightPalmTargetLocalPos);
+
+            this.rightPalmTargetObjectLastSetPosition = new THREE.Vector3().copy(this.rightPalmTargetObjectInteractable.vLabSceneObject.position.clone());
+
+            if (this.Valter.nature.devHelpers.showRightPalmTargetDirectionFromHeadYawLinkOrigin == true) {
+                this.setupRightPalmTargetDirectionFromHeadYawLinkOriginArrowHelper();
+            }
+
+            // this.rightPalmTargetObjectInteractable.DEV.menu.push(
+            //     {
+            //         label: 'Get Right Palm IK from VLabsRESTValterHeadIKService',
+            //         enabled: true,
+            //         selected: false,
+            //         icon: '<i class=\"material-icons\">share</i>',
+            //         action: () => {
+            //             let rightPalmTargetObjectPos = this.headTargetObject.position.clone();
+            //             console.log(rightPalmTargetObjectPos);
+            //             let rightPalmTargetPosition = {
+            //                 x: parseFloat(rightPalmTargetObjectPos.x.toFixed(3)),
+            //                 y: parseFloat(rightPalmTargetObjectPos.y.toFixed(3)),
+            //                 z: parseFloat(rightPalmTargetObjectPos.z.toFixed(3))
+            //             };
+            //             console.log('getRightPalmFKTuple REQUEST:');
+            //             console.log(rightPalmTargetPosition);
+            //             this.vLab.VLabsRESTClientManager.ValterHeadIKService.getRightPalmFKTuple(rightPalmTargetPosition)
+            //             .then(valterRightPalmFKTuples => {
+            //                 console.log('getRightPalmFKTuple RESULT:');
+            //                 console.log(valterRightPalmFKTuples);
+            //                 if (valterRightPalmFKTuples.length > 0) {
+
+            //                     let minDistanceTuple = valterRightPalmFKTuples[0];
+            //                     let curTupleTargetPos = new THREE.Vector3().set(
+            //                         minDistanceTuple.headTargetPosition.x,
+            //                         minDistanceTuple.headTargetPosition.y,
+            //                         minDistanceTuple.headTargetPosition.z
+            //                     );
+            //                     let minDistance = curTupleTargetPos.distanceToSquared(headTargetPosition);
+            //                     valterHeadFKTuples.forEach((valterHeadFKTuple) => {
+            //                         curTupleTargetPos =  new THREE.Vector3().set(
+            //                             valterHeadFKTuple.headTargetPosition.x,
+            //                             valterHeadFKTuple.headTargetPosition.y,
+            //                             valterHeadFKTuple.headTargetPosition.z
+            //                         );
+            //                         let distance = curTupleTargetPos.distanceToSquared(headTargetPosition);
+            //                         if (distance < minDistance) {
+            //                             minDistance = distance;
+            //                             minDistanceTuple = valterHeadFKTuple;
+            //                         }
+            //                     });
+
+            //                     console.log('getHeadFKTuple SELECTED:');
+            //                     console.log(minDistanceTuple);
+
+            //                     this.Valter.setHeadYawLink(minDistanceTuple.headYawLinkValue);
+            //                     this.Valter.setHeadTiltLink(minDistanceTuple.headTiltLinkValue);
+            //                 }
+            //             });
+            //         }
+            //     }
+            // );
+
+            // this.headTargetObjectInteractable.DEV.menu.push(
+            //     {
+            //         label: 'Get ALL Right Arm FK points from VLabsRESTValterHeadIKService',
+            //         enabled: true,
+            //         selected: false,
+            //         icon: '<i class=\"material-icons\">grain</i>',
+            //         action: () => {
+            //             let headFKPointsMaterial = new THREE.PointsMaterial({ size: 0.01, color: 0xff00ff });
+            //             let headFKPointsGeometry = new THREE.Geometry();
+            //             this.vLab.VLabsRESTClientManager.ValterHeadIKService.getAllHeadFKTuples()
+            //             .then(valterHeadFKTuples => {
+            //                 valterHeadFKTuples.forEach(valterHeadFKTuple => {
+            //                     let point = new THREE.Vector3().set(valterHeadFKTuple.headTargetPosition.x, valterHeadFKTuple.headTargetPosition.y, valterHeadFKTuple.headTargetPosition.z);
+            //                     headFKPointsGeometry.vertices.push(point);
+            //                 });
+            //                 this.headFKPoints = new THREE.Points(headFKPointsGeometry, headFKPointsMaterial);
+            //                 this.headYawLinkOriginObject3D.add(this.headFKPoints);
+            //             });
+            //         }
+            //     }
+            // );
+        });
     }
 
-    setupRightPalmTargetDirectionFromHeadYawLinkOrigin() {
-        /*<dev>*/
+    rightPalmTargetAction(event) {
+        let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
+        if (this.prevActionInitialEventCoords !== undefined) {
+            this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
+            this.vLab.WebGLRendererCanvas.style.cursor = 'move';
+
+            if (this.rightPalmTargetObjectPrevGlobalPosition != undefined) {
+                var newRightPalmTargetObjectPos = this.rightPalmTargetObject.position.clone();
+            }
+
+            if (event.event.ctrlKey == true) {
+                let rightPalmTargetObjectGlobalPosition = this.headYawLinkOriginObject3D.localToWorld(this.rightPalmTargetObject.position.clone());
+                let distanceToCurrentCamera = rightPalmTargetObjectGlobalPosition.distanceTo(this.vLab.SceneDispatcher.currentVLabScene.currentCamera.position);
+                let shiftY = distanceToCurrentCamera * 0.002 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1);
+                var newRightPalmTargetObjectPos = this.rightPalmTargetObject.position.clone();
+                newRightPalmTargetObjectPos.y += shiftY;
+            } else {
+                let rect = this.vLab.WebGLRendererCanvas.getBoundingClientRect();
+                let x = (currentActionInitialEventCoords.x - rect.left) / rect.width;
+                let y = (currentActionInitialEventCoords.y - rect.top) / rect.height;
+                var pointerVector = new THREE.Vector2();
+                pointerVector.set((x * 2) - 1, -(y * 2) + 1);
+                this.helperDragRaycaster.setFromCamera(pointerVector, this.vLab.SceneDispatcher.currentVLabScene.currentCamera);
+                let intersections = this.helperDragRaycaster.intersectObjects([this.Valter.helperDragXZPlane], true);
+                if (intersections[0]) {
+                    let intersectionPoint = intersections[0].point.clone();
+                    if (this.rightPalmTargetObjectPrevGlobalPosition == undefined) {
+                        this.rightPalmTargetObjectPrevGlobalPosition = this.headYawLinkOriginObject3D.localToWorld(this.rightPalmTargetObject.position.clone());
+                        this.prevRightPalmTargetObjectOffest = intersectionPoint;
+                        return;
+                    } else {
+                            intersectionPoint.sub(this.prevRightPalmTargetObjectOffest);
+                            let dragPosition = this.rightPalmTargetObjectPrevGlobalPosition.clone();
+                            intersectionPoint.multiplyScalar(0.5);
+                            dragPosition.add(intersectionPoint);
+
+
+                            let localDragPos = this.headYawLinkOriginObject3D.worldToLocal(dragPosition.clone());
+                            newRightPalmTargetObjectPos.x = localDragPos.x;
+                            newRightPalmTargetObjectPos.z = localDragPos.z;
+                    }
+                }
+            }
+
+            if (newRightPalmTargetObjectPos != undefined) {
+
+                // let headNormalizationBounds = this.Valter.nature.ANNIK.headFKTuplesNormalizationBounds;
+
+                let headYawLinkRightPalmTargetLocalPos = newRightPalmTargetObjectPos.clone();
+
+                if (false) {
+                    newRightPalmTargetObjectPos = this.headYawLinkOriginObject3D.worldToLocal(this.rightPalmTargetObjectLastSetPosition.clone());
+                    this.rightPalmTargetObjectPrevGlobalPosition = undefined;
+                    this.vLab.WebGLRendererCanvas.style.cursor = 'default';
+                    newRightPalmTargetObjectPos.copy(this.rightPalmTargetObjectLastSetPosition);
+                } else {
+                    this.rightPalmTargetObjectLastSetPosition = new THREE.Vector3().copy(newRightPalmTargetObjectPos.clone());
+
+                    this.rightPalmTargetObject.position.copy(newRightPalmTargetObjectPos);
+    
+                    if (this.Valter.nature.devHelpers.showRightPalmTargetDirectionFromHeadYawLinkOrigin == true) {
+                        let headYawLinkRightPalmDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(newRightPalmTargetObjectPos);
+                        let headYawLinkRightPalmDir = newRightPalmTargetObjectPos.clone().normalize();
+                        this.rightPalmFromHeadYawLinkArrowHelper.setDirection(headYawLinkRightPalmDir);
+                        this.rightPalmFromHeadYawLinkArrowHelper.setLength(headYawLinkRightPalmDistance, 0.02, 0.01);
+                    }
+
+                    // if (this.Valter.nature.ANNIK.headANNIK && this.valterHeadIKTFModel !== undefined) {
+                    //     /**
+                    //      *
+                    //      *
+                    //      _    _                _   _____ _  __ 
+                    //     | |  | |              | | |_   _| |/ /
+                    //     | |__| | ___  __ _  __| |   | | | ' /
+                    //     |  __  |/ _ \/ _` |/ _` |   | | |  <
+                    //     | |  | |  __/ (_| | (_| |  _| |_| . \
+                    //     |_|  |_|\___|\__,_|\__,_| |_____|_|\_\
+                    //     _____              _ _      _   _ 
+                    //     |  __ \            | (_)    | | (_)
+                    //     | |__) | __ ___  __| |_  ___| |_ _  ___  _ __  
+                    //     |  ___/ '__/ _ \/ _` | |/ __| __| |/ _ \| '_ \ 
+                    //     | |   | | |  __/ (_| | | (__| |_| | (_) | | | |
+                    //     |_|   |_|  \___|\__,_|_|\___|\__|_|\___/|_| |_|
+                    //     *
+                    //     *
+                    //     */
+                    //     let nHeadTargetX = ANNUtils.normalizeNegPos(this.headTargetObject.position.x, headNormalizationBounds.headTargetPositionXMin, headNormalizationBounds.headTargetPositionXMax);
+                    //     let nHeadTargetY = ANNUtils.normalizeNegPos(this.headTargetObject.position.y, headNormalizationBounds.headTargetPositionYMin, headNormalizationBounds.headTargetPositionYMax);
+                    //     let nHeadTargetZ = ANNUtils.normalizeNegPos(this.headTargetObject.position.z, headNormalizationBounds.headTargetPositionZMin, headNormalizationBounds.headTargetPositionZMax);
+    
+                    //     const valterHeadYawTiltPreditction = this.valterHeadIKTFModel.predict(tf.tensor([nHeadTargetX, nHeadTargetY, nHeadTargetZ], [1, 3]));
+                    //     const valterHeadYawTiltPreditctionData = valterHeadYawTiltPreditction.dataSync();
+                    //     const valterHeadYawPreditctionValue = ANNUtils.deNormalizeNegPos(valterHeadYawTiltPreditctionData[0], headNormalizationBounds.headYawLinkValueMin, headNormalizationBounds.headYawLinkValueMax);
+                    //     const valterHeadTiltPreditctionValue = ANNUtils.deNormalizeNegPos(valterHeadYawTiltPreditctionData[1], headNormalizationBounds.headTiltLinkValueMin, headNormalizationBounds.headTiltLinkValueMax);
+    
+                    //     // console.log('[' + this.headTargetObject.position.x.toFixed(3) + ', ' + this.headTargetObject.position.y.toFixed(3) + ', ' + this.headTargetObject.position.z.toFixed(3) + '] -> [' + valterHeadYawPreditctionValue.toFixed(3) +', ' + valterHeadTiltPreditctionValue.toFixed(3) + ']');
+    
+                    //     this.Valter.setHeadYawLink(valterHeadYawPreditctionValue);
+                    //     this.Valter.setHeadTiltLink(valterHeadTiltPreditctionValue);
+                    // }
+                }
+            }
+        }
+        this.prevActionInitialEventCoords = new THREE.Vector2();
+        this.prevActionInitialEventCoords.copy(currentActionInitialEventCoords);
+    }
+
+    setupRightPalmTargetDirectionFromHeadYawLinkOriginArrowHelper() {
         this.Valter.baseFrame.updateMatrixWorld();
         let headYawLinkRightPalmDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(this.headYawLinkRightPalmTargetLocalPos);
         this.rightPalmFromHeadYawLinkArrowHelper = new THREE.ArrowHelper(this.headYawLinkRightPalmTargetLocalPos.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), headYawLinkRightPalmDistance, 0x00ff00, 0.02, 0.01);
         this.headYawLinkOriginObject3D.add(this.rightPalmFromHeadYawLinkArrowHelper);
-        /*</dev>*/
     }
 
 
@@ -419,6 +630,7 @@ class ValterIK {
 
     commonInvAction() {
         this.headTargetObjectPrevGlobalPosition = undefined;
+        this.rightPalmTargetObjectPrevGlobalPosition = undefined;
         this.vLab.WebGLRendererCanvas.style.cursor = 'default';
         this.vLab.SceneDispatcher.currentVLabScene.currentControls.enable();
     }

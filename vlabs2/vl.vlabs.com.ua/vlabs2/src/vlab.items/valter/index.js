@@ -981,9 +981,7 @@ class Valter extends VLabItem {
 
                 this.ValterIK.setupHeadTargetDirectionFromHeadYawLinkOrigin(distance);
             }
-            if (this.nature.devHelpers.showRightPalmTargetDirectionFromHeadYawLinkOrigin == true) {
-                this.ValterIK.setupRightPalmTargetDirectionFromHeadYawLinkOrigin();
-            }
+
             if (this.nature.devHelpers.showLeftPalmTargetDirectionFromHeadYawLinkOrigin == true) {
                 this.ValterIK.setupLeftPalmTargetDirectionFromHeadYawLinkOrigin();
             }

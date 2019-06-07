@@ -43,11 +43,20 @@ class VLabsRESTClientManager {
              */
             valter: {
                 base: '/valter',
-                saveHeadFKTuple: '/head/ik/save_head_fk_tuple',
-                getHeadFKTuple: '/head/ik/get_head_fk_tuple',
-                getAllHeadFKTuples: '/head/ik/get_all_head_fk_tuples',
-                getHeadFKTuplesNormalizationBounds: '/head/ik/get_head_fk_normalization_bounds',
-                getAllHeadFKTuplesNormalized: '/head/ik/get_all_head_fk_tuples_normalized'
+                /**
+                 * Head
+                 */
+                saveHeadFKTuple:                        '/head/ik/save_head_fk_tuple',
+                getHeadFKTuple:                         '/head/ik/get_head_fk_tuple',
+                getAllHeadFKTuples:                     '/head/ik/get_all_head_fk_tuples',
+                getHeadFKTuplesNormalizationBounds:     '/head/ik/get_head_fk_normalization_bounds',
+                getAllHeadFKTuplesNormalized:           '/head/ik/get_all_head_fk_tuples_normalized',
+                /**
+                 * Right Palm
+                 */
+                saveRightPalmFKTuple:                   '/palm/right/ik/save_right_palm_fk_tuple',
+                getRightPalmFKTuple:                    '/palm/right/ik/get_right_palm_fk_tuple',
+                getAllRightPalmFKTuples:                '/palm/right/ik/get_all_right_palm_fk_tuples',
             },
             getFullyQualifiedURL: function (endpointGroup, endpointPoint) {
                 return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint];
