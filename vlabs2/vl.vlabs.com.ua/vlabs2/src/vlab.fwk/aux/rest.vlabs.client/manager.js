@@ -1,6 +1,7 @@
 import VLabsRESTAuthService from './service/auth.service';
 import VLabsRESTUserService from './service/user.service';
 import VLabsRESTValterHeadIKService from './service/valter/valter.head.ik.service';
+import ValterRightPalmIKService from './service/valter/valter.right.palm.ik.service';
 import VLabsRESTWSBasicService from './service/ws.basic.service';
 
 /**
@@ -54,9 +55,11 @@ class VLabsRESTClientManager {
                 /**
                  * Right Palm
                  */
-                saveRightPalmFKTuple:                   '/palm/right/ik/save_right_palm_fk_tuple',
-                getRightPalmFKTuple:                    '/palm/right/ik/get_right_palm_fk_tuple',
-                getAllRightPalmFKTuples:                '/palm/right/ik/get_all_right_palm_fk_tuples',
+                saveRightPalmFKTuple:                           '/palm/right/ik/save_right_palm_fk_tuple',
+                getRightPalmFKTuple:                            '/palm/right/ik/get_right_palm_fk_tuple',
+                getAllRightPalmFKTuples:                        '/palm/right/ik/get_all_right_palm_fk_tuples',
+                getRightPalmFKTuplesNormalizationBounds:        '/palm/right/ik/get_right_palm_fk_normalization_bounds',
+                getAllRightPalmFKTuplesNormalized:              '/palm/right/ik/get_all_right_palm_fk_tuples_normalized',
             },
             getFullyQualifiedURL: function (endpointGroup, endpointPoint) {
                 return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint];
@@ -74,7 +77,8 @@ class VLabsRESTClientManager {
         /**
          * Valter
          */
-        this.ValterHeadIKService        = new VLabsRESTValterHeadIKService(this);
+        this.ValterHeadIKService                    = new VLabsRESTValterHeadIKService(this);
+        this.ValterRightPalmIKService               = new ValterRightPalmIKService(this);
     }
     handleError(error) {
         switch (error.type) {

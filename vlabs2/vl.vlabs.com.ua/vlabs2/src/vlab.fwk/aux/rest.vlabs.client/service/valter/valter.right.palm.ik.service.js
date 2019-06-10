@@ -1,10 +1,10 @@
 /**
- * VLabsRESTValterHeadIKService base class
+ * ValterRightPalmIKService base class
  * @class
  */
-class VLabsRESTValterHeadIKService {
+class ValterRightPalmIKService {
     /**
-     * VLabsRESTValterHeadIKService constructor
+     * ValterRightPalmIKService constructor
      * @constructor
      * @param {VLabsRESTClientManager}         vLabsRESTClientManager                      - VLabsRESTClientManager instance
      */
@@ -15,10 +15,15 @@ class VLabsRESTValterHeadIKService {
           */
          this.manager = vLabsRESTClientManager;
      }
-     saveHeadFKTuple(headFKTuple) {
+
+     /**
+      * 
+      * @param {ValterRightPalmFKTuple} rightPalmFKTuple 
+      */
+     saveRightPalmFKTuple(rightPalmFKTuple) {
         return new Promise((resolve, reject) => {
-            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'saveHeadFKTuple');
-            this.manager.post(apiEndPoint, headFKTuple)
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'saveRightPalmFKTuple');
+            this.manager.post(apiEndPoint, rightPalmFKTuple)
             .then((result) => {
                 resolve(result);
             })
@@ -28,10 +33,11 @@ class VLabsRESTValterHeadIKService {
             });
         });
      }
-     getHeadFKTuple(headTargetObjectPos) {
+
+     getRightPalmFKTuple(rightPalmTargetObjectPos) {
         return new Promise((resolve, reject) => {
-            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getHeadFKTuple');
-            this.manager.post(apiEndPoint, headTargetObjectPos)
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getRightPalmFKTuple');
+            this.manager.post(apiEndPoint, rightPalmTargetObjectPos)
             .then((result) => {
                 resolve(result);
             })
@@ -41,9 +47,10 @@ class VLabsRESTValterHeadIKService {
             });
         });
      }
-     getAllHeadFKTuples() {
+
+     getAllRightPalmFKTuples() {
         return new Promise((resolve, reject) => {
-            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getAllHeadFKTuples');
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getAllRightPalmFKTuples');
             this.manager.get(apiEndPoint)
             .then((result) => {
                 resolve(result);
@@ -54,9 +61,10 @@ class VLabsRESTValterHeadIKService {
             });
         });
      }
-     getHeadFKTuplesNormalizationBounds() {
+
+     getRightPalmFKTuplesNormalizationBounds() {
         return new Promise((resolve, reject) => {
-            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getHeadFKTuplesNormalizationBounds');
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getRightPalmFKTuplesNormalizationBounds');
             this.manager.get(apiEndPoint)
             .then((result) => {
                 resolve(result);
@@ -67,9 +75,10 @@ class VLabsRESTValterHeadIKService {
             });
         });
      }
-     getAllHeadFKTuplesNormalized() {
+
+     getAllRightPalmFKTuplesNormalized() {
         return new Promise((resolve, reject) => {
-            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getAllHeadFKTuplesNormalized');
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getAllRightPalmFKTuplesNormalized');
             this.manager.get(apiEndPoint)
             .then((result) => {
                 resolve(result);
@@ -80,5 +89,5 @@ class VLabsRESTValterHeadIKService {
             });
         });
      }
- }
- export default VLabsRESTValterHeadIKService;
+}
+ export default ValterRightPalmIKService;

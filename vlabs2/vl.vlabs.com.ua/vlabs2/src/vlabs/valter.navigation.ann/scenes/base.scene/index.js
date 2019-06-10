@@ -5,8 +5,8 @@ import VLabScene from '../../../../vlab.fwk/core/vlab.scene';
  * VLab Items, VLabItems classes
  */
 import Valter from '../../../../vlab.items/valter/index';
-import ValterHeadIKDev from '../../../../vlab.items/valter/ik/valter-head-ik-dev';
-import ValterRightPalmIKDev from '../../../../vlab.items/valter/ik/valter-right-palm-ik-dev';
+import ValterHeadIKDev from '../../../../vlab.items/valter/ik/dev/valter-head-ik-dev';
+import ValterRightPalmIKDev from '../../../../vlab.items/valter/ik/dev/valter-right-palm-ik-dev';
 
 
 
@@ -67,8 +67,9 @@ class BaseScene extends VLabScene {
             /**
              * Head IK fit from FK tuples
              */
-            this.ValterHeadIKDev = new ValterHeadIKDev(this.vLab['Valter']);
+            // this.ValterHeadIKDev = new ValterHeadIKDev(this.vLab['Valter']);
             // this.ValterHeadIKDev.getValterHeadFKTuples();
+            // this.ValterHeadIKDev.printHeadFKTuplesNormalizationBounds();
             // this.ValterHeadIKDev.fitAndSaveHeadTargetIKModel();
             // this.ValterHeadIKDev.saveValterHeadIKModelToLocalFile();
 
@@ -76,7 +77,9 @@ class BaseScene extends VLabScene {
              * Right Palm IK fit from FK tuples
              */
             this.ValterRightPalmIKDev = new ValterRightPalmIKDev(this.vLab['Valter']);
-            this.ValterRightPalmIKDev.getValterRightPalmFKTuples();
+            // this.ValterRightPalmIKDev.getValterRightPalmFKTuples();
+            // this.ValterRightPalmIKDev.printRightPalmFKTuplesNormalizationBounds();
+            // this.ValterRightPalmIKDev.fitAndSaveRightPalmTargetIKModel();
         }
     }
 

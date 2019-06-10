@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import vlabs.rest.model.three.Vector3;
 import vlabs.rest.model.valter.ik.palm.right.ValterRightPalmFKTuple;
+import vlabs.rest.model.valter.ik.palm.right.ValterRightPalmFKTuplesNormalizationBounds;
 import vlabs.rest.service.valter.ik.palm.right.ValterRightPalmIKService;
 
 @RestController
@@ -35,5 +36,17 @@ public class ValterRightPalmIKController {
     @RequestMapping(value = "/get_all_right_palm_fk_tuples", method = RequestMethod.GET)
     public Flux<ValterRightPalmFKTuple> getAllRightPalmFKTuples() {
         return valterRightPalmIKService.getAllValterRightPalmFKTuples();
+    }
+
+    @RequestMapping(value = "/get_right_palm_fk_normalization_bounds", method = RequestMethod.GET)
+    public Mono<ResponseEntity<ValterRightPalmFKTuplesNormalizationBounds>> getRightPalmFKTuplesNormalizationBounds() {
+        return valterRightPalmIKService.getValterRightPalmFKTuplesNormalizationBounds().map(valterRightPalmFKTuplesNormalizationBounds -> {
+            return ResponseEntity.ok(valterRightPalmFKTuplesNormalizationBounds);
+        });
+    }
+
+    @RequestMapping(value = "/get_all_right_palm_fk_tuples_normalized", method = RequestMethod.GET)
+    public Flux<ValterRightPalmFKTuple> getAllRightPalmFKTuplesNormalized() {
+        return valterRightPalmIKService.getAllValterRightPalmFKTuplesNormalized();
     }
 }

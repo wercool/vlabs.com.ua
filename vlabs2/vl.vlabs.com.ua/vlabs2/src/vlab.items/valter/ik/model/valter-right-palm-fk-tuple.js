@@ -11,7 +11,7 @@ class ValterRightPalmFKTuple {
         };
         this.shoulderRightLinkValue = 0.0;
         this.limbRightLinkValue = 0.0;
-        this.armRightLink = 0.0;
+        this.armRightLinkValue = 0.0;
         this.forearmRollRightLinkValue = 0.0;
     }
 }

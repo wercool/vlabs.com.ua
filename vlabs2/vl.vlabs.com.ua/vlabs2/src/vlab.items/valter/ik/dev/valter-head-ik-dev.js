@@ -1,6 +1,6 @@
 import * as tf from '@tensorflow/tfjs';
-import * as ANNUtils from '../../../vlab.fwk/utils/ann.utils';
-import ValterHeadFKTuple from './model/valter-head-fk-tuple';
+import * as ANNUtils from '../../../../vlab.fwk/utils/ann.utils';
+import ValterHeadFKTuple from '../model/valter-head-fk-tuple';
 
 /**
  * Valter Head IK dev class.
@@ -99,6 +99,20 @@ class ValterHeadIKDev {
      * Head IK solving with TFjs
      * 
      */
+
+    printHeadFKTuplesNormalizationBounds() {
+        this.vLab.VLabsRESTClientManager.ValterHeadIKService.getHeadFKTuplesNormalizationBounds()
+        .then(headFKTuplesNormalizationBounds => {
+            let ValterNatureANNIKHeadFKTuplesNormalizationBounds = '"headFKTuplesNormalizationBounds": {\n';
+            Object.keys(headFKTuplesNormalizationBounds).forEach((key) => {
+                ValterNatureANNIKHeadFKTuplesNormalizationBounds += '"' + key + '": ' + headFKTuplesNormalizationBounds[key] + ',\n';
+            });
+            ValterNatureANNIKHeadFKTuplesNormalizationBounds = ValterNatureANNIKHeadFKTuplesNormalizationBounds.substr(0, ValterNatureANNIKHeadFKTuplesNormalizationBounds.length - 2);
+            ValterNatureANNIKHeadFKTuplesNormalizationBounds += '\n}';
+            console.log(ValterNatureANNIKHeadFKTuplesNormalizationBounds);
+        });
+    }
+
     prepareValterHeadFKTuples() {
         return new Promise((resolve, reject) => {
             this.vLab.VLabsRESTClientManager.ValterHeadIKService.getAllHeadFKTuplesNormalized()

@@ -1,9 +1,11 @@
 package vlabs.rest.repository.mongo.valter.ik.palm.right;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import vlabs.rest.model.valter.ik.palm.right.ValterRightPalmFKTuple;
 
 public interface ValterRightPalmFKTupleRepository  extends ReactiveMongoRepository<ValterRightPalmFKTuple, String> {
@@ -21,4 +23,7 @@ public interface ValterRightPalmFKTupleRepository  extends ReactiveMongoReposito
             double maxY,
             double minZ,
             double maxZ);
+    
+    @Query("{}")
+    Mono<ValterRightPalmFKTuple> findOne(Sort sort);
 }
