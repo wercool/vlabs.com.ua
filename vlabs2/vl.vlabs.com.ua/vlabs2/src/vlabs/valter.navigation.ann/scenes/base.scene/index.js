@@ -7,6 +7,7 @@ import VLabScene from '../../../../vlab.fwk/core/vlab.scene';
 import Valter from '../../../../vlab.items/valter/index';
 import ValterHeadIKDev from '../../../../vlab.items/valter/ik/dev/valter-head-ik-dev';
 import ValterRightPalmIKDev from '../../../../vlab.items/valter/ik/dev/valter-right-palm-ik-dev';
+import ValterLeftPalmIKDev from '../../../../vlab.items/valter/ik/dev/valter-left-palm-ik-dev';
 
 
 
@@ -61,8 +62,8 @@ class BaseScene extends VLabScene {
 
     onVLabItemInitialized(event) {
         if (event.vLabItem == this.vLab['Valter']) {
-            // this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 1.0));
-            this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 0.0));
+            this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 1.0));
+            // this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 0.0));
 
             /**
              * Head IK fit from FK tuples
@@ -78,9 +79,18 @@ class BaseScene extends VLabScene {
              */
             // this.ValterRightPalmIKDev = new ValterRightPalmIKDev(this.vLab['Valter']);
             // this.ValterRightPalmIKDev.getValterRightPalmFKTuples();
-            // this.ValterRightPalmIKDev.printRightPalmFKTuplesNormalizationBounds(0.05);
+            // this.ValterRightPalmIKDev.printRightPalmFKTuplesNormalizationBounds(this.vLab['Valter'].ValterIK.rightPalmIKDataThrottlingSigma);
             // this.ValterRightPalmIKDev.fitAndSaveRightPalmTargetIKModel();
             // this.ValterRightPalmIKDev.saveValterRightPalmTargetIKModelToLocalFile();
+
+            /**
+             * Left Palm IK fit from FK tuples
+             */
+            // this.ValterLeftPalmIKDev = new ValterLeftPalmIKDev(this.vLab['Valter']);
+            // this.ValterLeftPalmIKDev.getValterLeftPalmFKTuples();
+            // this.ValterLeftPalmIKDev.printLeftPalmFKTuplesNormalizationBounds(this.vLab['Valter'].ValterIK.leftPalmIKDataThrottlingSigma);
+            // this.ValterLeftPalmIKDev.fitAndSaveLeftPalmTargetIKModel();
+            // this.ValterLeftPalmIKDev.saveValterLeftPalmTargetIKModelToLocalFile();
         }
     }
 

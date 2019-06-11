@@ -77,7 +77,18 @@ gulp.task('sync-vlab-assets', function () {
 gulp.task('sync-vlab-items', function() {
     return gulp.src('./src')
     .pipe(dirsync('./src/vlab.items', './build/vlab.items', { 
-        ignore: ['index.js'],
+        ignore: function(dir, file) {
+
+            let gulpIgnores = [];
+            if (fs.existsSync(dir + '/gulp.ignore')) {
+                let gulpIgnoreContent = fs.readFileSync(dir + '/gulp.ignore', 'utf-8');
+                gulpIgnores = gulpIgnoreContent.split('\n');
+            }
+
+            if ((new RegExp('.js$')).test(file)) return true;
+            if (file == 'gulp.ignore') return true;
+            if (gulpIgnores.indexOf(file) > -1) return true;
+        },
         printSummary: true
     }));
 });

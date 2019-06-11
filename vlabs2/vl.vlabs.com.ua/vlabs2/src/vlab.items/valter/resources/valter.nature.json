@@ -29,8 +29,8 @@
         "headIKTFModelURL": "/vlab.items/valter/resources/tf/valter-head-ik-model.json",
         "rightPalmANNIK": true,
         "rightPalmFKTuplesNormalizationBounds": {
-            "rightPalmTargetPositionXMin": -1.004,
-            "rightPalmTargetPositionXMax": 0.262,
+            "rightPalmTargetPositionXMin": -1.02,
+            "rightPalmTargetPositionXMax": 0.266,
             "rightPalmTargetPositionYMin": -0.828,
             "rightPalmTargetPositionYMax": 0.233,
             "rightPalmTargetPositionZMin": -0.539,
@@ -44,7 +44,25 @@
             "forearmRollRightLinkValueMin": -0.65,
             "forearmRollRightLinkValueMax": 1.15
         },
-        "rightPalmIKTFModelURL": "/vlab.items/valter/resources/tf/valter-right-palm-ik-model.json"
+        "rightPalmIKTFModelURL": "/vlab.items/valter/resources/tf/valter-right-palm-ik-model.json",
+        "leftPalmANNIK": true,
+        "leftPalmFKTuplesNormalizationBounds": {
+            "leftPalmTargetPositionXMin": -0.368,
+            "leftPalmTargetPositionXMax": 1.008,
+            "leftPalmTargetPositionYMin": -0.836,
+            "leftPalmTargetPositionYMax": 0.227,
+            "leftPalmTargetPositionZMin": -0.536,
+            "leftPalmTargetPositionZMax": 0.949,
+            "shoulderLeftLinkValueMin": -1.05,
+            "shoulderLeftLinkValueMax": 0,
+            "limbLeftLinkValueMin": -1.48,
+            "limbLeftLinkValueMax": 0.92,
+            "armLeftLinkValueMin": 0,
+            "armLeftLinkValueMax": 1.2,
+            "forearmRollLeftLinkValueMin": -0.65,
+            "forearmRollLeftLinkValueMax": 1.15
+        },
+        "leftPalmIKTFModelURL": "/vlab.items/valter/resources/tf/valter-left-palm-ik-model.json"
     },
     "interactables": [
         {

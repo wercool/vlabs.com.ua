@@ -29,6 +29,9 @@ class ValterIK {
         this.headYawLinkOriginObject3D.position.copy(this.Valter.headYawLink.position.clone());
         this.Valter.torsoFrame.add(this.headYawLinkOriginObject3D);
 
+        /**
+         * Setup TF models
+         */
         this.valterHeadIKTFModel = undefined;
 
         tf.setBackend('webgl');
@@ -56,11 +59,22 @@ class ValterIK {
             });
         }
 
+        this.valterLeftPalmIKTFModel = undefined;
+
+        if (this.Valter.nature.ANNIK.leftPalmANNIK) {
+            tf.loadLayersModel(this.Valter.nature.ANNIK.leftPalmIKTFModelURL ? this.Valter.nature.ANNIK.leftPalmIKTFModelURL : 'localstorage://valter-left-palm-ik-model')
+            .then((model) => {
+                this.valterLeftPalmIKTFModel = model;
+            })
+            .catch(error => {
+                console.error(error.message);
+            });
+        }
+
         /**
          * Head target setup
          */
         this.setupHeadTarget();
-
         /**
          * Right palm setup
          */
@@ -482,7 +496,7 @@ class ValterIK {
                     action: () => {
                         let rightPalmFKPointsMaterial = new THREE.PointsMaterial({ size: 0.01, color: 0x00ff00 });
                         let rightPalmFKPointsGeometry = new THREE.Geometry();
-                        this.vLab.VLabsRESTClientManager.ValterRightPalmIKService.getAllRightPalmFKTuples(0.05)
+                        this.vLab.VLabsRESTClientManager.ValterRightPalmIKService.getAllRightPalmFKTuples(this.rightPalmIKDataThrottlingSigma)
                         .then(valterRightPalmFKTuples => {
                             console.log('valterRightPalmFKTuples size: ' + valterRightPalmFKTuples.length);
                             valterRightPalmFKTuples.forEach(valterRightPalmFKTuple => {
@@ -548,7 +562,16 @@ class ValterIK {
 
                 let headYawLinkRightPalmTargetLocalPos = newRightPalmTargetObjectPos.clone();
 
-                if (false) {
+                /**
+                 * Check bounds
+                 */
+                if (headYawLinkRightPalmTargetLocalPos.x > rightPalmFKTuplesNormalizationBounds.rightPalmTargetPositionXMax * 0.95 
+                 || headYawLinkRightPalmTargetLocalPos.x < rightPalmFKTuplesNormalizationBounds.rightPalmTargetPositionXMin * 0.95 
+                 || headYawLinkRightPalmTargetLocalPos.y > rightPalmFKTuplesNormalizationBounds.rightPalmTargetPositionYMax * 0.95 
+                 || headYawLinkRightPalmTargetLocalPos.y < rightPalmFKTuplesNormalizationBounds.rightPalmTargetPositionYMin * 0.95 
+                 || headYawLinkRightPalmTargetLocalPos.z > rightPalmFKTuplesNormalizationBounds.rightPalmTargetPositionZMax * 0.95 
+                 || headYawLinkRightPalmTargetLocalPos.z < rightPalmFKTuplesNormalizationBounds.rightPalmTargetPositionZMin * 0.95 
+                ) {
                     newRightPalmTargetObjectPos = this.headYawLinkOriginObject3D.worldToLocal(this.rightPalmTargetObjectLastSetPosition.clone());
                     this.rightPalmTargetObjectPrevGlobalPosition = undefined;
                     this.vLab.WebGLRendererCanvas.style.cursor = 'default';
@@ -657,24 +680,270 @@ class ValterIK {
         this.leftPalmTargetObject.name = 'leftPalmTargetObject';
         this.headYawLinkOriginObject3D.add(this.leftPalmTargetObject);
 
-        this.leftPalmTargetGlobalPosition = this.Valter.leftPalm.localToWorld(new THREE.Vector3());
-        this.headYawLinkLeftPalmTargetLocalPos = this.headYawLinkOriginObject3D.worldToLocal(this.leftPalmTargetGlobalPosition.clone());
-        this.leftPalmTargetObject.position.copy(this.headYawLinkLeftPalmTargetLocalPos);
+        this.vLab.SceneDispatcher.currentVLabScene.addInteractable({
+            name: 'leftPalmTargetObject',
+            intersectable: true,
+            preselectable: true,
+            action: {
+                context: this,
+                function: this.leftPalmTargetAction,
+                manipulator: true,
+                activated: true,
+                invfunction: this.commonInvAction,
+                args: {}
+            },
+        }).then((leftPalmTargetObjectInteractable) => {
+            this.leftPalmTargetObjectInteractable = leftPalmTargetObjectInteractable;
+
+            this.leftPalmTargetGlobalPosition = this.Valter.leftPalm.localToWorld(new THREE.Vector3());
+            this.headYawLinkLeftPalmTargetLocalPos = this.headYawLinkOriginObject3D.worldToLocal(this.leftPalmTargetGlobalPosition.clone());
+
+            this.leftPalmTargetObjectInteractable.vLabSceneObject.position.copy(this.headYawLinkLeftPalmTargetLocalPos);
+
+            this.leftPalmTargetObjectLastSetPosition = new THREE.Vector3().copy(this.leftPalmTargetObjectInteractable.vLabSceneObject.position.clone());
+
+            if (this.Valter.nature.devHelpers.showLeftPalmTargetDirectionFromHeadYawLinkOrigin == true) {
+                this.setupLeftPalmTargetDirectionFromHeadYawLinkOriginArrowHelper();
+            }
+
+            this.leftPalmTargetObjectInteractable.DEV.menu.push(
+                {
+                    label: 'Get Left Palm IK from ValterLeftPalmIKService',
+                    enabled: true,
+                    selected: false,
+                    icon: '<i class=\"material-icons\">share</i>',
+                    action: () => {
+                        let leftPalmTargetObjectPos = this.leftPalmTargetObject.position.clone();
+                        // console.log(leftPalmTargetObjectPos);
+                        let leftPalmTargetPosition = {
+                            x: parseFloat(leftPalmTargetObjectPos.x.toFixed(3)),
+                            y: parseFloat(leftPalmTargetObjectPos.y.toFixed(3)),
+                            z: parseFloat(leftPalmTargetObjectPos.z.toFixed(3))
+                        };
+                        console.log('getLeftPalmFKTuple REQUEST:');
+                        console.log(leftPalmTargetPosition);
+                        this.vLab.VLabsRESTClientManager.ValterLeftPalmIKService.getLeftPalmFKTuple(leftPalmTargetPosition)
+                        .then(valterLeftPalmFKTuples => {
+                            console.log('getLeftPalmFKTuple RESULT:');
+                            console.log(valterLeftPalmFKTuples);
+                            if (valterLeftPalmFKTuples.length > 0) {
+
+                                let minDistanceTuple = valterLeftPalmFKTuples[0];
+                                let curTupleTargetPos = new THREE.Vector3().set(
+                                    minDistanceTuple.leftPalmTargetPosition.x,
+                                    minDistanceTuple.leftPalmTargetPosition.y,
+                                    minDistanceTuple.leftPalmTargetPosition.z
+                                );
+                                let minDistance = curTupleTargetPos.distanceToSquared(leftPalmTargetPosition);
+                                valterLeftPalmFKTuples.forEach((valterLeftPalmFKTuple) => {
+                                    curTupleTargetPos =  new THREE.Vector3().set(
+                                        valterLeftPalmFKTuple.leftPalmTargetPosition.x,
+                                        valterLeftPalmFKTuple.leftPalmTargetPosition.y,
+                                        valterLeftPalmFKTuple.leftPalmTargetPosition.z
+                                    );
+                                    let distance = curTupleTargetPos.distanceToSquared(leftPalmTargetPosition);
+                                    if (distance < minDistance) {
+                                        minDistance = distance;
+                                        minDistanceTuple = valterLeftPalmFKTuple;
+                                    }
+                                });
+
+                                console.log('getLeftPalmFKTuple SELECTED:');
+                                console.log(minDistanceTuple);
+
+                                this.Valter.setShoulderLeftLink(minDistanceTuple.shoulderLeftLinkValue);
+                                this.Valter.setLimbLeftLink(minDistanceTuple.limbLeftLinkValue);
+                                this.Valter.setArmLeftLink(minDistanceTuple.armLeftLinkValue);
+                                this.Valter.setForearmRollLeftLink(minDistanceTuple.forearmRollLeftLinkValue);
+                            }
+                        });
+                    }
+                }
+            );
+
+            this.leftPalmTargetObjectInteractable.DEV.menu.push(
+                {
+                    label: 'Get ALL Left Palm FK points from ValterLeftPalmIKService',
+                    enabled: true,
+                    selected: false,
+                    icon: '<i class=\"material-icons\">grain</i>',
+                    action: () => {
+                        let leftPalmFKPointsMaterial = new THREE.PointsMaterial({ size: 0.01, color: 0x00ff00 });
+                        let leftPalmFKPointsGeometry = new THREE.Geometry();
+                        this.vLab.VLabsRESTClientManager.ValterLeftPalmIKService.getAllLeftPalmFKTuples(this.leftPalmIKDataThrottlingSigma)
+                        .then(valterLeftPalmFKTuples => {
+                            console.log('valterLeftPalmFKTuples size: ' + valterLeftPalmFKTuples.length);
+                            valterLeftPalmFKTuples.forEach(valterLeftPalmFKTuple => {
+                                let point = new THREE.Vector3().set(valterLeftPalmFKTuple.leftPalmTargetPosition.x, valterLeftPalmFKTuple.leftPalmTargetPosition.y, valterLeftPalmFKTuple.leftPalmTargetPosition.z);
+                                leftPalmFKPointsGeometry.vertices.push(point);
+                            });
+                            this.leftPalmFKPoints = new THREE.Points(leftPalmFKPointsGeometry, leftPalmFKPointsMaterial);
+                            this.headYawLinkOriginObject3D.add(this.leftPalmFKPoints);
+                        });
+                    }
+                }
+            );
+        });
     }
 
-    setupLeftPalmTargetDirectionFromHeadYawLinkOrigin() {
-        /*<dev>*/
+    leftPalmTargetAction(event) {
+        let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
+        if (this.prevActionInitialEventCoords !== undefined) {
+            this.vLab.SceneDispatcher.currentVLabScene.currentControls.disable();
+            this.vLab.WebGLRendererCanvas.style.cursor = 'move';
+
+            if (this.leftPalmTargetObjectPrevGlobalPosition != undefined) {
+                var newLeftPalmTargetObjectPos = this.leftPalmTargetObject.position.clone();
+            }
+
+            if (event.event.ctrlKey == true) {
+                let leftPalmTargetObjectGlobalPosition = this.headYawLinkOriginObject3D.localToWorld(this.leftPalmTargetObject.position.clone());
+                let distanceToCurrentCamera = leftPalmTargetObjectGlobalPosition.distanceTo(this.vLab.SceneDispatcher.currentVLabScene.currentCamera.position);
+                let shiftY = distanceToCurrentCamera * 0.002 * ((this.prevActionInitialEventCoords.y - currentActionInitialEventCoords.y > 0.0) ? 1 : -1);
+                var newLeftPalmTargetObjectPos = this.leftPalmTargetObject.position.clone();
+                newLeftPalmTargetObjectPos.y += shiftY;
+            } else {
+                let rect = this.vLab.WebGLRendererCanvas.getBoundingClientRect();
+                let x = (currentActionInitialEventCoords.x - rect.left) / rect.width;
+                let y = (currentActionInitialEventCoords.y - rect.top) / rect.height;
+                var pointerVector = new THREE.Vector2();
+                pointerVector.set((x * 2) - 1, -(y * 2) + 1);
+                this.helperDragRaycaster.setFromCamera(pointerVector, this.vLab.SceneDispatcher.currentVLabScene.currentCamera);
+                let intersections = this.helperDragRaycaster.intersectObjects([this.Valter.helperDragXZPlane], true);
+                if (intersections[0]) {
+                    let intersectionPoint = intersections[0].point.clone();
+                    if (this.leftPalmTargetObjectPrevGlobalPosition == undefined) {
+                        this.leftPalmTargetObjectPrevGlobalPosition = this.headYawLinkOriginObject3D.localToWorld(this.leftPalmTargetObject.position.clone());
+                        this.prevLeftPalmTargetObjectOffest = intersectionPoint;
+                        return;
+                    } else {
+                            intersectionPoint.sub(this.prevLeftPalmTargetObjectOffest);
+                            let dragPosition = this.leftPalmTargetObjectPrevGlobalPosition.clone();
+                            intersectionPoint.multiplyScalar(0.5);
+                            dragPosition.add(intersectionPoint);
+
+
+                            let localDragPos = this.headYawLinkOriginObject3D.worldToLocal(dragPosition.clone());
+                            newLeftPalmTargetObjectPos.x = localDragPos.x;
+                            newLeftPalmTargetObjectPos.z = localDragPos.z;
+                    }
+                }
+            }
+
+            if (newLeftPalmTargetObjectPos != undefined) {
+
+                let leftPalmFKTuplesNormalizationBounds = this.Valter.nature.ANNIK.leftPalmFKTuplesNormalizationBounds;
+
+                let headYawLinkLeftPalmTargetLocalPos = newLeftPalmTargetObjectPos.clone();
+
+                /**
+                 * Check bounds
+                 */
+                if (headYawLinkLeftPalmTargetLocalPos.x > leftPalmFKTuplesNormalizationBounds.leftPalmTargetPositionXMax * 0.95 
+                 || headYawLinkLeftPalmTargetLocalPos.x < leftPalmFKTuplesNormalizationBounds.leftPalmTargetPositionXMin * 0.95 
+                 || headYawLinkLeftPalmTargetLocalPos.y > leftPalmFKTuplesNormalizationBounds.leftPalmTargetPositionYMax * 0.95 
+                 || headYawLinkLeftPalmTargetLocalPos.y < leftPalmFKTuplesNormalizationBounds.leftPalmTargetPositionYMin * 0.95 
+                 || headYawLinkLeftPalmTargetLocalPos.z > leftPalmFKTuplesNormalizationBounds.leftPalmTargetPositionZMax * 0.95 
+                 || headYawLinkLeftPalmTargetLocalPos.z < leftPalmFKTuplesNormalizationBounds.leftPalmTargetPositionZMin * 0.95 
+                ) {
+                    newLeftPalmTargetObjectPos = this.headYawLinkOriginObject3D.worldToLocal(this.leftPalmTargetObjectLastSetPosition.clone());
+                    this.leftPalmTargetObjectPrevGlobalPosition = undefined;
+                    this.vLab.WebGLRendererCanvas.style.cursor = 'default';
+                    newLeftPalmTargetObjectPos.copy(this.leftPalmTargetObjectLastSetPosition);
+                } else {
+                    this.leftPalmTargetObjectLastSetPosition = new THREE.Vector3().copy(newLeftPalmTargetObjectPos.clone());
+
+                    this.leftPalmTargetObject.position.copy(newLeftPalmTargetObjectPos);
+    
+                    this.updateLeftPalmTargetDirectionFromHeadYawLinkOriginArrowHelper();
+
+                    if (this.Valter.nature.ANNIK.leftPalmANNIK && this.valterLeftPalmIKTFModel !== undefined) {
+                        /**
+                         *
+                         *
+                             _           __ _     _____      _             _____ _  __
+                            | |         / _| |   |  __ \    | |           |_   _| |/ /
+                            | |     ___| |_| |_  | |__) |_ _| |_ __ ___     | | | ' / 
+                            | |    / _ \  _| __| |  ___/ _` | | '_ ` _ \    | | |  <  
+                            | |___|  __/ | | |_  | |  | (_| | | | | | | |  _| |_| . \ 
+                            |______\___|_|  \__|_|_|   \__,_|_|_| |_| |_| |_____|_|\_\
+                            |  __ \            | (_)    | | (_)
+                            | |__) | __ ___  __| |_  ___| |_ _  ___  _ __
+                            |  ___/ '__/ _ \/ _` | |/ __| __| |/ _ \| '_ \
+                            | |   | | |  __/ (_| | | (__| |_| | (_) | | | |
+                            |_|   |_|  \___|\__,_|_|\___|\__|_|\___/|_| |_|
+                        *
+                        *
+                        */
+                        let nLeftPalmTargetX = ANNUtils.normalizeNegPos(this.leftPalmTargetObject.position.x, leftPalmFKTuplesNormalizationBounds.leftPalmTargetPositionXMin, leftPalmFKTuplesNormalizationBounds.leftPalmTargetPositionXMax);
+                        let nLeftPalmTargetY = ANNUtils.normalizeNegPos(this.leftPalmTargetObject.position.y, leftPalmFKTuplesNormalizationBounds.leftPalmTargetPositionYMin, leftPalmFKTuplesNormalizationBounds.leftPalmTargetPositionYMax);
+                        let nLeftPalmTargetZ = ANNUtils.normalizeNegPos(this.leftPalmTargetObject.position.z, leftPalmFKTuplesNormalizationBounds.leftPalmTargetPositionZMin, leftPalmFKTuplesNormalizationBounds.leftPalmTargetPositionZMax);
+
+                        const valterLeftPalmIKreditction = this.valterLeftPalmIKTFModel.predict(tf.tensor([nLeftPalmTargetX, nLeftPalmTargetY, nLeftPalmTargetZ], [1, 3]));
+                        const valterLeftPalmIKreditctionData = valterLeftPalmIKreditction.dataSync();
+
+                        const shoulderLeftLinkValuePrediction = ANNUtils.deNormalizeNegPos(valterLeftPalmIKreditctionData[0], leftPalmFKTuplesNormalizationBounds.shoulderLeftLinkValueMin, leftPalmFKTuplesNormalizationBounds.shoulderLeftLinkValueMax);
+                        const limbLeftLinkValuePrediction = ANNUtils.deNormalizeNegPos(valterLeftPalmIKreditctionData[1], leftPalmFKTuplesNormalizationBounds.limbLeftLinkValueMin, leftPalmFKTuplesNormalizationBounds.limbLeftLinkValueMax);
+                        const armLeftLinkValuePrediction = ANNUtils.deNormalizeNegPos(valterLeftPalmIKreditctionData[2], leftPalmFKTuplesNormalizationBounds.armLeftLinkValueMin, leftPalmFKTuplesNormalizationBounds.armLeftLinkValueMax);
+                        const forearmRollLeftLinkValuePrediction = ANNUtils.deNormalizeNegPos(valterLeftPalmIKreditctionData[3], leftPalmFKTuplesNormalizationBounds.forearmRollLeftLinkValueMin, leftPalmFKTuplesNormalizationBounds.forearmRollLeftLinkValueMax);
+
+                        this.Valter.setShoulderLeftLink(shoulderLeftLinkValuePrediction);
+                        this.Valter.setLimbLeftLink(limbLeftLinkValuePrediction);
+                        this.Valter.setArmLeftLink(armLeftLinkValuePrediction);
+                        this.Valter.setForearmRollLeftLink(forearmRollLeftLinkValuePrediction);
+                    }
+                }
+            }
+        }
+        this.prevActionInitialEventCoords = new THREE.Vector2();
+        this.prevActionInitialEventCoords.copy(currentActionInitialEventCoords);
+    }
+
+    setupLeftPalmTargetDirectionFromHeadYawLinkOriginArrowHelper() {
         this.Valter.baseFrame.updateMatrixWorld();
         let headYawLinkLeftPalmDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(this.headYawLinkLeftPalmTargetLocalPos);
         this.leftPalmFromHeadYawLinkArrowHelper = new THREE.ArrowHelper(this.headYawLinkLeftPalmTargetLocalPos.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), headYawLinkLeftPalmDistance, 0xffff00, 0.02, 0.01);
         this.headYawLinkOriginObject3D.add(this.leftPalmFromHeadYawLinkArrowHelper);
-        /*</dev>*/
+    }
+
+    updateLeftPalmTargetDirectionFromHeadYawLinkOriginArrowHelper() {
+        this.Valter.baseFrame.updateMatrixWorld();
+
+        this.headYawLinkLeftPalmTargetLocalPos = this.leftPalmTargetObject.position.clone();
+        this.headYawLinkLeftPalmTargetLocalPos = new THREE.Vector3(parseFloat(this.headYawLinkLeftPalmTargetLocalPos.x.toFixed(3)), parseFloat(this.headYawLinkLeftPalmTargetLocalPos.y.toFixed(3)), parseFloat(this.headYawLinkLeftPalmTargetLocalPos.z.toFixed(3)));
+        let headYawLinkLeftPalmTargetObjectDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(this.headYawLinkLeftPalmTargetLocalPos);
+        let headYawLinkLeftPalmTargetObjectDirection = this.headYawLinkLeftPalmTargetLocalPos.clone().normalize();
+
+        if (this.Valter.nature.devHelpers.showLeftPalmTargetDirectionFromHeadYawLinkOrigin == true && this.leftPalmFromHeadYawLinkArrowHelper) {
+            this.leftPalmFromHeadYawLinkArrowHelper.setDirection(headYawLinkLeftPalmTargetObjectDirection);
+            this.leftPalmFromHeadYawLinkArrowHelper.setLength(headYawLinkLeftPalmTargetObjectDistance, 0.02, 0.01);
+        }
+    }
+
+    updateLeftPalmDirectionFromHeadYawLinkOriginArrowHelper() {
+        this.Valter.baseFrame.updateMatrixWorld();
+
+        this.leftPalmTargetGlobalPosition = this.Valter.leftPalm.localToWorld(new THREE.Vector3());
+
+        this.headYawLinkLeftPalmLocalPos = this.headYawLinkOriginObject3D.worldToLocal(this.leftPalmTargetGlobalPosition.clone());
+        this.headYawLinkLeftPalmLocalPos = new THREE.Vector3(
+                                                                parseFloat(this.headYawLinkLeftPalmLocalPos.x.toFixed(3)), 
+                                                                parseFloat(this.headYawLinkLeftPalmLocalPos.y.toFixed(3)), 
+                                                                parseFloat(this.headYawLinkLeftPalmLocalPos.z.toFixed(3)));
+        let headYawLinkLeftPalmtDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(this.headYawLinkLeftPalmLocalPos);
+        let headYawLinkLeftPalmDirection = this.headYawLinkLeftPalmLocalPos.clone().normalize();
+
+        if (this.leftPalmFromHeadYawLinkArrowHelper) {
+            this.leftPalmFromHeadYawLinkArrowHelper.setDirection(headYawLinkLeftPalmDirection);
+            this.leftPalmFromHeadYawLinkArrowHelper.setLength(headYawLinkLeftPalmtDistance, 0.02, 0.01);
+        }
     }
 
 
     commonInvAction() {
         this.headTargetObjectPrevGlobalPosition = undefined;
         this.rightPalmTargetObjectPrevGlobalPosition = undefined;
+        this.leftPalmTargetObjectPrevGlobalPosition = undefined;
         this.vLab.WebGLRendererCanvas.style.cursor = 'default';
         this.vLab.SceneDispatcher.currentVLabScene.currentControls.enable();
     }

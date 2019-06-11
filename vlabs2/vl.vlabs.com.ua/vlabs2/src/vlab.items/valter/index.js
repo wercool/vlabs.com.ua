@@ -4,6 +4,7 @@ import * as VLabUtils from '../../vlab.fwk/utils/vlab.utils';
 import * as THREEUtils from '../../vlab.fwk/utils/three.utils';
 import VLabItem from '../../vlab.fwk/core/vlab.item';
 import ValterIK from './ik/valter-ik';
+import ValterSLAM from './slam/valter-slam';
 /**
  * Valter VLabItem base class.
  * @class
@@ -68,6 +69,16 @@ class Valter extends VLabItem {
          * 
          */
         this.ValterIK = new ValterIK({
+            Valter: this
+        });
+
+        /**
+         * 
+         * Valter SLAM
+         * 
+         * 
+         */
+        this.ValterSLAM = new ValterSLAM({
             Valter: this
         });
 
@@ -980,10 +991,6 @@ class Valter extends VLabItem {
                 this.kinectHead.add(this.kinectHeadDirectionArrowHelper);
 
                 this.ValterIK.setupHeadTargetDirectionFromHeadYawLinkOrigin(distance);
-            }
-
-            if (this.nature.devHelpers.showLeftPalmTargetDirectionFromHeadYawLinkOrigin == true) {
-                this.ValterIK.setupLeftPalmTargetDirectionFromHeadYawLinkOrigin();
             }
         }
         /*</dev>*/

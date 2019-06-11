@@ -2,6 +2,7 @@ import VLabsRESTAuthService from './service/auth.service';
 import VLabsRESTUserService from './service/user.service';
 import VLabsRESTValterHeadIKService from './service/valter/valter.head.ik.service';
 import ValterRightPalmIKService from './service/valter/valter.right.palm.ik.service';
+import ValterLeftPalmIKService from './service/valter/valter.left.palm.ik.service';
 import VLabsRESTWSBasicService from './service/ws.basic.service';
 
 /**
@@ -60,6 +61,14 @@ class VLabsRESTClientManager {
                 getAllRightPalmFKTuples:                        '/palm/right/ik/get_all_right_palm_fk_tuples',
                 getRightPalmFKTuplesNormalizationBounds:        '/palm/right/ik/get_right_palm_fk_normalization_bounds',
                 getAllRightPalmFKTuplesNormalized:              '/palm/right/ik/get_all_right_palm_fk_tuples_normalized',
+                /**
+                 * Left Palm
+                 */
+                saveLeftPalmFKTuple:                           '/palm/left/ik/save_left_palm_fk_tuple',
+                getLeftPalmFKTuple:                            '/palm/left/ik/get_left_palm_fk_tuple',
+                getAllLeftPalmFKTuples:                        '/palm/left/ik/get_all_left_palm_fk_tuples',
+                getLeftPalmFKTuplesNormalizationBounds:        '/palm/left/ik/get_left_palm_fk_normalization_bounds',
+                getAllLeftPalmFKTuplesNormalized:              '/palm/left/ik/get_all_left_palm_fk_tuples_normalized',
             },
             getFullyQualifiedURL: function (endpointGroup, endpointPoint) {
                 return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint];
@@ -79,6 +88,7 @@ class VLabsRESTClientManager {
          */
         this.ValterHeadIKService                    = new VLabsRESTValterHeadIKService(this);
         this.ValterRightPalmIKService               = new ValterRightPalmIKService(this);
+        this.ValterLeftPalmIKService                = new ValterLeftPalmIKService(this);
     }
     handleError(error) {
         switch (error.type) {

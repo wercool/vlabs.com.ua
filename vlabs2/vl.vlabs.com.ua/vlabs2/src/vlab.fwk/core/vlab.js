@@ -423,13 +423,21 @@ password: '123'
      * @memberof VLab
      */
     render(time) {
+        this.EventDispatcher.notifySubscribers({
+            type: 'beforerender',
+            target: this.WebGLRendererCanvas,
+            dt: delta
+        });
+
         let delta = this.clock.getDelta();
+
         if (this.effectComposer) {
             this.WebGLRenderer.clear();
             this.effectComposer.render(delta);
         } else {
             this.WebGLRenderer.render(this.SceneDispatcher.currentVLabScene, this.SceneDispatcher.currentVLabScene.currentCamera);
         }
+
         this.fps = 1 / delta;
 
         this.EventDispatcher.notifySubscribers({

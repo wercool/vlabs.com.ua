@@ -40,7 +40,8 @@ class VLabEventDispatcher {
                 touchstart:         {},
                 touchend:           {},
                 touchmove:          {},
-                framerequest:       {}
+                framerequest:       {},
+                beforerender:       {}
             },
             VLabScene: {
                 /**

@@ -17,6 +17,10 @@ class ValterRightPalmIKDev {
          * Valter.vLab VLab Instance
          */
         this.vLab = this.Valter.vLab;
+        /**
+         * Throttling of data
+         */
+        this.Valter.ValterIK.rightPalmIKDataThrottlingSigma = 0.025;
     }
 
     /**
@@ -151,7 +155,7 @@ class ValterRightPalmIKDev {
 
     prepareValterRightPalmFKTuples() {
         return new Promise((resolve, reject) => {
-            this.vLab.VLabsRESTClientManager.ValterRightPalmIKService.getAllRightPalmFKTuplesNormalized(0.05)
+            this.vLab.VLabsRESTClientManager.ValterRightPalmIKService.getAllRightPalmFKTuplesNormalized(this.Valter.ValterIK.rightPalmIKDataThrottlingSigma)
             .then(rightPalmFKNormalizedTuples => {
                 resolve(rightPalmFKNormalizedTuples);
             });
