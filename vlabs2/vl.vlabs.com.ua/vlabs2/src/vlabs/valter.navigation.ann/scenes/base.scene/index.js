@@ -76,10 +76,11 @@ class BaseScene extends VLabScene {
             /**
              * Right Palm IK fit from FK tuples
              */
-            this.ValterRightPalmIKDev = new ValterRightPalmIKDev(this.vLab['Valter']);
+            // this.ValterRightPalmIKDev = new ValterRightPalmIKDev(this.vLab['Valter']);
             // this.ValterRightPalmIKDev.getValterRightPalmFKTuples();
-            // this.ValterRightPalmIKDev.printRightPalmFKTuplesNormalizationBounds();
+            // this.ValterRightPalmIKDev.printRightPalmFKTuplesNormalizationBounds(0.05);
             // this.ValterRightPalmIKDev.fitAndSaveRightPalmTargetIKModel();
+            // this.ValterRightPalmIKDev.saveValterRightPalmTargetIKModelToLocalFile();
         }
     }
 

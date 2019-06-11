@@ -44,6 +44,18 @@ class ValterIK {
             });
         }
 
+        this.valterRightPalmIKTFModel = undefined;
+
+        if (this.Valter.nature.ANNIK.rightPalmANNIK) {
+            tf.loadLayersModel(this.Valter.nature.ANNIK.rightPalmIKTFModelURL ? this.Valter.nature.ANNIK.rightPalmIKTFModelURL : 'localstorage://valter-right-palm-ik-model')
+            .then((model) => {
+                this.valterRightPalmIKTFModel = model;
+            })
+            .catch(error => {
+                console.error(error.message);
+            });
+        }
+
         /**
          * Head target setup
          */
@@ -470,8 +482,9 @@ class ValterIK {
                     action: () => {
                         let rightPalmFKPointsMaterial = new THREE.PointsMaterial({ size: 0.01, color: 0x00ff00 });
                         let rightPalmFKPointsGeometry = new THREE.Geometry();
-                        this.vLab.VLabsRESTClientManager.ValterRightPalmIKService.getAllRightPalmFKTuples()
+                        this.vLab.VLabsRESTClientManager.ValterRightPalmIKService.getAllRightPalmFKTuples(0.05)
                         .then(valterRightPalmFKTuples => {
+                            console.log('valterRightPalmFKTuples size: ' + valterRightPalmFKTuples.length);
                             valterRightPalmFKTuples.forEach(valterRightPalmFKTuple => {
                                 let point = new THREE.Vector3().set(valterRightPalmFKTuple.rightPalmTargetPosition.x, valterRightPalmFKTuple.rightPalmTargetPosition.y, valterRightPalmFKTuple.rightPalmTargetPosition.z);
                                 rightPalmFKPointsGeometry.vertices.push(point);
@@ -531,7 +544,7 @@ class ValterIK {
 
             if (newRightPalmTargetObjectPos != undefined) {
 
-                // let headNormalizationBounds = this.Valter.nature.ANNIK.headFKTuplesNormalizationBounds;
+                let rightPalmFKTuplesNormalizationBounds = this.Valter.nature.ANNIK.rightPalmFKTuplesNormalizationBounds;
 
                 let headYawLinkRightPalmTargetLocalPos = newRightPalmTargetObjectPos.clone();
 
@@ -547,39 +560,41 @@ class ValterIK {
     
                     this.updateRightPalmTargetDirectionFromHeadYawLinkOriginArrowHelper();
 
-                    // if (this.Valter.nature.ANNIK.headANNIK && this.valterHeadIKTFModel !== undefined) {
-                    //     /**
-                    //      *
-                    //      *
-                    //      _    _                _   _____ _  __ 
-                    //     | |  | |              | | |_   _| |/ /
-                    //     | |__| | ___  __ _  __| |   | | | ' /
-                    //     |  __  |/ _ \/ _` |/ _` |   | | |  <
-                    //     | |  | |  __/ (_| | (_| |  _| |_| . \
-                    //     |_|  |_|\___|\__,_|\__,_| |_____|_|\_\
-                    //     _____              _ _      _   _ 
-                    //     |  __ \            | (_)    | | (_)
-                    //     | |__) | __ ___  __| |_  ___| |_ _  ___  _ __  
-                    //     |  ___/ '__/ _ \/ _` | |/ __| __| |/ _ \| '_ \ 
-                    //     | |   | | |  __/ (_| | | (__| |_| | (_) | | | |
-                    //     |_|   |_|  \___|\__,_|_|\___|\__|_|\___/|_| |_|
-                    //     *
-                    //     *
-                    //     */
-                    //     let nHeadTargetX = ANNUtils.normalizeNegPos(this.headTargetObject.position.x, headNormalizationBounds.headTargetPositionXMin, headNormalizationBounds.headTargetPositionXMax);
-                    //     let nHeadTargetY = ANNUtils.normalizeNegPos(this.headTargetObject.position.y, headNormalizationBounds.headTargetPositionYMin, headNormalizationBounds.headTargetPositionYMax);
-                    //     let nHeadTargetZ = ANNUtils.normalizeNegPos(this.headTargetObject.position.z, headNormalizationBounds.headTargetPositionZMin, headNormalizationBounds.headTargetPositionZMax);
-    
-                    //     const valterHeadYawTiltPreditction = this.valterHeadIKTFModel.predict(tf.tensor([nHeadTargetX, nHeadTargetY, nHeadTargetZ], [1, 3]));
-                    //     const valterHeadYawTiltPreditctionData = valterHeadYawTiltPreditction.dataSync();
-                    //     const valterHeadYawPreditctionValue = ANNUtils.deNormalizeNegPos(valterHeadYawTiltPreditctionData[0], headNormalizationBounds.headYawLinkValueMin, headNormalizationBounds.headYawLinkValueMax);
-                    //     const valterHeadTiltPreditctionValue = ANNUtils.deNormalizeNegPos(valterHeadYawTiltPreditctionData[1], headNormalizationBounds.headTiltLinkValueMin, headNormalizationBounds.headTiltLinkValueMax);
-    
-                    //     // console.log('[' + this.headTargetObject.position.x.toFixed(3) + ', ' + this.headTargetObject.position.y.toFixed(3) + ', ' + this.headTargetObject.position.z.toFixed(3) + '] -> [' + valterHeadYawPreditctionValue.toFixed(3) +', ' + valterHeadTiltPreditctionValue.toFixed(3) + ']');
-    
-                    //     this.Valter.setHeadYawLink(valterHeadYawPreditctionValue);
-                    //     this.Valter.setHeadTiltLink(valterHeadTiltPreditctionValue);
-                    // }
+                    if (this.Valter.nature.ANNIK.rightPalmANNIK && this.valterRightPalmIKTFModel !== undefined) {
+                        /**
+                         *
+                         *
+                             _____  _       _     _     _____      _             _____ _  __
+                            |  __ \(_)     | |   | |   |  __ \    | |           |_   _| |/ /
+                            | |__) |_  __ _| |__ | |_  | |__) |_ _| |_ __ ___     | | | ' / 
+                            |  _  /| |/ _` | '_ \| __| |  ___/ _` | | '_ ` _ \    | | |  <  
+                            | | \ \| | (_| | | | | |_  | |  | (_| | | | | | | |  _| |_| . \ 
+                            |_|__\_\_|\__, |_| |_|\__| |_|   \__,_|_|_| |_| |_| |_____|_|\_\
+                            |  __ \    __/ |   | (_)    | | (_)
+                            | |__) | _|___/  __| |_  ___| |_ _  ___  _ __ 
+                            |  ___/ '__/ _ \/ _` | |/ __| __| |/ _ \| '_ \ 
+                            | |   | | |  __/ (_| | | (__| |_| | (_) | | | |
+                            |_|   |_|  \___|\__,_|_|\___|\__|_|\___/|_| |_|
+                        *
+                        *
+                        */
+                        let nRightPalmTargetX = ANNUtils.normalizeNegPos(this.rightPalmTargetObject.position.x, rightPalmFKTuplesNormalizationBounds.rightPalmTargetPositionXMin, rightPalmFKTuplesNormalizationBounds.rightPalmTargetPositionXMax);
+                        let nRightPalmTargetY = ANNUtils.normalizeNegPos(this.rightPalmTargetObject.position.y, rightPalmFKTuplesNormalizationBounds.rightPalmTargetPositionYMin, rightPalmFKTuplesNormalizationBounds.rightPalmTargetPositionYMax);
+                        let nRightPalmTargetZ = ANNUtils.normalizeNegPos(this.rightPalmTargetObject.position.z, rightPalmFKTuplesNormalizationBounds.rightPalmTargetPositionZMin, rightPalmFKTuplesNormalizationBounds.rightPalmTargetPositionZMax);
+
+                        const valterRightPalmIKreditction = this.valterRightPalmIKTFModel.predict(tf.tensor([nRightPalmTargetX, nRightPalmTargetY, nRightPalmTargetZ], [1, 3]));
+                        const valterRightPalmIKreditctionData = valterRightPalmIKreditction.dataSync();
+
+                        const shoulderRightLinkValuePrediction = ANNUtils.deNormalizeNegPos(valterRightPalmIKreditctionData[0], rightPalmFKTuplesNormalizationBounds.shoulderRightLinkValueMin, rightPalmFKTuplesNormalizationBounds.shoulderRightLinkValueMax);
+                        const limbRightLinkValuePrediction = ANNUtils.deNormalizeNegPos(valterRightPalmIKreditctionData[1], rightPalmFKTuplesNormalizationBounds.limbRightLinkValueMin, rightPalmFKTuplesNormalizationBounds.limbRightLinkValueMax);
+                        const armRightLinkValuePrediction = ANNUtils.deNormalizeNegPos(valterRightPalmIKreditctionData[2], rightPalmFKTuplesNormalizationBounds.armRightLinkValueMin, rightPalmFKTuplesNormalizationBounds.armRightLinkValueMax);
+                        const forearmRollRightLinkValuePrediction = ANNUtils.deNormalizeNegPos(valterRightPalmIKreditctionData[3], rightPalmFKTuplesNormalizationBounds.forearmRollRightLinkValueMin, rightPalmFKTuplesNormalizationBounds.forearmRollRightLinkValueMax);
+
+                        this.Valter.setShoulderRightLink(shoulderRightLinkValuePrediction);
+                        this.Valter.setLimbRightLink(limbRightLinkValuePrediction);
+                        this.Valter.setArmRightLink(armRightLinkValuePrediction);
+                        this.Valter.setForearmRollRightLink(forearmRollRightLinkValuePrediction);
+                    }
                 }
             }
         }

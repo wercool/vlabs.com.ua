@@ -136,8 +136,8 @@ class ValterRightPalmIKDev {
      * Right Palm IK solving with TFjs
      * 
      */
-    printRightPalmFKTuplesNormalizationBounds() {
-        this.vLab.VLabsRESTClientManager.ValterRightPalmIKService.getRightPalmFKTuplesNormalizationBounds()
+    printRightPalmFKTuplesNormalizationBounds(sigma) {
+        this.vLab.VLabsRESTClientManager.ValterRightPalmIKService.getRightPalmFKTuplesNormalizationBounds(sigma)
         .then(rightPalmFKTuplesNormalizationBounds => {
             let ValterNatureANNIKRightPalmFKTuplesNormalizationBounds = '"rightPalmFKTuplesNormalizationBounds": {\n';
             Object.keys(rightPalmFKTuplesNormalizationBounds).forEach((key) => {
@@ -151,7 +151,7 @@ class ValterRightPalmIKDev {
 
     prepareValterRightPalmFKTuples() {
         return new Promise((resolve, reject) => {
-            this.vLab.VLabsRESTClientManager.ValterRightPalmIKService.getAllRightPalmFKTuplesNormalized()
+            this.vLab.VLabsRESTClientManager.ValterRightPalmIKService.getAllRightPalmFKTuplesNormalized(0.05)
             .then(rightPalmFKNormalizedTuples => {
                 resolve(rightPalmFKNormalizedTuples);
             });
@@ -225,8 +225,7 @@ class ValterRightPalmIKDev {
                     .catch(error => {
                         // A sequential model is a container which you can add layers to.
                         const model = tf.sequential();
-                        model.add(tf.layers.dense({inputShape: [valterRightPalmIKTrainingData.inputTensorShape[1]], units: 12, activation: 'elu'}));
-                        model.add(tf.layers.dense({units: 12, activation: 'elu'}));
+                        model.add(tf.layers.dense({inputShape: [valterRightPalmIKTrainingData.inputTensorShape[1]], units: 32, activation: 'elu'}));
                         model.add(tf.layers.dense({units: 4, activation: 'elu'}));
 
                         // Specify the loss type and optimizer for training.
@@ -258,13 +257,13 @@ class ValterRightPalmIKDev {
             // We'll keep a buffer of loss and accuracy values over time.
             let trainBatchCount = 0;
             let trainEpochCount = 0;
-            let trainEpochs = 1000;
+            let trainEpochs = 2000;
             this.valterRightPalmFKtoIKSolver.model.fit(
                 this.valterRightPalmFKtoIKSolver.inputTensor, 
                 this.valterRightPalmFKtoIKSolver.outpuTensor, 
                 {
                     epochs: trainEpochs,
-                    batchSize: 100,
+                    // batchSize: 500,
                     shuffle: true,
                     //validationData: [this.valterRightPalmFKtoIKSolver.inputTensor, this.valterRightPalmFKtoIKSolver.outpuTensor],
                     callbacks: {

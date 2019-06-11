@@ -48,9 +48,10 @@ class ValterRightPalmIKService {
         });
      }
 
-     getAllRightPalmFKTuples() {
+     getAllRightPalmFKTuples(sigma) {
         return new Promise((resolve, reject) => {
             let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getAllRightPalmFKTuples');
+            if (sigma !== undefined) apiEndPoint += '?sigma=' + sigma;
             this.manager.get(apiEndPoint)
             .then((result) => {
                 resolve(result);
@@ -62,9 +63,10 @@ class ValterRightPalmIKService {
         });
      }
 
-     getRightPalmFKTuplesNormalizationBounds() {
+     getRightPalmFKTuplesNormalizationBounds(sigma) {
         return new Promise((resolve, reject) => {
             let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getRightPalmFKTuplesNormalizationBounds');
+            if (sigma !== undefined) apiEndPoint += '?sigma=' + sigma;
             this.manager.get(apiEndPoint)
             .then((result) => {
                 resolve(result);
@@ -76,9 +78,10 @@ class ValterRightPalmIKService {
         });
      }
 
-     getAllRightPalmFKTuplesNormalized() {
+     getAllRightPalmFKTuplesNormalized(sigma) {
         return new Promise((resolve, reject) => {
             let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getAllRightPalmFKTuplesNormalized');
+            if (sigma !== undefined) apiEndPoint += '?sigma=' + sigma;
             this.manager.get(apiEndPoint)
             .then((result) => {
                 resolve(result);
