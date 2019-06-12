@@ -14,13 +14,13 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
 
-public class BasicWebSocketHandler extends AuthorizedWebSocketHandler {
+public class BasicWebSocketMessageHandler extends AuthorizedWebSocketHandler {
 
     private UnicastProcessor<BasicWebSocketMessage> messagePublisher;
     private Flux<String> outputMessages;
     private ObjectMapper mapper;
 
-    public BasicWebSocketHandler(UnicastProcessor<BasicWebSocketMessage> messagePublisher, Flux<BasicWebSocketMessage> messages){
+    public BasicWebSocketMessageHandler(UnicastProcessor<BasicWebSocketMessage> messagePublisher, Flux<BasicWebSocketMessage> messages){
         this.authorizedRoles.addAll(Arrays.asList("ROLE_USER"));
         this.messagePublisher = messagePublisher;
         this.mapper = new ObjectMapper();
@@ -28,7 +28,7 @@ public class BasicWebSocketHandler extends AuthorizedWebSocketHandler {
     }
 
     @Override
-    Mono<Void> doHandle(WebSocketSession session) {
+    public Mono<Void> doHandle(WebSocketSession session) {
         WebSocketMessageSubscriber subscriber = new WebSocketMessageSubscriber(messagePublisher);
 
         session.receive()

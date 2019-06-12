@@ -1,9 +1,14 @@
 import VLabsRESTAuthService from './service/auth.service';
 import VLabsRESTUserService from './service/user.service';
+import VLabsRESTWSBasicService from './service/ws.basic.service';
+
+/**
+ * Valter
+ */
 import VLabsRESTValterHeadIKService from './service/valter/valter.head.ik.service';
 import ValterRightPalmIKService from './service/valter/valter.right.palm.ik.service';
 import ValterLeftPalmIKService from './service/valter/valter.left.palm.ik.service';
-import VLabsRESTWSBasicService from './service/ws.basic.service';
+import VLabsRESTWSValterRGBDMessageService from './service/valter/ws/ws.valter.rgbd.message.service';
 
 /**
  * VLabsRESTClientManager base class
@@ -69,6 +74,12 @@ class VLabsRESTClientManager {
                 getAllLeftPalmFKTuples:                        '/palm/left/ik/get_all_left_palm_fk_tuples',
                 getLeftPalmFKTuplesNormalizationBounds:        '/palm/left/ik/get_left_palm_fk_normalization_bounds',
                 getAllLeftPalmFKTuplesNormalized:              '/palm/left/ik/get_all_left_palm_fk_tuples_normalized',
+                /**
+                 * Navigation Kinect
+                 */
+                ws: {
+                    navKinectRGBD:  '/nav_kinect_rgbd',
+                }
             },
             getFullyQualifiedURL: function (endpointGroup, endpointPoint) {
                 return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint];
@@ -89,6 +100,10 @@ class VLabsRESTClientManager {
         this.ValterHeadIKService                    = new VLabsRESTValterHeadIKService(this);
         this.ValterRightPalmIKService               = new ValterRightPalmIKService(this);
         this.ValterLeftPalmIKService                = new ValterLeftPalmIKService(this);
+        /**
+         * Valter WS
+         */
+        this.VLabsRESTWSValterRGBDMessageService             = new VLabsRESTWSValterRGBDMessageService(this);
     }
     handleError(error) {
         switch (error.type) {

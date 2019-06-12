@@ -13,7 +13,7 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
 import vlabs.rest.config.security.JWTAuthenticationToken;
 
-abstract class AuthorizedWebSocketHandler implements WebSocketHandler {
+abstract public class AuthorizedWebSocketHandler implements WebSocketHandler {
 
     protected ArrayList<String> authorizedRoles = new ArrayList<String>();
 
@@ -62,5 +62,5 @@ abstract class AuthorizedWebSocketHandler implements WebSocketHandler {
         return false;
     }
 
-    abstract Mono<Void> doHandle(WebSocketSession session);
+    abstract public Mono<Void> doHandle(WebSocketSession session);
 }

@@ -25,6 +25,8 @@ class BaseScene extends VLabScene {
          */
         console.log(this);
 
+        this.manager.performance.lowFPSThreshold = 10;
+
         var ambientLight = new THREE.AmbientLight(0x404040, 0.2); // soft white light
         this.add(ambientLight);
 
@@ -63,8 +65,8 @@ class BaseScene extends VLabScene {
     onVLabItemInitialized(event) {
         if (event.vLabItem == this.vLab['Valter']) {
             this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 1.0));
-            // this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 0.0));
 
+            // this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 0.0));
             /**
              * Head IK fit from FK tuples
              */

@@ -3,9 +3,9 @@ package vlabs.rest.config.websocket;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.server.WebSocketService;
@@ -15,34 +15,71 @@ import org.springframework.web.reactive.socket.server.upgrade.ReactorNettyReques
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
-import vlabs.rest.api.ws.BasicWebSocketHandler;
+import vlabs.rest.api.ws.BasicWebSocketMessageHandler;
+import vlabs.rest.api.ws.valter.handlers.NavKinectRGBDWebSocketMessageHandler;
+import vlabs.rest.api.ws.valter.messages.NavKinectRGBDWebSocketMessage;
 import vlabs.rest.api.ws.BasicWebSocketMessage;
 
 @Configuration
 public class WebSocketConfig {
 
+    @Value("${ws.maxFramePayloadLength}")
+    Integer maxFramePayloadLength;
+
+    /**
+     * 
+     * BasicWebSocketMessage
+     * 
+     */
     @Bean
-    public UnicastProcessor<BasicWebSocketMessage> messagePublisher(){
+    public UnicastProcessor<BasicWebSocketMessage> basicWebSocketMessagePublisher(){
         return UnicastProcessor.create();
     }
-
     @Bean
-    public Flux<BasicWebSocketMessage> messages(UnicastProcessor<BasicWebSocketMessage> messagePublisher) {
-        return messagePublisher
+    public Flux<BasicWebSocketMessage> basicWebSocketMessages(UnicastProcessor<BasicWebSocketMessage> basicWebSocketMessagePublisher) {
+        return basicWebSocketMessagePublisher
                .replay(0)
                .autoConnect();
     }
-
     @Bean
-    public BasicWebSocketHandler basicWebSocketHandler(UnicastProcessor<BasicWebSocketMessage> messagePublisher, Flux<BasicWebSocketMessage> messages)
+    public BasicWebSocketMessageHandler basicWebSocketMessageHandler(UnicastProcessor<BasicWebSocketMessage> basicWebSocketMessagePublisher, Flux<BasicWebSocketMessage> basicWebSocketMessages)
     {
-        return new BasicWebSocketHandler(messagePublisher, messages);
+        return new BasicWebSocketMessageHandler(basicWebSocketMessagePublisher, basicWebSocketMessages);
+    }
+
+    /**
+     * 
+     * NavKinectRGBDWebSocketMessage
+     * 
+     */
+    @Bean
+    public UnicastProcessor<NavKinectRGBDWebSocketMessage> navKinectRGBDWebSocketMessagePublisher(){
+        return UnicastProcessor.create();
+    }
+    @Bean
+    public Flux<NavKinectRGBDWebSocketMessage> navKinectRGBDWebSocketMessages(UnicastProcessor<NavKinectRGBDWebSocketMessage> navKinectRGBDWebSocketMessagePublisher) {
+        return navKinectRGBDWebSocketMessagePublisher
+               .replay(0)
+               .autoConnect();
+    }
+    @Bean
+    public NavKinectRGBDWebSocketMessageHandler navKinectRGBDWebSocketMessageHandler(UnicastProcessor<NavKinectRGBDWebSocketMessage> navKinectRGBDWebSocketMessagePublisher, Flux<NavKinectRGBDWebSocketMessage> navKinectRGBDWebSocketMessages)
+    {
+        return new NavKinectRGBDWebSocketMessageHandler(navKinectRGBDWebSocketMessagePublisher, navKinectRGBDWebSocketMessages);
     }
 
     @Bean
-    public SimpleUrlHandlerMapping handlerMapping(BasicWebSocketHandler basicWebSocketHandler) {
+    public SimpleUrlHandlerMapping handlerMapping(
+            BasicWebSocketMessageHandler basicWebSocketMessageHandler,
+            NavKinectRGBDWebSocketMessageHandler navKinectRGBDWebSocketMessageHandler
+            ) {
         Map<String, WebSocketHandler> map = new HashMap<>();
-        map.put("/api/ws/basic", basicWebSocketHandler);
+        map.put("/api/ws/basic", basicWebSocketMessageHandler);
+        
+        /**
+         * Valter
+         */
+        map.put("/api/ws/valter/nav_kinect_rgbd", navKinectRGBDWebSocketMessageHandler);
 
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
         mapping.initApplicationContext();
@@ -68,6 +105,9 @@ public class WebSocketConfig {
 
     @Bean
     public WebSocketService webSocketService() {
-        return new HandshakeWebSocketService(new ReactorNettyRequestUpgradeStrategy());
+        ReactorNettyRequestUpgradeStrategy reactorNettyRequestUpgradeStrategy = new ReactorNettyRequestUpgradeStrategy();
+        reactorNettyRequestUpgradeStrategy.setMaxFramePayloadLength(maxFramePayloadLength);
+
+        return new HandshakeWebSocketService(reactorNettyRequestUpgradeStrategy);
     }
 }

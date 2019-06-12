@@ -19,7 +19,7 @@ import org.springframework.web.util.pattern.PathPattern;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
-import vlabs.rest.api.ws.BasicWebSocketHandler;
+import vlabs.rest.api.ws.BasicWebSocketMessageHandler;
 import vlabs.rest.api.ws.BasicWebSocketMessage;
 
 @Component
@@ -41,7 +41,7 @@ public class VLabWebSocketHandlerMapping extends AbstractHandlerMapping {
             UnicastProcessor<BasicWebSocketMessage> messagePublisher = UnicastProcessor.create();
             Flux<BasicWebSocketMessage> messages = messagePublisher.replay(0).autoConnect();
 
-            registerHandler(url, new BasicWebSocketHandler(messagePublisher, messages));
+            registerHandler(url, new BasicWebSocketMessageHandler(messagePublisher, messages));
 
             return Mono.just(true);
         } catch (IllegalStateException ex) {
@@ -53,7 +53,7 @@ public class VLabWebSocketHandlerMapping extends AbstractHandlerMapping {
     public Mono<Boolean> removeMapping(String url) {
         PathPattern pattern = getPathPatternParser().parse(url);
         if (this.handlerMap.containsKey(pattern)) {
-            BasicWebSocketHandler handler = (BasicWebSocketHandler) this.handlerMap.get(pattern);
+            BasicWebSocketMessageHandler handler = (BasicWebSocketMessageHandler) this.handlerMap.get(pattern);
             handler.terminate();
             this.handlerMap.remove(pattern);
             log.warn("VLabWebSocketHandlerMapping for the URL [" + url + "] removed");
