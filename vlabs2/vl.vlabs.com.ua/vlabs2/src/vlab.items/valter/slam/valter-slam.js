@@ -30,6 +30,7 @@ class ValterSLAM {
         .connect();
 
         this.rgbdSize = new THREE.Vector2(320, 240);
+        // this.rgbdSize = new THREE.Vector2(160, 120);
         this.kinectCameraAspect = this.rgbdSize.x / this.rgbdSize.y;
 
         /**
@@ -84,7 +85,7 @@ class ValterSLAM {
 
         this.WebGLRenderer = new THREE.WebGLRenderer({
             canvas: this.slamKinectRGBCameraRendererCanvas,
-            antialias: false,
+            antialias: true,
             powerPreference: 'high-performance',
             precision: 'lowp',
             preserveDrawingBuffer: true
@@ -111,6 +112,20 @@ class ValterSLAM {
         this.getNavKinectRGBDWebSocketMessage = this.getNavKinectRGBDWebSocketMessage.bind(this);
 
         this.getNavKinectRGBDWebSocketMessageEnabled = false;
+
+        this.Valter.getInteractableByName('baseFrame').DEV.menu.unshift(
+            {
+                label: 'Get ' + this.rgbdSize.x + 'x' + this.rgbdSize.y + ' RGBD Image from navigation Kinect',
+                enabled: true,
+                selected: false,
+                icon: '<i class=\"material-icons\">cast_connected</i>',
+                action: (menuItem) => {
+                    this.slamKinectRGBCameraRendererCanvas.style.visibility = 'visible';
+                    this.slamKinectRGBCameraDepthImageCanvas.style.visibility = 'visible';
+                    this.initializeRGBDScanning(1.0);
+                }
+            }
+        );
 
         this.Valter.getInteractableByName('baseFrame').DEV.menu.unshift(
             {
@@ -164,8 +179,9 @@ class ValterSLAM {
         this.slamKinectRGBCamera.lookAt(this.slamKinectRGBCameraLookAt);
     }
 
-    initializeRGBDScanning() {
-        this.depthImageThrottling = 7.0001;
+    initializeRGBDScanning(depthImageThrottling) {
+        this.depthImageThrottling = depthImageThrottling ? depthImageThrottling : 7.0;
+        this.depthImageThrottling += 0.0001;
 
         this.slamKinectDepthRaycasterHAngleDelta = this.slamKinectRGBCameraHFOV / (this.rgbdSize.x / this.depthImageThrottling);
         this.slamKinectDepthRaycasterVAngleDelta = this.slamKinectRGBCameraVFOV / (this.rgbdSize.y / this.depthImageThrottling);
@@ -264,32 +280,39 @@ class ValterSLAM {
 
         this.vLab.renderPaused = false;
 
-        if (this.getNavKinectRGBDWebSocketMessageEnabled) setTimeout(this.getNavKinectRGBDWebSocketMessage, 250);
-
-        this.sendNavKinectRGBDWebSocketMessage();
+        if (this.getNavKinectRGBDWebSocketMessageEnabled) {
+            this.sendNavKinectRGBDWebSocketMessage()
+            .then(() => {
+                setTimeout(this.getNavKinectRGBDWebSocketMessage, 250);
+            });
+        }
     }
 
     sendNavKinectRGBDWebSocketMessage() {
-        /**
-         * RGB image
-         */
-        let navKinectRGBImageData = this.slamKinectRGBCameraRendererCanvas.toDataURL();
-        /**
-         * Depth image
-         */
-        let navKinectDepthImageData = this.slamKinectRGBCameraDepthImageCanvas.toDataURL();
-        /**
-         * Send NavKinectRGBDWebSocketMessage to VLabsRESTWS
-         */
-        let navKinectRGBDWebSocketMessage = new NavKinectRGBDWebSocketMessage();
-        navKinectRGBDWebSocketMessage.rgbImageData = navKinectRGBImageData;
-        navKinectRGBDWebSocketMessage.depthImageData = navKinectDepthImageData;
+        return new Promise((resolve) => {
+            /**
+             * RGB image
+             */
+            let navKinectRGBImageData = this.slamKinectRGBCameraRendererCanvas.toDataURL();
+            /**
+             * Depth image
+             */
+            let navKinectDepthImageData = this.slamKinectRGBCameraDepthImageCanvas.toDataURL();
+            /**
+             * Send NavKinectRGBDWebSocketMessage to VLabsRESTWS
+             */
+            let navKinectRGBDWebSocketMessage = new NavKinectRGBDWebSocketMessage();
+            navKinectRGBDWebSocketMessage.rgbImageData = navKinectRGBImageData;
+            navKinectRGBDWebSocketMessage.depthImageData = navKinectDepthImageData;
 
-        // this.vLab.VLabsRESTClientManager.VLabsRESTWSValterRGBDMessageService.send(navKinectRGBDWebSocketMessage);
+            // this.vLab.VLabsRESTClientManager.VLabsRESTWSValterRGBDMessageService.send(navKinectRGBDWebSocketMessage);
 
-        this.sendNavKinectRGBDWebSocketMessageWorker.postMessage({
-            socketURL: this.vLab.VLabsRESTClientManager.VLabsRESTWSValterRGBDMessageService.getFullyQualifiedURL(),
-            navKinectRGBDWebSocketMessage: navKinectRGBDWebSocketMessage
+            this.sendNavKinectRGBDWebSocketMessageWorker.postMessage({
+                socketURL: this.vLab.VLabsRESTClientManager.VLabsRESTWSValterRGBDMessageService.getFullyQualifiedURL(),
+                navKinectRGBDWebSocketMessage: navKinectRGBDWebSocketMessage
+            });
+
+            resolve();
         });
     }
 }

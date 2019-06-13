@@ -1,5 +1,2 @@
-gulp -v
-[13:15:48] CLI version 2.0.1
-[13:15:48] Local version 4.0.0
-
-1) animations from GLB
+1) Add VLabsRESTClientManager.APIEndpoints settings to ./src/vlab.fwk/utils/vlab.project.structure/...
+2) animations from GLB

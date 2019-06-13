@@ -1,0 +1,22 @@
+{
+    "name": "RGBD Kinect Message subscriber",
+    "APIEndpoints": {
+        "base": "http://192.168.101.100:8080/api",
+        "ws_base": "ws://192.168.101.100:8080/api/ws"
+    },
+    "styles": {
+    },
+    "WebGLRendererParameters": {
+        "resolutionFactor": 1.0,
+        "clearColor": "0x0f0f0f",
+        "effectComposer": true
+    },
+    "materialParameters": {
+        "bumpMaps": false
+    },
+    "selections": {
+        "outlineHelperMesh": false,
+        "boundsSprite": true
+    },
+    "simpleStats": true
+}

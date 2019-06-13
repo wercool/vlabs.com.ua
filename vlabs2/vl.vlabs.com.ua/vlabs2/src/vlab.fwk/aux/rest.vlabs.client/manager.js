@@ -32,9 +32,9 @@ class VLabsRESTClientManager {
         ];
 
         this.APIEndpoints = {
-            base: 'http://localhost:8080/api',
+            base: (this.vLab.nature.APIEndpoints && this.vLab.nature.APIEndpoints.base) ? this.vLab.nature.APIEndpoints.base : 'http://localhost:8080/api',
             ws: {
-                base: 'ws://localhost:8080/api/ws',
+                base: (this.vLab.nature.APIEndpoints && this.vLab.nature.APIEndpoints.ws_base) ? this.vLab.nature.APIEndpoints.ws_base : 'ws://localhost:8080/api/ws',
                 basic: '/basic'
             },
             auth: {

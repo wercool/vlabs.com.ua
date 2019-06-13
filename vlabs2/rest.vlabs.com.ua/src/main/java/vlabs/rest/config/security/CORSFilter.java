@@ -15,7 +15,8 @@ public class CORSFilter implements WebFluxConfigurer {
             .allowedOrigins(
                     "http://localhost:4200", //VLabs Front Face
                     "http://localhost:3000", //VLabs Admin
-                    "http://localhost:9001"  //VLabs
+                    "http://localhost:9001", //VLabs
+                    "http://192.168.101.100:9001" //Vlabs Development host
             )
             .allowedMethods("*")
             .allowedHeaders("*")
