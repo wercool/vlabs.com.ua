@@ -25,7 +25,7 @@ class BaseScene extends VLabScene {
          */
         console.log(this);
 
-        this.manager.performance.lowFPSThreshold = 10;
+        this.manager.performance.lowFPSThreshold = 0;
 
         var ambientLight = new THREE.AmbientLight(0x404040, 0.2); // soft white light
         this.add(ambientLight);

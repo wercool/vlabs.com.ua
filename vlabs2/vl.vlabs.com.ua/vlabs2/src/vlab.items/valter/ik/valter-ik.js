@@ -94,6 +94,7 @@ class ValterIK {
 
             this.kinectHeadToHeadTargetArrowHelper = new THREE.ArrowHelper(kinectHeadToHeadTargetLocalPos.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), kinectHeadToHeadTargetDistance, 0xff00ff, 0.02, 0.01);
             this.Valter.kinectHead.add(this.kinectHeadToHeadTargetArrowHelper);
+            this.Valter.selfMeshes.push(this.kinectHeadToHeadTargetArrowHelper.cone);
         }
     }
 
@@ -120,6 +121,7 @@ class ValterIK {
             this.headDirectionTarget = new THREE.Mesh(geometry, material);
             this.headDirectionTarget.position.copy(this.headDirectionTargetObject3D.position.clone());
             this.Valter.kinectHead.add(this.headDirectionTarget);
+            this.Valter.selfMeshes.push(this.headDirectionTarget);
 
             this.Valter.baseFrame.updateMatrixWorld();
             this.headDirectionTargetGlobalPosition = this.Valter.kinectHead.localToWorld(this.headDirectionTargetObject3D.position.clone());
@@ -127,6 +129,7 @@ class ValterIK {
             let headYawLinkHeadTargetDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(this.headYawLinkHeadTargetLocalPos);
             this.headDirectionTargetFromHeadYawLinkArrowHelper = new THREE.ArrowHelper(this.headYawLinkHeadTargetLocalPos.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), headYawLinkHeadTargetDistance, 0xff00ff, 0.02, 0.01);
             this.headYawLinkOriginObject3D.add(this.headDirectionTargetFromHeadYawLinkArrowHelper);
+            this.Valter.selfMeshes.push(this.headDirectionTargetFromHeadYawLinkArrowHelper.cone);
 
             let headYawLinkOriginObject3DAxis = new TransformControls(this.vLab.SceneDispatcher.currentVLabScene.currentCamera, this.vLab.WebGLRendererCanvas);
             headYawLinkOriginObject3DAxis.setSize(1.0);
@@ -171,6 +174,7 @@ class ValterIK {
         this.headTargetObject = new THREE.Mesh(headTargetObjectGeometry, headTargetObjectMaterial);
         this.headTargetObject.name = 'headTargetObject';
         this.headYawLinkOriginObject3D.add(this.headTargetObject);
+        this.Valter.selfMeshes.push(this.headTargetObject);
 
         this.vLab.SceneDispatcher.currentVLabScene.addInteractable({
             name: 'headTargetObject',
@@ -192,7 +196,7 @@ class ValterIK {
 
             this.setupKinectHeadToHeadTargetArrowHelper();
 
-            this.headTargetObjectInteractable.DEV.menu.push(
+            this.headTargetObjectInteractable.DEV.menu.unshift(
                 {
                     label: 'Get Head Yaw & Tilt IK from VLabsRESTValterHeadIKService',
                     enabled: true,
@@ -245,7 +249,7 @@ class ValterIK {
                 }
             );
 
-            this.headTargetObjectInteractable.DEV.menu.push(
+            this.headTargetObjectInteractable.DEV.menu.unshift(
                 {
                     label: 'Get ALL Head Yaw & Tilt FK points from VLabsRESTValterHeadIKService',
                     enabled: true,
@@ -272,6 +276,7 @@ class ValterIK {
                 let headYawLinkHeadTargetDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(headYawLinkHeadTargetLocalPos);
                 this.headTargetDirectionFromYawLinkOriginArrowHelper = new THREE.ArrowHelper(headYawLinkHeadTargetLocalPos.normalize(), new THREE.Vector3(0.0, 0.0, 0.0), headYawLinkHeadTargetDistance, 0xff00ff, 0.02, 0.01);
                 this.headYawLinkOriginObject3D.add(this.headTargetDirectionFromYawLinkOriginArrowHelper);
+                this.Valter.selfMeshes.push(this.headTargetDirectionFromYawLinkOriginArrowHelper.cone);
             }
         });
     }
@@ -405,6 +410,7 @@ class ValterIK {
         this.rightPalmTargetObject = new THREE.Mesh(rightPalmTargetObjectGeometry, rightPalmTargetObjectMaterial);
         this.rightPalmTargetObject.name = 'rightPalmTargetObject';
         this.headYawLinkOriginObject3D.add(this.rightPalmTargetObject);
+        this.Valter.selfMeshes.push(this.rightPalmTargetObject);
 
         this.vLab.SceneDispatcher.currentVLabScene.addInteractable({
             name: 'rightPalmTargetObject',
@@ -432,7 +438,7 @@ class ValterIK {
                 this.setupRightPalmTargetDirectionFromHeadYawLinkOriginArrowHelper();
             }
 
-            this.rightPalmTargetObjectInteractable.DEV.menu.push(
+            this.rightPalmTargetObjectInteractable.DEV.menu.unshift(
                 {
                     label: 'Get Right Palm IK from ValterRightPalmIKService',
                     enabled: true,
@@ -487,7 +493,7 @@ class ValterIK {
                 }
             );
 
-            this.rightPalmTargetObjectInteractable.DEV.menu.push(
+            this.rightPalmTargetObjectInteractable.DEV.menu.unshift(
                 {
                     label: 'Get ALL Right Palm FK points from ValterRightPalmIKService',
                     enabled: true,
@@ -630,6 +636,7 @@ class ValterIK {
         let headYawLinkRightPalmDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(this.headYawLinkRightPalmTargetLocalPos);
         this.rightPalmFromHeadYawLinkArrowHelper = new THREE.ArrowHelper(this.headYawLinkRightPalmTargetLocalPos.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), headYawLinkRightPalmDistance, 0x00ff00, 0.02, 0.01);
         this.headYawLinkOriginObject3D.add(this.rightPalmFromHeadYawLinkArrowHelper);
+        this.Valter.selfMeshes.push(this.rightPalmFromHeadYawLinkArrowHelper.cone);
     }
 
     updateRightPalmTargetDirectionFromHeadYawLinkOriginArrowHelper() {
@@ -679,6 +686,7 @@ class ValterIK {
         this.leftPalmTargetObject = new THREE.Mesh(leftPalmTargetObjectGeometry, leftPalmTargetObjectMaterial);
         this.leftPalmTargetObject.name = 'leftPalmTargetObject';
         this.headYawLinkOriginObject3D.add(this.leftPalmTargetObject);
+        this.Valter.selfMeshes.push(this.leftPalmTargetObject);
 
         this.vLab.SceneDispatcher.currentVLabScene.addInteractable({
             name: 'leftPalmTargetObject',
@@ -706,7 +714,7 @@ class ValterIK {
                 this.setupLeftPalmTargetDirectionFromHeadYawLinkOriginArrowHelper();
             }
 
-            this.leftPalmTargetObjectInteractable.DEV.menu.push(
+            this.leftPalmTargetObjectInteractable.DEV.menu.unshift(
                 {
                     label: 'Get Left Palm IK from ValterLeftPalmIKService',
                     enabled: true,
@@ -761,7 +769,7 @@ class ValterIK {
                 }
             );
 
-            this.leftPalmTargetObjectInteractable.DEV.menu.push(
+            this.leftPalmTargetObjectInteractable.DEV.menu.unshift(
                 {
                     label: 'Get ALL Left Palm FK points from ValterLeftPalmIKService',
                     enabled: true,
@@ -904,6 +912,7 @@ class ValterIK {
         let headYawLinkLeftPalmDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(this.headYawLinkLeftPalmTargetLocalPos);
         this.leftPalmFromHeadYawLinkArrowHelper = new THREE.ArrowHelper(this.headYawLinkLeftPalmTargetLocalPos.clone().normalize(), new THREE.Vector3(0.0, 0.0, 0.0), headYawLinkLeftPalmDistance, 0xffff00, 0.02, 0.01);
         this.headYawLinkOriginObject3D.add(this.leftPalmFromHeadYawLinkArrowHelper);
+        this.Valter.selfMeshes.push(this.leftPalmFromHeadYawLinkArrowHelper.cone);
     }
 
     updateLeftPalmTargetDirectionFromHeadYawLinkOriginArrowHelper() {

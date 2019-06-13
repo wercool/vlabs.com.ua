@@ -52,15 +52,28 @@ class Valter extends VLabItem {
         this.helperDragXZPlane.rotation.set(- Math.PI / 2, 0, 0);
         this.vLabItemModel.add(this.helperDragXZPlane);
 
+        this.selfMeshes = [];
+        this.vLabItemModel.traverse((valterMesh) => {
+            this.selfMeshes.push(valterMesh);
+        });
+
         this.baseFrameActionActivated = false;
 
         this.clock = new THREE.Clock();
-        this.baseFrameDoubleClickTime = 0.0;
+        this.baseFrameDoubleClickTime = this.clock.getElapsedTime();
 
         this.vLab.SceneDispatcher.currentVLabScene.add(this.vLabItemModel);
-        this.setupInteractables();
-        this.setupFramesAndLinks();
 
+        this.setupInteractables()
+        .then((interactables) => {
+            this.setupAuxilaries();
+        });
+
+        this.setupFramesAndLinks();
+        this.setupDevHelpers();
+    }
+
+    setupAuxilaries() {
         /**
          * 
          * 
@@ -76,13 +89,10 @@ class Valter extends VLabItem {
          * 
          * Valter SLAM
          * 
-         * 
          */
         this.ValterSLAM = new ValterSLAM({
             Valter: this
         });
-
-        this.setupDevHelpers();
     }
 
     /**
@@ -353,6 +363,7 @@ class Valter extends VLabItem {
         this.torsoFrameToHeadFrameCableGeometry = new THREE.TubeBufferGeometry(this.getTorsoFrameToHeadFrameCableCurve(), this.torsoFrameToHeadFrameSleeveSegments, 0.01, 5);
         this.torsoFrameToHeadFrameCableMesh = new THREE.Mesh(this.torsoFrameToHeadFrameCableGeometry, this.cableSleeveMaterial);
         this.torsoFrame.add(this.torsoFrameToHeadFrameCableMesh);
+        this.selfMeshes.push(this.torsoFrameToHeadFrameCableMesh);
 
 
 
@@ -377,10 +388,12 @@ class Valter extends VLabItem {
         this.bodyFrameToTorsoFrameCableLGeometry = new THREE.TubeBufferGeometry(this.getBodyFrameToTorsoFrameCableLCurve(), this.bodyFrameToTorsoFrameSleeveSegments, 0.01, 5);
         this.bodyFrameToTorsoFrameCableLMesh = new THREE.Mesh(this.bodyFrameToTorsoFrameCableLGeometry, this.cableSleeveMaterial);
         this.torsoFrame.add(this.bodyFrameToTorsoFrameCableLMesh);
+        this.selfMeshes.push(this.bodyFrameToTorsoFrameCableLMesh);
 
         this.bodyFrameToTorsoFrameCableRGeometry = new THREE.TubeBufferGeometry(this.getBodyFrameToTorsoFrameCableRCurve(), this.bodyFrameToTorsoFrameSleeveSegments, 0.01, 5);
         this.bodyFrameToTorsoFrameCableRMesh = new THREE.Mesh(this.bodyFrameToTorsoFrameCableRGeometry, this.cableSleeveMaterial);
         this.torsoFrame.add(this.bodyFrameToTorsoFrameCableRMesh);
+        this.selfMeshes.push(this.bodyFrameToTorsoFrameCableRMesh);
 
 
 
@@ -405,10 +418,12 @@ class Valter extends VLabItem {
         this.baseFrameToBodyFrameCableLGeometry = new THREE.TubeBufferGeometry(this.getBaseFrameToBodyFrameCableLCurve(), this.baseFrameToBodyFrameSleeveSegments, 0.01, 5);
         this.baseFrameToBodyFrameCableLMesh = new THREE.Mesh(this.baseFrameToBodyFrameCableLGeometry, this.cableSleeveMaterial);
         this.baseFrame.add(this.baseFrameToBodyFrameCableLMesh);
+        this.selfMeshes.push(this.baseFrameToBodyFrameCableLMesh);
 
         this.baseFrameToBodyFrameCableRGeometry = new THREE.TubeBufferGeometry(this.getBaseFrameToBodyFrameCableRCurve(), this.baseFrameToBodyFrameSleeveSegments, 0.01, 5);
         this.baseFrameToBodyFrameCableRMesh = new THREE.Mesh(this.baseFrameToBodyFrameCableRGeometry, this.cableSleeveMaterial);
         this.baseFrame.add(this.baseFrameToBodyFrameCableRMesh);
+        this.selfMeshes.push(this.baseFrameToBodyFrameCableRMesh);
     }
     /**
      * Dynamic torsoFrame to headFrame cable sleeve curve
@@ -519,7 +534,7 @@ class Valter extends VLabItem {
                          * Zoom to Valter on double click on baseFrame
                          */
                         if (this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x == 0) {
-                            if (this.clock.getElapsedTime() - this.baseFrameDoubleClickTime < 0.2) {
+                            if (this.clock.getElapsedTime() - this.baseFrameDoubleClickTime < 0.15) {
                                 this.zoomToValter();
                             }
                         }
@@ -975,12 +990,13 @@ class Valter extends VLabItem {
         /*<dev>*/
         if (this.nature.devHelpers.devMode == true) {
             if (this.nature.devHelpers.showBaseDirection == true) {
-                this.baseDirectionArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0.0, 0.0, 1.0).normalize(), new THREE.Vector3(0.0, 0.1, 0.0), 1.0, 0x0000ff, 0.05, 0.025);
+                this.baseDirectionArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0.0, 0.0, 1.0).normalize(), new THREE.Vector3(0.0, 0.172, -0.271), 3.0, 0x0000ff, 0.05, 0.025);
                 this.baseFrame.add(this.baseDirectionArrowHelper);
             }
             if (this.nature.devHelpers.showHeadDirection == true) {
                 this.headDirectionArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0.0, 0.0, 1.0).normalize(), new THREE.Vector3(0.0, 0.0, 0.0), 1.0, 0x0000ff, 0.05, 0.025);
                 this.headGlass.add(this.headDirectionArrowHelper);
+                this.selfMeshes.push(this.headDirectionArrowHelper.cone);
             }
             if (this.nature.devHelpers.showKinectHeadDirection == true) {
                 /**
@@ -989,6 +1005,7 @@ class Valter extends VLabItem {
                 let distance = 0.4;
                 this.kinectHeadDirectionArrowHelper = new THREE.ArrowHelper(this.kinectHeadDirection, new THREE.Vector3(0.0, 0.0, 0.0), distance, 0xff00ff, 0.02, 0.01);
                 this.kinectHead.add(this.kinectHeadDirectionArrowHelper);
+                this.selfMeshes.push(this.kinectHeadDirectionArrowHelper.cone);
 
                 this.ValterIK.setupHeadTargetDirectionFromHeadYawLinkOrigin(distance);
             }

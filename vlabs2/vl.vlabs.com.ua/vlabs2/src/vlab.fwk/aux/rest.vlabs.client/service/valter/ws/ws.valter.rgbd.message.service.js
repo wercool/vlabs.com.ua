@@ -19,8 +19,11 @@ class VLabsRESTWSValterRGBDMessageService {
         this.socket = undefined;
         this.connected = false;
     }
+    getFullyQualifiedURL() {
+        return this.manager.APIEndpoints.ws['base'] + this.manager.APIEndpoints.valter['base'] +  this.manager.APIEndpoints.valter.ws['navKinectRGBD'] + '?token=' + this.manager.AuthService.token;
+    }
     connect() {
-        this.socket = new WebSocket(this.manager.APIEndpoints.ws['base'] + this.manager.APIEndpoints.valter['base'] +  this.manager.APIEndpoints.valter.ws['navKinectRGBD'] + '?token=' + this.manager.AuthService.token);
+        this.socket = new WebSocket(this.getFullyQualifiedURL());
         this.socket.onopen = this.onSocketOpen.bind(this);
         this.socket.onerror = this.onSocketError.bind(this);
         this.socket.onmessage = this.onSocketMessage.bind(this);
