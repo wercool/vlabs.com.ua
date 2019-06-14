@@ -841,7 +841,7 @@ class VLabSceneInteractable {
             if (this.intersection) {
                 /*<dev>*/
                     if (!this.taken) {
-                        this['DEV'].showMenu();
+                        this['DEV'].showMenu(event);
                     }
                 /*</dev>*/
             }

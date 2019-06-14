@@ -201,6 +201,7 @@ class ValterIK {
                     label: 'Get Head Yaw & Tilt IK from VLabsRESTValterHeadIKService',
                     enabled: true,
                     selected: false,
+                    primary: true,
                     icon: '<i class=\"material-icons\">share</i>',
                     action: () => {
                         let headTargetObjectPos = this.headTargetObject.position.clone();
@@ -254,6 +255,7 @@ class ValterIK {
                     label: 'Get ALL Head Yaw & Tilt FK points from VLabsRESTValterHeadIKService',
                     enabled: true,
                     selected: false,
+                    primary: true,
                     icon: '<i class=\"material-icons\">grain</i>',
                     action: () => {
                         let headFKPointsMaterial = new THREE.PointsMaterial({ size: 0.01, color: 0xff00ff });
@@ -443,6 +445,7 @@ class ValterIK {
                     label: 'Get Right Palm IK from ValterRightPalmIKService',
                     enabled: true,
                     selected: false,
+                    primary: true,
                     icon: '<i class=\"material-icons\">share</i>',
                     action: () => {
                         let rightPalmTargetObjectPos = this.rightPalmTargetObject.position.clone();
@@ -498,6 +501,7 @@ class ValterIK {
                     label: 'Get ALL Right Palm FK points from ValterRightPalmIKService',
                     enabled: true,
                     selected: false,
+                    primary: true,
                     icon: '<i class=\"material-icons\">grain</i>',
                     action: () => {
                         let rightPalmFKPointsMaterial = new THREE.PointsMaterial({ size: 0.01, color: 0x00ff00 });
@@ -719,6 +723,7 @@ class ValterIK {
                     label: 'Get Left Palm IK from ValterLeftPalmIKService',
                     enabled: true,
                     selected: false,
+                    primary: true,
                     icon: '<i class=\"material-icons\">share</i>',
                     action: () => {
                         let leftPalmTargetObjectPos = this.leftPalmTargetObject.position.clone();
@@ -774,6 +779,7 @@ class ValterIK {
                     label: 'Get ALL Left Palm FK points from ValterLeftPalmIKService',
                     enabled: true,
                     selected: false,
+                    primary: true,
                     icon: '<i class=\"material-icons\">grain</i>',
                     action: () => {
                         let leftPalmFKPointsMaterial = new THREE.PointsMaterial({ size: 0.01, color: 0x00ff00 });

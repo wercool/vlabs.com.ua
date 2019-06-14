@@ -71,6 +71,52 @@ class Valter extends VLabItem {
 
         this.setupFramesAndLinks();
         this.setupDevHelpers();
+
+
+        /**
+         * Valter baseFrame dynamics methods
+         */
+        this.dynamics = {
+            maxLinearSpeed: 0.08 * (1 / 60),
+            linearDeceleration: 0.00001,
+            angularDeceleration: 0.00001,
+        };
+        this.cmd_vel = {
+            linear: new THREE.Vector3(0.0, 0.0, 0.0),
+            angular: 0.0
+        };
+        this.moveForwad = this.moveForwad.bind(this);
+        this.accelerateForward = this.accelerateForward.bind(this);
+        this.deCelerateForward = this.deCelerateForward.bind(this);
+        this.moveBackward = this.moveBackward.bind(this);
+        this.accelerateBackward = this.accelerateBackward.bind(this);
+        this.deCelerateBackward = this.deCelerateBackward.bind(this);
+
+        /**
+         * WASD keys listeners
+         */
+        this.wasd = {
+            w: false,
+            s: false,
+            a: false,
+            d: false
+        };
+        this.vLab.EventDispatcher.subscribe({
+            subscriber: this,
+            events: {
+                window: {
+                    keydown: this.onWindowKeyDown
+                }
+            }
+        });
+        this.vLab.EventDispatcher.subscribe({
+            subscriber: this,
+            events: {
+                window: {
+                    keyup: this.onWindowKeyUp
+                }
+            }
+        });
     }
 
     setupAuxilaries() {
@@ -122,7 +168,21 @@ class Valter extends VLabItem {
         this.leftPalm              = this.vLabItemModel.getObjectByName('palmPadL');
 
         this.headGlass             = this.vLabItemModel.getObjectByName('headGlass');
-        this.kinectHead             = this.vLabItemModel.getObjectByName('kinectHead');
+        this.kinectHead            = this.vLabItemModel.getObjectByName('kinectHead');
+
+        /**
+         * Wheels
+         */
+        this.rightWheel     = this.vLabItemModel.getObjectByName('rightWheel');
+        this.leftWheel      = this.vLabItemModel.getObjectByName('leftWheel');
+        this.smallWheelRF   = this.vLabItemModel.getObjectByName('smallWheelRF');
+        this.smallWheelLF   = this.vLabItemModel.getObjectByName('smallWheelLF');
+        this.smallWheelRR   = this.vLabItemModel.getObjectByName('smallWheelRR');
+        this.smallWheelLR   = this.vLabItemModel.getObjectByName('smallWheelLR');
+        this.smallWheelArmatureRF = this.vLabItemModel.getObjectByName('smallWheelArmatureRF');
+        this.smallWheelArmatureLF = this.vLabItemModel.getObjectByName('smallWheelArmatureLF');
+        this.smallWheelArmatureRR = this.vLabItemModel.getObjectByName('smallWheelArmatureRR');
+        this.smallWheelArmatureLR = this.vLabItemModel.getObjectByName('smallWheelArmatureLR');
 
         this.vLabItemModel.updateMatrixWorld();
 
@@ -232,7 +292,7 @@ class Valter extends VLabItem {
      * 
      */
     rotateBaseFrame(angle) {
-        this.baseFrame.rotateY(angle);
+        this.baseFrame.rotateY(angle * -1);
     }
     translateBaseFrame(axis, distance) {
         this.baseFrame.translateOnAxis(axis, distance);
@@ -514,7 +574,7 @@ class Valter extends VLabItem {
 
             if (event.event.ctrlKey == true) {
                 let shift = 0.02 * ((this.prevActionInitialEventCoords.x - currentActionInitialEventCoords.x > 0.0) ? -1 : 1);
-                this.rotateBaseFrame(shift);
+                this.rotateBaseFrame(-shift);
             } else {
                 this.vLab.WebGLRendererCanvas.style.cursor = 'move';
                 let rect = this.vLab.WebGLRendererCanvas.getBoundingClientRect();
@@ -987,7 +1047,6 @@ class Valter extends VLabItem {
      * Development helpers
      */
     setupDevHelpers() {
-        /*<dev>*/
         if (this.nature.devHelpers.devMode == true) {
             if (this.nature.devHelpers.showBaseDirection == true) {
                 this.baseDirectionArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0.0, 0.0, 1.0).normalize(), new THREE.Vector3(0.0, 0.172, -0.271), 3.0, 0x0000ff, 0.05, 0.025);
@@ -1010,7 +1069,190 @@ class Valter extends VLabItem {
                 this.ValterIK.setupHeadTargetDirectionFromHeadYawLinkOrigin(distance);
             }
         }
-        /*</dev>*/
+    }
+
+    /**
+     * WASD keys down listener
+     */
+    onWindowKeyDown(event) {
+        switch (event.key) {
+            case 'w':
+                if (!this.wasd.w) {
+                    this.wasd.w = true;
+                    this.accelerateForward();
+                }
+            break;
+            case 's':
+                if (!this.wasd.s) {
+                    this.wasd.s = true;
+                    this.accelerateBackward();
+                }
+            break;
+            case 'a':
+                this.rotateLeft();
+            break;
+            case 'd':
+                this.rotateRight();
+            break;
+        }
+    }
+    /**
+     * WASD keys up listener
+     */
+    onWindowKeyUp(event) {
+        switch (event.key) {
+            case 'w':
+                this.wasd.w = false;
+                this.deCelerateForward();
+            break;
+            case 's':
+                this.wasd.s = false;
+                this.deCelerateBackward();
+            break;
+            case 'a':
+                this.cmd_vel.angular = 0.0;
+            break;
+            case 'd':
+                this.cmd_vel.angular = 0.0;
+            break;
+        }
+    }
+
+    /**
+     * Valter baseFrame dynamics
+     */
+    /**
+     * Translation forward
+     */
+    moveForwad() {
+        this.translateBaseFrame(new THREE.Vector3(0.0, 0.0, 1.0), this.cmd_vel.linear.z);
+        this.rightWheel.rotateX(this.cmd_vel.linear.z * 8);
+        this.leftWheel.rotateX(this.cmd_vel.linear.z * 8);
+
+        this.smallWheelRF.rotateX(this.cmd_vel.linear.z * 12);
+        this.smallWheelLF.rotateX(this.cmd_vel.linear.z * 12);
+        this.smallWheelRR.rotateX(this.cmd_vel.linear.z * 12);
+        this.smallWheelLR.rotateX(this.cmd_vel.linear.z * 12);
+
+        if (this.smallWheelArmatureRF.rotation.y > 0.0) {
+            this.smallWheelArmatureRF.rotateY(this.cmd_vel.linear.z * -10);
+        } else {
+            this.smallWheelArmatureRF.rotateY(this.cmd_vel.linear.z * 10);
+        }
+        if (this.smallWheelArmatureLF.rotation.y > 0.0) {
+            this.smallWheelArmatureLF.rotateY(this.cmd_vel.linear.z * -10);
+        } else {
+            this.smallWheelArmatureLF.rotateY(this.cmd_vel.linear.z * 10);
+        }
+        if (this.smallWheelArmatureRR.rotation.y > 0.0) {
+            this.smallWheelArmatureRR.rotateY(this.cmd_vel.linear.z * -10);
+        } else {
+            this.smallWheelArmatureRR.rotateY(this.cmd_vel.linear.z * 10);
+        }
+        if (this.smallWheelArmatureLR.rotation.y > 0.0) {
+            this.smallWheelArmatureLR.rotateY(this.cmd_vel.linear.z * -10);
+        } else {
+            this.smallWheelArmatureLR.rotateY(this.cmd_vel.linear.z * 10);
+        }
+    }
+    accelerateForward() {
+        if (this.wasd.w) {
+            if (this.cmd_vel.linear.z < this.dynamics.maxLinearSpeed) {
+                this.cmd_vel.linear.z += this.dynamics.linearDeceleration;
+            }
+            this.moveForwad();
+            setTimeout(this.accelerateForward, 2);
+        }
+    }
+    deCelerateForward() {
+        if (!this.wasd.w) {
+            if (this.cmd_vel.linear.z > 0.0) {
+                this.cmd_vel.linear.z -= this.dynamics.linearDeceleration;
+                this.moveForwad();
+                setTimeout(this.deCelerateForward, 2);
+            } else {
+                this.cmd_vel.linear.z = 0.0;
+            }
+        }
+    }
+    /**
+     * Translation backward
+     */
+    moveBackward() {
+        this.translateBaseFrame(new THREE.Vector3(0.0, 0.0, 1.0), this.cmd_vel.linear.z);
+        this.rightWheel.rotateX(this.cmd_vel.linear.z * 8);
+        this.leftWheel.rotateX(this.cmd_vel.linear.z * 8);
+    }
+    accelerateBackward() {
+        if (this.wasd.s) {
+            if (Math.abs(this.cmd_vel.linear.z) < this.dynamics.maxLinearSpeed) {
+                this.cmd_vel.linear.z -= this.dynamics.linearDeceleration;
+            }
+            this.moveBackward();
+            setTimeout(this.accelerateBackward, 2);
+        }
+    }
+    deCelerateBackward() {
+        if (!this.wasd.s) {
+            if (this.cmd_vel.linear.z < 0.0) {
+                this.cmd_vel.linear.z += this.dynamics.linearDeceleration;
+                this.moveBackward();
+                setTimeout(this.deCelerateBackward, 2);
+            } else {
+                this.cmd_vel.linear.z = 0.0;
+            }
+        }
+    }
+    /**
+     * Rotation
+     */
+    rotateLeft() {
+        if (this.cmd_vel.angular > -0.01) this.cmd_vel.angular += -0.002;
+        this.rotateBaseFrame(this.cmd_vel.angular);
+        this.rightWheel.rotateX(-this.cmd_vel.angular * 2);
+        this.leftWheel.rotateX(this.cmd_vel.angular * 2);
+
+        this.smallWheelRF.rotateX(this.cmd_vel.angular * 3.5);
+        this.smallWheelLF.rotateX(this.cmd_vel.angular * 3.5);
+        this.smallWheelRR.rotateX(this.cmd_vel.angular * 3.5);
+        this.smallWheelLR.rotateX(this.cmd_vel.angular * 3.5);
+
+        if (this.smallWheelArmatureRF.rotation.y < 1.2) {
+            this.smallWheelArmatureRF.rotateY(this.cmd_vel.angular * -1.6);
+        }
+        if (this.smallWheelArmatureLF.rotation.y < 1.2) {
+            this.smallWheelArmatureLF.rotateY(this.cmd_vel.angular * -1.6);
+        }
+        if (this.smallWheelArmatureRR.rotation.y > -1.0) {
+            this.smallWheelArmatureRR.rotateY(this.cmd_vel.angular * 1.6);
+        }
+        if (this.smallWheelArmatureLR.rotation.y > -1.0) {
+            this.smallWheelArmatureLR.rotateY(this.cmd_vel.angular * 1.6);
+        }
+    }
+    rotateRight() {
+        if (this.cmd_vel.angular < 0.01) this.cmd_vel.angular += 0.002;
+        this.rotateBaseFrame(this.cmd_vel.angular);
+        this.rightWheel.rotateX(-this.cmd_vel.angular * 2);
+        this.leftWheel.rotateX(this.cmd_vel.angular * 2);
+
+        this.smallWheelRF.rotateX(this.cmd_vel.angular * 3.5);
+        this.smallWheelLF.rotateX(this.cmd_vel.angular * 3.5);
+        this.smallWheelRR.rotateX(this.cmd_vel.angular * 3.5);
+        this.smallWheelLR.rotateX(this.cmd_vel.angular * 3.5);
+
+        if (this.smallWheelArmatureRF.rotation.y > -1.2) {
+            this.smallWheelArmatureRF.rotateY(this.cmd_vel.angular * -1.6);
+        }
+        if (this.smallWheelArmatureLF.rotation.y > -1.2) {
+            this.smallWheelArmatureLF.rotateY(this.cmd_vel.angular * -1.6);
+        }
+        if (this.smallWheelArmatureRR.rotation.y < 1.0) {
+            this.smallWheelArmatureRR.rotateY(this.cmd_vel.angular * 1.6);
+        }
+        if (this.smallWheelArmatureLR.rotation.y < 1.0) {
+            this.smallWheelArmatureLR.rotateY(this.cmd_vel.angular * 1.6);
+        }
     }
 }
 export default Valter;

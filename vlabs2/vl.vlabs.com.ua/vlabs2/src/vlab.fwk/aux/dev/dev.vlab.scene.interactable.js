@@ -153,7 +153,7 @@ class DEVVLabSceneInteractable {
         ];
         this.menuContainer = undefined;
     }
-    showMenu() {
+    showMenu(event) {
         if (this.menu.length > 0  && !this.menuContainer) {
             /**
              * Depress current VLabControls
@@ -169,22 +169,24 @@ class DEVVLabSceneInteractable {
             });
 
             this.menu.forEach((menuItem) => {
-                let menuItemDIV = document.createElement('div');
-                menuItemDIV.className = 'interactableMenuItemDEV';
-                menuItemDIV.innerHTML = '<div class="interactableMenuIconDEV">' + (menuItem.icon ? menuItem.icon : '<i class=\"material-icons materialIconsDEV\">code</i>') + '</div>' + '<div class="interactableMenuItemLabelDEV">' + menuItem.label + '</div>';
-                if (menuItem.enabled !== undefined && !menuItem.enabled) {
-                    menuItemDIV.style.opacity = 0.1;
-                } else {
-                    menuItemDIV.onmousedown = menuItemDIV.ontouchstart = this.callMenuAction.bind(this, menuItem);
+                if ((!event.altKey && menuItem.primary) || event.altKey) {
+                    let menuItemDIV = document.createElement('div');
+                    menuItemDIV.className = 'interactableMenuItemDEV';
+                    menuItemDIV.innerHTML = '<div class="interactableMenuIconDEV">' + (menuItem.icon ? menuItem.icon : '<i class=\"material-icons materialIconsDEV\">code</i>') + '</div>' + '<div class="interactableMenuItemLabelDEV">' + menuItem.label + '</div>';
+                    if (menuItem.enabled !== undefined && !menuItem.enabled) {
+                        menuItemDIV.style.opacity = 0.1;
+                    } else {
+                        menuItemDIV.onmousedown = menuItemDIV.ontouchstart = this.callMenuAction.bind(this, menuItem);
+                    }
+                    if (menuItem.selected !== undefined && menuItem.selected) {
+                        menuItemDIV.classList.add('interactableMenuItemSelectedDEV');
+                    }
+                    menuItemDIV.addEventListener('contextmenu', function(event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    });
+                    this.menuContainer.appendChild(menuItemDIV);
                 }
-                if (menuItem.selected !== undefined && menuItem.selected) {
-                    menuItemDIV.classList.add('interactableMenuItemSelectedDEV');
-                }
-                menuItemDIV.addEventListener('contextmenu', function(event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                });
-                this.menuContainer.appendChild(menuItemDIV);
             });
 
             this.vLab.DOMManager.WebGLContainer.appendChild(this.menuContainer);
