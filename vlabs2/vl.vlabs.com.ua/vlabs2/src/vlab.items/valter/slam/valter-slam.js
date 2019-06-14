@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import * as WebWorkerUtils from '../../../vlab.fwk/utils/web.worker.utils';
 
-import NavKinectRGBDWebSocketMessage from '../slam/model/nav-kinect-rgbd-websocket-message';
+import NavKinectRGBDWebSocketMessage from './model/nav-kinect-rgbd-websocket-message';
 
 /**
  * Valter SLAM class.
@@ -30,66 +30,57 @@ class ValterSLAM {
         .connect();
 
         this.rgbdSize = new THREE.Vector2(320, 240);
-        // this.rgbdSize = new THREE.Vector2(160, 120);
-        this.kinectCameraAspect = this.rgbdSize.x / this.rgbdSize.y;
+
+        this.kinectImageMinDistance = 0.1;
+        this.kinectImageMaxDistance = 50.0;
+
+        this.kinectDepthMinDistance = 0.5;
+        this.kinectDepthMaxDistance = 3.0;
 
         /**
          * Kinect RGB camera
          */
-        this.slamKinectRGBCameraOffset = new THREE.Vector3(-0.005, 0.307, 0.209);
-        this.slamKinectRGBCamera = new THREE.PerspectiveCamera(49, this.kinectCameraAspect, 0.2, 25.0);
-        this.slamKinectRGBCameraVFOV = THREE.Math.degToRad(this.slamKinectRGBCamera.fov);
-        this.slamKinectRGBCameraHFOV = 2 * Math.atan(Math.tan(this.slamKinectRGBCameraVFOV / 2) * this.slamKinectRGBCamera.aspect);
-        this.slamKinectRGBCamera.updateProjectionMatrix();
-        this.vLab.SceneDispatcher.currentVLabScene.add(this.slamKinectRGBCamera);
+        this.slamKinectRGBDCameraOffset = new THREE.Vector3(-0.005, 0.307, 0.209);
+        // this.slamKinectRGBDCamera = new THREE.PerspectiveCamera(49, this.rgbdSize.x / this.rgbdSize.y, this.kinectImageMinDistance, this.kinectImageMaxDistance);
+        this.slamKinectRGBDCamera = new THREE.OrthographicCamera(-1.0, 1.0, 1.0, -1, this.kinectImageMinDistance, this.kinectImageMaxDistance);
+        this.slamKinectRGBDCamera.updateProjectionMatrix();
+        this.vLab.SceneDispatcher.currentVLabScene.add(this.slamKinectRGBDCamera);
+
+        // this.slamKinectRGBDCameraHelper = new THREE.CameraHelper(this.slamKinectRGBDCamera);
+        // this.vLab.SceneDispatcher.currentVLabScene.add(this.slamKinectRGBDCameraHelper);
 
         /**
-         * Kinect depth camera setup
+         * Kinect RGB Image canvas
          */
-        this.slamKinectDepthRaycaster = new THREE.Raycaster();
-        this.slamKinectDepthRaycaster.near = 0.5;
-        this.slamKinectDepthRaycaster.far = 3.0;
-
-        // this.slamKinectDepthRaycasterArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(), new THREE.Vector3(), 1.0, 0xffffff, 0.02, 0.01);
-        // this.vLab.SceneDispatcher.currentVLabScene.add(this.slamKinectDepthRaycasterArrowHelper);
-
-        // this.slamKinectRGBCameraHelper = new THREE.CameraHelper(this.slamKinectRGBCamera);
-        // this.vLab.SceneDispatcher.currentVLabScene.add(this.slamKinectRGBCameraHelper);
-
+        this.slamKinectRGBImageCanvas = document.createElement('canvas');
+        this.slamKinectRGBImageCanvas.style.position = 'absolute';
+        this.slamKinectRGBImageCanvas.style.left = 'calc(50% - ' + this.rgbdSize.x + 'px)'
+        this.slamKinectRGBImageCanvas.style.zIndex = 3;
+        this.slamKinectRGBImageCanvas.width = this.rgbdSize.x;
+        this.slamKinectRGBImageCanvas.height = this.rgbdSize.y;
+        this.slamKinectRGBImageCanvas.style.visibility = 'hidden';
+        this.slamKinectRGBImageCanvasCtx = this.slamKinectRGBImageCanvas.getContext('2d');
+        this.vLab.DOMManager.container.appendChild(this.slamKinectRGBImageCanvas);
         /**
-         * Kinect RGB camera renderer canvas
+         * Kinect Depth Image canvas
          */
-        this.slamKinectRGBCameraRendererCanvas = document.createElement('canvas');
-        this.slamKinectRGBCameraRendererCanvas.style.position = 'absolute';
-        this.slamKinectRGBCameraRendererCanvas.style.left = 'calc(50% - ' + this.rgbdSize.x + 'px)'
-        this.slamKinectRGBCameraRendererCanvas.style.zIndex = 3;
-        this.slamKinectRGBCameraRendererCanvas.width = this.rgbdSize.x;
-        this.slamKinectRGBCameraRendererCanvas.height = this.rgbdSize.y;
-        this.slamKinectRGBCameraRendererCanvas.style.visibility = 'hidden';
-
-        this.vLab.DOMManager.container.appendChild(this.slamKinectRGBCameraRendererCanvas);
-
-        /**
-         * Kinect Depth image canvas
-         */
-        this.slamKinectRGBCameraDepthImageCanvas = document.createElement('canvas');
-        this.slamKinectRGBCameraDepthImageCanvas.style.position = 'absolute';
-        this.slamKinectRGBCameraDepthImageCanvas.style.left = '50%';
-        this.slamKinectRGBCameraDepthImageCanvas.style.zIndex = 3;
-        this.slamKinectRGBCameraDepthImageCanvas.width = this.rgbdSize.x;
-        this.slamKinectRGBCameraDepthImageCanvas.height = this.rgbdSize.y;
-        this.slamKinectRGBCameraDepthImageCanvas.style.visibility = 'hidden';
-        this.slamKinectRGBCameraDepthImageCanvasCtx = this.slamKinectRGBCameraDepthImageCanvas.getContext('2d');
-
-        this.vLab.DOMManager.container.appendChild(this.slamKinectRGBCameraDepthImageCanvas);
+        this.slamKinectDepthImageCanvas = document.createElement('canvas');
+        this.slamKinectDepthImageCanvas.style.position = 'absolute';
+        this.slamKinectDepthImageCanvas.style.left = '50%'
+        this.slamKinectDepthImageCanvas.style.zIndex = 3;
+        this.slamKinectDepthImageCanvas.width = this.rgbdSize.x;
+        this.slamKinectDepthImageCanvas.height = this.rgbdSize.y;
+        this.slamKinectDepthImageCanvas.style.visibility = 'hidden';
+        this.slamKinectDepthImageCanvasCtx = this.slamKinectDepthImageCanvas.getContext('2d');
+        this.vLab.DOMManager.container.appendChild(this.slamKinectDepthImageCanvas);
 
         this.WebGLRenderer = new THREE.WebGLRenderer({
-            canvas: this.slamKinectRGBCameraRendererCanvas,
-            antialias: true,
+            antialias: false,
             powerPreference: 'high-performance',
             precision: 'lowp',
             preserveDrawingBuffer: true
         });
+        this.WebGLRenderer.setSize(this.rgbdSize.x, this.rgbdSize.y);
         this.WebGLRenderer.context.getShaderInfoLog = function () { return '' };
         this.WebGLRenderer.context.getProgramInfoLog = function () { return '' };
         this.WebGLRenderer.gammaOutput = true;
@@ -103,45 +94,26 @@ class ValterSLAM {
             }
         });
 
-        // let pos = this.slamKinectRGBCameraOffset.clone().add(new THREE.Vector3(0.0, 0.0, 1.0));
-        // let geometry = new THREE.SphereGeometry( 0.01, 32, 32 );
-        // let material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-        // this.testSphere = new THREE.Mesh( geometry, material );
-        // this.Valter.bodyFrame.add(this.testSphere);
-
-        this.getNavKinectRGBDWebSocketMessage = this.getNavKinectRGBDWebSocketMessage.bind(this);
-
-        this.getNavKinectRGBDWebSocketMessageEnabled = false;
+        this.sendNavKinectRGBDWebSocketMessage = this.sendNavKinectRGBDWebSocketMessage.bind(this);
+        this.getNavKinectRGBDWebSocketMessageInterval = undefined;
 
         this.Valter.getInteractableByName('baseFrame').DEV.menu.unshift(
             {
-                label: 'Get ' + this.rgbdSize.x + 'x' + this.rgbdSize.y + ' RGBD Image from navigation Kinect',
+                label: 'Get RGBD from SLAM Kinect',
                 enabled: true,
                 selected: false,
-                icon: '<i class=\"material-icons\">cast_connected</i>',
+                icon: '<i class=\"material-icons\">gradient</i>',
                 action: (menuItem) => {
-                    this.slamKinectRGBCameraRendererCanvas.style.visibility = 'visible';
-                    this.slamKinectRGBCameraDepthImageCanvas.style.visibility = 'visible';
-                    this.initializeRGBDScanning(1.0);
-                }
-            }
-        );
-
-        this.Valter.getInteractableByName('baseFrame').DEV.menu.unshift(
-            {
-                label: 'Get RGBD Image from navigation Kinect',
-                enabled: true,
-                selected: false,
-                icon: '<i class=\"material-icons\">cast</i>',
-                action: (menuItem) => {
-                    if (!this.getNavKinectRGBDWebSocketMessageEnabled) {
-                        this.slamKinectRGBCameraRendererCanvas.style.visibility = 'visible';
-                        this.slamKinectRGBCameraDepthImageCanvas.style.visibility = 'visible';
-                        this.getNavKinectRGBDWebSocketMessageEnabled = true;
+                    if (this.getNavKinectRGBDWebSocketMessageInterval == undefined) {
+                        this.slamKinectRGBImageCanvas.style.visibility = 'visible';
+                        this.slamKinectDepthImageCanvas.style.visibility = 'visible';
                         menuItem.selected = true;
-                        this.initializeRGBDScanning();
+                        this.getNavKinectRGBDWebSocketMessageInterval = setInterval(this.sendNavKinectRGBDWebSocketMessage, 100);
                     } else {
-                        this.getNavKinectRGBDWebSocketMessageEnabled = false;
+                        clearInterval(this.getNavKinectRGBDWebSocketMessageInterval);
+                        this.getNavKinectRGBDWebSocketMessageInterval = undefined;
+                        this.slamKinectRGBImageCanvas.style.visibility = 'hidden';
+                        this.slamKinectDepthImageCanvas.style.visibility = 'hidden';
                         menuItem.selected = false;
                     }
                 }
@@ -154,7 +126,16 @@ class ValterSLAM {
          * 
          */
         this.sendNavKinectRGBDWebSocketMessageWorker = WebWorkerUtils.createInlineWorker(function (event) {
-            // console.log(event.data);
+            // console.log(event.data.navKinectRGBDWebSocketMessage.rgbImageData.data.length);
+
+            const toDataURL = function (data) {
+                return new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.addEventListener('load', () => resolve(reader.result));
+                    reader.readAsDataURL(data);
+                });
+            }
+
             if (self.socket == undefined) {
                 self.socket = new WebSocket(event.data.socketURL);
                 self.socket.onopen = function (event){
@@ -162,157 +143,89 @@ class ValterSLAM {
                 };
             }
             if (self.socketConnected == true) {
-                self.socket.send(JSON.stringify(event.data.navKinectRGBDWebSocketMessage));
-            }
-            // self.postMessage('NavKinectRGBDWebSocketMessage SENT');
-        });
+                let rgbImageCanvas = new OffscreenCanvas(event.data.rgbdSize.x, event.data.rgbdSize.y);
+                let rgbImageCanvasCtx = rgbImageCanvas.getContext('2d');
+                rgbImageCanvasCtx.putImageData(event.data.navKinectRGBDWebSocketMessage.rgbImageData, 0, 0);
 
-        this.sendNavKinectRGBDWebSocketMessageWorker.onMessage = function (event) {
-            console.log(event.data);
-        }
+                let depthImageCanvas = new OffscreenCanvas(event.data.rgbdSize.x, event.data.rgbdSize.y);
+                let depthImageCanvasCtx = depthImageCanvas.getContext('2d');
+                depthImageCanvasCtx.putImageData(event.data.navKinectRGBDWebSocketMessage.depthImageData, 0, 0);
+
+                Promise.all([
+                    rgbImageCanvas.convertToBlob().then((rgbImageBlob) => toDataURL(rgbImageBlob)),
+                    depthImageCanvas.convertToBlob().then((depthImageBlob) => toDataURL(depthImageBlob))
+                ])
+                .then((rgbdResult) => {
+                    event.data.navKinectRGBDWebSocketMessage.rgbImageData   = rgbdResult[0];
+                    event.data.navKinectRGBDWebSocketMessage.depthImageData = rgbdResult[1];
+
+                    self.socket.send(JSON.stringify(event.data.navKinectRGBDWebSocketMessage));
+                });
+            }
+        });
     }
 
     onWebGLRendererCanvasFramerequest(event) {
-        this.slamKinectRGBCamera.position.copy(this.slamKinectRGBCameraOffset);
-        this.slamKinectRGBCamera.position.applyMatrix4(this.Valter.bodyFrame.matrixWorld);
-        this.slamKinectRGBCameraLookAt = this.Valter.bodyFrame.localToWorld(this.slamKinectRGBCameraOffset.clone().setZ(1.0));
-        this.slamKinectRGBCamera.lookAt(this.slamKinectRGBCameraLookAt);
+        this.slamKinectRGBDCamera.position.copy(this.slamKinectRGBDCameraOffset);
+        this.slamKinectRGBDCamera.position.applyMatrix4(this.Valter.bodyFrame.matrixWorld);
+        this.slamKinectRGBDCameraLookAt = this.Valter.bodyFrame.localToWorld(this.slamKinectRGBDCameraOffset.clone().setZ(1.0));
+        this.slamKinectRGBDCamera.lookAt(this.slamKinectRGBDCameraLookAt);
     }
 
-    initializeRGBDScanning(depthImageThrottling) {
-        this.depthImageThrottling = depthImageThrottling ? depthImageThrottling : 7.0;
-        this.depthImageThrottling += 0.0001;
+    sendNavKinectRGBDWebSocketMessage() {
+        this.vLab.renderPaused = true;
 
-        this.slamKinectDepthRaycasterHAngleDelta = this.slamKinectRGBCameraHFOV / (this.rgbdSize.x / this.depthImageThrottling);
-        this.slamKinectDepthRaycasterVAngleDelta = this.slamKinectRGBCameraVFOV / (this.rgbdSize.y / this.depthImageThrottling);
+        /**
+         * Kinect RGB Image
+         */
+        this.slamKinectRGBDCamera.near = this.kinectImageMinDistance;
+        this.slamKinectRGBDCamera.far  = this.kinectImageMaxDistance;
+        this.slamKinectRGBDCamera.updateProjectionMatrix();
+        this.WebGLRenderer.render(this.vLab.SceneDispatcher.currentVLabScene, this.slamKinectRGBDCamera);
+        this.slamKinectRGBImageCanvasCtx.drawImage(this.WebGLRenderer.domElement, 0, 0, this.rgbdSize.x, this.rgbdSize.y);
 
-        this.sceneIntersectionMeshes = [];
+        /**
+         * Kinect Depth Image
+         */
+        this.sceneMeshesForDepthRendering = [];
         this.vLab.SceneDispatcher.currentVLabScene.traverse((sceneObject) => {
             if (sceneObject instanceof THREE.Mesh) {
                 if (sceneObject.name.indexOf('_OUTLINE') == -1) {
                     if (this.Valter.selfMeshes.indexOf(sceneObject) == -1) {
-                        this.sceneIntersectionMeshes.push(sceneObject);
+                        this.sceneMeshesForDepthRendering.push(sceneObject);
                     }
                 }
             }
         });
-        console.log('sceneIntersectionMeshes: ' + this.sceneIntersectionMeshes.length);
-
-        this.getNavKinectRGBDWebSocketMessage();
-    }
-
-    getNavKinectRGBDWebSocketMessage() {
-        this.WebGLRenderer.render(this.vLab.SceneDispatcher.currentVLabScene, this.slamKinectRGBCamera);
-
-        this.vLab.renderPaused = true;
-
-        this.slamKinectRGBCamera.updateMatrix();
-        this.slamKinectRGBCamera.updateMatrixWorld();
-        var slamKinectRGBCameraFrustum = new THREE.Frustum();
-        slamKinectRGBCameraFrustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(this.slamKinectRGBCamera.projectionMatrix, this.slamKinectRGBCamera.matrixWorldInverse));
-
-        // let meshesInslamKinectRGBCameraFrustum = [];
-        // this.sceneIntersectionMeshes.forEach((mesh) => {
-        //     if (mesh.geometry.boundingSphere) {
-        //         if (slamKinectRGBCameraFrustum.intersectsSphere(mesh.geometry.boundingSphere)) {
-        //             meshesInslamKinectRGBCameraFrustum.push(mesh);
-        //         }
-        //     }
-        // });
-
-        /**
-         * Raycaster scanning for Depth image
-         */
-        let depthImageValues = [];
-        let curHAngle = this.slamKinectRGBCameraHFOV / 2;
-        let curVAngle = this.slamKinectRGBCameraVFOV / 2;
-        while (curVAngle + this.slamKinectDepthRaycasterVAngleDelta > -this.slamKinectRGBCameraVFOV / 2) {
-            while (curHAngle + this.slamKinectDepthRaycasterHAngleDelta > -this.slamKinectRGBCameraHFOV / 2) {
-                let x = this.slamKinectRGBCamera.far * Math.tan(curHAngle);
-                let y = this.slamKinectRGBCamera.far * Math.tan(curVAngle);
-                let z = this.slamKinectRGBCamera.far;
-        
-                curHAngle -= this.slamKinectDepthRaycasterHAngleDelta;
-        
-                this.slamKinectDepthRaycasterDirectionOffset = new THREE.Vector3(x, y, z);
-                this.slamKinectDepthRaycasterDirection = this.Valter.bodyFrame.localToWorld(this.slamKinectRGBCameraOffset.clone().add(this.slamKinectDepthRaycasterDirectionOffset)).sub(this.slamKinectRGBCamera.position.clone()).normalize();
-                
-                // this.slamKinectDepthRaycasterArrowHelper.position.copy(this.slamKinectRGBCamera.position);
-                // this.slamKinectDepthRaycasterArrowHelper.setDirection(this.slamKinectDepthRaycasterDirection);
-                // let slamKinectDepthRaycasterArrowHelperLength = this.Valter.bodyFrame.localToWorld(this.slamKinectRGBCameraOffset.clone().add(this.slamKinectDepthRaycasterDirectionOffset)).distanceTo(this.slamKinectRGBCamera.position.clone());
-                // this.slamKinectDepthRaycasterArrowHelper.setLength(slamKinectDepthRaycasterArrowHelperLength, 0.02, 0.01);
-
-                this.slamKinectDepthRaycaster.set(this.slamKinectRGBCamera.position, this.slamKinectDepthRaycasterDirection);
-
-                let slamKinectDepthRaycasterIntersects = this.slamKinectDepthRaycaster.intersectObjects(this.sceneIntersectionMeshes);
-                if (slamKinectDepthRaycasterIntersects[0]) {
-                    let normalizedDistance = (slamKinectDepthRaycasterIntersects[0].distance - this.slamKinectDepthRaycaster.near) / (this.slamKinectDepthRaycaster.far - this.slamKinectDepthRaycaster.near);
-                    depthImageValues.push(normalizedDistance);
-                } else {
-                    depthImageValues.push(1.0);
-                }
-            }
-            curHAngle = this.slamKinectRGBCameraHFOV / 2;
-            curVAngle -= this.slamKinectDepthRaycasterVAngleDelta;
-        }
-
-        this.slamKinectRGBCameraDepthImageCanvasCtx.fillStyle = '#000000';
-        this.slamKinectRGBCameraDepthImageCanvasCtx.fillRect(0, 0, this.slamKinectRGBCameraDepthImageCanvas.width, this.slamKinectRGBCameraDepthImageCanvas.height);
-        let x = 0;
-        let y = 0;
-        let depthImageThrottlingInt = Math.round(this.depthImageThrottling);
-        depthImageValues.forEach((depth) => {
-            let depthPixel = this.slamKinectRGBCameraDepthImageCanvasCtx.createImageData(depthImageThrottlingInt, depthImageThrottlingInt);
-            for (let i = 0; i < depthPixel.data.length; i += 4) {
-                depthPixel.data[i + 0] = 255 - 255 * depth;
-                depthPixel.data[i + 1] = 255 - 255 * depth;
-                depthPixel.data[i + 2] = 255 - 255 * depth;
-                depthPixel.data[i + 3] = 255;
-            }
-            this.slamKinectRGBCameraDepthImageCanvasCtx.putImageData(depthPixel, x, y);
-            if (x < this.rgbdSize.x) {
-                x += depthImageThrottlingInt;
-            } else {
-                y += depthImageThrottlingInt;
-                x = 0;
-            }
+        this.sceneMeshesForDepthRendering.forEach((sceneMeshForDepthRendering) => {
+            sceneMeshForDepthRendering.userData['preDepthRenderingMaterial'] = sceneMeshForDepthRendering.material;
+            sceneMeshForDepthRendering.material = new THREE.MeshDepthMaterial();
+        });
+        this.slamKinectRGBDCamera.near = this.kinectDepthMinDistance;
+        this.slamKinectRGBDCamera.far  = this.kinectDepthMaxDistance;
+        this.slamKinectRGBDCamera.updateProjectionMatrix();
+        this.WebGLRenderer.render(this.vLab.SceneDispatcher.currentVLabScene, this.slamKinectRGBDCamera);
+        this.slamKinectDepthImageCanvasCtx.drawImage(this.WebGLRenderer.domElement, 0, 0, this.rgbdSize.x, this.rgbdSize.y);
+        this.sceneMeshesForDepthRendering.forEach((sceneMeshForDepthRendering) => {
+            sceneMeshForDepthRendering.material = sceneMeshForDepthRendering.userData['preDepthRenderingMaterial'];
+            delete sceneMeshForDepthRendering.userData['preDepthRenderingMaterial'];
         });
 
         this.vLab.renderPaused = false;
 
-        if (this.getNavKinectRGBDWebSocketMessageEnabled) {
-            this.sendNavKinectRGBDWebSocketMessage()
-            .then(() => {
-                setTimeout(this.getNavKinectRGBDWebSocketMessage, 250);
-            });
-        }
-    }
+        /**
+         * Send NavKinectRGBDWebSocketMessage to VLabsRESTWS
+         */
+        let navKinectRGBDWebSocketMessage = new NavKinectRGBDWebSocketMessage();
+        navKinectRGBDWebSocketMessage.rgbImageData   = this.slamKinectRGBImageCanvasCtx.getImageData(0, 0, this.rgbdSize.x, this.rgbdSize.y);
+        navKinectRGBDWebSocketMessage.depthImageData = this.slamKinectDepthImageCanvasCtx.getImageData(0, 0, this.rgbdSize.x, this.rgbdSize.y);
 
-    sendNavKinectRGBDWebSocketMessage() {
-        return new Promise((resolve) => {
-            /**
-             * RGB image
-             */
-            let navKinectRGBImageData = this.slamKinectRGBCameraRendererCanvas.toDataURL();
-            /**
-             * Depth image
-             */
-            let navKinectDepthImageData = this.slamKinectRGBCameraDepthImageCanvas.toDataURL();
-            /**
-             * Send NavKinectRGBDWebSocketMessage to VLabsRESTWS
-             */
-            let navKinectRGBDWebSocketMessage = new NavKinectRGBDWebSocketMessage();
-            navKinectRGBDWebSocketMessage.rgbImageData = navKinectRGBImageData;
-            navKinectRGBDWebSocketMessage.depthImageData = navKinectDepthImageData;
+        // this.vLab.VLabsRESTClientManager.VLabsRESTWSValterRGBDMessageService.send(navKinectRGBDWebSocketMessage);
 
-            // this.vLab.VLabsRESTClientManager.VLabsRESTWSValterRGBDMessageService.send(navKinectRGBDWebSocketMessage);
-
-            this.sendNavKinectRGBDWebSocketMessageWorker.postMessage({
-                socketURL: this.vLab.VLabsRESTClientManager.VLabsRESTWSValterRGBDMessageService.getFullyQualifiedURL(),
-                navKinectRGBDWebSocketMessage: navKinectRGBDWebSocketMessage
-            });
-
-            resolve();
+        this.sendNavKinectRGBDWebSocketMessageWorker.postMessage({
+            socketURL: this.vLab.VLabsRESTClientManager.VLabsRESTWSValterRGBDMessageService.getFullyQualifiedURL(),
+            navKinectRGBDWebSocketMessage: navKinectRGBDWebSocketMessage,
+            rgbdSize: this.rgbdSize
         });
     }
 }
