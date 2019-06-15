@@ -90,7 +90,8 @@ class ValterSLAM {
         this.WebGLRenderer.setSize(this.rgbdSize.x, this.rgbdSize.y);
         this.WebGLRenderer.context.getShaderInfoLog = function () { return '' };
         this.WebGLRenderer.context.getProgramInfoLog = function () { return '' };
-        this.WebGLRenderer.gammaOutput = true;
+        this.WebGLRenderer.gammaOutput = this.vLab.WebGLRenderer.gammaOutput;
+        this.WebGLRenderer.gammaFactor = this.vLab.WebGLRenderer.gammaFactor;
 
         this.vLab.EventDispatcher.subscribe({
             subscriber: this,

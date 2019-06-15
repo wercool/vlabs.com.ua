@@ -283,6 +283,19 @@ class ValterIK {
         });
     }
 
+    resetHeadTarget() {
+        this.Valter.baseFrame.updateMatrixWorld();
+        this.headTargetObjectInteractable.vLabSceneObject.position.copy(new THREE.Vector3(0.0, 0.0, 1.0));
+        if (this.Valter.nature.devHelpers.showHeadTargetDirectionFromHeadYawLinkOrigin) {
+            let headYawLinkHeadTargetLocalPos = this.headTargetObjectInteractable.vLabSceneObject.position.clone();
+
+            let headYawLinkHeadTargetDir = headYawLinkHeadTargetLocalPos.clone().normalize();
+            let headYawLinkHeadTargetDistance = new THREE.Vector3(0.0, 0.0, 0.0).distanceTo(headYawLinkHeadTargetLocalPos);
+            this.headTargetDirectionFromYawLinkOriginArrowHelper.setDirection(headYawLinkHeadTargetDir);
+            this.headTargetDirectionFromYawLinkOriginArrowHelper.setLength(headYawLinkHeadTargetDistance, 0.02, 0.01);
+        }
+    }
+
     headTargetAction(event) {
         let currentActionInitialEventCoords = VLabUtils.getEventCoords(event.event);
         if (this.prevActionInitialEventCoords !== undefined) {
@@ -520,6 +533,15 @@ class ValterIK {
                 }
             );
         });
+    }
+
+    resetRightPalmTarget() {
+        this.Valter.baseFrame.updateMatrixWorld();
+        this.rightPalmTargetGlobalPosition = this.Valter.rightPalm.localToWorld(new THREE.Vector3());
+        this.headYawLinkRightPalmTargetLocalPos = this.headYawLinkOriginObject3D.worldToLocal(this.rightPalmTargetGlobalPosition.clone());
+        this.rightPalmTargetObjectInteractable.vLabSceneObject.position.copy(this.headYawLinkRightPalmTargetLocalPos);
+        this.updateRightPalmTargetDirectionFromHeadYawLinkOriginArrowHelper();
+        this.updateRightPalmDirectionFromHeadYawLinkOriginArrowHelper();
     }
 
     rightPalmTargetAction(event) {
@@ -782,7 +804,7 @@ class ValterIK {
                     primary: true,
                     icon: '<i class=\"material-icons\">grain</i>',
                     action: () => {
-                        let leftPalmFKPointsMaterial = new THREE.PointsMaterial({ size: 0.01, color: 0x00ff00 });
+                        let leftPalmFKPointsMaterial = new THREE.PointsMaterial({ size: 0.01, color: 0xffff00 });
                         let leftPalmFKPointsGeometry = new THREE.Geometry();
                         this.vLab.VLabsRESTClientManager.ValterLeftPalmIKService.getAllLeftPalmFKTuples(this.leftPalmIKDataThrottlingSigma)
                         .then(valterLeftPalmFKTuples => {
@@ -798,6 +820,15 @@ class ValterIK {
                 }
             );
         });
+    }
+
+    resetLeftPalmTarget() {
+        this.Valter.baseFrame.updateMatrixWorld();
+        this.leftPalmTargetGlobalPosition = this.Valter.leftPalm.localToWorld(new THREE.Vector3());
+        this.headYawLinkLeftPalmTargetLocalPos = this.headYawLinkOriginObject3D.worldToLocal(this.leftPalmTargetGlobalPosition.clone());
+        this.leftPalmTargetObjectInteractable.vLabSceneObject.position.copy(this.headYawLinkLeftPalmTargetLocalPos);
+        this.updateLeftPalmTargetDirectionFromHeadYawLinkOriginArrowHelper();
+        this.updateLeftPalmDirectionFromHeadYawLinkOriginArrowHelper();
     }
 
     leftPalmTargetAction(event) {

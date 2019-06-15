@@ -25,7 +25,8 @@ class VLabEventDispatcher {
                 resize:     {},
                 keydown:    {},
                 keyup:      {},
-                message:    {}
+                message:    {},
+                blur:       {}
             },
             document: {
                 onfullscreenchange:     {},
@@ -102,8 +103,12 @@ class VLabEventDispatcher {
                 putToInventory: {}
             },
             VLabItem: {
-                initialized:                 {},
-                interactablesInitialized:    {},
+                initialized:               {},
+                interactablesInitialized:  {},
+                /**
+                 * see Valter VLabItem for reference
+                 */
+                auxilariesInitialized:     {},
             },
             VLabSceneInteractable: {
                 transitTakenInteractable:    {}
@@ -122,8 +127,9 @@ class VLabEventDispatcher {
 
         window.addEventListener('resize',   this.onWindowResize.bind(this),     false);
         window.addEventListener('keydown',  this.onWindowKeyDown.bind(this),    false);
-        window.addEventListener('keyup',    this.onWindowKeyUp.bind(this),    false);
+        window.addEventListener('keyup',    this.onWindowKeyUp.bind(this),      false);
         window.addEventListener('message',  this.onWindowMessage.bind(this),    false);
+        window.addEventListener('blur',     this.onWindowBlur.bind(this),       false);
 
         /**
          * Fullscreen change listeners
@@ -256,6 +262,9 @@ class VLabEventDispatcher {
         this.notifySubscribers(event);
     }
     onWindowMessage(event) {
+        this.notifySubscribers(event);
+    }
+    onWindowBlur(event) {
         this.notifySubscribers(event);
     }
     /* document event handlers */

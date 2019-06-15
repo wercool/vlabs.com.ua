@@ -66,6 +66,87 @@ class Valter extends VLabItem {
 
         this.setupInteractables()
         .then((interactables) => {
+            /**
+             * shoulderFrameR menu
+             */
+            this.getInteractableByName('shoulderFrameR').DEV.menu.unshift(
+                {
+                    label: 'Reset to Default',
+                    enabled: true,
+                    selected: false,
+                    primary: true,
+                    icon: '<i class=\"material-icons\">reply_all</i>',
+                    action: () => {
+                        this.resetRightSideManipulatorLinks();
+                    }
+                }
+            );
+            /**
+             * shoulderFrameL menu
+             */
+            this.getInteractableByName('shoulderFrameL').DEV.menu.unshift(
+                {
+                    label: 'Reset to Default',
+                    enabled: true,
+                    selected: false,
+                    primary: true,
+                    icon: '<i class=\"material-icons\">reply_all</i>',
+                    action: () => {
+                        this.resetLeftSideManipulatorLinks();
+                    }
+                }
+            );
+            /**
+             * bodyFrame menu
+             */
+            this.getInteractableByName('bodyFrame').DEV.menu.unshift(
+                {
+                    label: 'Reset to Default',
+                    enabled: true,
+                    selected: false,
+                    primary: true,
+                    icon: '<i class=\"material-icons\">reply_all</i>',
+                    action: () => {
+                        this.setBodyFrameYaw(this.ValterLinks.bodyFrameYaw.default);
+                    }
+                }
+            );
+            /**
+             * torsoFrame menu
+             */
+            this.getInteractableByName('torsoFrame').DEV.menu.unshift(
+                {
+                    label: 'Reset to Default',
+                    enabled: true,
+                    selected: false,
+                    primary: true,
+                    icon: '<i class=\"material-icons\">reply_all</i>',
+                    action: () => {
+                        this.setTorsoFrameTilt(this.ValterLinks.torsoFrameTilt.default);
+                    }
+                }
+            );
+            /**
+             * headFrame menu
+             */
+            this.getInteractableByName('headFrame').DEV.menu.unshift(
+                {
+                    label: 'Reset to Default',
+                    enabled: true,
+                    selected: false,
+                    primary: true,
+                    icon: '<i class=\"material-icons\">reply_all</i>',
+                    action: () => {
+                        this.setHeadYawLink(this.ValterLinks.headYawLink.default);
+                        this.setHeadTiltLink(this.ValterLinks.headTiltLink.default);
+                        this.ValterIK.resetHeadTarget();
+                    }
+                }
+            );
+
+            /**
+             * Setup Auxilaries
+             */
             this.setupAuxilaries();
         });
 
@@ -78,27 +159,27 @@ class Valter extends VLabItem {
          */
         this.dynamics = {
             maxLinearSpeed: 0.08 * (1 / 60),
-            linearDeceleration: 0.00001,
-            angularDeceleration: 0.00001,
+            maxAngularSpeed: 0.15 * (1 / 60),
+            linearAcceleration: 0.000025,
+            linearDeceleration: 0.000010,
+            angularAcceleration: 0.000004,
+            angularDeceleration: 0.000010,
         };
         this.cmd_vel = {
             linear: new THREE.Vector3(0.0, 0.0, 0.0),
             angular: 0.0
         };
-        this.moveForwad = this.moveForwad.bind(this);
-        this.accelerateForward = this.accelerateForward.bind(this);
-        this.deCelerateForward = this.deCelerateForward.bind(this);
+        this.moveForward = this.moveForward.bind(this);
         this.moveBackward = this.moveBackward.bind(this);
-        this.accelerateBackward = this.accelerateBackward.bind(this);
-        this.deCelerateBackward = this.deCelerateBackward.bind(this);
-
+        this.rotateLeft = this.rotateLeft.bind(this);
+        this.rotateRight = this.rotateRight.bind(this);
         /**
          * WASD keys listeners
          */
         this.wasd = {
             w: false,
-            s: false,
             a: false,
+            s: false,
             d: false
         };
         this.vLab.EventDispatcher.subscribe({
@@ -114,6 +195,14 @@ class Valter extends VLabItem {
             events: {
                 window: {
                     keyup: this.onWindowKeyUp
+                }
+            }
+        });
+        this.vLab.EventDispatcher.subscribe({
+            subscriber: this,
+            events: {
+                window: {
+                    blur: this.onWindowBlur
                 }
             }
         });
@@ -138,6 +227,15 @@ class Valter extends VLabItem {
          */
         this.ValterSLAM = new ValterSLAM({
             Valter: this
+        });
+
+        /**
+         * Notify event subscribers
+         */
+        this.vLab.EventDispatcher.notifySubscribers({
+            target: 'VLabItem',
+            type: 'auxilariesInitialized',
+            vLabItem: this
         });
     }
 
@@ -196,25 +294,29 @@ class Valter extends VLabItem {
                 value: this.bodyFrame.rotation.y,
                 min: -1.35,
                 max: 1.35,
-                step: 0.01
+                step: 0.01,
+                default: this.bodyFrame.rotation.y
             },
             torsoFrameTilt: {
                 value: this.torsoFrame.rotation.x,
                 min: 0.0,
                 max: 0.85,
-                step: 0.01
+                step: 0.01,
+                default: this.torsoFrame.rotation.x
             },
             headYawLink: {
                 value: this.headYawLink.rotation.y,
                 min: -1.35,
                 max: 1.35,
-                step: 0.02
+                step: 0.02,
+                default: this.headYawLink.rotation.y
             },
             headTiltLink: {
                 value: this.headTiltLink.rotation.x,
                 min: -1.0,
                 max: 0.0,
-                step: 0.01
+                step: 0.01,
+                default: this.headTiltLink.rotation.x
             },
             /**
              * Right side
@@ -223,31 +325,36 @@ class Valter extends VLabItem {
                 value: this.shoulderRightLink.rotation.y,
                 min: 0.0,
                 max: 1.05,
-                step: 0.02
+                step: 0.02,
+                default: this.shoulderRightLink.rotation.y
             },
             limbRightLink: {
                 value: this.limbRightLink.rotation.x,
                 min: -1.48,
                 max: 1.045,
-                step: 0.04
+                step: 0.04,
+                default: this.limbRightLink.rotation.x
             },
             armRightLink: {
                 value: this.armRightLink.rotation.z,
                 min: -1.38,
                 max: 0.0,
-                step: 0.02
+                step: 0.02,
+                default: this.armRightLink.rotation.z
             },
             forearmRollRightLink: {
                 value: this.forearmRollRightLink.rotation.x,
                 min: -0.65,
                 max: 1.2,
-                step: 0.02
+                step: 0.02,
+                default: this.forearmRollRightLink.rotation.x
             },
             forearmRightFrame: {
                 value: this.forearmRightFrame.rotation.z,
                 min: -1.57,
                 max: 1.57,
-                step: 0.02
+                step: 0.02,
+                default: this.forearmRightFrame.rotation.z
             },
             /**
              * Left side
@@ -256,31 +363,36 @@ class Valter extends VLabItem {
                 value: this.shoulderLeftLink.rotation.y,
                 min: -1.05,
                 max: 0.0,
-                step: 0.02
+                step: 0.02,
+                default: this.shoulderLeftLink.rotation.y
             },
             limbLeftLink: {
                 value: this.limbLeftLink.rotation.x,
                 min: -1.48,
                 max: 1.045,
-                step: 0.04
+                step: 0.04,
+                default: this.limbLeftLink.rotation.x
             },
             armLeftLink: {
                 value: this.armLeftLink.rotation.z,
                 min: 0.0,
                 max: 1.38,
-                step: 0.02
+                step: 0.02,
+                default: this.armLeftLink.rotation.z
             },
             forearmRollLeftLink: {
                 value: this.forearmRollLeftLink.rotation.x,
                 min: -0.65,
                 max: 1.2,
-                step: 0.02
+                step: 0.02,
+                default: this.forearmRollLeftLink.rotation.x
             },
             forearmLeftFrame: {
                 value: this.forearmLeftFrame.rotation.z,
                 min: -1.57,
                 max: 1.57,
-                step: 0.02
+                step: 0.02,
+                default: this.forearmLeftFrame.rotation.z
             }
         };
         this.initializeCableSleeves();
@@ -306,6 +418,26 @@ class Valter extends VLabItem {
      * Valter links manipulation
      * 
      */
+    resetRightSideManipulatorLinks() {
+        this.setShoulderRightLink(this.ValterLinks.shoulderRightLink.default);
+        this.setLimbRightLink(this.ValterLinks.limbRightLink.default);
+        this.setArmRightLink(this.ValterLinks.armRightLink.default);
+        this.setForearmRollRightLink(this.ValterLinks.forearmRollRightLink.default);
+        this.setForearmRightFrame(this.ValterLinks.forearmRightFrame.default);
+
+        this.ValterIK.resetRightPalmTarget();
+    }
+
+    resetLeftSideManipulatorLinks() {
+        this.setShoulderLeftLink(this.ValterLinks.shoulderLeftLink.default);
+        this.setLimbLeftLink(this.ValterLinks.limbLeftLink.default);
+        this.setArmLeftLink(this.ValterLinks.armLeftLink.default);
+        this.setForearmRollLeftLink(this.ValterLinks.forearmRollLeftLink.default);
+        this.setForearmLeftFrame(this.ValterLinks.forearmLeftFrame.default);
+
+        this.ValterIK.resetLeftPalmTarget();
+    }
+
     setBodyFrameYaw(value) {
         if (value >= this.ValterLinks.bodyFrameYaw.min && value <= this.ValterLinks.bodyFrameYaw.max) {
             this.ValterLinks.bodyFrameYaw.value = value;
@@ -1077,22 +1209,36 @@ class Valter extends VLabItem {
     onWindowKeyDown(event) {
         switch (event.key) {
             case 'w':
-                if (!this.wasd.w) {
+                if (!this.wasd.w && !this.movingBackward) {
                     this.wasd.w = true;
-                    this.accelerateForward();
+                    if (!this.movingForward) {
+                        this.moveForward();
+                    }
                 }
             break;
             case 's':
-                if (!this.wasd.s) {
+                if (!this.wasd.s && !this.movingForward) {
                     this.wasd.s = true;
-                    this.accelerateBackward();
+                    if (!this.movingBackward) {
+                        this.moveBackward();
+                    }
                 }
             break;
             case 'a':
-                this.rotateLeft();
+                if (!this.wasd.a && !this.rotatingRight) {
+                    this.wasd.a = true;
+                    if (!this.rotatingLeft) {
+                        this.rotateLeft();
+                    }
+                }
             break;
             case 'd':
-                this.rotateRight();
+                if (!this.wasd.d && !this.rotatingLeft) {
+                    this.wasd.d = true;
+                    if (!this.rotatingRight) {
+                        this.rotateRight();
+                    }
+                }
             break;
         }
     }
@@ -1103,37 +1249,43 @@ class Valter extends VLabItem {
         switch (event.key) {
             case 'w':
                 this.wasd.w = false;
-                this.deCelerateForward();
             break;
             case 's':
                 this.wasd.s = false;
-                this.deCelerateBackward();
             break;
             case 'a':
-                this.cmd_vel.angular = 0.0;
+                this.wasd.a = false;
             break;
             case 'd':
-                this.cmd_vel.angular = 0.0;
+                this.wasd.d = false;
             break;
         }
+    }
+    onWindowBlur(event) {
+        this.wasd.w = false;
+        this.wasd.s = false;
+        this.wasd.a = false;
+        this.wasd.d = false;
     }
 
     /**
      * Valter baseFrame dynamics
      */
     /**
-     * Translation forward
+     * Moving baseFrame forward
      */
-    moveForwad() {
+    moveForward() {
+        this.movingForward = true;
+        this.movingBackward = false;
+
         this.translateBaseFrame(new THREE.Vector3(0.0, 0.0, 1.0), this.cmd_vel.linear.z);
+
         this.rightWheel.rotateX(this.cmd_vel.linear.z * 8);
         this.leftWheel.rotateX(this.cmd_vel.linear.z * 8);
-
         this.smallWheelRF.rotateX(this.cmd_vel.linear.z * 12);
         this.smallWheelLF.rotateX(this.cmd_vel.linear.z * 12);
         this.smallWheelRR.rotateX(this.cmd_vel.linear.z * 12);
         this.smallWheelLR.rotateX(this.cmd_vel.linear.z * 12);
-
         if (this.smallWheelArmatureRF.rotation.y > 0.0) {
             this.smallWheelArmatureRF.rotateY(this.cmd_vel.linear.z * -10);
         } else {
@@ -1154,69 +1306,66 @@ class Valter extends VLabItem {
         } else {
             this.smallWheelArmatureLR.rotateY(this.cmd_vel.linear.z * 10);
         }
-    }
-    accelerateForward() {
+
         if (this.wasd.w) {
             if (this.cmd_vel.linear.z < this.dynamics.maxLinearSpeed) {
-                this.cmd_vel.linear.z += this.dynamics.linearDeceleration;
+                this.cmd_vel.linear.z += this.dynamics.linearAcceleration;
             }
-            this.moveForwad();
-            setTimeout(this.accelerateForward, 2);
-        }
-    }
-    deCelerateForward() {
-        if (!this.wasd.w) {
+            setTimeout(this.moveForward, 2);
+        } else {
             if (this.cmd_vel.linear.z > 0.0) {
                 this.cmd_vel.linear.z -= this.dynamics.linearDeceleration;
-                this.moveForwad();
-                setTimeout(this.deCelerateForward, 2);
+                setTimeout(this.moveForward, 2);
             } else {
                 this.cmd_vel.linear.z = 0.0;
+                this.movingForward = false;
             }
         }
     }
+
     /**
-     * Translation backward
+     * Moving baseFrame backward
      */
     moveBackward() {
+        this.movingBackward = true;
+        this.movingForward = false;
+
         this.translateBaseFrame(new THREE.Vector3(0.0, 0.0, 1.0), this.cmd_vel.linear.z);
+
         this.rightWheel.rotateX(this.cmd_vel.linear.z * 8);
         this.leftWheel.rotateX(this.cmd_vel.linear.z * 8);
-    }
-    accelerateBackward() {
+
         if (this.wasd.s) {
             if (Math.abs(this.cmd_vel.linear.z) < this.dynamics.maxLinearSpeed) {
-                this.cmd_vel.linear.z -= this.dynamics.linearDeceleration;
+                this.cmd_vel.linear.z -= this.dynamics.linearAcceleration;
             }
-            this.moveBackward();
-            setTimeout(this.accelerateBackward, 2);
-        }
-    }
-    deCelerateBackward() {
-        if (!this.wasd.s) {
+            setTimeout(this.moveBackward, 2);
+        } else {
             if (this.cmd_vel.linear.z < 0.0) {
                 this.cmd_vel.linear.z += this.dynamics.linearDeceleration;
-                this.moveBackward();
-                setTimeout(this.deCelerateBackward, 2);
+                setTimeout(this.moveBackward, 2);
             } else {
                 this.cmd_vel.linear.z = 0.0;
+                this.movingBackward = false;
             }
         }
     }
+
     /**
      * Rotation
      */
     rotateLeft() {
-        if (this.cmd_vel.angular > -0.01) this.cmd_vel.angular += -0.002;
+        this.rotatingLeft = true;
+        this.rotatingRight = false;
+
         this.rotateBaseFrame(this.cmd_vel.angular);
+
         this.rightWheel.rotateX(-this.cmd_vel.angular * 2);
         this.leftWheel.rotateX(this.cmd_vel.angular * 2);
-
         this.smallWheelRF.rotateX(this.cmd_vel.angular * 3.5);
         this.smallWheelLF.rotateX(this.cmd_vel.angular * 3.5);
         this.smallWheelRR.rotateX(this.cmd_vel.angular * 3.5);
         this.smallWheelLR.rotateX(this.cmd_vel.angular * 3.5);
-
         if (this.smallWheelArmatureRF.rotation.y < 1.2) {
             this.smallWheelArmatureRF.rotateY(this.cmd_vel.angular * -1.6);
         }
@@ -1229,18 +1378,35 @@ class Valter extends VLabItem {
         if (this.smallWheelArmatureLR.rotation.y > -1.0) {
             this.smallWheelArmatureLR.rotateY(this.cmd_vel.angular * 1.6);
         }
+
+        if (this.wasd.a) {
+            if (Math.abs(this.cmd_vel.angular) < this.dynamics.maxAngularSpeed) {
+                this.cmd_vel.angular -= this.dynamics.angularAcceleration;
+            }
+            setTimeout(this.rotateLeft, 2);
+        } else {
+            if (this.cmd_vel.angular < 0.0) {
+                this.cmd_vel.angular += this.dynamics.angularDeceleration;
+                setTimeout(this.rotateLeft, 2);
+            } else {
+                this.cmd_vel.angular = 0.0;
+                this.rotatingLeft = false;
+            }
+        }
     }
+
     rotateRight() {
-        if (this.cmd_vel.angular < 0.01) this.cmd_vel.angular += 0.002;
+        this.rotatingRight = true;
+        this.rotatingLeft = false;
+
         this.rotateBaseFrame(this.cmd_vel.angular);
+
         this.rightWheel.rotateX(-this.cmd_vel.angular * 2);
         this.leftWheel.rotateX(this.cmd_vel.angular * 2);
-
         this.smallWheelRF.rotateX(this.cmd_vel.angular * 3.5);
         this.smallWheelLF.rotateX(this.cmd_vel.angular * 3.5);
         this.smallWheelRR.rotateX(this.cmd_vel.angular * 3.5);
         this.smallWheelLR.rotateX(this.cmd_vel.angular * 3.5);
-
         if (this.smallWheelArmatureRF.rotation.y > -1.2) {
             this.smallWheelArmatureRF.rotateY(this.cmd_vel.angular * -1.6);
         }
@@ -1252,6 +1418,21 @@ class Valter extends VLabItem {
         }
         if (this.smallWheelArmatureLR.rotation.y < 1.0) {
             this.smallWheelArmatureLR.rotateY(this.cmd_vel.angular * 1.6);
+        }
+
+        if (this.wasd.d) {
+            if (Math.abs(this.cmd_vel.angular) < this.dynamics.maxAngularSpeed) {
+                this.cmd_vel.angular += this.dynamics.angularAcceleration;
+            }
+            setTimeout(this.rotateRight, 2);
+        } else {
+            if (this.cmd_vel.angular > 0.0) {
+                this.cmd_vel.angular -= this.dynamics.angularDeceleration;
+                setTimeout(this.rotateRight, 2);
+            } else {
+                this.cmd_vel.angular = 0.0;
+                this.rotatingRight = false;
+            }
         }
     }
 }
