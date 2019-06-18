@@ -20,6 +20,7 @@ const del                   = require('del');
 const rimraf                = require("rimraf");
 const recursivecopy         = require('recursive-copy');
 const preprocessify         = require('preprocessify');
+const glob                  = require('glob'); 
 
 var initObj = {};
 
@@ -345,15 +346,36 @@ gulp.task('watch', function (done) {
         done();
         return;
     }
-    gulp.watch(['./src/vlabs/' + initObj.vLabName + '/**/*.js',
-                './src/vlabs/' + initObj.vLabName + '/**/*.json',
-                './src/vlabs/' + initObj.vLabName + '/**/*.html',
-                './src/vlabs/' + initObj.vLabName + '/**/*.css',
-                './src/vlabs/' + initObj.vLabName + '/**/*.appcache',
-                './src/vlab.fwk/**/*.*',
-                './src/vlab.items/**/*.*',
-                './src/vlab.assets/**/*.*'
-                ], gulp.series('build'));
+
+    let watchIgnoreList = [];
+    /**
+     * VLab Items
+     */
+    glob('./src/vlab.items/**', function(err, vlabItemsFiles) {
+        vlabItemsFiles.forEach((vlabItemFile) => {
+            if (vlabItemFile.indexOf('gulp.watch.igore') > -1) {
+                let gulpWatchIgnoreContent = fs.readFileSync(vlabItemFile, 'utf-8');
+                let gulpWatchIgnores = gulpWatchIgnoreContent.split('\n');
+                gulpWatchIgnores.forEach(gulpWatchIgnore => {
+                    if (gulpWatchIgnore.length > 0) {
+                        watchIgnoreList.push('!' + gulpWatchIgnore);
+                    }
+                });
+            }
+        });
+
+        let watchList = ['./src/vlabs/' + initObj.vLabName + '/**/*.js',
+                    './src/vlabs/' + initObj.vLabName + '/**/*.json',
+                    './src/vlabs/' + initObj.vLabName + '/**/*.html',
+                    './src/vlabs/' + initObj.vLabName + '/**/*.css',
+                    './src/vlabs/' + initObj.vLabName + '/**/*.appcache',
+                    './src/vlab.fwk/**/*.*',
+                    './src/vlab.items/**/*.*',
+                    './src/vlab.assets/**/*.*'
+                    ];
+        watchList = [...watchList, ...watchIgnoreList];
+        gulp.watch(watchList, gulp.series('build'));
+    });
 });
 
 gulp.task('server', function(done){

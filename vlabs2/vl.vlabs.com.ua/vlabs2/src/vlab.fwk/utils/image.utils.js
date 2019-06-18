@@ -9,3 +9,10 @@ export function blackToTransparent(imageData) {
     }
     return imageData;
 };
+export function canvasBlobToDataURL(imageBlob) {
+    return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.addEventListener('load', () => resolve(reader.result));
+        reader.readAsDataURL(imageBlob);
+    });
+};

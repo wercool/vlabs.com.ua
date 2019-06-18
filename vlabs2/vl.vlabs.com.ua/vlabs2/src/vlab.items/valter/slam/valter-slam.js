@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import * as WebWorkerUtils from '../../../vlab.fwk/utils/web.worker.utils';
+import * as ImageUtils from '../../../vlab.fwk/utils/image.utils';
 
 import NavKinectRGBDWebSocketMessage from './model/nav-kinect-rgbd-websocket-message';
+import SLAMRGBDCmdVelOrientation from './model/slam-rgbd-cmd_vel-orientation';
 
 /**
  * Valter SLAM class.
@@ -81,6 +83,15 @@ class ValterSLAM {
         this.slamKinectDepthImageCanvasCtx = this.slamKinectDepthImageCanvas.getContext('2d');
         this.vLab.DOMManager.container.appendChild(this.slamKinectDepthImageCanvas);
 
+        /**
+         * Offscreen canvases
+         */
+        this.rgbImageOffscreenCanvas = new OffscreenCanvas(this.rgbdSize.x, this.rgbdSize.y);
+        this.rgbImageOffscreenCanvasCtx = this.rgbImageOffscreenCanvas.getContext('2d');
+
+        this.depthImageOffscreenCanvas = new OffscreenCanvas(this.rgbdSize.x, this.rgbdSize.y);
+        this.depthImageOffscreenCanvasCtx = this.depthImageOffscreenCanvas.getContext('2d');
+
         this.WebGLRenderer = new THREE.WebGLRenderer({
             antialias: false,
             powerPreference: 'high-performance',
@@ -117,6 +128,7 @@ class ValterSLAM {
                         this.slamKinectRGBImageCanvas.style.visibility = 'visible';
                         this.slamKinectDepthImageCanvas.style.visibility = 'visible';
                         menuItem.selected = true;
+                        this.slamRGBDCmdVelOrientationTuples = [];
                         this.getNavKinectRGBDWebSocketMessageInterval = setInterval(this.sendNavKinectRGBDWebSocketMessage, 100);
                     } else {
                         clearInterval(this.getNavKinectRGBDWebSocketMessageInterval);
@@ -125,6 +137,18 @@ class ValterSLAM {
                         this.slamKinectDepthImageCanvas.style.visibility = 'hidden';
                         menuItem.selected = false;
                     }
+                }
+            }
+        );
+        this.Valter.getInteractableByName('baseFrame').DEV.menu.push(
+            {
+                label: 'Save SLAMRGBDCmdVelOrientation tuples',
+                enabled: true,
+                selected: false,
+                primary: true,
+                icon: '<i class=\"material-icons\">save</i>',
+                action: (menuItem) => {
+                    this.saveSLAMRGBDCmdVelOrientationTuples();
                 }
             }
         );
@@ -172,6 +196,11 @@ class ValterSLAM {
                 });
             }
         });
+
+        /**
+         * SLAM tuples initialization
+         */
+        this.slamRGBDCmdVelOrientationTuples = [];
     }
 
     onWebGLRendererCanvasFramerequest(event) {
@@ -249,29 +278,83 @@ class ValterSLAM {
                 z: parseFloat(this.Valter.baseFrame.position.z.toFixed(3)),
                 r: parseFloat(this.Valter.baseFrame.rotation.y.toFixed(3))
             };
-            console.log(cmd_vel, orientation);
+            // console.log(cmd_vel, orientation);
 
             this.slamKinectRGBImageCanvas.style.outline = 'red 2px solid';
             this.slamKinectDepthImageCanvas.style.outline = 'red 2px solid';
 
+            let rgbJSImageData = this.slamKinectRGBImageCanvasCtx.getImageData(0, 0, this.rgbdSize.x, this.rgbdSize.y);
+            let depthJSImageData = this.slamKinectDepthImageCanvasCtx.getImageData(0, 0, this.rgbdSize.x, this.rgbdSize.y);
+
             /**
-             * Send NavKinectRGBDWebSocketMessage to VLabsRESTWS
+             * Save SLAMRGBDCmdVelOrientation tuple
              */
-            let navKinectRGBDWebSocketMessage = new NavKinectRGBDWebSocketMessage();
-            navKinectRGBDWebSocketMessage.rgbImageData   = this.slamKinectRGBImageCanvasCtx.getImageData(0, 0, this.rgbdSize.x, this.rgbdSize.y);
-            navKinectRGBDWebSocketMessage.depthImageData = this.slamKinectDepthImageCanvasCtx.getImageData(0, 0, this.rgbdSize.x, this.rgbdSize.y);
+            let slamRGBDCmdVelOrientation = new SLAMRGBDCmdVelOrientation();
+            slamRGBDCmdVelOrientation.rgbImageData   = rgbJSImageData;
+            slamRGBDCmdVelOrientation.depthImageData = depthJSImageData;
+            slamRGBDCmdVelOrientation.cmd_vel_linear  = cmd_vel.linear;
+            slamRGBDCmdVelOrientation.cmd_vel_angular = cmd_vel.angular;
+            slamRGBDCmdVelOrientation.orientation_x = orientation.x;
+            slamRGBDCmdVelOrientation.orientation_z = orientation.z;
+            slamRGBDCmdVelOrientation.orientation_r = orientation.r;
 
-            // this.vLab.VLabsRESTClientManager.VLabsRESTWSValterRGBDMessageService.send(navKinectRGBDWebSocketMessage);
+            this.slamRGBDCmdVelOrientationTuples.push(slamRGBDCmdVelOrientation);
+            console.log(this.slamRGBDCmdVelOrientationTuples.length + ' SLAM tuples accumulated');
 
-            this.sendNavKinectRGBDWebSocketMessageWorker.postMessage({
-                socketURL: this.vLab.VLabsRESTClientManager.VLabsRESTWSValterRGBDMessageService.getFullyQualifiedURL(),
-                navKinectRGBDWebSocketMessage: navKinectRGBDWebSocketMessage,
-                rgbdSize: this.rgbdSize
-            });
+            // /**
+            //  * Send NavKinectRGBDWebSocketMessage to VLabsRESTWS
+            //  */
+            // let navKinectRGBDWebSocketMessage = new NavKinectRGBDWebSocketMessage();
+            // navKinectRGBDWebSocketMessage.rgbImageData   = rgbJSImageData;
+            // navKinectRGBDWebSocketMessage.depthImageData = depthJSImageData;
+            // /**
+            //  * Send in UI thread
+            //  */
+            // // this.vLab.VLabsRESTClientManager.VLabsRESTWSValterRGBDMessageService.send(navKinectRGBDWebSocketMessage);
+            // /**
+            //  * Send in worker thread
+            //  */
+            // this.sendNavKinectRGBDWebSocketMessageWorker.postMessage({
+            //     socketURL: this.vLab.VLabsRESTClientManager.VLabsRESTWSValterRGBDMessageService.getFullyQualifiedURL(),
+            //     navKinectRGBDWebSocketMessage: navKinectRGBDWebSocketMessage,
+            //     rgbdSize: this.rgbdSize
+            // });
         } else {
             this.slamKinectRGBImageCanvas.style.outline = '';
             this.slamKinectDepthImageCanvas.style.outline = '';
         }
+    }
+
+    async saveSLAMRGBDCmdVelOrientationTuples() {
+        let savedCnt = 0;
+
+        Promise.all(this.slamRGBDCmdVelOrientationTuples.map(async (slamRGBDCmdVelOrientationTuple) => {
+            await new Promise((resolve) => {
+                this.rgbImageOffscreenCanvasCtx.putImageData(slamRGBDCmdVelOrientationTuple.rgbImageData, 0, 0);
+                this.depthImageOffscreenCanvasCtx.putImageData(slamRGBDCmdVelOrientationTuple.depthImageData, 0, 0);
+
+                Promise.all([
+                    this.rgbImageOffscreenCanvas.convertToBlob().then((rgbImageBlob) => ImageUtils.canvasBlobToDataURL(rgbImageBlob)),
+                    this.depthImageOffscreenCanvas.convertToBlob().then((depthImageBlob) => ImageUtils.canvasBlobToDataURL(depthImageBlob))
+                ])
+                .then((rgbdResult) => {
+                    slamRGBDCmdVelOrientationTuple.rgbImageData   = rgbdResult[0];
+                    slamRGBDCmdVelOrientationTuple.depthImageData = rgbdResult[1];
+
+                    this.vLab.VLabsRESTClientManager
+                    .ValterSLAMService
+                    .saveSLAMRGBDCmdVelOrientationTuple(slamRGBDCmdVelOrientationTuple)
+                    .then(() => {
+                        savedCnt++;
+                        console.log(savedCnt + '/' + this.slamRGBDCmdVelOrientationTuples.length + ' SLAM tuples persisted');
+                        resolve();
+                    });
+                });
+            });
+        }))
+        .then(() => {
+            this.slamRGBDCmdVelOrientationTuples = [];
+        });
     }
 }
 export default ValterSLAM;

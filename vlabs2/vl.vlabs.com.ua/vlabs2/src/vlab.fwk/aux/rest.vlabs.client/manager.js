@@ -8,6 +8,7 @@ import VLabsRESTWSBasicService from './service/ws.basic.service';
 import VLabsRESTValterHeadIKService from './service/valter/valter.head.ik.service';
 import ValterRightPalmIKService from './service/valter/valter.right.palm.ik.service';
 import ValterLeftPalmIKService from './service/valter/valter.left.palm.ik.service';
+import ValterSLAMService from './service/valter/valter.slam.service';
 import VLabsRESTWSValterRGBDMessageService from './service/valter/ws/ws.valter.rgbd.message.service';
 
 /**
@@ -75,7 +76,11 @@ class VLabsRESTClientManager {
                 getLeftPalmFKTuplesNormalizationBounds:        '/palm/left/ik/get_left_palm_fk_normalization_bounds',
                 getAllLeftPalmFKTuplesNormalized:              '/palm/left/ik/get_all_left_palm_fk_tuples_normalized',
                 /**
-                 * Navigation Kinect
+                 * SLAM
+                 */
+                saveSLAMRGBDCmdVelOrientationTuple:            '/slam/save_slam_tuple',
+                /**
+                 * Navigation Kinect WS
                  */
                 ws: {
                     navKinectRGBD:  '/nav_kinect_rgbd',
@@ -100,6 +105,7 @@ class VLabsRESTClientManager {
         this.ValterHeadIKService                    = new VLabsRESTValterHeadIKService(this);
         this.ValterRightPalmIKService               = new ValterRightPalmIKService(this);
         this.ValterLeftPalmIKService                = new ValterLeftPalmIKService(this);
+        this.ValterSLAMService                      = new ValterSLAMService(this);
         /**
          * Valter WS
          */
