@@ -158,11 +158,11 @@ class Valter extends VLabItem {
          * Valter baseFrame dynamics methods
          */
         this.dynamics = {
-            maxLinearSpeed: 0.08 * (1 / 60),
+            maxLinearSpeed: 0.04 * (1 / 60),
             maxAngularSpeed: 0.15 * (1 / 60),
             linearAcceleration: 0.000025,
             linearDeceleration: 0.000010,
-            angularAcceleration: 0.000004,
+            angularAcceleration: 0.000003,
             angularDeceleration: 0.000010,
         };
         this.cmd_vel = {
@@ -1274,7 +1274,7 @@ class Valter extends VLabItem {
     /**
      * Moving baseFrame forward
      */
-    moveForward() {
+    moveForward(forced = false) {
         this.movingForward = true;
         this.movingBackward = false;
 
@@ -1307,11 +1307,11 @@ class Valter extends VLabItem {
             this.smallWheelArmatureLR.rotateY(this.cmd_vel.linear.z * 10);
         }
 
-        if (this.wasd.w) {
+        if (this.wasd.w || forced) {
             if (this.cmd_vel.linear.z < this.dynamics.maxLinearSpeed) {
                 this.cmd_vel.linear.z += this.dynamics.linearAcceleration;
             }
-            setTimeout(this.moveForward, 2);
+            setTimeout(this.moveForward, 2, forced);
         } else {
             if (this.cmd_vel.linear.z > 0.0) {
                 this.cmd_vel.linear.z -= this.dynamics.linearDeceleration;
@@ -1326,7 +1326,7 @@ class Valter extends VLabItem {
     /**
      * Moving baseFrame backward
      */
-    moveBackward() {
+    moveBackward(forced = false) {
         this.movingBackward = true;
         this.movingForward = false;
 
@@ -1335,7 +1335,7 @@ class Valter extends VLabItem {
         this.rightWheel.rotateX(this.cmd_vel.linear.z * 8);
         this.leftWheel.rotateX(this.cmd_vel.linear.z * 8);
 
-        if (this.wasd.s) {
+        if (this.wasd.s || forced) {
             if (Math.abs(this.cmd_vel.linear.z) < this.dynamics.maxLinearSpeed) {
                 this.cmd_vel.linear.z -= this.dynamics.linearAcceleration;
             }
@@ -1343,7 +1343,7 @@ class Valter extends VLabItem {
         } else {
             if (this.cmd_vel.linear.z < 0.0) {
                 this.cmd_vel.linear.z += this.dynamics.linearDeceleration;
-                setTimeout(this.moveBackward, 2);
+                setTimeout(this.moveBackward, 2, forced);
             } else {
                 this.cmd_vel.linear.z = 0.0;
                 this.movingBackward = false;
@@ -1354,7 +1354,7 @@ class Valter extends VLabItem {
     /**
      * Rotation
      */
-    rotateLeft() {
+    rotateLeft(forced = false) {
         this.rotatingLeft = true;
         this.rotatingRight = false;
 
@@ -1379,11 +1379,11 @@ class Valter extends VLabItem {
             this.smallWheelArmatureLR.rotateY(this.cmd_vel.angular * 1.6);
         }
 
-        if (this.wasd.a) {
+        if (this.wasd.a || forced) {
             if (Math.abs(this.cmd_vel.angular) < this.dynamics.maxAngularSpeed) {
                 this.cmd_vel.angular -= this.dynamics.angularAcceleration;
             }
-            setTimeout(this.rotateLeft, 2);
+            setTimeout(this.rotateLeft, 2, forced);
         } else {
             if (this.cmd_vel.angular < 0.0) {
                 this.cmd_vel.angular += this.dynamics.angularDeceleration;
@@ -1395,7 +1395,7 @@ class Valter extends VLabItem {
         }
     }
 
-    rotateRight() {
+    rotateRight(forced = false) {
         this.rotatingRight = true;
         this.rotatingLeft = false;
 
@@ -1420,11 +1420,11 @@ class Valter extends VLabItem {
             this.smallWheelArmatureLR.rotateY(this.cmd_vel.angular * 1.6);
         }
 
-        if (this.wasd.d) {
+        if (this.wasd.d || forced) {
             if (Math.abs(this.cmd_vel.angular) < this.dynamics.maxAngularSpeed) {
                 this.cmd_vel.angular += this.dynamics.angularAcceleration;
             }
-            setTimeout(this.rotateRight, 2);
+            setTimeout(this.rotateRight, 2, forced);
         } else {
             if (this.cmd_vel.angular > 0.0) {
                 this.cmd_vel.angular -= this.dynamics.angularDeceleration;

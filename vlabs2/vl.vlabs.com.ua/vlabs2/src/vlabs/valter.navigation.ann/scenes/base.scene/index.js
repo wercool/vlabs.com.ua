@@ -69,7 +69,7 @@ class BaseScene extends VLabScene {
     }
 
     onActivated() {
-        
+
     }
 
     onVLabItemInitialized(event) {
@@ -77,6 +77,15 @@ class BaseScene extends VLabScene {
             this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 1.0));
 
             // this.vLab['Valter'].setBaseFramePosition(new THREE.Vector3(0.0, 0.0, 0.0));
+
+            /**
+             * SLAM
+             */
+            // this.vLab['Valter'].cmd_vel = {
+            //     linear: new THREE.Vector3(0.0, 0.0, this.vLab['Valter'].dynamics.maxLinearSpeed),
+            //     angular: 0.0
+            // };
+            // this.vLab['Valter'].moveForward(true);
         }
     }
 

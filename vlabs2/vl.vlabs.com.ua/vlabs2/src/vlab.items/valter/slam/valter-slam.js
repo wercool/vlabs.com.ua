@@ -93,6 +93,7 @@ class ValterSLAM {
         this.depthImageOffscreenCanvasCtx = this.depthImageOffscreenCanvas.getContext('2d');
 
         this.WebGLRenderer = new THREE.WebGLRenderer({
+            alpha: false,
             antialias: false,
             powerPreference: 'high-performance',
             precision: 'lowp',
@@ -266,8 +267,6 @@ class ValterSLAM {
             sceneObjectExcludedFromRendering.visible = true;
         });
 
-        this.vLab.renderPaused = false;
-
         if (Math.abs(this.Valter.cmd_vel.linear.z) > 0.0 || Math.abs(this.Valter.cmd_vel.angular)) {
             let cmd_vel = {
                 linear:  parseFloat((this.Valter.cmd_vel.linear.z / (1 / 60)).toFixed(4)),
@@ -323,6 +322,8 @@ class ValterSLAM {
             this.slamKinectRGBImageCanvas.style.outline = '';
             this.slamKinectDepthImageCanvas.style.outline = '';
         }
+
+        this.vLab.renderPaused = false;
     }
 
     async saveSLAMRGBDCmdVelOrientationTuples() {

@@ -32,14 +32,20 @@ class ValterIK {
         /**
          * Setup TF models
          */
-        this.valterHeadIKTFModel = undefined;
 
         tf.setBackend('webgl');
         console.log('ValterIK -> TF Backend ->', tf.getBackend());
 
+        this.valterHeadIKTFModel = undefined;
+
         if (this.Valter.nature.ANNIK.headANNIK) {
             tf.loadLayersModel(this.Valter.nature.ANNIK.headIKTFModelURL ? this.Valter.nature.ANNIK.headIKTFModelURL : 'localstorage://valter-head-ik-model')
             .then((model) => {
+                // Warmup the model before using real data.
+                const warmupResult = model.predict(tf.zeros([1, 3]));
+                warmupResult.dataSync();
+                warmupResult.dispose();
+
                 this.valterHeadIKTFModel = model;
             })
             .catch(error => {
@@ -52,6 +58,11 @@ class ValterIK {
         if (this.Valter.nature.ANNIK.rightPalmANNIK) {
             tf.loadLayersModel(this.Valter.nature.ANNIK.rightPalmIKTFModelURL ? this.Valter.nature.ANNIK.rightPalmIKTFModelURL : 'localstorage://valter-right-palm-ik-model')
             .then((model) => {
+                // Warmup the model before using real data.
+                const warmupResult = model.predict(tf.zeros([1, 3]));
+                warmupResult.dataSync();
+                warmupResult.dispose();
+
                 this.valterRightPalmIKTFModel = model;
             })
             .catch(error => {
@@ -64,6 +75,11 @@ class ValterIK {
         if (this.Valter.nature.ANNIK.leftPalmANNIK) {
             tf.loadLayersModel(this.Valter.nature.ANNIK.leftPalmIKTFModelURL ? this.Valter.nature.ANNIK.leftPalmIKTFModelURL : 'localstorage://valter-left-palm-ik-model')
             .then((model) => {
+                // Warmup the model before using real data.
+                const warmupResult = model.predict(tf.zeros([1, 3]));
+                warmupResult.dataSync();
+                warmupResult.dispose();
+
                 this.valterLeftPalmIKTFModel = model;
             })
             .catch(error => {
