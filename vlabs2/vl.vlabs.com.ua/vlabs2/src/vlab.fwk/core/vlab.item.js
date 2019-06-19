@@ -348,5 +348,19 @@ class VLabItem {
             interactable.menuIsActive = true;
         });
     }
+    /**
+     * Sets visibility of VLabItemModel
+     */
+    setVisibility(visibility) {
+        if (visibility !== undefined) {
+            this.vLabItemModel.visible = visibility;
+        }
+    }
+    /**
+     * Returns visibility of VLabItemModel
+     */
+    isVisible() {
+        return this.vLabItemModel.visible;
+    }
 }
 export default VLabItem;

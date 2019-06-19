@@ -8,6 +8,7 @@ import Valter from '../../../../vlab.items/valter/index';
 import ValterHeadIKDev from '../../../../vlab.items/valter/ik/dev/valter-head-ik-dev';
 import ValterRightPalmIKDev from '../../../../vlab.items/valter/ik/dev/valter-right-palm-ik-dev';
 import ValterLeftPalmIKDev from '../../../../vlab.items/valter/ik/dev/valter-left-palm-ik-dev';
+import ValterSLAMDev from '../../../../vlab.items/valter/slam/dev/valter-slam-dev';
 
 
 
@@ -45,52 +46,31 @@ class BaseScene extends VLabScene {
         /**
          * Valter VLabItem
          */
-        // this.vLab['Valter'] = new Valter({
-        //     vLab: this.vLab,
-        //     natureURL: '/vlab.items/valter/resources/valter.nature.json',
-        //     name: 'ValterVLabItem'
-        // });
-        // this.vLab.EventDispatcher.subscribe({
-        //     subscriber: this,
-        //     events: {
-        //         VLabItem: {
-        //             initialized: this.onVLabItemInitialized
-        //         }
-        //     }
-        // });
-        // this.vLab.EventDispatcher.subscribe({
-        //     subscriber: this,
-        //     events: {
-        //         VLabItem: {
-        //             auxilariesInitialized: this.onVLabItemAuxilariesInitialized
-        //         }
-        //     }
-        // });
-    }
-
-    onActivated() {
-        // this.vLab.VLabsRESTClientManager
-        // .ValterSLAMService
-        // .getAllSLAMRGBDCmdVelOrientationTuplesNormalized()
-        // .then((slamRGBDCmdVelOrientationNormalizedTuples) => {
-        //     console.log(slamRGBDCmdVelOrientationNormalizedTuples[0].rgbImageData);
-        // });
-
-        this.vLab.VLabsRESTClientManager
-        .ValterSLAMService
-        .getStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized({
-            context: this,
-            onMessage: this.onMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized,
-            onLastMessage: this.onLastMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized,
+        this.vLab['Valter'] = new Valter({
+            vLab: this.vLab,
+            natureURL: '/vlab.items/valter/resources/valter.nature.json',
+            name: 'ValterVLabItem'
+        });
+        this.vLab.EventDispatcher.subscribe({
+            subscriber: this,
+            events: {
+                VLabItem: {
+                    initialized: this.onVLabItemInitialized
+                }
+            }
+        });
+        this.vLab.EventDispatcher.subscribe({
+            subscriber: this,
+            events: {
+                VLabItem: {
+                    auxilariesInitialized: this.onVLabItemAuxilariesInitialized
+                }
+            }
         });
     }
 
-    onMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized(slamRGBDCmdVelOrientationTuplesNormalized) {
-        console.log(slamRGBDCmdVelOrientationTuplesNormalized);
-    }
+    onActivated() {
 
-    onLastMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized() {
-        console.log('onLastMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized');
     }
 
     onVLabItemInitialized(event) {
@@ -137,6 +117,12 @@ class BaseScene extends VLabScene {
         // this.ValterLeftPalmIKDev.printLeftPalmFKTuplesNormalizationBounds(this.vLab['Valter'].ValterIK.leftPalmIKDataThrottlingSigma);
         // this.ValterLeftPalmIKDev.fitAndSaveLeftPalmTargetIKModel();
         // this.ValterLeftPalmIKDev.saveValterLeftPalmTargetIKModelToLocalFile();
+
+        /**
+         * Valter SLAM Dev
+         */
+        this.ValterSLAMDev = new ValterSLAMDev(this.vLab['Valter']);
+        // this.ValterSLAMDev.getStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized();
     }
 
 

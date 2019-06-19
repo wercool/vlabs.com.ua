@@ -153,7 +153,6 @@ class Valter extends VLabItem {
         this.setupFramesAndLinks();
         this.setupDevHelpers();
 
-
         /**
          * Valter baseFrame dynamics methods
          */
