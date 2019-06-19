@@ -75,16 +75,22 @@ class BaseScene extends VLabScene {
         // .then((slamRGBDCmdVelOrientationNormalizedTuples) => {
         //     console.log(slamRGBDCmdVelOrientationNormalizedTuples[0].rgbImageData);
         // });
+
         this.vLab.VLabsRESTClientManager
         .ValterSLAMService
         .getStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized({
+            context: this,
             onMessage: this.onMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized,
+            onLastMessage: this.onLastMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized,
         });
     }
 
-    onMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized(event) {
-        let slamRGBDCmdVelOrientationTuplesNormalized = JSON.parse(event.data);
+    onMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized(slamRGBDCmdVelOrientationTuplesNormalized) {
         console.log(slamRGBDCmdVelOrientationTuplesNormalized);
+    }
+
+    onLastMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized() {
+        console.log('onLastMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized');
     }
 
     onVLabItemInitialized(event) {

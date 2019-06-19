@@ -97,6 +97,7 @@ class VLabsRESTClientManager {
             }
         };
 
+
         /**
          * 
          * Services
@@ -249,21 +250,31 @@ class VLabsRESTClientManager {
         headers.forEach(header => {
             esHeaders[header[0]] = header[1];
         });
-        let es = new EventSourcePolyfill(endPointPath, {
-            headers: esHeaders
+        var es = new EventSourcePolyfill(endPointPath, {
+            headers: esHeaders,
+            Transport: XMLHttpRequest
         });
-        var self = this;
+        
+        es.addEventListener('message', (event) => {
+            let eventData = JSON.parse(event.data);
+            /**
+             * Setup callbacks
+             */
+            if (callbacks.onMessage) {
+                callbacks.onMessage.call(callbacks.context ? callbacks.context : undefined, eventData);
+            }
+            if (eventData.lastMessage) {
+                es.close();
+                if (callbacks.onLastMessage) {
+                    callbacks.onLastMessage.call(callbacks.context ? callbacks.context : undefined);
+                }
+            }
+        });
         /**
          * Setup callbacks
          */
-        es.addEventListener('open', (event) => {
-            // es.close();
-        });
         if (callbacks.onOpen) {
             es.addEventListener('open', callbacks.onOpen);
-        }
-        if (callbacks.onMessage) {
-            es.addEventListener('message', callbacks.onMessage);
         }
     }
 }

@@ -1,10 +1,11 @@
 package vlabs.rest.model.valter.slam;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+
+import vlabs.rest.model.prototypes.SSEMessage;
 
 
-public class SLAMRGBDCmdVelOrientationTupleNormalized {
+public class SLAMRGBDCmdVelOrientationTupleNormalized extends SSEMessage {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -17,8 +18,6 @@ public class SLAMRGBDCmdVelOrientationTupleNormalized {
     double orientation_x;
     double orientation_z;
     double orientation_r;
-
-    long sseId = 0;
 
     public SLAMRGBDCmdVelOrientationTupleNormalized() {}
 
@@ -73,12 +72,5 @@ public class SLAMRGBDCmdVelOrientationTupleNormalized {
     }
     public void setOrientation_r(double orientation_r) {
         this.orientation_r = orientation_r;
-    }
-
-    public long getSseId() {
-        return sseId;
-    }
-    public void setSseId(long sseId) {
-        this.sseId = sseId;
     }
 }

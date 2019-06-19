@@ -92,6 +92,10 @@ public class ValterSLAMService {
 //                    basicWebSocketMessagePublisher.onNext(progressMessage);
 //                    basicWebSocketMessagePublisher.publish();
 
+                    if (this.processedTuplesCnt == this.numOfTuples) {
+                        slamRGBDCmdVelOrientationTupleNormalized.setLastMessage(true);
+                    }
+
                     return slamRGBDCmdVelOrientationTupleNormalized;
                 })
             );

@@ -1,12 +1,11 @@
 package vlabs.rest.api.http.valter.slam;
 
-import java.awt.PageAttributes.MediaType;
+import java.util.Observable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -50,7 +49,7 @@ public class ValterSLAMController {
         return valterSLAMService.getSLAMRGBDCmdVelOrientationTuplesNormalized();
     }
 
-//    @RequestMapping(value = "/get_stream_all_slam_tuples_normalized", method = RequestMethod.GET, produces = org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE)
+//    @GetMapping(value = "/get_stream_all_slam_tuples_normalized")
 //    public Flux<ServerSentEvent<SLAMRGBDCmdVelOrientationTupleNormalized>> getStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized() {
 //        return valterSLAMService.getSLAMRGBDCmdVelOrientationTuplesNormalized()
 //                .map(slamRGBDCmdVelOrientationTuplesNormalized -> 
@@ -63,6 +62,8 @@ public class ValterSLAMController {
 
   @RequestMapping(value = "/get_stream_all_slam_tuples_normalized", method = RequestMethod.GET, produces = org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE)
   public Flux<SLAMRGBDCmdVelOrientationTupleNormalized> getStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized() {
-      return valterSLAMService.getSLAMRGBDCmdVelOrientationTuplesNormalized();
+      SLAMRGBDCmdVelOrientationTupleNormalized emptySLAMRGBDCmdVelOrientationTupleNormalized = new SLAMRGBDCmdVelOrientationTupleNormalized();
+      emptySLAMRGBDCmdVelOrientationTupleNormalized.setLastMessage(true);
+      return valterSLAMService.getSLAMRGBDCmdVelOrientationTuplesNormalized().switchIfEmpty(Flux.just(emptySLAMRGBDCmdVelOrientationTupleNormalized));
   }
 }
