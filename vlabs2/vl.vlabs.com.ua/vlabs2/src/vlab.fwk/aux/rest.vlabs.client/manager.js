@@ -1,3 +1,5 @@
+import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
+
 import VLabsRESTAuthService from './service/auth.service';
 import VLabsRESTUserService from './service/user.service';
 import VLabsRESTWSBasicService from './service/ws.basic.service';
@@ -78,7 +80,11 @@ class VLabsRESTClientManager {
                 /**
                  * SLAM
                  */
-                saveSLAMRGBDCmdVelOrientationTuple:            '/slam/save_slam_tuple',
+                saveSLAMRGBDCmdVelOrientationTuple:                     '/slam/save_slam_tuple',
+                getSLAMRGBDCmdVelOrientationTuples:                     '/slam/get_all_slam_tuples',
+                getSLAMRGBDBytesCmdVelOrientationTuples:                '/slam/get_all_slam_tuples_rgbd_bytes',
+                getSLAMRGBDCmdVelOrientationTuplesNormalized:           '/slam/get_all_slam_tuples_normalized',
+                getStreamSLAMRGBDCmdVelOrientationTuplesNormalized:     '/slam/get_stream_all_slam_tuples_normalized',
                 /**
                  * Navigation Kinect WS
                  */
@@ -140,6 +146,7 @@ class VLabsRESTClientManager {
         let self = this;
         return new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
+            // xhr.onprogress = function(event) { console.log(event); }
             xhr.onload = function() {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     try {
@@ -231,6 +238,33 @@ class VLabsRESTClientManager {
             });
             xhr.send(JSON.stringify(body));
         });
+    }
+    /**
+     * GET from EventSource
+     */
+    getFromEventSource(endPointPath, callbacks = {}, customHeaders = []) {
+        let headers = this.setupHeaders();
+        headers = [...headers, ...customHeaders];
+        let esHeaders = {};
+        headers.forEach(header => {
+            esHeaders[header[0]] = header[1];
+        });
+        let es = new EventSourcePolyfill(endPointPath, {
+            headers: esHeaders
+        });
+        var self = this;
+        /**
+         * Setup callbacks
+         */
+        es.addEventListener('open', (event) => {
+            // es.close();
+        });
+        if (callbacks.onOpen) {
+            es.addEventListener('open', callbacks.onOpen);
+        }
+        if (callbacks.onMessage) {
+            es.addEventListener('message', callbacks.onMessage);
+        }
     }
 }
 export default VLabsRESTClientManager;

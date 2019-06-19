@@ -28,5 +28,52 @@ class ValterSLAMService {
             });
         });
      }
+
+     getAllSLAMRGBDCmdVelOrientationTuples() {
+        return new Promise((resolve, reject) => {
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getSLAMRGBDCmdVelOrientationTuples');
+            this.manager.get(apiEndPoint)
+            .then((result) => {
+                resolve(result);
+            })
+            .catch((error) => {
+                console.error(error.status);
+                reject(error);
+            });
+        });
+     }
+
+     getAllSLAMRGBDBytesCmdVelOrientationTuples() {
+        return new Promise((resolve, reject) => {
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getSLAMRGBDBytesCmdVelOrientationTuples');
+            this.manager.get(apiEndPoint)
+            .then((result) => {
+                resolve(result);
+            })
+            .catch((error) => {
+                console.error(error.status);
+                reject(error);
+            });
+        });
+     }
+
+     getAllSLAMRGBDCmdVelOrientationTuplesNormalized() {
+        return new Promise((resolve, reject) => {
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getSLAMRGBDCmdVelOrientationTuplesNormalized');
+            this.manager.get(apiEndPoint)
+            .then((result) => {
+                resolve(result);
+            })
+            .catch((error) => {
+                console.error(error.status);
+                reject(error);
+            });
+        });
+     }
+
+     getStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized(callbacks = {}) {
+         let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getStreamSLAMRGBDCmdVelOrientationTuplesNormalized');
+         this.manager.getFromEventSource(apiEndPoint, callbacks);
+     }
 }
  export default ValterSLAMService;

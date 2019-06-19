@@ -12,6 +12,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import nu.pattern.OpenCV;
+
 @SpringBootApplication
 @ComponentScan
 public class VLabsRESTApplication {
@@ -24,6 +26,8 @@ public class VLabsRESTApplication {
         try {
             properties.load(resource.getInputStream());
             String applicationTitle = properties.getProperty("application.title");
+
+            OpenCV.loadShared();
 
             SpringApplication app = new SpringApplication(VLabsRESTApplication.class);
             app.setWebApplicationType(WebApplicationType.REACTIVE);

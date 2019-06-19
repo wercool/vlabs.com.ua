@@ -45,31 +45,46 @@ class BaseScene extends VLabScene {
         /**
          * Valter VLabItem
          */
-        this.vLab['Valter'] = new Valter({
-            vLab: this.vLab,
-            natureURL: '/vlab.items/valter/resources/valter.nature.json',
-            name: 'ValterVLabItem'
-        });
-        this.vLab.EventDispatcher.subscribe({
-            subscriber: this,
-            events: {
-                VLabItem: {
-                    initialized: this.onVLabItemInitialized
-                }
-            }
-        });
-        this.vLab.EventDispatcher.subscribe({
-            subscriber: this,
-            events: {
-                VLabItem: {
-                    auxilariesInitialized: this.onVLabItemAuxilariesInitialized
-                }
-            }
-        });
+        // this.vLab['Valter'] = new Valter({
+        //     vLab: this.vLab,
+        //     natureURL: '/vlab.items/valter/resources/valter.nature.json',
+        //     name: 'ValterVLabItem'
+        // });
+        // this.vLab.EventDispatcher.subscribe({
+        //     subscriber: this,
+        //     events: {
+        //         VLabItem: {
+        //             initialized: this.onVLabItemInitialized
+        //         }
+        //     }
+        // });
+        // this.vLab.EventDispatcher.subscribe({
+        //     subscriber: this,
+        //     events: {
+        //         VLabItem: {
+        //             auxilariesInitialized: this.onVLabItemAuxilariesInitialized
+        //         }
+        //     }
+        // });
     }
 
     onActivated() {
+        // this.vLab.VLabsRESTClientManager
+        // .ValterSLAMService
+        // .getAllSLAMRGBDCmdVelOrientationTuplesNormalized()
+        // .then((slamRGBDCmdVelOrientationNormalizedTuples) => {
+        //     console.log(slamRGBDCmdVelOrientationNormalizedTuples[0].rgbImageData);
+        // });
+        this.vLab.VLabsRESTClientManager
+        .ValterSLAMService
+        .getStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized({
+            onMessage: this.onMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized,
+        });
+    }
 
+    onMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized(event) {
+        let slamRGBDCmdVelOrientationTuplesNormalized = JSON.parse(event.data);
+        console.log(slamRGBDCmdVelOrientationTuplesNormalized);
     }
 
     onVLabItemInitialized(event) {
