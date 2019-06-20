@@ -123,6 +123,11 @@ class ValterSLAMDev {
                 }
             });
         }
+
+        /**
+         * SLAM tuples assets for TF ML
+         */
+        this.SLAMRGBDCmdVelOrientationTuplesNormalized = [];
     }
 
     sendNavKinectRGBDWebSocketMessage() {
@@ -227,30 +232,43 @@ class ValterSLAMDev {
      * 
      */
     getAllSLAMRGBDCmdVelOrientationTuplesNormalized() {
+        this.SLAMRGBDCmdVelOrientationTuplesNormalized = [];
         this.vLab.VLabsRESTClientManager
         .ValterSLAMService
         .getAllSLAMRGBDCmdVelOrientationTuplesNormalized()
         .then((slamRGBDCmdVelOrientationNormalizedTuples) => {
+            this.SLAMRGBDCmdVelOrientationTuplesNormalized = slamRGBDCmdVelOrientationNormalizedTuples;
             console.log(slamRGBDCmdVelOrientationNormalizedTuples[0].rgbImageData);
         });
     }
 
     getStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized() {
-        this.vLab.VLabsRESTClientManager
-        .ValterSLAMService
-        .getStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized({
-            context: this,
-            onMessage: this.onMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized,
-            onLastMessage: this.onLastMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized,
+        return new Promise((resolve) => {
+            this.vLab.VLabsRESTClientManager
+            .ValterSLAMService
+            .getStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized({
+                context: this,
+                onMessage: this.onMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized,
+                onFirstMessage: this.onFirstMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized,
+                // onLastMessage: this.onLastMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized,
+            })
+            .then(() => {
+                resolve();
+            });
         });
     }
 
     onMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized(slamRGBDCmdVelOrientationTuplesNormalized) {
-        console.log(slamRGBDCmdVelOrientationTuplesNormalized);
+        console.log(slamRGBDCmdVelOrientationTuplesNormalized.sseId + ' / ' + this.slamRGBDCmdVelOrientationTuplesNormalizedQueueLength + ' SLAM normalized tuple');
+        this.SLAMRGBDCmdVelOrientationTuplesNormalized.push(slamRGBDCmdVelOrientationTuplesNormalized);
     }
 
-    onLastMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized() {
-        console.log('onLastMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized');
+    onFirstMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized(eventData) {
+        this.slamRGBDCmdVelOrientationTuplesNormalizedQueueLength = eventData.queueLength;
     }
+
+    // onLastMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized() {
+    //     console.log('onLastMessageStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized');
+    // }
 }
 export default ValterSLAMDev; 

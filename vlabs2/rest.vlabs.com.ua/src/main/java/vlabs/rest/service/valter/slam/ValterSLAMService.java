@@ -47,6 +47,9 @@ public class ValterSLAMService {
         return slamRGBDCmdVelOrientationTupleRepository.findAll().map(slamRGBDCmdVelOrientationTuple -> {
             SLAMRGBDBytesCmdVelOrientationTuple slamRGBDBytesCmdVelOrientationTuple = new SLAMRGBDBytesCmdVelOrientationTuple(slamRGBDCmdVelOrientationTuple);
 
+            /**
+             * RGB
+             */
             byte[] rgbImageRGBABytes = ImageUtils.convertDataURLToImageBytes(slamRGBDCmdVelOrientationTuple.getRgbImageData());
             Mat rgbaImageMat = Imgcodecs.imdecode(new MatOfByte(rgbImageRGBABytes), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
             Mat rgbImageMat = new Mat();
@@ -55,6 +58,18 @@ public class ValterSLAMService {
             byte[] rgbImageMatBytes = new byte[rgbImageMatBytesLength];
             rgbImageMat.get(0, 0, rgbImageMatBytes);
             slamRGBDBytesCmdVelOrientationTuple.setRgbImageData(rgbImageMatBytes);
+
+            /**
+             * Depth
+             */
+            byte[] depthImageRGBABytes = ImageUtils.convertDataURLToImageBytes(slamRGBDCmdVelOrientationTuple.getDepthImageData());
+            Mat depthAImageMat = Imgcodecs.imdecode(new MatOfByte(depthImageRGBABytes), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+            Mat depthImageMat = new Mat();
+            Imgproc.cvtColor(depthAImageMat, depthImageMat, Imgproc.COLOR_RGBA2GRAY);
+            int depthImageMatBytesLength = (int) (depthImageMat.total() * depthImageMat.elemSize());
+            byte[] depthImageMatBytes = new byte[depthImageMatBytesLength];
+            depthImageMat.get(0, 0, depthImageMatBytes);
+            slamRGBDBytesCmdVelOrientationTuple.setDepthImageData(depthImageMatBytes);
 
             return slamRGBDBytesCmdVelOrientationTuple;
         });
@@ -73,6 +88,9 @@ public class ValterSLAMService {
                 this.getSLAMRGBDBytesCmdVelOrientationTuples().map(slamRGBDBytesCmdVelOrientationTuple -> {
                     SLAMRGBDCmdVelOrientationTupleNormalized slamRGBDCmdVelOrientationTupleNormalized = new SLAMRGBDCmdVelOrientationTupleNormalized(slamRGBDBytesCmdVelOrientationTuple);
 
+                    /**
+                     * RGB
+                     */
                     byte[] rgbImageMatBytes = slamRGBDBytesCmdVelOrientationTuple.getRgbImageData();
                     double[] rgbImageDataNorm = new double[rgbImageMatBytes.length]; 
                     for (int i = 0; i < rgbImageMatBytes.length; i++) {
@@ -85,12 +103,32 @@ public class ValterSLAMService {
                     }
                     slamRGBDCmdVelOrientationTupleNormalized.setRgbImageData(rgbImageDataNorm);
 
+                    /**
+                     * Depth
+                     */
+                    byte[] depthImageMatBytes = slamRGBDBytesCmdVelOrientationTuple.getDepthImageData();
+                    double[] depthImageDataNorm = new double[depthImageMatBytes.length];
+                    for (int i = 0; i < depthImageMatBytes.length; i++) {
+                        double value = (Byte.toUnsignedInt(depthImageMatBytes[i]) / 127.5 - 1.0);
+                        Double truncatedDouble = 
+                                BigDecimal.valueOf(value)
+                                .setScale(4, RoundingMode.HALF_UP)
+                                .doubleValue();
+                        depthImageDataNorm[i] = truncatedDouble;
+                    }
+                    slamRGBDCmdVelOrientationTupleNormalized.setDepthImageData(depthImageDataNorm);
+
                     this.processedTuplesCnt++;
 
                     slamRGBDCmdVelOrientationTupleNormalized.setSseId(this.processedTuplesCnt);
 //                    BasicWebSocketMessage progressMessage = new BasicWebSocketMessage("progress", String.format("%d of %d tuples processed", this.processedTuplesCnt, this.numOfTuples));
 //                    basicWebSocketMessagePublisher.onNext(progressMessage);
 //                    basicWebSocketMessagePublisher.publish();
+
+                    if (this.processedTuplesCnt == 1) {
+                        slamRGBDCmdVelOrientationTupleNormalized.setFirstMessage(true);
+                        slamRGBDCmdVelOrientationTupleNormalized.setQueueLength(this.numOfTuples);
+                    }
 
                     if (this.processedTuplesCnt == this.numOfTuples) {
                         slamRGBDCmdVelOrientationTupleNormalized.setLastMessage(true);

@@ -72,8 +72,17 @@ class ValterSLAMService {
      }
 
      getStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized(callbacks = {}) {
-         let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getStreamSLAMRGBDCmdVelOrientationTuplesNormalized');
-         this.manager.getFromEventSource(apiEndPoint, callbacks);
+         return new Promise((resolve, reject) => {
+            let apiEndPoint = this.manager.APIEndpoints.getFullyQualifiedURL('valter', 'getStreamSLAMRGBDCmdVelOrientationTuplesNormalized');
+            this.manager.getFromEventSourceWithCompletion(apiEndPoint, callbacks)
+            .then(() => {
+                resolve();
+            })
+            .catch((error) => {
+                console.error(error.status);
+                reject(error);
+            });
+         });
      }
 }
  export default ValterSLAMService;

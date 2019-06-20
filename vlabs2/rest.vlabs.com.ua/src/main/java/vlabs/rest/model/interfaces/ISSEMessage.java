@@ -5,4 +5,8 @@ public interface ISSEMessage {
     public void setSseId(long sseId);
     public boolean getLastMessage();
     public void setLastMessage(boolean flag);
+    public boolean getFirstMessage();
+    public void setFirstMessage(boolean flag);
+    public long getQueueLength();
+    public void setQueueLength(long queueLength);
 }

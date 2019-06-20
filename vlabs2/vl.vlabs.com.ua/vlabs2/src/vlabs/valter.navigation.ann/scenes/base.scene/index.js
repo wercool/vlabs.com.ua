@@ -122,7 +122,10 @@ class BaseScene extends VLabScene {
          * Valter SLAM Dev
          */
         this.ValterSLAMDev = new ValterSLAMDev(this.vLab['Valter']);
-        // this.ValterSLAMDev.getStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized();
+        this.ValterSLAMDev.getStreamAllSLAMRGBDCmdVelOrientationTuplesNormalized()
+        .then(() => {
+            console.log(this.ValterSLAMDev.SLAMRGBDCmdVelOrientationTuplesNormalized);
+        });
     }
 
 

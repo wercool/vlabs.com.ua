@@ -241,41 +241,51 @@ class VLabsRESTClientManager {
         });
     }
     /**
+     * 
      * GET from EventSource
+     * 
      */
-    getFromEventSource(endPointPath, callbacks = {}, customHeaders = []) {
-        let headers = this.setupHeaders();
-        headers = [...headers, ...customHeaders];
-        let esHeaders = {};
-        headers.forEach(header => {
-            esHeaders[header[0]] = header[1];
-        });
-        var es = new EventSourcePolyfill(endPointPath, {
-            headers: esHeaders,
-            Transport: XMLHttpRequest
-        });
-        
-        es.addEventListener('message', (event) => {
-            let eventData = JSON.parse(event.data);
+    getFromEventSourceWithCompletion(endPointPath, callbacks = {}, customHeaders = []) {
+        return new Promise((resolve) => {
+            let headers = this.setupHeaders();
+            headers = [...headers, ...customHeaders];
+            let esHeaders = {};
+            headers.forEach(header => {
+                esHeaders[header[0]] = header[1];
+            });
+            var es = new EventSourcePolyfill(endPointPath, {
+                headers: esHeaders,
+                Transport: XMLHttpRequest
+            });
+            
+            es.addEventListener('message', (event) => {
+                let eventData = JSON.parse(event.data);
+                /**
+                 * Setup callbacks
+                 */
+                if (eventData.firstMessage) {
+                    if (callbacks.onFirstMessage) {
+                        callbacks.onFirstMessage.call(callbacks.context ? callbacks.context : undefined, eventData);
+                    }
+                }
+                if (callbacks.onMessage) {
+                    callbacks.onMessage.call(callbacks.context ? callbacks.context : undefined, eventData);
+                }
+                if (eventData.lastMessage) {
+                    es.close();
+                    if (callbacks.onLastMessage) {
+                        callbacks.onLastMessage.call(callbacks.context ? callbacks.context : undefined);
+                    }
+                    resolve();
+                }
+            });
             /**
              * Setup callbacks
              */
-            if (callbacks.onMessage) {
-                callbacks.onMessage.call(callbacks.context ? callbacks.context : undefined, eventData);
-            }
-            if (eventData.lastMessage) {
-                es.close();
-                if (callbacks.onLastMessage) {
-                    callbacks.onLastMessage.call(callbacks.context ? callbacks.context : undefined);
-                }
+            if (callbacks.onOpen) {
+                es.addEventListener('open', callbacks.onOpen);
             }
         });
-        /**
-         * Setup callbacks
-         */
-        if (callbacks.onOpen) {
-            es.addEventListener('open', callbacks.onOpen);
-        }
     }
 }
 export default VLabsRESTClientManager;
