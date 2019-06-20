@@ -32,8 +32,18 @@ class VLabsRESTClientManager {
         };
 
         /**
-         * Services
-         */
+         * 
+         * 
+         _____                 _               
+        / ____|               (_)              
+       | (___   ___ _ ____   ___  ___ ___  ___ 
+        \___ \ / _ \ '__\ \ / / |/ __/ _ \/ __|
+        ____) |  __/ |   \ V /| | (_|  __/\__ \
+       |_____/ \___|_|    \_/ |_|\___\___||___/
+                                                
+        * 
+        * 
+        */
         this.PublicService = new PublicService(this);
         this.AuthService = new AuthService(this);
     }
@@ -53,7 +63,7 @@ class VLabsRESTClientManager {
      */
     setupHeaders() {
         let headers = this.headers.slice();
-        if (this.AuthService.token !== undefined) {
+        if (this.AuthService.token !== null) {
             headers.push(['Authorization', 'Bearer ' + this.AuthService.token]);
         }
         return headers;
@@ -151,11 +161,14 @@ class VLabsRESTClientManager {
                 self.handleError(errorObj);
                 reject(errorObj);
             }
+
             xhr.open('POST', endPointPath);
+
             let headers = self.setupHeaders();
             headers.forEach((header) => {
                 xhr.setRequestHeader(header[0], header[1]);
             });
+
             xhr.send(JSON.stringify(body));
         });
     }

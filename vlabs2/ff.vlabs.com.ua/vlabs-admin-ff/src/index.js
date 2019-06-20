@@ -4,6 +4,8 @@ import App from './components/app';
 import 'typeface-roboto';
 import * as serviceWorker from './serviceWorker';
 
+console.log(process.env.REACT_APP_NAME);
+
 ReactDOM.render(<App />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change

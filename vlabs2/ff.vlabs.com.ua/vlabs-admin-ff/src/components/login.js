@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter, Redirect } from 'react-router-dom';
 import {
   Paper,
   Typography,
@@ -6,6 +7,7 @@ import {
   Button,
   CircularProgress
 } from '@material-ui/core';
+import * as EmailValidator from 'email-validator';
 
 const styles = {
     root: {
@@ -35,6 +37,11 @@ const styles = {
         position: 'absolute',
         right: '5%',
         bottom: '20px'
+    },
+    unauthorizedLabel: {
+        color: 'red',
+        fontFamily: 'Roboto',
+        fontSize: '12px',
     }
 };
 
@@ -47,8 +54,12 @@ class Login extends Component {
         this.state = {
             email: '',
             password: '',
-            formErrors: {email: '', password: ''},
-            submitted: false
+            formErrors: { 
+                email: '', 
+                password: ''
+            },
+            submitted: false,
+            authorized: undefined
         };
 
         this.onSubmit = this.onSubmit.bind(this);
@@ -59,39 +70,80 @@ class Login extends Component {
     }
     onSubmit(event) {
         event.preventDefault();
+
+        if (this.state.formErrors.email !== '' 
+        || this.state.formErrors.password !== '' 
+        ||  this.state.email === '' 
+        || this.state.password === '') 
+        return;
+
         this.setState({ submitted: true });
 
         this.App
             .VLabsRESTClientManager
-            .PublicService
-            .ping()
-            .then((result) => { console.log(result); });
+            .AuthService
+            .authenticate(this.state.email, this.state.password)
+            .then(() => {
+                this.setState({ submitted: false, authorized: true });
+            })
+            .catch((error) => {
+                this.setState({ submitted: false, authorized: false });
+            });
     }
     handleUserInput(event) {
         const name = event.target.name;
         const value = event.target.value;
-        this.setState({[name]: value});
+        this.setState({ [name]: value });
+
+        let { formErrors } = this.state;
+        formErrors[name] = '';
+
+        if (name === 'email' && value !== '') {
+            formErrors[name] = EmailValidator.validate(value) ? '' : 'Malformed email address';
+        }
+
+        this.setState({ formErrors: formErrors });
     }
     handleUserBlur(event) {
         const name = event.target.name;
-        const value = event.target.value;
+        // const value = event.target.value;
+
+        let { formErrors } = this.state;
+
         switch (name) {
             case 'email':
                 if (this.state.email === '') {
-                    this.setState({formErrors: { email: 'test'}});
+                    formErrors['email'] = 'Email is required';
                 }
             break;
+            case 'password':
+                if (this.state.password === '') {
+                    formErrors['password'] = 'Paasword is required';
+                }
+            break;
+            default: 
+                this.setState({ formErrors: formErrors });
+            break;
         }
+        this.setState({ formErrors: formErrors });
     }
     render() {
+        if (this.App.VLabsRESTClientManager.AuthService.isAuthenticated()) return(
+            <Redirect to='/dashboard'/>
+        );
+
         return(
             <Paper style={styles.root} elevation={5}>
                 <Typography style={styles.rootLabel} variant='h5' align='center' color='textSecondary'>
                     Welcome to VLabs Admin
+                    {
+                        (this.state.authorized === false) ? <div style={ styles.unauthorizedLabel }>Login failed</div> : ''
+                    }
                 </Typography>
                 <form style={styles.formContainer} noValidate autoComplete='off' onSubmit={(event) => this.onSubmit(event)}>
                     <TextField
-                    error
+                        autoFocus={true}
+                        error={ (this.state.formErrors.email !== '') ? true : false }
                         name='email'
                         label='Email'
                         placeholder='email@host.name'
@@ -102,6 +154,7 @@ class Login extends Component {
                         value={this.state.email}
                         onChange={(event) => this.handleUserInput(event)}
                         onBlur={(event) => this.handleUserBlur(event)}
+                        helperText={this.state.formErrors.email}
                     />
                     <TextField
                         name='password'
@@ -109,10 +162,13 @@ class Login extends Component {
                         margin='normal'
                         variant='outlined'
                         required={true}
+                        error={ (this.state.formErrors.password !== '') ? true : false }
                         style={styles.formElement}
                         type='password'
                         value={this.state.password}
                         onChange={(event) => this.handleUserInput(event)}
+                        onBlur={(event) => this.handleUserBlur(event)}
+                        helperText={this.state.formErrors.password}
                     />
                     { this.state.submitted ?
                         <CircularProgress 
@@ -124,14 +180,13 @@ class Login extends Component {
                     <Button type='submit' 
                         variant='contained'
                         color='primary'
-                        style={styles.formSubmitButton}>
+                        style={styles.formSubmitButton}
+                    >
                         Continue
                     </Button>
                 </form>
             </Paper>
         );
     }
-}
-
-
-export default Login;
+};
+export default withRouter(Login);
