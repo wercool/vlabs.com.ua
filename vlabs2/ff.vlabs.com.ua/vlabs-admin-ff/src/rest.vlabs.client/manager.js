@@ -1,5 +1,6 @@
 import PublicService from './service/public.service';
 import AuthService from './service/auth.service';
+import ValterService from './service/valter.service';
 
 class VLabsRESTClientManager {
     constructor() {
@@ -26,6 +27,11 @@ class VLabsRESTClientManager {
             user: {
                 base: '/user',
             },
+
+            valter: {
+                base: '/valter',
+                tuplesNum: '/slam/get_slam_tuples_num'
+            },
             getFullyQualifiedURL: function (endpointGroup, endpointPoint) {
                 return this.base + ((this[endpointGroup].base) ? this[endpointGroup].base : '') + this[endpointGroup][endpointPoint];
             }
@@ -46,6 +52,8 @@ class VLabsRESTClientManager {
         */
         this.PublicService = new PublicService(this);
         this.AuthService = new AuthService(this);
+
+        this.ValterService = new ValterService(this);
     }
     handleError(error) {
         switch (error.type) {

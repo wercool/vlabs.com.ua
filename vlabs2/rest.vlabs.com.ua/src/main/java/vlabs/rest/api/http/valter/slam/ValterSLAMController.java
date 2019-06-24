@@ -1,7 +1,5 @@
 package vlabs.rest.api.http.valter.slam;
 
-import java.util.Observable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +35,11 @@ public class ValterSLAMController {
     @RequestMapping(value = "/get_all_slam_tuples", method = RequestMethod.GET)
     public Flux<SLAMRGBDCmdVelOrientationTuple> getAllSLAMRGBDCmdVelOrientationTuples() {
         return valterSLAMService.getSLAMRGBDCmdVelOrientationTuples();
+    }
+
+    @RequestMapping(value = "/get_slam_tuples_num", method = RequestMethod.GET)
+    public Mono<Long> getSLAMRGBDCmdVelOrientationTuplesNum() {
+        return valterSLAMService.getSLAMRGBDCmdVelOrientationTuplesNum();
     }
 
     @RequestMapping(value = "/get_all_slam_tuples_rgbd_bytes", method = RequestMethod.GET)

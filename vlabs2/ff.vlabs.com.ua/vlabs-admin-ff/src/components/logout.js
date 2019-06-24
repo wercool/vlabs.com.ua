@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter, Redirect } from 'react-router-dom';
 import ExitToApp from '@material-ui/icons/ExitToApp';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const styles = {
     root: {
@@ -36,14 +37,16 @@ class Logout extends Component {
                 {
                     this.App.VLabsRESTClientManager.AuthService.userDetails.username
                 }
-                <div style={styles.exitButton}>
-                    <ExitToApp 
-                        onClick={() => { 
-                            this.App.VLabsRESTClientManager.AuthService.logout();
-                            this.props.history.push('/');
-                        }}
-                    />
-                </div>
+                <Tooltip title="Logout">
+                    <div style={styles.exitButton}>
+                        <ExitToApp 
+                            onClick={() => { 
+                                this.App.VLabsRESTClientManager.AuthService.logout();
+                                this.props.history.push('/');
+                            }}
+                        />
+                    </div>
+                </Tooltip>
             </div>
         );
     }

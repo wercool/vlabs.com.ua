@@ -43,6 +43,10 @@ public class ValterSLAMService {
         return slamRGBDCmdVelOrientationTupleRepository.findAll();
     }
 
+    public Mono<Long> getSLAMRGBDCmdVelOrientationTuplesNum() {
+        return slamRGBDCmdVelOrientationTupleRepository.count();
+    }
+
     public Flux<SLAMRGBDBytesCmdVelOrientationTuple> getSLAMRGBDBytesCmdVelOrientationTuples() {
         return slamRGBDCmdVelOrientationTupleRepository.findAll().map(slamRGBDCmdVelOrientationTuple -> {
             SLAMRGBDBytesCmdVelOrientationTuple slamRGBDBytesCmdVelOrientationTuple = new SLAMRGBDBytesCmdVelOrientationTuple(slamRGBDCmdVelOrientationTuple);
