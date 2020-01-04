@@ -27,7 +27,8 @@ public class VLabsRESTApplication {
             properties.load(resource.getInputStream());
             String applicationTitle = properties.getProperty("application.title");
 
-            OpenCV.loadShared();
+//            OpenCV.loadShared();
+            OpenCV.loadLocally();
 
             SpringApplication app = new SpringApplication(VLabsRESTApplication.class);
             app.setWebApplicationType(WebApplicationType.REACTIVE);
