@@ -133,9 +133,9 @@ export default class Tablet {
             for (var i = 0; i < this.initObj.content.tabs[this.currentActiveTabId].items.length; i++) {
                 if (this.tabletShortToast.style.display !== 'block' && !this.initObj.content.tabs[this.currentActiveTabId].items[i].completed) {
                     this.tabletShortToast.innerHTML = '<div style="color: #c4c4c4; font-size: 18px; margin: 5px; min-height: 24px; clear: both;">' + this.initObj.content.tabs[this.currentActiveTabId].title + '</div>';
-                    this.tabletShortToast.innerHTML += (attention == true ? '<img src="/vlabs.assets/img/attention.png" style="margin-right: 10px; vertical-align: middle;"/>' : '') + this.initObj.content.tabs[this.currentActiveTabId].items[i].shortDesc;
+                    this.tabletShortToast.innerHTML += (attention == true ? '<img src="../vlabs.assets/img/attention.png" style="margin-right: 10px; vertical-align: middle;"/>' : '') + this.initObj.content.tabs[this.currentActiveTabId].items[i].shortDesc;
                     if (attention == true) {
-                        this.tabletShortToast.innerHTML += '<div> click / tap <img src="/vlabs.assets/img/tablet.png" height="64" style="vertical-align: middle;"> for assistance</div>';
+                        this.tabletShortToast.innerHTML += '<div> click / tap <img src="../vlabs.assets/img/tablet.png" height="64" style="vertical-align: middle;"> for assistance</div>';
                     }
                     if (extraInnerHtml !== undefined) {
                         this.tabletShortToast.innerHTML += extraInnerHtml;

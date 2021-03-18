@@ -5,7 +5,7 @@
     "HCAlias": "vlab.hvac.base",
     "resolutionFactor": "1.0",
     "sounds": true,
-    "sceneJSONFile": "./resources/scene-heat-pump/vlab.hvac.base-heat-pump.json",
+    "sceneJSONFile": "resources/scene-heat-pump/vlab.hvac.base-heat-pump.json",
     "lang": "en",
     "defaultSceneCameraName": "defaultCamera",
     "cameraControls": {

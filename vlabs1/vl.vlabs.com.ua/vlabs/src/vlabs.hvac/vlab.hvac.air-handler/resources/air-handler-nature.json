@@ -4,7 +4,7 @@
     "alias": "vlab.hvac.base.air-handler",
     "HCAlias": "vlab.hvac.base",
     "resolutionFactor": "1.0",
-    "sceneJSONFile": "./resources/scene-air-handler/vlab.hvac.base-air-handler.json",
+    "sceneJSONFile": "resources/scene-air-handler/vlab.hvac.base-air-handler.json",
     "lang": "en",
     "defaultSceneCameraName": "defaultCamera",
     "cameraControls": {

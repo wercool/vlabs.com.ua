@@ -427,7 +427,7 @@ export default class VLab {
             from: {color: '#B2EBF2'},
             to: {color: '#006064'},
             step: (state, bar) => {
-                if (bar.value() < 1)
+                if (bar.value() < 1 && bar.value() > 0)
                 {
                     bar.setText(this.progressBarPrependText + Math.round(bar.value() * 100) + ' %');
                 } else {
@@ -573,7 +573,7 @@ export default class VLab {
         this.setProgressBar();
         return new Promise((resolve, reject) => {
             let thisVLab = this;
-            thisVLab.progressBarPrependText = (loaderMessage)? loaderMessage : "The world of HelpClip is loaded by ";
+            thisVLab.progressBarPrependText = (loaderMessage)? loaderMessage : "VEduLabs HVAC Demo loading... ";
             if (this.nature.sceneJSONFile) {
                 let loader = new THREE.ObjectLoader();
                 if (thisVLab.initObj.crossOrigin) loader.setCrossOrigin(thisVLab.initObj.crossOrigin);
@@ -611,7 +611,7 @@ export default class VLab {
             let thisVLab = this;
             this.overlayContainer.style.display = 'block';
             this.progressBarElement.style.display = 'block';
-            thisVLab.progressBarPrependText = (vlabItemName)? "HelpClips Item [" + vlabItemName + "] is loaded by " : "HelpClips item is loaded by ";
+            thisVLab.progressBarPrependText = (vlabItemName)? "VLab Item [" + vlabItemName + "] is loading... " : "VLab item loading... ";
             if (itemURL) {
                 let loader = new THREE.ObjectLoader();
                 loader.convertUpAxis = true;

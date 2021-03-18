@@ -1,3 +1,16 @@
+https://timonweb.com/javascript/how-to-fix-referenceerror-primordials-is-not-defined-error/
+
+gulp --vlab vlabs.hvac/vlab.hvac.base --mode dev --noauth --nature-plain
+
+
+
+
+
+
+
+
+
+
 VLabs
 
 Building ES6 Javascript for the Browser with Gulp, Babel, and More

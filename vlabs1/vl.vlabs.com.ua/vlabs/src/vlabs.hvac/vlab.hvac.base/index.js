@@ -161,7 +161,7 @@ class HVACVLabBase {
             context: this,
             vLabLocator: this.vLabLocator,
             content: {
-                header: 'HelpClip Assistant',
+                header: 'VLab Assistant',
                 tabs: [
                     {
                         title: 'Normal operation demo',

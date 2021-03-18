@@ -24,7 +24,7 @@
     height: 10vmin;
     max-width: 48px;
     max-height: 48px;
-    background-image: url('/vlabs.assets/img/closeInventory.png');
+    background-image: url('../vlabs.assets/img/closeInventory.png');
     background-repeat: no-repeat;
     background-size: contain;
     left: 16px;
